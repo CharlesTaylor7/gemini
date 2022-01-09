@@ -1,3 +1,4 @@
+{-# language OverloadedLabels #-}
 {-# options_ghc -Wwarn #-}
 module Main where
 
@@ -11,9 +12,7 @@ import           Shpadoinkle.Backend.Snabbdom (runSnabbdom, stage)
 import           Shpadoinkle.Html             (addStyle)
 import           Shpadoinkle.Run              (liveWithStatic, runJSorWarp, simple)
 
-import           MarsRover.Env                (loadEnv)
-import           MarsRover.PhotoBrowser.Api   (getRovers, runHandler)
-import           PhotoBrowser                 (Store (..), initialState, rootView)
+import           Gemini                       (Store (..), initialState, rootView)
 
 
 app :: Store -> JSM ()
@@ -28,10 +27,6 @@ port = 8080
 
 dev :: IO ()
 dev = do
-  _ <- loadEnv
-  rovers <- runHandler getRovers
-  rovers <- either throwIO pure rovers
-
   let initialPage = initialState & #rovers .~ rovers & app
   let staticFolder = "app/photo-browser-client/static/"
   liveWithStatic port initialPage staticFolder
@@ -40,4 +35,4 @@ dev = do
 main :: IO ()
 main = do
   error "Need to implement static server"
-  runJSorWarp port (app initialState)
+  runJSorWarp port $ app initialState
