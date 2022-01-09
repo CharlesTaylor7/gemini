@@ -1,0 +1,12 @@
+resolver: lts-18.14
+system-ghc: true
+compiler: ghc-8.10.7
+allow-newer: true
+packages:
+- .
+extra-deps:
+# optics
+- optics-0.4
+- optics-core-0.4
+- optics-extra-0.4
+- optics-th-0.4

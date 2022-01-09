@@ -1,0 +1,17 @@
+.slideshow {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  color: white;
+  background-color: #373d48;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.rover-photo {
+  max-height: 60vh;
+  max-width: 80%;
+  margin: 10px 0;
+  pointer-events: none;
+  user-select: none;
+}

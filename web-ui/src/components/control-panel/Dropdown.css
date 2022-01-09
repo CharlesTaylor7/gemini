@@ -1,0 +1,15 @@
+.dropdown {
+  display: flex;
+  margin: 0 10px;
+}
+
+.dropdown-select {
+  width: 100px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.dropdown-label {
+  margin-right: 10px;
+  font-weight: bold;
+  user-select: none;
+}

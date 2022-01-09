@@ -1,0 +1,186 @@
+name:                mars-rover
+version:             0.1.0.0
+github:              "githubuser/mars-rover"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2021 Author name here"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/mars-rover#readme>
+
+dependencies:
+- base >= 4.14 && < 4.16
+- relude
+# core data types
+- text
+- containers
+- vector
+# sql stuff
+- postgresql-binary
+- hasql
+- hasql-migration
+- hasql-transaction
+# aeson
+- aeson
+# monad utilities
+- mtl
+- monad-control
+  # - transformers-base
+# optics
+- optics >= 0.4
+# streaming
+- conduit >= 1.3
+# http client
+- req
+- http-client
+- http-types
+# logging
+- co-log
+- co-log-polysemy
+# http server
+- servant
+- servant-server
+- wai
+- warp
+# effects
+- polysemy
+- polysemy-plugin
+
+
+default-extensions:
+  # using relude instead
+  - NoImplicitPrelude
+  # together with optics solves the record problem
+  - DuplicateRecordFields
+  - OverloadedLabels
+  - DataKinds
+  - FlexibleContexts
+  # conveniences
+  - OverloadedStrings
+  - ImportQualifiedPost
+  - BlockArguments
+  - NamedFieldPuns
+  - PartialTypeSignatures
+  - PatternSynonyms
+  # deriving extensions
+  - DerivingStrategies
+  - DerivingVia
+  - DeriveGeneric
+  - DeriveAnyClass
+  - GeneralizedNewtypeDeriving
+  - StandaloneDeriving
+  # for type equalities in rel8
+  - GADTs
+  # polysemy
+  - LambdaCase
+  - PolyKinds
+  - RankNTypes
+  - ScopedTypeVariables
+  - TypeApplications
+  - TypeOperators
+  - TypeFamilies
+  - AllowAmbiguousTypes
+
+ghc-options:
+  # ide integration
+  - -fwrite-ide-info
+  - -hiedir=.hie
+  # general
+  - -ferror-spans
+  - -freverse-errors
+  # warnings
+  - -Wall
+  - -Wmissing-deriving-strategies
+  - -Wmissing-signatures
+  - -Wincomplete-uni-patterns
+  - -Wincomplete-record-updates
+  - -Wtype-defaults
+  - -Wunused-imports
+  - -Werror
+  # turn off warnings
+  - -Wno-name-shadowing
+  - -Wno-partial-type-signatures
+  # polysemy
+  - -fplugin=Polysemy.Plugin
+    # - -O2
+    # - -flate-specialise
+    # - -fspecialise-aggressively
+
+
+internal-libraries:
+  rel8-extra:
+    source-dirs: lib/rel8-extra
+    dependencies:
+    - rel8
+    - aeson-casing
+    - http-api-data
+  open-variant:
+    source-dirs: lib/open-variant
+    dependencies:
+    - haskus-utils-variant
+
+
+library:
+  ghc-options:
+    - -Wmissing-export-lists
+  source-dirs: lib/mars-rover
+  dependencies:
+  - rel8-extra
+  - open-variant
+
+executables:
+  fetch-nasa-data:
+    main:                Main.hs
+    source-dirs:         app/fetch-nasa-data
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - mars-rover
+    - rel8-extra
+    - open-variant
+  migrate:
+    main:                Main.hs
+    source-dirs:         app/migrate
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - mars-rover
+    - rel8-extra
+    - open-variant
+  photo-browser:
+    main:                Main.hs
+    source-dirs:         app/photo-browser
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - mars-rover
+    - rel8-extra
+    - open-variant
+
+tests:
+  mars-rover-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - mars-rover
