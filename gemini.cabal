@@ -1,0 +1,163 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           gemini
+version:        0.0.0.0
+description:    Please see the README on GitHub at <https://github.com/charlestaylor7/gemini#readme>
+homepage:       https://github.com/CharlesTaylor7/gemini#readme
+bug-reports:    https://github.com/CharlesTaylor7/gemini/issues
+author:         Charles Taylor
+maintainer:     charlestaylor95@gmail.com
+copyright:      2021 Charles Taylor
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/CharlesTaylor7/gemini
+
+library
+  exposed-modules:
+      Gemini
+  other-modules:
+      Paths_gemini
+  hs-source-dirs:
+      lib
+  default-extensions:
+      NoImplicitPrelude
+      DuplicateRecordFields
+      OverloadedLabels
+      DataKinds
+      FlexibleContexts
+      OverloadedStrings
+      ImportQualifiedPost
+      BlockArguments
+      NamedFieldPuns
+      PartialTypeSignatures
+      PatternSynonyms
+      DerivingStrategies
+      DerivingVia
+      DeriveGeneric
+      DeriveAnyClass
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      GADTs
+      LambdaCase
+      PolyKinds
+      RankNTypes
+      ScopedTypeVariables
+      TypeApplications
+      TypeOperators
+      TypeFamilies
+      AllowAmbiguousTypes
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
+  build-depends:
+      base >=4.14 && <4.16
+    , containers
+    , mtl
+    , optics >=0.4
+    , relude
+    , text
+    , vector
+  default-language: Haskell2010
+
+executable gemini
+  main-is: Main.hs
+  other-modules:
+      Paths_gemini
+  hs-source-dirs:
+      app
+  default-extensions:
+      NoImplicitPrelude
+      DuplicateRecordFields
+      OverloadedLabels
+      DataKinds
+      FlexibleContexts
+      OverloadedStrings
+      ImportQualifiedPost
+      BlockArguments
+      NamedFieldPuns
+      PartialTypeSignatures
+      PatternSynonyms
+      DerivingStrategies
+      DerivingVia
+      DeriveGeneric
+      DeriveAnyClass
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      GADTs
+      LambdaCase
+      PolyKinds
+      RankNTypes
+      ScopedTypeVariables
+      TypeApplications
+      TypeOperators
+      TypeFamilies
+      AllowAmbiguousTypes
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Shpadoinkle
+    , Shpadoinkle-backend-snabbdom
+    , Shpadoinkle-html
+    , base >=4.14 && <4.16
+    , containers
+    , gemini
+    , mtl
+    , optics >=0.4
+    , relude
+    , text
+    , vector
+  default-language: Haskell2010
+
+test-suite gemini-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_gemini
+  hs-source-dirs:
+      test
+  default-extensions:
+      NoImplicitPrelude
+      DuplicateRecordFields
+      OverloadedLabels
+      DataKinds
+      FlexibleContexts
+      OverloadedStrings
+      ImportQualifiedPost
+      BlockArguments
+      NamedFieldPuns
+      PartialTypeSignatures
+      PatternSynonyms
+      DerivingStrategies
+      DerivingVia
+      DeriveGeneric
+      DeriveAnyClass
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      GADTs
+      LambdaCase
+      PolyKinds
+      RankNTypes
+      ScopedTypeVariables
+      TypeApplications
+      TypeOperators
+      TypeFamilies
+      AllowAmbiguousTypes
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.14 && <4.16
+    , containers
+    , mars-rover
+    , mtl
+    , optics >=0.4
+    , relude
+    , text
+    , vector
+  default-language: Haskell2010

@@ -27,7 +27,7 @@ port = 8080
 
 dev :: IO ()
 dev = do
-  let initialPage = initialState & #rovers .~ rovers & app
+  let initialPage = app initialState
   let staticFolder = "app/photo-browser-client/static/"
   liveWithStatic port initialPage staticFolder
 

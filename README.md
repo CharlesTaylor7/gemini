@@ -6,5 +6,10 @@ Project goals:
 - Ability to program "algos", reusable sets of moves to apply.
 - Learn how to solve the puzzle
 
+## Run Dev Server
+
+ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
+
+
 ## TODO
 - Attach image of puzzle to readme

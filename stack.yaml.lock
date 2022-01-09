@@ -11,27 +11,6 @@ snapshots:
     size: 586069
 packages:
 - original:
-    hackage: rel8-1.2.0.0
-  completed:
-    pantry-tree:
-      sha256: a037ef16fed5785e57d68a83721fa2b0cfc47ce8ed7a128be0149455797c2d76
-      size: 9027
-    hackage: rel8-1.2.0.0@sha256:d540fbfb967bf7eed23a1e7df24ef17424ed25575ab05a86a2cf213b2e6d6940,5045
-- original:
-    hackage: hasql-migration-0.3.0
-  completed:
-    pantry-tree:
-      sha256: 55e3dfca36ffe0d11e1c42bce446e3cc1d5b9a4983e196ec99c650c8b4268845
-      size: 589
-    hackage: hasql-migration-0.3.0@sha256:6ca4cc6c89834bb79eb9f15b504774043b5b3994336bd86a9d79e59da6d54963,2799
-- original:
-    hackage: aeson-casing-0.2.0.0
-  completed:
-    pantry-tree:
-      sha256: b17d246240f7318e25d9ecf92e4d665fe0db00b3cba2cf6556674a863ee1feb3
-      size: 417
-    hackage: aeson-casing-0.2.0.0@sha256:0cd116308e91e2a1162b7e57125d2a9fc503a1a6bd6efc59378b518db0a33733,1466
-- original:
     hackage: optics-0.4
   completed:
     pantry-tree:
@@ -59,48 +38,6 @@ packages:
       sha256: 41e77d095f528791a181589af631373d2a2fa63ab43564462cd2ce2a185ec3a8
       size: 741
     hackage: optics-th-0.4@sha256:7c838b5b1d6998133bf8f0641c36197ed6cb468dc69515e1952f33f0bbe8e11d,2009
-- original:
-    hackage: co-log-0.4.0.1
-  completed:
-    pantry-tree:
-      sha256: e73165ff8f744709428e2e87984c9d60ca1cec43d8455c413181c7c466e7497c
-      size: 1126
-    hackage: co-log-0.4.0.1@sha256:3d4c17f37693c80d1aa2c41669bc3438fac3e89dc5f479e57d79bc3ddc4dfcc5,5087
-- original:
-    hackage: co-log-polysemy-0.0.1.2
-  completed:
-    pantry-tree:
-      sha256: 56ddcbaf126c9e557d7e1336c6d1a9044567676dcdbc24fab34907d9a5725f73
-      size: 400
-    hackage: co-log-polysemy-0.0.1.2@sha256:a6ea6103f5ca806dc16bcdbb666ee2ebafdbbf36a9626f33103105a41a55d561,3645
-- original:
-    hackage: ansi-terminal-0.10.3
-  completed:
-    pantry-tree:
-      sha256: 02f05d52be3ffcf36c78876629cbab80b63420672685371aea4fd10e1c4aabb6
-      size: 1461
-    hackage: ansi-terminal-0.10.3@sha256:e2fbcef5f980dc234c7ad8e2fa433b0e8109132c9e643bc40ea5608cd5697797,3226
-- original:
-    hackage: haskus-utils-variant-3.1
-  completed:
-    pantry-tree:
-      sha256: b8fdb73713f5704b63efbea838ea8319421b3fee714575cd632507975889f529
-      size: 1022
-    hackage: haskus-utils-variant-3.1@sha256:e602dd23e068c98d03c1027af20503addef8df6368577622453f44ccabea2a5b,2159
-- original:
-    hackage: haskus-utils-data-1.4
-  completed:
-    pantry-tree:
-      sha256: 0b40fd5e679a2badd33b049876592c120d0c45ec0dd3fe651ca60c0e09cf9042
-      size: 872
-    hackage: haskus-utils-data-1.4@sha256:bfa94363b94b14779edd6834fbd59dbb847c3d7b8f48e3844f456ffdc077da4a,1466
-- original:
-    hackage: haskus-utils-types-1.5.1
-  completed:
-    pantry-tree:
-      sha256: 67355c8db2c9452e73fb5463914d7bcc80f3fdb09ff1d710aba1a9d3547a0806
-      size: 853
-    hackage: haskus-utils-types-1.5.1@sha256:991c472f4e751e2f0d7aab6ad4220ef151d6160876dcf0511bbf876bbd432020,1298
 - original:
     subdir: core
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
