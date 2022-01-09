@@ -14,10 +14,11 @@ import qualified Shpadoinkle.Continuation as Continuation
 import qualified Shpadoinkle.Html         as Html
 import qualified Shpadoinkle.Keyboard     as Key
 
+import           Gemini.Types
 
 
 data Store = Store
-  {
+  { disks :: [Disk]
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -25,7 +26,7 @@ data Store = Store
 
 initialState :: Store
 initialState = Store
-  {
+  { disks = allDisks
   }
 
 

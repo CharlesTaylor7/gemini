@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Gemini
+      Gemini.Types
   other-modules:
       Paths_gemini
   hs-source-dirs:
