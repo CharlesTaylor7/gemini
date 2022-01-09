@@ -3,4 +3,4 @@
 *~
 /.env
 /.hie/
-*.cabal
+mars-rover.cabal

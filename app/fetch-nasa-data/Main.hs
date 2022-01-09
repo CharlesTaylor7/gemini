@@ -1,27 +1,27 @@
 module Main where
-import Relude hiding (State, get, runState, evalState)
-import Data.Traversable (for)
-import Data.Vector hiding (length)
+import           Data.Traversable      (for)
+import           Data.Vector           hiding (length)
+import           Relude                hiding (State, evalState, get, runState)
 
-import Optics
+import           Optics
 
-import Rel8
-import Rel8.Polysemy
-import Polysemy
-import Polysemy.Input
-import Polysemy.Output
-import Polysemy.Error
-import Polysemy.State
-import Polysemy.State.Optics
+import           Polysemy
+import           Polysemy.Error
+import           Polysemy.Input
+import           Polysemy.Output
+import           Polysemy.State
+import           Polysemy.State.Optics
+import           Rel8
+import           Rel8.Polysemy
 
-import Variant
+import           Variant
 
-import MarsRover.Api
-import MarsRover.DBSchema
-import MarsRover.Query
-import MarsRover.Env
-import MarsRover.Utils
-import MarsRover.Log
+import           MarsRover.Api
+import           MarsRover.DBSchema
+import           MarsRover.Env
+import           MarsRover.Log
+import           MarsRover.Query
+import           MarsRover.Utils
 
 
 main :: IO ()

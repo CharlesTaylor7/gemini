@@ -2,9 +2,9 @@ name:                mars-rover
 version:             0.1.0.0
 github:              "githubuser/mars-rover"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2021 Author name here"
+author:              "Charles Taylor"
+maintainer:          "charlestaylor95@gmail.com"
+copyright:           "2021 Charles Taylor"
 
 extra-source-files:
 - README.md
@@ -162,9 +162,10 @@ executables:
     - mars-rover
     - rel8-extra
     - open-variant
-  photo-browser:
+
+  photo-browser-api:
     main:                Main.hs
-    source-dirs:         app/photo-browser
+    source-dirs:         app/photo-browser-api
     ghc-options:
     - -threaded
     - -rtsopts
@@ -173,6 +174,22 @@ executables:
     - mars-rover
     - rel8-extra
     - open-variant
+
+  photo-browser-client:
+    main:                Main.hs
+    source-dirs:         app/photo-browser-client
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    other-modules:
+      PhotoBrowser
+    dependencies:
+    - mars-rover
+    - Shpadoinkle
+    - Shpadoinkle-backend-snabbdom
+    - Shpadoinkle-html
+
 
 tests:
   mars-rover-test:

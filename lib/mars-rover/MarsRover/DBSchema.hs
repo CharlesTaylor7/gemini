@@ -6,9 +6,9 @@ module MarsRover.DBSchema
   , Camera(..)
   )
   where
-import Relude
-import Rel8
-import Data.Aeson (FromJSON, ToJSON)
+import           Data.Aeson (FromJSON, ToJSON)
+import           Rel8
+import           Relude
 
 
 -- | Rover
@@ -34,16 +34,16 @@ data RoverName
   | Spirit
   deriving stock (Generic, Read, Show, Bounded, Relude.Enum, Eq)
   deriving DBType via ReadShow RoverName
-  deriving anyclass (DBEq, FromJSON, ToJSON)
+  deriving anyclass (DBEq, FromJSON, ToJSON, NFData)
 
 
 -- | Photo
 data Photo f = Photo
-  { id         :: Column f (Id Photo)
-  , roverId    :: Column f (Id Rover)
-  , cameraId   :: Column f (Id Camera)
-  , imgSrc     :: Column f Text
-  , earthDate  :: Column f Day
+  { id        :: Column f (Id Photo)
+  , roverId   :: Column f (Id Rover)
+  , cameraId  :: Column f (Id Camera)
+  , imgSrc    :: Column f Text
+  , earthDate :: Column f Day
   }
   deriving stock (Generic)
   deriving anyclass (Rel8able, AutoSchema)
@@ -53,9 +53,9 @@ deriving stock instance f ~ Rel8.Result => Show (Photo f)
 
 -- | Job
 data Job f = Job
-  { roverId     :: Column f (Id Rover)
-  , sol         :: Column f Int64
-  , page        :: Column f Int64
+  { roverId :: Column f (Id Rover)
+  , sol     :: Column f Int64
+  , page    :: Column f Int64
   }
   deriving stock (Generic)
   deriving anyclass (Rel8able, AutoSchema)
@@ -65,9 +65,9 @@ deriving stock instance f ~ Rel8.Result => Show (Job f)
 
 -- | Camera (view)
 data Camera f = Camera
-  { id          :: Column f (Id Camera)
-  , roverId     :: Column f (Id Rover)
-  , name        :: Column f Text
+  { id      :: Column f (Id Camera)
+  , roverId :: Column f (Id Rover)
+  , name    :: Column f Text
   }
   deriving stock (Generic)
   deriving anyclass (Rel8able, AutoSchema)
