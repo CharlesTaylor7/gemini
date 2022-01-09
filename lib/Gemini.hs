@@ -1,32 +1,39 @@
 {-# options_ghc -Wwarn #-}
 module Gemini where
 
-import           Relude                   hiding (Option)
+import           Relude                    hiding (Option)
 
-import           Control.Exception        (throwIO)
-import           Data.List                (findIndex)
-import           Data.Text                (pack, unpack)
-import           Data.Vector              (Vector)
+import           Control.Exception         (throwIO)
+import           Data.List                 (findIndex)
+import           Data.Text                 (pack, unpack)
+import           Data.Vector               (Vector)
 import           Optics
+import           Prettyprinter             (Pretty (..))
+import qualified Prettyprinter             as Pretty
+import qualified Prettyprinter.Render.Text as Pretty
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Continuation as Continuation
-import qualified Shpadoinkle.Html         as Html
-import qualified Shpadoinkle.Keyboard     as Key
+import qualified Shpadoinkle.Continuation  as Continuation
+import qualified Shpadoinkle.Html          as Html
+import qualified Shpadoinkle.Keyboard      as Key
 
 import           Gemini.Types
 
 
+
 data Store = Store
-  { disks :: [Disk]
+  { gemini :: Gemini
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
+instance Pretty Store where
+  pretty Store { gemini } = ""
+
 
 initialState :: Store
 initialState = Store
-  { disks = allDisks
+  { gemini = solvedGemini
   }
 
 
@@ -49,7 +56,7 @@ rotateR' = identity
 rootView :: MonadIO m => Store -> Html m Store
 rootView state =
   Html.div
-    [ Html.className "slideshow"
+    [ Html.className "gemini-app"
     , Html.tabIndex 0
     , Html.onKeydownC \case
       Key.T -> Pure rotateL
@@ -69,5 +76,10 @@ debugView state =
     [ Html.br'_
     , Html.br'_
     , Html.br'_
-    , Html.text $ show state
+    , Html.text $ prettyCompactText state
     ]
+
+
+-- | Utilities
+prettyCompactText :: forall a. Pretty a => a -> Text
+prettyCompactText = Pretty.renderStrict . Pretty.layoutCompact . pretty

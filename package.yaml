@@ -30,6 +30,7 @@ dependencies:
 - mtl
 # optics
 - optics >= 0.4
+- prettyprinter
 
 
 default-extensions:

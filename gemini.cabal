@@ -64,6 +64,7 @@ library
     , containers
     , mtl
     , optics >=0.4
+    , prettyprinter
     , relude
     , text
     , vector
@@ -112,6 +113,7 @@ executable gemini
     , gemini
     , mtl
     , optics >=0.4
+    , prettyprinter
     , relude
     , text
     , vector
@@ -158,6 +160,7 @@ test-suite gemini-test
     , mars-rover
     , mtl
     , optics >=0.4
+    , prettyprinter
     , relude
     , text
     , vector
