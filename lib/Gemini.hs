@@ -1,26 +1,31 @@
 {-# options_ghc -Wwarn #-}
 module Gemini where
 
-import           Relude                    hiding (Option)
+import           Relude                      hiding (Option)
 
-import           Control.Exception         (throwIO)
-import           Data.List                 (findIndex)
-import           Data.Text                 (pack, unpack)
-import           Data.Vector               (Vector)
-import           Optics
-import           Prettyprinter             (Pretty (..))
-import qualified Prettyprinter             as Pretty
-import qualified Prettyprinter.Render.Text as Pretty
+import           Control.Exception           (throwIO)
+import           Data.List                   (findIndex)
+import           Data.Text                   (pack, unpack)
+import           Data.Vector                 (Vector)
+import           Optics                      hiding ((#))
+import           Prettyprinter               (Pretty (..))
+import qualified Prettyprinter               as Pretty
+import qualified Prettyprinter.Render.Text   as Pretty
+
+
+
+import           JSDOM                       (currentDocumentUnchecked)
+import           Language.Javascript.JSaddle (JSM, JSString, MonadJSM, Object, fromJSVal, toJSVal, (#))
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Continuation  as Continuation
-import qualified Shpadoinkle.Html          as Html
-import qualified Shpadoinkle.Keyboard      as Key
+import qualified Shpadoinkle.Continuation    as Continuation
+import qualified Shpadoinkle.Html            as Html
+import qualified Shpadoinkle.Keyboard        as Key
 
 import           Gemini.Types
 
 
-
+-- | Store definition
 data Store = Store
   { gemini :: Gemini
   }
@@ -37,7 +42,7 @@ initialState = Store
   }
 
 
--- | state functions
+-- | Store transformations
 -- The 6 basic motions are called:
 -- L, L', C, C', R, R'
 -- L is a clockwise rotation of the leftmost ring, L' is anticlockwise
@@ -53,6 +58,7 @@ rotateR' = identity
 -- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
 -- T = L, Y = L', U = C, I = C', O = R, P = R'
 
+-- | Components
 rootView :: MonadIO m => Store -> Html m Store
 rootView state =
   Html.div
@@ -67,17 +73,42 @@ rootView state =
       Key.P -> Pure rotateR'
       _     -> done
     ]
-    [ debugView state
+    [ geminiSvgView (state ^. #gemini)
+    , debugView state
     ]
 
-
+debugView :: Store -> Html m Store
 debugView state =
   Html.div_
     [ Html.br'_
     , Html.br'_
     , Html.br'_
-    , Html.text $ prettyCompactText state
+    , Html.text $ show state
     ]
+
+
+geminiSvgView :: Gemini -> Html m a
+geminiSvgView gemini =
+  Html.h "svg"
+    [ Html.className "gemini-svg"
+    , ("xmlns", "http://www.w3.org/2000/svg")
+    ]
+    [ circle
+      [ ("stroke", "black")
+      , ("fill", "transparent")
+      ]
+    ]
+
+-- | Svg elements
+
+circle :: [(JSString, JSString)] -> Html m a
+circle attributes = baked $ do
+  document' <- currentDocumentUnchecked
+  container' <- document' # ("createElement" :: Text) $ ("circle" :: Text)
+  for_ attributes $ \(name, value) ->
+    container' # ("setAttribute" :: Text) $ (name, value)
+  return (RawNode container', pure done)
+
 
 
 -- | Utilities

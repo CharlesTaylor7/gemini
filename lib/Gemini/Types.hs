@@ -1,4 +1,11 @@
-module Gemini.Types where
+module Gemini.Types
+  ( Gemini, geminiFromList
+  , Location(..)
+  , Ring(..)
+  , Disk(..)
+  , Color(..)
+  , solvedGemini
+  ) where
 
 import           Relude
 
@@ -81,15 +88,6 @@ instance Pretty Color where
 
 
 -- | Basic operations
-
--- | each pair represents a location and its two possible representations
-locationEquivalences :: [(Location, Location)]
-locationEquivalences =
-  [ (Location LeftRing 2, Location CenterRing 16)
-  , (Location LeftRing 7, Location CenterRing 11)
-  , (Location CenterRing 2, Location RightRing 16)
-  , (Location CenterRing 7, Location RightRing 11)
-  ]
 
 -- | lookup location on gemini puzzle
 geminiLookup :: Gemini -> Location -> Disk

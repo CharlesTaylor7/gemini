@@ -62,6 +62,8 @@ library
   build-depends:
       base >=4.14 && <4.16
     , containers
+    , jsaddle
+    , jsaddle-dom
     , mtl
     , optics >=0.4
     , prettyprinter
@@ -111,6 +113,8 @@ executable gemini
     , base >=4.14 && <4.16
     , containers
     , gemini
+    , jsaddle
+    , jsaddle-dom
     , mtl
     , optics >=0.4
     , prettyprinter
@@ -157,6 +161,8 @@ test-suite gemini-test
   build-depends:
       base >=4.14 && <4.16
     , containers
+    , jsaddle
+    , jsaddle-dom
     , mars-rover
     , mtl
     , optics >=0.4

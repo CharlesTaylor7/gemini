@@ -22,15 +22,14 @@ description:         Please see the README on GitHub at <https://github.com/char
 dependencies:
 - base >= 4.14 && < 4.16
 - relude
-# core data types
 - text
 - containers
 - vector
-# effects
 - mtl
-# optics
 - optics >= 0.4
 - prettyprinter
+- jsaddle
+- jsaddle-dom
 
 
 default-extensions:
