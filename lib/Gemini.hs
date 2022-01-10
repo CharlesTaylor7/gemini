@@ -89,24 +89,17 @@ debugView state =
 
 geminiSvgView :: Gemini -> Html m a
 geminiSvgView gemini =
-  Html.h "svg"
-    [ Html.className "gemini-svg"
-    , ("xmlns", "http://www.w3.org/2000/svg")
-    ]
-    [ circle
-      [ ("stroke", "black")
-      , ("fill", "transparent")
-      ]
+  hSvg "svg"
+    [ ("class", "gemini-svg")
+    , ("viewBox", "0 0 100 100")
     ]
 
 -- | Svg elements
-
-circle :: [(JSString, JSString)] -> Html m a
-circle attributes = baked $ do
+hSvg :: Text -> [(Text, Text)] -> Html m a
+hSvg name attributes = baked $ do
   document' <- currentDocumentUnchecked
-  container' <- document' # ("createElement" :: Text) $ ("circle" :: Text)
-  for_ attributes $ \(name, value) ->
-    container' # ("setAttribute" :: Text) $ (name, value)
+  container' <- document' # ("createElement" :: Text) $ name
+  for_ attributes $ container' # ("setAttribute" :: Text)
   return (RawNode container', pure done)
 
 

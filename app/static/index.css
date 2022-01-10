@@ -11,6 +11,6 @@ body {
 }
 
 .gemini-svg {
-    width: 100%;
-    height: 500px;
+    display: block;
+    height: 100%;
 }

@@ -28,7 +28,7 @@ port = 8080
 dev :: IO ()
 dev = do
   let initialPage = app initialState
-  let staticFolder = "app/photo-browser-client/static/"
+  let staticFolder = "app/static/"
   liveWithStatic port initialPage staticFolder
 
 
