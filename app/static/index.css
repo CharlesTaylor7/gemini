@@ -34,6 +34,10 @@ body {
     font-size: 10px;
 }
 
+.disk-black > .disk-label {
+    fill: white;
+}
+
 .disk-unknown {
     fill: purple;
 }
