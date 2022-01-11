@@ -89,6 +89,20 @@ instance Pretty Color where
 
 -- | Basic operations
 
+-- | Gemini transformations
+-- The 6 basic motions are called:
+-- L, L', C, C', R, R'
+-- L is a clockwise rotation of the leftmost ring, L' is anticlockwise
+-- C is for the central ring
+-- R is for the rightmost ring
+rotateL, rotateL', rotateC, rotateC', rotateR, rotateR' :: Gemini -> Gemini
+rotateL = identity
+rotateL' = identity
+rotateC = identity
+rotateC' = identity
+rotateR = identity
+rotateR' = identity
+
 -- | lookup location on gemini puzzle
 getDisk :: Gemini -> Location -> Maybe Disk
 getDisk (Gemini map) location = map ^? ix index
@@ -153,6 +167,8 @@ solvedGemini = geminiFromList
   , (Location LeftRing 7, Disk White 5)
   , (Location LeftRing 8, Disk White 6)
   , (Location LeftRing 9, Disk White 7)
+  , (Location LeftRing 10, Disk White 8)
+  , (Location LeftRing 11, Disk White 9)
   -- green
   , (Location CenterRing 12, Disk Green 1)
   , (Location CenterRing 13, Disk Green 2)

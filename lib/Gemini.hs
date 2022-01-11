@@ -41,22 +41,6 @@ initialState = Store
   }
 
 
--- | Store transformations
--- The 6 basic motions are called:
--- L, L', C, C', R, R'
--- L is a clockwise rotation of the leftmost ring, L' is anticlockwise
--- C is for the central ring
--- R is for the rightmost ring
-rotateL, rotateL', rotateC, rotateC', rotateR, rotateR' :: Store -> Store
-rotateL = identity
-rotateL' = identity
-rotateC = identity
-rotateC' = identity
-rotateR = identity
-rotateR' = identity
--- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
--- T = L, Y = L', U = C, I = C', O = R, P = R'
-
 -- | Components
 rootView :: MonadIO m => Store -> Html m Store
 rootView state =
@@ -64,6 +48,8 @@ rootView state =
     [ Html.className "gemini-app"
     , Html.tabIndex 0
     , Html.onKeydownC \case
+      -- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
+      -- T, Y, U, I, O, P
       Key.T -> Pure rotateL
       Key.Y -> Pure rotateL'
       Key.U -> Pure rotateC
