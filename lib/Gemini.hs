@@ -3,10 +3,6 @@ module Gemini where
 
 import           Relude                      hiding (Option)
 
-import           Control.Exception           (throwIO)
-import           Data.List                   (findIndex)
-import           Data.Text                   (pack, unpack)
-import           Data.Vector                 (Vector)
 import           Optics                      hiding ((#))
 import           Prettyprinter               (Pretty (..))
 import qualified Prettyprinter               as Pretty
@@ -15,7 +11,7 @@ import qualified Prettyprinter.Render.Text   as Pretty
 
 
 import           JSDOM                       (currentDocumentUnchecked)
-import           Language.Javascript.JSaddle (JSM, JSString, MonadJSM, Object, fromJSVal, toJSVal, (#))
+import           Language.Javascript.JSaddle (JSVal, (#))
 
 import           Shpadoinkle
 import qualified Shpadoinkle.Continuation    as Continuation
@@ -79,28 +75,61 @@ rootView state =
 
 debugView :: Store -> Html m Store
 debugView state =
-  Html.div_
-    [ Html.br'_
-    , Html.br'_
-    , Html.br'_
-    , Html.text $ show state
+  Html.div
+    [ Html.className "gemini-debug"]
+    [ Html.text $ show state
     ]
 
 
 geminiSvgView :: Gemini -> Html m a
 geminiSvgView gemini =
-  hSvg "svg"
-    [ ("class", "gemini-svg")
-    , ("viewBox", "0 0 100 100")
+  Html.div
+    [ Html.className "svg-wrapper"]
+    [ bakeSvg $
+      hSvg "svg"
+        [ ("class", "gemini-svg")
+        , ("viewBox", "0 0 100 100")
+        ]
+        [ hSvg "circle"
+          [ ("r", "50")
+          , ("cx", "50")
+          , ("cy", "50")
+          ]
+          []
+        ]
     ]
 
+
+
 -- | Svg elements
-hSvg :: Text -> [(Text, Text)] -> Html m a
-hSvg name attributes = baked $ do
+-- https://stackoverflow.com/a/3642265
+bakeSvg :: SvgElement -> Html m a
+bakeSvg svgElement = baked $ do
   document' <- currentDocumentUnchecked
-  container' <- document' # ("createElement" :: Text) $ name
-  for_ attributes $ container' # ("setAttribute" :: Text)
-  return (RawNode container', pure done)
+
+  let svgNamespace :: Text
+      svgNamespace = "http://www.w3.org/2000/svg"
+
+  let render :: SvgElement -> JSM JSVal
+      render SvgElement { name, attributes, children } = do
+        element' <- document' # ("createElementNS" :: Text) $ (svgNamespace, name)
+        for_ attributes $ element' # ("setAttribute" :: Text)
+        for_ children $ \child -> do
+          child' <- render child
+          element' # ("appendChild" :: Text) $ child'
+        pure element'
+
+  el' <- render svgElement
+  pure (RawNode el', pure Continuation.done)
+
+
+
+hSvg = SvgElement
+data SvgElement = SvgElement
+  { name       :: !Text
+  , attributes :: [(Text, Text)]
+  , children   :: [SvgElement]
+  }
 
 
 

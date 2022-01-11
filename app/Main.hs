@@ -4,9 +4,6 @@ module Main where
 
 import           Relude
 
-import           Control.Exception            (throwIO)
-import           Optics                       hiding (simple)
-
 import           Shpadoinkle                  (JSM)
 import           Shpadoinkle.Backend.Snabbdom (runSnabbdom, stage)
 import           Shpadoinkle.Html             (addStyle)

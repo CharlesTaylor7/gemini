@@ -6,11 +6,20 @@ body {
     margin: 0;
 }
 
-.gemini-app: {
+.gemini-app {
     margin: 12px;
+}
+
+.svg-wrapper > div {
+    height: 200px;
 }
 
 .gemini-svg {
     display: block;
     height: 100%;
+}
+
+.gemini-debug {
+    height: auto;
+    margin: 10px 0;
 }
