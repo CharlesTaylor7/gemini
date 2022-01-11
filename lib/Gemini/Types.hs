@@ -1,10 +1,8 @@
 module Gemini.Types
   ( Gemini, geminiFromList, getDisk
-  , Location(..)
-  , Ring(..)
-  , Disk(..)
-  , Color(..)
+  , Location(..) , Ring(..) , Disk(..) , Color(..), RotationDirection(..)
   , solvedGemini
+  , rotate
   ) where
 
 import           Relude
@@ -37,11 +35,14 @@ data Location = Location
   deriving stock (Eq, Show, Ord, Generic)
   deriving anyclass (NFData)
 
+data RotationDirection
+  = Clockwise
+  | AntiClockwise
+  deriving (Eq, Show)
 
 instance Pretty Location where
   pretty Location { ring, position } =
     pretty ring <> Pretty.unsafeViaShow position
-
 
 data Ring
   = LeftRing
@@ -95,13 +96,9 @@ instance Pretty Color where
 -- L is a clockwise rotation of the leftmost ring, L' is anticlockwise
 -- C is for the central ring
 -- R is for the rightmost ring
-rotateL, rotateL', rotateC, rotateC', rotateR, rotateR' :: Gemini -> Gemini
-rotateL = identity
-rotateL' = identity
-rotateC = identity
-rotateC' = identity
-rotateR = identity
-rotateR' = identity
+rotate :: Ring -> RotationDirection -> Gemini -> Gemini
+rotate r d = identity
+
 
 -- | lookup location on gemini puzzle
 getDisk :: Gemini -> Location -> Maybe Disk
@@ -123,10 +120,22 @@ locationToIndex = index . canonical
     -- if the position exists on two different rings, then prefer the left one
     canonical :: Location -> Location
     canonical (Location CenterRing 16) = Location LeftRing 2
-    canonical (Location CenterRing 16) = Location LeftRing 7
+    canonical (Location CenterRing 11) = Location LeftRing 7
     canonical (Location RightRing 16)  = Location CenterRing 2
     canonical (Location RightRing 11)  = Location CenterRing 7
     canonical location                 = location
+
+
+-- | Invert a disk coordinate to its canonical location
+indexToLocation :: Int -> Location
+indexToLocation n = Location ring p
+  where
+    (r, p) = n `quotRem` 18
+    ring = case r of
+        0 -> LeftRing
+        1 -> CenterRing
+        2 -> RightRing
+        _ -> error "impossible"
 
 
 ringIndex :: Ring -> Int

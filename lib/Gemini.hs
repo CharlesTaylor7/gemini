@@ -19,6 +19,7 @@ import           Shpadoinkle
 import qualified Shpadoinkle.Continuation    as Continuation
 import qualified Shpadoinkle.Html            as Html
 import qualified Shpadoinkle.Keyboard        as Key
+import           Shpadoinkle.Lens            (generalize)
 
 import           Gemini.Types
 
@@ -43,19 +44,19 @@ initialState = Store
 
 -- | Components
 rootView :: MonadIO m => Store -> Html m Store
-rootView state =
+rootView state = generalizeOptic #gemini $
   Html.div
     [ Html.className "gemini-app"
     , Html.tabIndex 0
     , Html.onKeydownC \case
       -- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
       -- T, Y, U, I, O, P
-      Key.T -> Pure rotateL
-      Key.Y -> Pure rotateL'
-      Key.U -> Pure rotateC
-      Key.I -> Pure rotateC'
-      Key.O -> Pure rotateR
-      Key.P -> Pure rotateR'
+      Key.T -> Pure $ rotate LeftRing Clockwise
+      Key.Y -> Pure $ rotate LeftRing AntiClockwise
+      Key.U -> Pure $ rotate CenterRing Clockwise
+      Key.I -> Pure $ rotate CenterRing AntiClockwise
+      Key.O -> Pure $ rotate RightRing Clockwise
+      Key.P -> Pure $ rotate RightRing AntiClockwise
       _     -> done
     ]
     [ geminiSvgView (state ^. #gemini)
@@ -144,3 +145,7 @@ geminiSvgView gemini =
 -- | Utilities
 prettyCompactText :: forall a. Pretty a => a -> Text
 prettyCompactText = Pretty.renderStrict . Pretty.layoutCompact . pretty
+
+
+generalizeOptic :: (Functor m, Continuous f, Is k A_Lens) => Optic' k is s a -> (f m a -> f m s)
+generalizeOptic arg = generalize $ toLensVL arg
