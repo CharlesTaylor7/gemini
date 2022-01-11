@@ -1,5 +1,5 @@
 module Gemini.Types
-  ( Gemini, geminiFromList, getDisk
+  ( Gemini, geminiFromList, geminiIx
   , Location(..) , Ring(..) , Disk(..) , Color(..), RotationDirection(..)
   , solvedGemini
   , rotate
@@ -12,13 +12,14 @@ import qualified Prettyprinter             as Pretty
 import           Prettyprinter.Render.Text
 
 import           Optics
+import           Optics.State.Operators
 
 import qualified Data.Map                  as Map
 import qualified Data.Text                 as Text
 
 
 -- | Definitions
-newtype Gemini = Gemini (IntMap Disk)
+newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (NFData)
 
@@ -97,7 +98,23 @@ instance Pretty Color where
 -- C is for the central ring
 -- R is for the rightmost ring
 rotate :: Ring -> RotationDirection -> Gemini -> Gemini
-rotate r d = identity
+rotate r d g = flip execState g $
+  for_ disks $ \(i, disk) ->
+    geminiIx (Location r i) .= disk
+  where
+    step Clockwise     = 1
+    step AntiClockwise = -1
+
+    disks :: [(Int, Disk)]
+    disks = flip map [0..17] $ \p ->
+      let next = (p + step d) `mod` 18
+      in (p, (g ^? geminiIx (Location r next)) & fromMaybe (error "impossible"))
+{--
+  for_ [0..17] $ \position -> do
+    let nextPosition = (position + 1) `rem` 18
+    disk <- use
+    geminiIx (Location r nextPosition) .=
+--}
 
 
 -- | lookup location on gemini puzzle
@@ -136,6 +153,9 @@ indexToLocation n = Location ring p
         1 -> CenterRing
         2 -> RightRing
         _ -> error "impossible"
+
+geminiIx :: Location -> AffineTraversal' Gemini Disk
+geminiIx location = #geminiDiskMap % ix (locationToIndex location)
 
 
 ringIndex :: Ring -> Int

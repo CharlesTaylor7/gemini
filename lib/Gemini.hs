@@ -60,10 +60,10 @@ rootView state = generalizeOptic #gemini $
       _     -> done
     ]
     [ geminiSvgView (state ^. #gemini)
-    -- , debugView state
+    , debugView state
     ]
 
-debugView :: Store -> Html m Store
+debugView :: Store -> Html m a
 debugView state =
   Html.div
     [ Html.className "gemini-debug"]
@@ -126,7 +126,7 @@ geminiSvgView gemini =
     disks r = flip map [0..17] $ \i ->
       let
         (color, label) =
-          case gemini `getDisk` (Location r i) of
+          case gemini ^? geminiIx (Location r i) of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "unknown")
       in
