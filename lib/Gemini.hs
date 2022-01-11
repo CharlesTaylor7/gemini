@@ -120,10 +120,10 @@ ringDisks gemini r = Svg.h "g" [] (ringOutline : disks)
     ringOutline :: SvgElement
     ringOutline =
       Svg.circle
-        [ ("r", show ringR)
+        [ ("class", "ring")
+        , ("r", show ringR)
         , ("cx", show ringX)
         , ("cy", show ringY)
-        , ("fill", "none")
         ]
 
     diskProps :: Svg.AttributeList
@@ -147,7 +147,7 @@ ringDisks gemini r = Svg.h "g" [] (ringOutline : disks)
           [ Svg.h "text" [] []
           , Svg.circle
               ( ("transform", "rotate(" <> show (i * 20) <> "," <> show ringX <> "," <> show ringY <> ")")
-              : ("fill", color)
+              : ("class", "disk-" <> color)
               : diskProps
               )
           ]

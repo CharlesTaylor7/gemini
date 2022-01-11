@@ -13,16 +13,46 @@ body {
     height: 80vh;
     display: flex;
     justify-content: space-around;
-    border: 4px solid gray;
 }
 
 .gemini-svg {
     display: block;
     height: 100%;
-    stroke-width: 0.5px;
-    stroke: black;
+    background-color: #747676;
 }
 
 .gemini-debug {
     margin: 10px 0;
+}
+
+.ring {
+    fill: #816c5b;
+}
+
+.disk-unknown {
+    fill: purple;
+}
+
+.disk-white {
+    fill: white;
+}
+
+.disk-black {
+    fill: black;
+}
+
+.disk-yellow {
+    fill: #fadd00;
+}
+
+.disk-red {
+    fill: #ad0000;
+}
+
+.disk-green {
+    fill: #45ab36;
+}
+
+.disk-blue {
+    fill: #00aeff;
 }
