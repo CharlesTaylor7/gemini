@@ -94,12 +94,13 @@ geminiSvgView gemini =
         ]
         [ Svg.circle
             [ ("r", "100")
-            , ("cx", "55")
+            , ("cx", "100")
             , ("cy", "50")
+            , ("fill", "none")
             ]
         , Svg.circle
             [ ("r", "5")
-            , ("cx", "5")
+            , ("cx", "100")
             , ("cy", "5")
             ]
         ]
