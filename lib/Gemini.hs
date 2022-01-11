@@ -1,25 +1,21 @@
 {-# options_ghc -Wwarn #-}
 module Gemini where
 
-import           Relude                      hiding (Option)
+import           Relude                    hiding (Option)
 
-import qualified Data.Text                   as Text
-import           Optics                      hiding ((#))
-import           Prettyprinter               (Pretty (..))
-import qualified Prettyprinter               as Pretty
-import qualified Prettyprinter.Render.Text   as Pretty
+import qualified Data.Text                 as Text
+import           Optics                    hiding ((#))
+import           Prettyprinter             (Pretty (..))
+import qualified Prettyprinter             as Pretty
+import qualified Prettyprinter.Render.Text as Pretty
 
-import           JSDOM                       (currentDocumentUnchecked)
-import           Language.Javascript.JSaddle (JSVal, (#))
-
-import           Svg                         (SvgElement)
+import           Svg                       (SvgElement)
 import qualified Svg
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Continuation    as Continuation
-import qualified Shpadoinkle.Html            as Html
-import qualified Shpadoinkle.Keyboard        as Key
-import           Shpadoinkle.Lens            (generalize)
+import qualified Shpadoinkle.Html          as Html
+import qualified Shpadoinkle.Keyboard      as Key
+import           Shpadoinkle.Lens          (generalize)
 
 import           Gemini.Types
 
@@ -33,7 +29,7 @@ data Store = Store
   deriving anyclass (NFData)
 
 instance Pretty Store where
-  pretty Store { gemini } = ""
+  pretty Store { gemini } = show gemini
 
 
 initialState :: Store
@@ -44,20 +40,23 @@ initialState = Store
 
 -- | Components
 rootView :: MonadIO m => Store -> Html m Store
-rootView state = generalizeOptic #gemini $
+rootView state =
   Html.div
     [ Html.className "gemini-app"
     , Html.tabIndex 0
-    , Html.onKeydownC \case
-      -- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
-      -- T, Y, U, I, O, P
-      Key.T -> Pure $ rotate LeftRing Clockwise
-      Key.Y -> Pure $ rotate LeftRing AntiClockwise
-      Key.U -> Pure $ rotate CenterRing Clockwise
-      Key.I -> Pure $ rotate CenterRing AntiClockwise
-      Key.O -> Pure $ rotate RightRing Clockwise
-      Key.P -> Pure $ rotate RightRing AntiClockwise
-      _     -> done
+    , Html.onKeydownM $ \key -> do
+      putStrLn "hello"
+      let update = case key of
+            -- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
+            -- T, Y, U, I, O, P
+            Key.T -> rotate LeftRing Clockwise
+            Key.Y -> rotate LeftRing AntiClockwise
+            Key.U -> rotate CenterRing Clockwise
+            Key.I -> rotate CenterRing AntiClockwise
+            Key.O -> rotate RightRing Clockwise
+            Key.P -> rotate RightRing AntiClockwise
+            _     -> identity
+      pure $ over #gemini update
     ]
     [ geminiSvgView (state ^. #gemini)
     , debugView state
@@ -103,6 +102,7 @@ geminiSvgView gemini =
     -- small angle = 40 degrees
     -- ringOffset = radius * (sin 100 / sin 40)
     sine = sin . toRadians
+    cosine = cos . toRadians
     toRadians :: Double -> Double
     toRadians th = (th * pi) / 180.0
 
@@ -114,30 +114,31 @@ geminiSvgView gemini =
     diskR = 6
     ringY = ringR
 
-    diskProps :: Ring -> Svg.AttributeList
-    diskProps r =
-      [ ("r", show diskR)
-      , ("cx", show $ ringX r)
-      , ("cy", show diskR)
-      , ("stroke", "none")
-      ]
-
     disks :: Ring -> [SvgElement]
-    disks r = flip map [0..17] $ \i ->
+    disks ring = flip map [0..17] $ \position ->
       let
         (color, label) =
-          case gemini ^? geminiIx (Location r i) of
+          case gemini ^? geminiIx (Location ring position) of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "unknown")
+        r = ringR - diskR
+        angle = fromIntegral position * 20.0 - 90.0
+        (x, y) =
+          ( r * (cosine angle) + ringX ring
+          , r * (sine angle)
+          )
       in
         Svg.h "g"
-          []
-          [ Svg.h "text" [] []
-          , Svg.circle
-              ( ("transform", "rotate(" <> show (i * 20) <> "," <> show (ringX r) <> "," <> show ringY <> ")")
-              : ("class", "disk-" <> color)
-              : diskProps r
-              )
+          [ ("transform", "translate(" <> show x <> "," <> show y <> ")")
+          , ("class", "disk-" <> color)
+          ]
+          [ Svg.circle [("r", show diskR)]
+          , Svg.text
+              [ ("class", "disk-label")
+              , ("dx", "-2")
+              , ("dy", "3")
+              ]
+              label
           ]
 
 

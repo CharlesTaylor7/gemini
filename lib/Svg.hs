@@ -1,7 +1,7 @@
 {-# options_ghc -Wwarn #-}
 module Svg
   ( h , bake , SvgElement, AttributeList
-  , circle
+  , circle, text
   ) where
 
 import           Relude                      hiding (Option)
@@ -21,16 +21,30 @@ import qualified Shpadoinkle.Continuation    as Continuation
 import qualified Shpadoinkle.Html            as Html
 import qualified Shpadoinkle.Keyboard        as Key
 
+-- | Definitions
+data SvgElement
+  = SvgElement
+  { name       :: !Text
+  , attributes :: AttributeList
+  , children   :: [SvgElement]
+  }
+  | SvgText
+  { attributes :: AttributeList
+  , contents   :: !Text
+  }
+
 
 type AttributeList = [(Text, Text)]
 
 
+h = SvgElement
+
 circle :: AttributeList -> SvgElement
-circle attributes = SvgElement
-  { name = "circle"
-  , children = []
-  , attributes
-  }
+circle attributes = h "circle" attributes []
+
+text :: AttributeList -> Text -> SvgElement
+text = SvgText
+
 -- | Svg elements
 -- https://stackoverflow.com/a/3642265
 bake :: SvgElement -> Html m a
@@ -41,6 +55,12 @@ bake svgElement = baked $ do
       svgNamespace = "http://www.w3.org/2000/svg"
 
   let render :: SvgElement -> JSM JSVal
+      render SvgText { attributes, contents } = do
+        element' <- document' # ("createElementNS" :: Text) $ (svgNamespace, "text" :: Text)
+        for_ attributes $ element' # ("setAttribute" :: Text)
+        element' # ("append" :: Text) $ contents
+        pure element'
+
       render SvgElement { name, attributes, children } = do
         element' <- document' # ("createElementNS" :: Text) $ (svgNamespace, name)
         for_ attributes $ element' # ("setAttribute" :: Text)
@@ -51,11 +71,3 @@ bake svgElement = baked $ do
 
   el' <- render svgElement
   pure (RawNode el', pure Continuation.done)
-
-
-h = SvgElement
-data SvgElement = SvgElement
-  { name       :: !Text
-  , attributes :: AttributeList
-  , children   :: [SvgElement]
-  }

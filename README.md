@@ -13,3 +13,5 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ## TODO
 - Attach image of puzzle to readme
+- Figure out why keyboard handlers aren't firing
+- Attach labels to each disk

@@ -29,6 +29,11 @@ body {
     fill: #816c5b;
 }
 
+.disk-label {
+    fill: black;
+    font-size: 10px;
+}
+
 .disk-unknown {
     fill: purple;
 }
