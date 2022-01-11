@@ -8,10 +8,11 @@ import           Prettyprinter               (Pretty (..))
 import qualified Prettyprinter               as Pretty
 import qualified Prettyprinter.Render.Text   as Pretty
 
-
-
 import           JSDOM                       (currentDocumentUnchecked)
 import           Language.Javascript.JSaddle (JSVal, (#))
+
+import           Svg                         (SvgElement)
+import qualified Svg
 
 import           Shpadoinkle
 import qualified Shpadoinkle.Continuation    as Continuation
@@ -19,6 +20,7 @@ import qualified Shpadoinkle.Html            as Html
 import qualified Shpadoinkle.Keyboard        as Key
 
 import           Gemini.Types
+
 
 
 -- | Store definition
@@ -85,51 +87,23 @@ geminiSvgView :: Gemini -> Html m a
 geminiSvgView gemini =
   Html.div
     [ Html.className "svg-wrapper"]
-    [ bakeSvg $
-      hSvg "svg"
+    [ Svg.bake $
+      Svg.h "svg"
         [ ("class", "gemini-svg")
-        , ("viewBox", "0 0 100 100")
+        , ("viewBox", "0 0 300 100")
         ]
-        [ hSvg "circle"
-          [ ("r", "50")
-          , ("cx", "50")
-          , ("cy", "50")
-          ]
-          []
+        [ Svg.circle
+            [ ("r", "100")
+            , ("cx", "55")
+            , ("cy", "50")
+            ]
+        , Svg.circle
+            [ ("r", "5")
+            , ("cx", "5")
+            , ("cy", "5")
+            ]
         ]
     ]
-
-
-
--- | Svg elements
--- https://stackoverflow.com/a/3642265
-bakeSvg :: SvgElement -> Html m a
-bakeSvg svgElement = baked $ do
-  document' <- currentDocumentUnchecked
-
-  let svgNamespace :: Text
-      svgNamespace = "http://www.w3.org/2000/svg"
-
-  let render :: SvgElement -> JSM JSVal
-      render SvgElement { name, attributes, children } = do
-        element' <- document' # ("createElementNS" :: Text) $ (svgNamespace, name)
-        for_ attributes $ element' # ("setAttribute" :: Text)
-        for_ children $ \child -> do
-          child' <- render child
-          element' # ("appendChild" :: Text) $ child'
-        pure element'
-
-  el' <- render svgElement
-  pure (RawNode el', pure Continuation.done)
-
-
-
-hSvg = SvgElement
-data SvgElement = SvgElement
-  { name       :: !Text
-  , attributes :: [(Text, Text)]
-  , children   :: [SvgElement]
-  }
 
 
 

@@ -27,6 +27,7 @@ library
   exposed-modules:
       Gemini
       Gemini.Types
+      Svg
   other-modules:
       Paths_gemini
   hs-source-dirs:
