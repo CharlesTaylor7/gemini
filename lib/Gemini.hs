@@ -3,6 +3,7 @@ module Gemini where
 
 import           Relude                      hiding (Option)
 
+import qualified Data.Text                   as Text
 import           Optics                      hiding ((#))
 import           Prettyprinter               (Pretty (..))
 import qualified Prettyprinter               as Pretty
@@ -92,15 +93,15 @@ geminiSvgView gemini =
         [ ("class", "gemini-svg")
         , ("viewBox", "0 0 300 100")
         ]
-        ( map ringDisks [LeftRing, CenterRing, RightRing] )
+        ( map (ringDisks gemini) [LeftRing, CenterRing, RightRing] )
     ]
 
 
-ringDisks :: Ring -> SvgElement
-ringDisks r = Svg.h "g" [] (ringOutline : disks)
+ringDisks :: Gemini -> Ring -> SvgElement
+ringDisks gemini r = Svg.h "g" [] (ringOutline : disks)
   where
     -- law of sines
-    ringOffset = (ringR - diskR) * (sine 100.0 / sine 40.0)
+    ringOffset = (ringR - diskR) * (sine 80.0 / sine 50.0)
     -- big angle = 100 degrees
     -- small angle = 40 degrees
     -- ringOffset = radius * (sin 100 / sin 40)
@@ -130,14 +131,27 @@ ringDisks r = Svg.h "g" [] (ringOutline : disks)
       [ ("r", show diskR)
       , ("cx", show ringX)
       , ("cy", show diskR)
+      , ("stroke", "none")
       ]
 
     disks :: [SvgElement]
     disks = flip map [0..17] $ \i ->
-      Svg.circle
-        ( ("transform", "rotate(" <> show (i * 20) <> "," <> show ringX <> "," <> show ringY <> ")")
-        : diskProps
-        )
+      let
+        (color, label) =
+          case gemini `getDisk` (Location r i) of
+            Just Disk { color, label } -> (Text.toLower $ show color, show label)
+            Nothing                    -> ("unknown", "unknown")
+      in
+        Svg.h "g"
+          []
+          [ Svg.h "text" [] []
+          , Svg.circle
+              ( ("transform", "rotate(" <> show (i * 20) <> "," <> show ringX <> "," <> show ringY <> ")")
+              : ("fill", color)
+              : diskProps
+              )
+          ]
+
 
 
 -- | Utilities

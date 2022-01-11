@@ -52,17 +52,17 @@ packages:
     name: Shpadoinkle
     commit: 4142a5211592122630523f30d906c7c067700932
 - original:
-    subdir: backends/snabbdom
+    subdir: backends/pardiff
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
     commit: 4142a5211592122630523f30d906c7c067700932
   completed:
     pantry-tree:
-      sha256: 83731e8584cc1172ee31e3d772ac5deee6529d03e9824143bac7b550925e0aad
-      size: 565
-    subdir: backends/snabbdom
-    version: 0.3.0.2
+      sha256: abf8f6cd616f5b51670af9ea97d381837bdba0905081b28ba2ea05fbf8b4a5ee
+      size: 348
+    subdir: backends/pardiff
+    version: 0.3.0.1
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    name: Shpadoinkle-backend-snabbdom
+    name: Shpadoinkle-backend-pardiff
     commit: 4142a5211592122630523f30d906c7c067700932
 - original:
     subdir: html

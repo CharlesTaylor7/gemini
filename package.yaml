@@ -100,7 +100,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - gemini
-    - Shpadoinkle-backend-snabbdom
+    - Shpadoinkle-backend-pardiff
 
 
 tests:

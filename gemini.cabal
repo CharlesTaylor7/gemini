@@ -111,7 +111,7 @@ executable gemini
   ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       Shpadoinkle
-    , Shpadoinkle-backend-snabbdom
+    , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , base >=4.14 && <4.16
     , containers

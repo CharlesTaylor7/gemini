@@ -4,12 +4,12 @@ module Main where
 
 import           Relude
 
-import           Shpadoinkle                  (JSM)
-import           Shpadoinkle.Backend.Snabbdom (runSnabbdom, stage)
-import           Shpadoinkle.Html             (addStyle)
-import           Shpadoinkle.Run              (liveWithStatic, runJSorWarp, simple)
+import           Shpadoinkle                 (JSM)
+import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
+import           Shpadoinkle.Html            (addStyle)
+import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
 
-import           Gemini                       (Store (..), initialState, rootView)
+import           Gemini                      (Store (..), initialState, rootView)
 
 main :: IO ()
 main = dev
@@ -35,4 +35,4 @@ main' = do
 app :: Store -> JSM ()
 app state = do
   addStyle "index.css"
-  simple runSnabbdom state rootView stage
+  simple runParDiff state rootView stage

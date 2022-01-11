@@ -1,5 +1,5 @@
 module Gemini.Types
-  ( Gemini, geminiFromList
+  ( Gemini, geminiFromList, getDisk
   , Location(..)
   , Ring(..)
   , Disk(..)
@@ -90,8 +90,8 @@ instance Pretty Color where
 -- | Basic operations
 
 -- | lookup location on gemini puzzle
-geminiLookup :: Gemini -> Location -> Disk
-geminiLookup (Gemini map) location = map ^? ix index & fromMaybe (error "impossible")
+getDisk :: Gemini -> Location -> Maybe Disk
+getDisk (Gemini map) location = map ^? ix index
   where
     index = locationToIndex location
 
@@ -113,7 +113,6 @@ locationToIndex = index . canonical
     canonical (Location RightRing 16)  = Location CenterRing 2
     canonical (Location RightRing 11)  = Location CenterRing 7
     canonical location                 = location
-
 
 
 ringIndex :: Ring -> Int
