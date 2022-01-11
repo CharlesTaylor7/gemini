@@ -93,13 +93,23 @@ geminiSvgView gemini =
         [ ("class", "gemini-svg")
         , ("viewBox", "0 0 300 100")
         ]
-        ( map (ringDisks gemini) [LeftRing, CenterRing, RightRing] )
+        (  map ringOutline [LeftRing, CenterRing, RightRing]
+        <> map ringDisks [LeftRing, CenterRing, RightRing]
+        )
     ]
-
-
-ringDisks :: Gemini -> Ring -> SvgElement
-ringDisks gemini r = Svg.h "g" [] (ringOutline : disks)
   where
+    ringOutline :: Ring -> SvgElement
+    ringOutline r =
+      Svg.circle
+        [ ("class", "ring")
+        , ("r", show ringR)
+        , ("cx", show $ ringX r)
+        , ("cy", show ringY)
+        ]
+
+    ringDisks :: Ring -> SvgElement
+    ringDisks r = Svg.h "g" [] $ disks r
+
     -- law of sines
     ringOffset = (ringR - diskR) * (sine 80.0 / sine 50.0)
     -- big angle = 100 degrees
@@ -109,7 +119,7 @@ ringDisks gemini r = Svg.h "g" [] (ringOutline : disks)
     toRadians :: Double -> Double
     toRadians th = (th * pi) / 180.0
 
-    ringX = case r of
+    ringX r = case r of
       LeftRing   -> 100
       CenterRing -> 100 + ringOffset
       RightRing  -> 100 + ringOffset * 2
@@ -117,25 +127,16 @@ ringDisks gemini r = Svg.h "g" [] (ringOutline : disks)
     diskR = 6
     ringY = ringR
 
-    ringOutline :: SvgElement
-    ringOutline =
-      Svg.circle
-        [ ("class", "ring")
-        , ("r", show ringR)
-        , ("cx", show ringX)
-        , ("cy", show ringY)
-        ]
-
-    diskProps :: Svg.AttributeList
-    diskProps =
+    diskProps :: Ring -> Svg.AttributeList
+    diskProps r =
       [ ("r", show diskR)
-      , ("cx", show ringX)
+      , ("cx", show $ ringX r)
       , ("cy", show diskR)
       , ("stroke", "none")
       ]
 
-    disks :: [SvgElement]
-    disks = flip map [0..17] $ \i ->
+    disks :: Ring -> [SvgElement]
+    disks r = flip map [0..17] $ \i ->
       let
         (color, label) =
           case gemini `getDisk` (Location r i) of
@@ -146,9 +147,9 @@ ringDisks gemini r = Svg.h "g" [] (ringOutline : disks)
           []
           [ Svg.h "text" [] []
           , Svg.circle
-              ( ("transform", "rotate(" <> show (i * 20) <> "," <> show ringX <> "," <> show ringY <> ")")
+              ( ("transform", "rotate(" <> show (i * 20) <> "," <> show (ringX r) <> "," <> show ringY <> ")")
               : ("class", "disk-" <> color)
-              : diskProps
+              : diskProps r
               )
           ]
 
