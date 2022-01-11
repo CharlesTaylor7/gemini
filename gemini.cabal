@@ -59,9 +59,11 @@ library
       TypeOperators
       TypeFamilies
       AllowAmbiguousTypes
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
   build-depends:
-      base >=4.14 && <4.16
+      Shpadoinkle
+    , Shpadoinkle-html
+    , base >=4.14 && <4.16
     , containers
     , jsaddle
     , jsaddle-dom
@@ -106,7 +108,7 @@ executable gemini
       TypeOperators
       TypeFamilies
       AllowAmbiguousTypes
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       Shpadoinkle
     , Shpadoinkle-backend-snabbdom
@@ -158,9 +160,11 @@ test-suite gemini-test
       TypeOperators
       TypeFamilies
       AllowAmbiguousTypes
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.14 && <4.16
+      Shpadoinkle
+    , Shpadoinkle-html
+    , base >=4.14 && <4.16
     , containers
     , jsaddle
     , jsaddle-dom

@@ -30,6 +30,8 @@ dependencies:
 - prettyprinter
 - jsaddle
 - jsaddle-dom
+- Shpadoinkle
+- Shpadoinkle-html
 
 
 default-extensions:
@@ -77,7 +79,7 @@ ghc-options:
   - -Wincomplete-record-updates
   - -Wtype-defaults
   - -Wunused-imports
-  - -Werror
+  #- -Werror
   # turn off warnings
   - -Wno-name-shadowing
   - -Wno-partial-type-signatures
@@ -98,9 +100,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - gemini
-    - Shpadoinkle
     - Shpadoinkle-backend-snabbdom
-    - Shpadoinkle-html
 
 
 tests:

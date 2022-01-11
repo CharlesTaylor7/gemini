@@ -11,11 +11,8 @@ import           Shpadoinkle.Run              (liveWithStatic, runJSorWarp, simp
 
 import           Gemini                       (Store (..), initialState, rootView)
 
-
-app :: Store -> JSM ()
-app state = do
-  addStyle "index.css"
-  simple runSnabbdom state rootView stage
+main :: IO ()
+main = dev
 
 
 port :: Int
@@ -29,7 +26,13 @@ dev = do
   liveWithStatic port initialPage staticFolder
 
 
-main :: IO ()
-main = do
+main' :: IO ()
+main' = do
   error "Need to implement static server"
   runJSorWarp port $ app initialState
+
+
+app :: Store -> JSM ()
+app state = do
+  addStyle "index.css"
+  simple runSnabbdom state rootView stage

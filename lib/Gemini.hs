@@ -72,7 +72,7 @@ rootView state =
       _     -> done
     ]
     [ geminiSvgView (state ^. #gemini)
-    , debugView state
+    -- , debugView state
     ]
 
 debugView :: Store -> Html m Store
@@ -92,20 +92,52 @@ geminiSvgView gemini =
         [ ("class", "gemini-svg")
         , ("viewBox", "0 0 300 100")
         ]
-        [ Svg.circle
-            [ ("r", "100")
-            , ("cx", "100")
-            , ("cy", "50")
-            , ("fill", "none")
-            ]
-        , Svg.circle
-            [ ("r", "5")
-            , ("cx", "100")
-            , ("cy", "5")
-            ]
-        ]
+        ( map ringDisks [LeftRing, CenterRing, RightRing] )
     ]
 
+
+ringDisks :: Ring -> SvgElement
+ringDisks r = Svg.h "g" [] (ringOutline : disks)
+  where
+    -- law of sines
+    ringOffset = (ringR - diskR) * (sine 100.0 / sine 40.0)
+    -- big angle = 100 degrees
+    -- small angle = 40 degrees
+    -- ringOffset = radius * (sin 100 / sin 40)
+    sine = sin . toRadians
+    toRadians :: Double -> Double
+    toRadians th = (th * pi) / 180.0
+
+    ringX = case r of
+      LeftRing   -> 100
+      CenterRing -> 100 + ringOffset
+      RightRing  -> 100 + ringOffset * 2
+    ringR = 42
+    diskR = 6
+    ringY = ringR
+
+    ringOutline :: SvgElement
+    ringOutline =
+      Svg.circle
+        [ ("r", show ringR)
+        , ("cx", show ringX)
+        , ("cy", show ringY)
+        , ("fill", "none")
+        ]
+
+    diskProps :: Svg.AttributeList
+    diskProps =
+      [ ("r", show diskR)
+      , ("cx", show ringX)
+      , ("cy", show diskR)
+      ]
+
+    disks :: [SvgElement]
+    disks = flip map [0..17] $ \i ->
+      Svg.circle
+        ( ("transform", "rotate(" <> show (i * 20) <> "," <> show ringX <> "," <> show ringY <> ")")
+        : diskProps
+        )
 
 
 -- | Utilities

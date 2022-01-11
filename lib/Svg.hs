@@ -1,6 +1,6 @@
 {-# options_ghc -Wwarn #-}
 module Svg
-  ( h , bake , SvgElement
+  ( h , bake , SvgElement, AttributeList
   , circle
   ) where
 
@@ -56,6 +56,6 @@ bake svgElement = baked $ do
 h = SvgElement
 data SvgElement = SvgElement
   { name       :: !Text
-  , attributes :: [(Text, Text)]
+  , attributes :: AttributeList
   , children   :: [SvgElement]
   }
