@@ -1,6 +1,7 @@
 module Gemini.Types
   ( Gemini, geminiFromList, geminiIx
-  , Location(..) , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
+  , Location(..), location
+  , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , solvedGemini
   , rotate
   ) where
@@ -33,6 +34,8 @@ data Location = Location
   }
   deriving stock (Eq, Show, Ord, Generic)
   deriving anyclass (NFData)
+
+location r p = Location r (p `mod` 18)
 
 data Rotation = Rotation
   { ring      :: !Ring
@@ -109,15 +112,17 @@ instance Pretty Color where
 rotate :: Rotation -> Gemini -> Gemini
 rotate Rotation { ring = r, direction = d } g = flip execState g $
   for_ disks $ \(i, disk) ->
-    geminiIx (Location r i) .= disk
+    case disk of
+      Just disk -> geminiIx (Location r i) .= disk
+      _         -> pure ()
   where
-    step Clockwise     = 1
-    step AntiClockwise = -1
+    step Clockwise     = -1
+    step AntiClockwise = 1
 
-    disks :: [(Int, Disk)]
+    disks :: [(Int, Maybe Disk)]
     disks = flip map [0..17] $ \p ->
-      let next = (p + step d) `mod` 18
-      in (p, (g ^? geminiIx (Location r next)) & fromMaybe (error "impossible"))
+      let next = p + step d
+      in (p, g ^? geminiIx (location r next))
 
 
 -- | lookup location on gemini puzzle
