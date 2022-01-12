@@ -1,7 +1,7 @@
 module Gemini.Types
   ( Gemini, geminiFromList, geminiIx, ringIndex
   , Location(..), location
-  , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
+  , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..), DiskLabelOption(..)
   , solvedGemini
   , rotate
   ) where
@@ -15,6 +15,14 @@ import           Optics
 import           Optics.State.Operators
 
 import qualified Data.Text              as Text
+
+
+data DiskLabelOption
+  = ShowLabels
+  | HideLabels
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
+
 
 
 -- | Definitions

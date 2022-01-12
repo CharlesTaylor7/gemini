@@ -18,8 +18,8 @@ import           Gemini.Types
 
 
 
-geminiHtmlView :: forall a m. Gemini -> Html m a
-geminiHtmlView gemini =
+geminiHtmlView :: forall a m. DiskLabelOption -> Gemini -> Html m a
+geminiHtmlView diskLabelOption gemini =
   Html.div
     [ Html.className "gemini-wrapper"
     ]
@@ -87,9 +87,13 @@ geminiHtmlView gemini =
             , ("top", show y <> "px")
             ]
           ]
-          [ Html.span
-              [ ("className", "disk-label")
+          ( if diskLabelOption == ShowLabels
+            then
+              [ Html.span
+                  [ ("className", "disk-label")
+                  ]
+                  [ Html.text label
+                  ]
               ]
-              [ Html.text label
-              ]
-          ]
+            else []
+          )

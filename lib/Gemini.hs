@@ -21,17 +21,14 @@ import           Gemini.Html
 import           Gemini.Types
 
 
-
 -- | Store operations
 data Store = Store
-  { gemini  :: Gemini
-  , history :: [Rotation]
+  { gemini          :: !Gemini
+  , history         :: ![Rotation]
+  , diskLabelOption :: !DiskLabelOption
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
-
-instance Pretty Store where
-  pretty Store { gemini } = show gemini
 
 
 applyRotation :: Rotation -> Store -> Store
@@ -42,6 +39,7 @@ initialState :: Store
 initialState = Store
   { gemini = solvedGemini
   , history = []
+  , diskLabelOption = HideLabels
   }
 
 
@@ -63,27 +61,29 @@ rootView state =
         _     -> identity
 
     ]
-    [ buttonsRow
-    , geminiHtmlView (state ^. #gemini)
+    [ buttonsRow state
+    , geminiHtmlView (state ^. #diskLabelOption) (state ^. #gemini)
     , debugView state
     ]
 
 
-buttonsRow :: Html m Store
-buttonsRow =
+buttonsRow :: Functor m => Store -> Html m Store
+buttonsRow state =
   Html.div
     [ Html.className "motion-buttons-row"
     ]
     [ Html.div
         [ Html.className "motion-buttons-group"
         ]
-        ( flip map rotations $ \rotation ->
-            Html.button
-              [ Html.className "motion-button"
-              , Html.onClick $ applyRotation rotation
-              ]
-              [ Html.text $ prettyCompactText rotation
-              ]
+        ( (diskLabelOptionToggle (state ^. #diskLabelOption) & generalizeOptic #diskLabelOption)
+        : ( flip map rotations $ \rotation ->
+              Html.button
+                [ Html.className "motion-button"
+                , Html.onClick $ applyRotation rotation
+                ]
+                [ Html.text $ prettyCompactText rotation
+                ]
+          )
         )
     ]
   where
@@ -95,6 +95,19 @@ buttonsRow =
       , Rotation RightRing Clockwise
       , Rotation RightRing AntiClockwise
       ]
+
+
+diskLabelOptionToggle :: DiskLabelOption -> Html m DiskLabelOption
+diskLabelOptionToggle option =
+  Html.button
+    [ Html.onClick opposite]
+    [ Html.text $ show $ opposite option
+    ]
+    where
+      opposite = \case
+        ShowLabels -> HideLabels
+        HideLabels -> ShowLabels
+
 
 debugView :: Store -> Html m a
 debugView state =
