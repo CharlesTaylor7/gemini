@@ -1,27 +1,24 @@
-module Gemini.Svg where
+module Gemini.Svg
+  ( geminiSvgView
+  )
+  where
 
 import           Relude
 
-import qualified Data.Text                 as Text
-import           Optics                    hiding ((#))
-import           Prettyprinter             (Pretty (..))
-import qualified Prettyprinter             as Pretty
-import qualified Prettyprinter.Render.Text as Pretty
+import qualified Data.Text        as Text
+import           Optics           hiding ((#))
 
-import           Svg                       (SvgElement)
+import           Svg              (SvgElement)
 import qualified Svg
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Html          as Html
-import qualified Shpadoinkle.Keyboard      as Key
-import           Shpadoinkle.Lens          (generalize)
+import qualified Shpadoinkle.Html as Html
 
 import           Gemini.Types
 
 
-
-geminiSvgView :: Gemini -> Html m a
-geminiSvgView gemini =
+geminiSvgView :: forall a m. Options -> Gemini -> Html m a
+geminiSvgView options gemini =
   Html.div
     [ Html.className "gemini-wrapper"]
     [ Svg.bake $
@@ -82,13 +79,15 @@ geminiSvgView gemini =
           [ ("transform", "translate(" <> show x <> "," <> show y <> ")")
           , ("class", "disk-" <> color)
           ]
-          [ Svg.circle [("r", show diskR)]
-          , Svg.text
-              [ ("class", "disk-label")
-              , ("dx", "-2.5")
-              , ("dy", "3")
+          ( Svg.circle [("r", show diskR)]
+          : if options ^. #showLabels
+            then
+              [ Svg.text
+                [ ("class", "disk-label")
+                , ("dx", "-2.5")
+                , ("dy", "3")
+                ]
+                label
               ]
-              label
-          ]
-
-
+            else []
+          )

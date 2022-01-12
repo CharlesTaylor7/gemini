@@ -1,29 +1,38 @@
 module Gemini.Types
-  ( Gemini, geminiFromList, geminiIx, ringIndex
+  ( -- core types and operations
+    Gemini, geminiFromList, geminiIx, ringIndex , solvedGemini, rotate
   , Location(..), location
-  , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..), DiskLabelOption(..)
-  , solvedGemini
-  , rotate
+  , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
+    -- ui types
+  , Store(..), Options(..)
   ) where
 
 import           Relude
 
-import           Prettyprinter          (Pretty (..))
-import qualified Prettyprinter          as Pretty
-
+import qualified Data.Text              as Text
 import           Optics
 import           Optics.State.Operators
+import           Prettyprinter          (Pretty (..))
+import qualified Prettyprinter          as Pretty
+import           System.Random.Stateful
 
-import qualified Data.Text              as Text
 
-
-data DiskLabelOption
-  = ShowLabels
-  | HideLabels
+-- | UI Definitions
+data Store = Store
+  { gemini  :: !Gemini
+  , history :: ![Rotation]
+  , options :: !Options
+  }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
-
+data Options = Options
+  { showLabels :: !Bool
+  , animate    :: !Bool
+  , useSvg     :: !Bool
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
 
 -- | Definitions
 newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
@@ -50,7 +59,7 @@ data Rotation = Rotation
   , direction :: !RotationDirection
   }
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (NFData)
+  deriving anyclass (NFData, Uniform)
 
 instance Pretty Rotation where
   pretty Rotation { ring, direction } = pretty ring <> if direction == Clockwise then "" else "'"
@@ -59,7 +68,7 @@ data RotationDirection
   = Clockwise
   | AntiClockwise
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (NFData)
+  deriving anyclass (NFData, Uniform)
 
 instance Pretty Location where
   pretty Location { ring, position } =
@@ -70,7 +79,7 @@ data Ring
   | CenterRing
   | RightRing
   deriving stock (Eq, Show, Generic, Ord)
-  deriving anyclass (NFData)
+  deriving anyclass (NFData, Uniform)
 
 instance Pretty Ring where
   pretty LeftRing   = "L"

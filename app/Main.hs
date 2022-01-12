@@ -9,7 +9,7 @@ import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
 import           Shpadoinkle.Html            (addStyle)
 import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
 
-import           Gemini                      (Store (..), initialState, rootView)
+import           Gemini                      (Store, initialState, rootView)
 
 main :: IO ()
 main = dev

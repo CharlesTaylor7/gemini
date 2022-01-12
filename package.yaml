@@ -33,6 +33,7 @@ dependencies:
 - Shpadoinkle
 - Shpadoinkle-html
 - Shpadoinkle-lens
+- random
 
 
 default-extensions:

@@ -73,6 +73,7 @@ library
     , mtl
     , optics >=0.4
     , prettyprinter
+    , random
     , relude
     , text
     , vector
@@ -125,6 +126,7 @@ executable gemini
     , mtl
     , optics >=0.4
     , prettyprinter
+    , random
     , relude
     , text
     , vector
@@ -177,6 +179,7 @@ test-suite gemini-test
     , mtl
     , optics >=0.4
     , prettyprinter
+    , random
     , relude
     , text
     , vector

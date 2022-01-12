@@ -1,36 +1,30 @@
 {-# options_ghc -Wwarn #-}
-module Gemini where
+module Gemini
+  ( Store
+  , initialState
+  , rootView
+  ) where
 
 import           Relude
 
-import qualified Data.Text                 as Text
+import           Data.Traversable          (for)
 import           Optics                    hiding ((#))
 import           Prettyprinter             (Pretty (..))
 import qualified Prettyprinter             as Pretty
 import qualified Prettyprinter.Render.Text as Pretty
-
-import           Svg                       (SvgElement)
-import qualified Svg
+import           System.Random.Stateful    (globalStdGen, uniformM)
 
 import           Shpadoinkle
 import qualified Shpadoinkle.Html          as Html
 import qualified Shpadoinkle.Keyboard      as Key
 import           Shpadoinkle.Lens          (generalize)
 
-import           Gemini.Html
+import           Gemini.Html               (geminiHtmlView)
+import           Gemini.Svg                (geminiSvgView)
 import           Gemini.Types
 
 
--- | Store operations
-data Store = Store
-  { gemini          :: !Gemini
-  , history         :: ![Rotation]
-  , diskLabelOption :: !DiskLabelOption
-  }
-  deriving stock (Eq, Generic, Show)
-  deriving anyclass (NFData)
-
-
+-- | UI Operations
 applyRotation :: Rotation -> Store -> Store
 applyRotation r = over #gemini (rotate r) . over #history (r :)
 
@@ -39,7 +33,11 @@ initialState :: Store
 initialState = Store
   { gemini = solvedGemini
   , history = []
-  , diskLabelOption = HideLabels
+  , options = Options
+      { showLabels = False
+      , animate = True
+      , useSvg = False
+      }
   }
 
 
@@ -59,15 +57,20 @@ rootView state =
         Key.O -> applyRotation $ Rotation RightRing Clockwise
         Key.P -> applyRotation $ Rotation RightRing AntiClockwise
         _     -> identity
-
     ]
     [ buttonsRow state
-    , geminiHtmlView (state ^. #diskLabelOption) (state ^. #gemini)
+    , geminiView (state ^. #options) (state ^. #gemini)
     , debugView state
     ]
+  where
+    geminiView =
+      if state ^. #options % #useSvg
+      then geminiSvgView
+      else geminiHtmlView
 
 
-buttonsRow :: Functor m => Store -> Html m Store
+
+buttonsRow :: MonadIO m => Store -> Html m Store
 buttonsRow state =
   Html.div
     [ Html.className "motion-buttons-row"
@@ -75,7 +78,10 @@ buttonsRow state =
     [ Html.div
         [ Html.className "motion-buttons-group"
         ]
-        ( (diskLabelOptionToggle (state ^. #diskLabelOption) & generalizeOptic #diskLabelOption)
+        ( scrambleButton
+        : (buttonToggle ("Show Labels", "Hide Labels") (state ^. #options % #showLabels) & generalizeOptic (#options % #showLabels))
+        : (buttonToggle ("Animate", "Disable Animation") (state ^. #options % #animate) & generalizeOptic (#options % #animate))
+        : (buttonToggle ("Use Svg", "Use Html") (state ^. #options % #useSvg) & generalizeOptic (#options % #useSvg))
         : ( flip map rotations $ \rotation ->
               Html.button
                 [ Html.className "motion-button"
@@ -97,17 +103,26 @@ buttonsRow state =
       ]
 
 
-diskLabelOptionToggle :: DiskLabelOption -> Html m DiskLabelOption
-diskLabelOptionToggle option =
+buttonToggle :: (Text, Text) -> Bool -> Html a Bool
+buttonToggle (enable, disable) on =
   Html.button
-    [ Html.onClick opposite]
-    [ Html.text $ show $ opposite option
+    [ Html.className "toggle"
+    , Html.onClick toggle
     ]
-    where
-      opposite = \case
-        ShowLabels -> HideLabels
-        HideLabels -> ShowLabels
+    [ Html.text $ if on then disable else enable
+    ]
+    where toggle = not
 
+
+scrambleButton :: MonadIO m => Html m Store
+scrambleButton =
+  Html.button
+    [ Html.onClickM $ do
+        rotations <- for ([1..1000] :: [Int]) $ \_ -> (Endo . rotate) <$> uniformM globalStdGen
+        let Endo scramble = fold rotations
+        pure $ (set #history []) . (over #gemini scramble)
+    ]
+    [ Html.text "Scramble" ]
 
 debugView :: Store -> Html m a
 debugView state =
@@ -115,7 +130,6 @@ debugView state =
     [ Html.className "gemini-debug"]
     [ Html.text $ prettyCompactText (state ^. #history % to (take 10))
     ]
-
 
 
 -- | Utilities
