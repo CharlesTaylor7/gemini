@@ -12,7 +12,7 @@ body {
 }
 
 .svg-wrapper {
-    margin-top: 20vh;
+    margin-top: 10vh;
     display: flex;
     justify-content: space-around
 }
@@ -29,10 +29,12 @@ body {
 
 .motion-buttons-group {
     display: flex;
-    gap: 10px;
+    margin-top: 24px;
+    gap: 24px;
 }
 
 .motion-button {
+    height: 24px;
     width: 30px;
 }
 
