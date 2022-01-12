@@ -16,3 +16,4 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - scramble button : apply 1000 random moves and clear the history buffer
 - scripting: record seqeuences of moves, give them names and replay them
 - solve button: solve by algorithms
+- arrow butons over each ring
