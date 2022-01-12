@@ -73,14 +73,18 @@ buttonsRow =
   Html.div
     [ Html.className "motion-buttons-row"
     ]
-    ( flip map rotations $ \rotation ->
-        Html.button
-          [ Html.className "motion-button"
-          , Html.onClick $ applyRotation rotation
-          ]
-          [ Html.text $ prettyCompactText rotation
-          ]
-    )
+    [ Html.div
+        [ Html.className "motion-buttons-group"
+        ]
+        ( flip map rotations $ \rotation ->
+            Html.button
+              [ Html.className "motion-button"
+              , Html.onClick $ applyRotation rotation
+              ]
+              [ Html.text $ prettyCompactText rotation
+              ]
+        )
+    ]
   where
     rotations =
       [ Rotation LeftRing Clockwise
@@ -106,7 +110,7 @@ geminiSvgView gemini =
     [ Svg.bake $
       Svg.h "svg"
         [ ("class", "gemini-svg")
-        , ("viewBox", "0 0 300 100")
+        , ("viewBox", "0 0 210 100")
         ]
         (  map ringOutline [LeftRing, CenterRing, RightRing]
         <> map ringDisks [LeftRing, CenterRing, RightRing]
@@ -136,11 +140,11 @@ geminiSvgView gemini =
     toRadians th = (th * pi) / 180.0
 
     ringX r = case r of
-      LeftRing   -> 100
-      CenterRing -> 100 + ringOffset
-      RightRing  -> 100 + ringOffset * 2
-    ringR = 42
-    diskR = 6
+      LeftRing   -> ringR
+      CenterRing -> ringR + ringOffset
+      RightRing  -> ringR + ringOffset * 2
+    ringR = 50.0
+    diskR = (ringR / 7.0)
     ringY = ringR
 
     disks :: Ring -> [SvgElement]
