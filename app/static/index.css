@@ -6,19 +6,30 @@ body {
     margin: 0;
 }
 
+:root {
+  --disk-unknown: purple;
+  --disk-white: white;
+  --disk-black: black;
+  --disk-yellow: #fadd00;
+  --disk-red: #ad0000;
+  --disk-green: #45ab36;
+  --disk-blue: #00aeff;
+  --ring-background: #816c5b;
+
+}
+
 .gemini-app {
     height: 100vh;
     background-color: #9aaecd;
 }
 
-.svg-wrapper {
+.gemini-wrapper {
     margin-top: 10vh;
     display: flex;
-    justify-content: space-around
+    justify-content: space-around;
 }
 
-.gemini-svg {
-    display: block;
+.gemini {
     height: 350px;
 }
 
@@ -45,43 +56,106 @@ body {
     max-width: 300px;
 }
 
-.ring {
-    fill: #816c5b;
+
+/* html gemini */
+div.gemini {
+    display: flex;
+    flex-direction: row;
+}
+div.ring {
+    position: relative;
+    border-radius: 100%;
+    background-color: var(--ring-background);
+}
+div.disk {
+    position: absolute;
+    text-align: center;
+    border-radius: 100%;
+    z-index: 1;
 }
 
-.disk-label {
+
+div.disk.label {
+    color: black;
+    font-size: 10px;
+}
+
+div.disk.black > .disk-label {
+    color: white;
+}
+
+/* colors */
+div.disk.unknown {
+    background-color: var(--disk-unknown);
+}
+
+div.disk.white {
+    background-color: var(--disk-white);
+}
+
+div.disk.black {
+    background-color: var(--disk-black);
+}
+
+div.disk.yellow {
+    background-color: var(--disk-yellow);
+}
+
+div.disk.red {
+    background-color: var(--disk-red);
+}
+
+div.disk.green {
+    background-color: var(--disk-green);
+}
+
+div.disk.blue {
+    background-color: var(--disk-blue);
+}
+
+
+/* svg gemini */
+svg.gemini {
+    display: block;
+}
+
+circle.ring {
+    fill: var(--ring-background);
+}
+
+text.disk-label {
     fill: black;
     font-size: 10px;
 }
 
-.disk-black > .disk-label {
+g.disk.black > .disk-label {
     fill: white;
 }
 
-.disk-unknown {
-    fill: purple;
+g.disk.unknown {
+    fill: var(--disk-unknown);
 }
 
-.disk-white {
-    fill: white;
+g.disk.white {
+    fill: var(--disk-white);
 }
 
-.disk-black {
-    fill: black;
+g.disk.black {
+    fill: var(--disk-black);
 }
 
-.disk-yellow {
-    fill: #fadd00;
+g.disk.yellow {
+    fill: var(--disk-yellow);
 }
 
-.disk-red {
-    fill: #ad0000;
+g.disk.red {
+    fill: var(--disk-red);
 }
 
-.disk-green {
-    fill: #45ab36;
+g.disk.green {
+    fill: var(--disk-green);
 }
 
-.disk-blue {
-    fill: #00aeff;
+g.disk.blue {
+    fill: var(--disk-blue);
 }

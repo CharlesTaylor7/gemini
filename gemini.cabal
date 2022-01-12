@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       Gemini
+      Gemini.Html
+      Gemini.Svg
       Gemini.Types
       Svg
   other-modules:
