@@ -59,7 +59,7 @@ rootView state =
       pure $ over #gemini update
     ]
     [ geminiSvgView (state ^. #gemini)
-    , debugView state
+    -- , debugView state
     ]
 
 debugView :: Store -> Html m a
