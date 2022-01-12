@@ -100,7 +100,7 @@ debugView :: Store -> Html m a
 debugView state =
   Html.div
     [ Html.className "gemini-debug"]
-    [ Html.text $ prettyCompactText (state ^. #history)
+    [ Html.text $ prettyCompactText (state ^. #history % to (take 10))
     ]
 
 

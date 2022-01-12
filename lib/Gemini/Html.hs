@@ -31,15 +31,14 @@ geminiHtmlView gemini =
     ]
   where
     -- dimensions
-    ringR = 100.0
+    ringR = 150.0
     diskR = (ringR / 7.0)
-    ringY = ringR
-    ringX r = case r of
-      LeftRing   -> ringR
-      CenterRing -> ringR + ringOffset
-      RightRing  -> ringR + ringOffset * 2
     ringD = 2 * ringR
     diskD = 2 * diskR
+    ringShift = \case
+      LeftRing   -> ("left", show (0.9 * ringR) <> "px")
+      CenterRing -> ("left", "0")
+      RightRing  -> ("right", show (0.9 * ringR) <> "px")
 
     ring :: Ring -> Html m a
     ring r =
@@ -48,7 +47,7 @@ geminiHtmlView gemini =
         , Html.styleProp
             [ ("width", show ringD <> "px")
             , ("height", show ringD <> "px")
-            , ("margin-right", show (-ringOffset) <> "px")
+            , ringShift r
             ]
         ]
         ( disks r )
@@ -74,8 +73,8 @@ geminiHtmlView gemini =
         r = ringR - diskR
         angle = fromIntegral position * 20.0 - 90.0
         (x, y) =
-          ( r * (cosine angle) + ringX ring
-          , r * (sine angle) + ringY
+          ( r * (1 + cosine angle)
+          , r * (1 + sine angle)
           )
       in
         Html.div

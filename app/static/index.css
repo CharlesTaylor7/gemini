@@ -30,7 +30,6 @@ body {
 }
 
 .gemini {
-    height: 350px;
 }
 
 .motion-buttons-row {
@@ -117,6 +116,7 @@ div.disk.blue {
 /* svg gemini */
 svg.gemini {
     display: block;
+    height: 300px;
 }
 
 circle.ring {

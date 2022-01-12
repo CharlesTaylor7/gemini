@@ -13,5 +13,7 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ## TODO
 - Attach image of puzzle to readme
-- Figure out why keyboard handlers aren't firing
-- Attach labels to each disk
+- fix layout of html version
+- scramble button : apply 1000 random moves and clear the history buffer
+- scripting: record seqeuences of moves, give them names and replay them
+- solve button: solve by algorithms

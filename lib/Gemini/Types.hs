@@ -1,5 +1,5 @@
 module Gemini.Types
-  ( Gemini, geminiFromList, geminiIx
+  ( Gemini, geminiFromList, geminiIx, ringIndex
   , Location(..), location
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , solvedGemini
