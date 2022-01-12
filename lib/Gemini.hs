@@ -47,7 +47,6 @@ rootView state =
     [ Html.className "gemini-app"
     , Html.tabIndex 0
     , Html.onKeydownM $ \key -> do
-      traceShowM key
       let rotation = case key of
             -- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
             -- T, Y, U, I, O, P
