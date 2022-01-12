@@ -77,7 +77,7 @@ geminiSvgView options gemini =
       in
         Svg.h "g"
           [ ("transform", "translate(" <> show x <> "," <> show y <> ")")
-          , ("class", "disk-" <> color)
+          , ("class", "disk " <> color)
           ]
           ( Svg.circle [("r", show diskR)]
           : if options ^. #showLabels

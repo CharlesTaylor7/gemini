@@ -1,3 +1,5 @@
+@namespace svg url(http://www.w3.org/2000/svg);
+
 * {
     margin: 0;
 }
@@ -128,34 +130,34 @@ text.disk-label {
     font-size: 10px;
 }
 
-g.disk.black > .disk-label {
+svg|g.disk.black > .disk-label {
     fill: white;
 }
 
-g.disk.unknown {
+svg|g.disk.unknown {
     fill: var(--disk-unknown);
 }
 
-g.disk.white {
+svg|g.disk.white {
     fill: var(--disk-white);
 }
 
-g.disk.black {
+svg|g.disk.black {
     fill: var(--disk-black);
 }
 
-g.disk.yellow {
+svg|g.disk.yellow {
     fill: var(--disk-yellow);
 }
 
-g.disk.red {
+svg|g.disk.red {
     fill: var(--disk-red);
 }
 
-g.disk.green {
+svg|g.disk.green {
     fill: var(--disk-green);
 }
 
-g.disk.blue {
+svg|g.disk.blue {
     fill: var(--disk-blue);
 }

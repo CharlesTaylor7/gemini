@@ -79,9 +79,9 @@ buttonsRow state =
         [ Html.className "motion-buttons-group"
         ]
         ( scrambleButton
-        : (buttonToggle ("Show Labels", "Hide Labels") (state ^. #options % #showLabels) & generalizeOptic (#options % #showLabels))
-        : (buttonToggle ("Animate", "Disable Animation") (state ^. #options % #animate) & generalizeOptic (#options % #animate))
-        : (buttonToggle ("Use Svg", "Use Html") (state ^. #options % #useSvg) & generalizeOptic (#options % #useSvg))
+        : (buttonToggle ("Show Labels", "Hide Labels") & zoomComponent (#options % #showLabels) state)
+        : (buttonToggle ("Animate", "Disable Animation") & zoomComponent (#options % #animate) state)
+        --: (buttonToggle ("Use Svg", "Use Html") & zoomComponent (#options % #useSvg) state)
         : ( flip map rotations $ \rotation ->
               Html.button
                 [ Html.className "motion-button"
@@ -137,5 +137,9 @@ prettyCompactText :: forall a. Pretty a => a -> Text
 prettyCompactText = Pretty.renderStrict . Pretty.layoutCompact . pretty
 
 
-generalizeOptic :: (Functor m, Continuous f, Is k A_Lens) => Optic' k is s a -> (f m a -> f m s)
-generalizeOptic arg = generalize $ toLensVL arg
+-- |
+zoomComponent :: Functor m => Lens' s a -> s -> (a -> Html m a) -> Html m s
+zoomComponent optic props component = component (props ^. optic) & generalizeOptic optic
+
+generalizeOptic :: (Functor m, Continuous f) => Lens' s a -> (f m a -> f m s)
+generalizeOptic optic = generalize $ toLensVL optic
