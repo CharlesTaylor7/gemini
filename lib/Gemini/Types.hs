@@ -1,21 +1,19 @@
 module Gemini.Types
   ( Gemini, geminiFromList, geminiIx
-  , Location(..) , Ring(..) , Disk(..) , Color(..), RotationDirection(..)
+  , Location(..) , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , solvedGemini
   , rotate
   ) where
 
 import           Relude
 
-import           Prettyprinter             (Pretty (..))
-import qualified Prettyprinter             as Pretty
-import           Prettyprinter.Render.Text
+import           Prettyprinter          (Pretty (..))
+import qualified Prettyprinter          as Pretty
 
 import           Optics
 import           Optics.State.Operators
 
-import qualified Data.Map                  as Map
-import qualified Data.Text                 as Text
+import qualified Data.Text              as Text
 
 
 -- | Definitions
@@ -36,10 +34,21 @@ data Location = Location
   deriving stock (Eq, Show, Ord, Generic)
   deriving anyclass (NFData)
 
+data Rotation = Rotation
+  { ring      :: !Ring
+  , direction :: !RotationDirection
+  }
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (NFData)
+
+instance Pretty Rotation where
+  pretty Rotation { ring, direction } = pretty ring <> if direction == Clockwise then "" else "'"
+
 data RotationDirection
   = Clockwise
   | AntiClockwise
-  deriving (Eq, Show)
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (NFData)
 
 instance Pretty Location where
   pretty Location { ring, position } =
@@ -97,8 +106,8 @@ instance Pretty Color where
 -- L is a clockwise rotation of the leftmost ring, L' is anticlockwise
 -- C is for the central ring
 -- R is for the rightmost ring
-rotate :: Ring -> RotationDirection -> Gemini -> Gemini
-rotate r d g = flip execState g $
+rotate :: Rotation -> Gemini -> Gemini
+rotate Rotation { ring = r, direction = d } g = flip execState g $
   for_ disks $ \(i, disk) ->
     geminiIx (Location r i) .= disk
   where
@@ -109,12 +118,6 @@ rotate r d g = flip execState g $
     disks = flip map [0..17] $ \p ->
       let next = (p + step d) `mod` 18
       in (p, (g ^? geminiIx (Location r next)) & fromMaybe (error "impossible"))
-{--
-  for_ [0..17] $ \position -> do
-    let nextPosition = (position + 1) `rem` 18
-    disk <- use
-    geminiIx (Location r nextPosition) .=
---}
 
 
 -- | lookup location on gemini puzzle

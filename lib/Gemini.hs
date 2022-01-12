@@ -23,7 +23,8 @@ import           Gemini.Types
 
 -- | Store definition
 data Store = Store
-  { gemini :: Gemini
+  { gemini  :: Gemini
+  , history :: [Rotation]
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -35,6 +36,7 @@ instance Pretty Store where
 initialState :: Store
 initialState = Store
   { gemini = solvedGemini
+  , history = []
   }
 
 
@@ -45,28 +47,31 @@ rootView state =
     [ Html.className "gemini-app"
     , Html.tabIndex 0
     , Html.onKeydownM $ \key -> do
-      putStrLn "hello"
-      let update = case key of
+      traceShowM key
+      let rotation = case key of
             -- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
             -- T, Y, U, I, O, P
-            Key.T -> rotate LeftRing Clockwise
-            Key.Y -> rotate LeftRing AntiClockwise
-            Key.U -> rotate CenterRing Clockwise
-            Key.I -> rotate CenterRing AntiClockwise
-            Key.O -> rotate RightRing Clockwise
-            Key.P -> rotate RightRing AntiClockwise
-            _     -> identity
-      pure $ over #gemini update
+            Key.T -> Just $ Rotation LeftRing Clockwise
+            Key.Y -> Just $ Rotation LeftRing AntiClockwise
+            Key.U -> Just $ Rotation CenterRing Clockwise
+            Key.I -> Just $ Rotation CenterRing AntiClockwise
+            Key.O -> Just $ Rotation RightRing Clockwise
+            Key.P -> Just $ Rotation RightRing AntiClockwise
+            _     -> Nothing
+
+      pure $ case rotation of
+        Just r -> over #gemini (rotate r) . over #history (r :)
+        _      -> identity
     ]
     [ geminiSvgView (state ^. #gemini)
-    -- , debugView state
+    , debugView state
     ]
 
 debugView :: Store -> Html m a
 debugView state =
   Html.div
     [ Html.className "gemini-debug"]
-    [ Html.text $ show state
+    [ Html.text $ prettyCompactText (state ^. #history)
     ]
 
 
@@ -125,7 +130,7 @@ geminiSvgView gemini =
         angle = fromIntegral position * 20.0 - 90.0
         (x, y) =
           ( r * (cosine angle) + ringX ring
-          , r * (sine angle)
+          , r * (sine angle) + ringY
           )
       in
         Svg.h "g"
@@ -135,7 +140,7 @@ geminiSvgView gemini =
           [ Svg.circle [("r", show diskR)]
           , Svg.text
               [ ("class", "disk-label")
-              , ("dx", "-2")
+              , ("dx", "-2.5")
               , ("dy", "3")
               ]
               label
