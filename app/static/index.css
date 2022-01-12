@@ -34,7 +34,10 @@ body {
 }
 
 .gemini-debug {
-    margin: 10px 0;
+    position: absolute;
+    top: 10vh;
+    left: 0;
+    max-width: 300px;
 }
 
 .ring {
