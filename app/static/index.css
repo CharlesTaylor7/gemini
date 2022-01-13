@@ -68,13 +68,6 @@ label {
     font-size: 35px;
 }
 
-.gemini-debug {
-    position: absolute;
-    top: 10vh;
-    left: 0;
-    max-width: 300px;
-}
-
 
 /* html gemini */
 div.gemini {

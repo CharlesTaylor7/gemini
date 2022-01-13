@@ -5,12 +5,16 @@ module Gemini.Types
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
     -- ui types
   , Store(..), Options(..)
+    -- re export Seq constructors
+  , pattern (:<|), pattern (:|>), pattern EmptySequence
   ) where
 
 import           Relude
 
 import qualified Data.IntMap            as Map
 import qualified Data.List              as List
+import           Data.Sequence          (Seq ((:<|), (:|>)))
+import qualified Data.Sequence          as Seq
 import qualified Data.Text              as Text
 import           Optics
 import           Optics.State.Operators
@@ -18,11 +22,13 @@ import           Prettyprinter          (Pretty (..))
 import qualified Prettyprinter          as Pretty
 import           System.Random.Stateful
 
+-- |
+pattern EmptySequence = Seq.Empty
 
 -- | UI Definitions
 data Store = Store
   { gemini  :: !Gemini
-  , history :: ![Rotation]
+  , history :: !(Seq Rotation)
   , options :: !Options
   }
   deriving stock (Eq, Generic, Show)

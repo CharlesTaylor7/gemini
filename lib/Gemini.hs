@@ -25,13 +25,24 @@ import           Gemini.Types
 
 -- | UI Operations
 applyRotation :: Rotation -> Store -> Store
-applyRotation r = over #gemini (rotate r) . over #history (r :)
+applyRotation r state = state
+  { gemini = state ^. #gemini % to (rotate r)
+  , history
+  }
+  where
+    history =
+      if state ^. #options % #recording
+      then state ^. #history % to ( :|> r)
+      else EmptySequence
+
+stopRecording :: Store -> Store
+stopRecording = error "todo"
 
 
 initialState :: Store
 initialState = Store
   { gemini = initialGemini
-  , history = []
+  , history = EmptySequence
   , options = Options
       { showLabels = False
       , animate = True
@@ -80,10 +91,10 @@ controlPanel state =
         ]
         [ (checkBox "Labels" & zoomComponent (#options % #showLabels) state)
         , (checkBox "Animate" & zoomComponent (#options % #animate) state)
+        -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) state)
         , resetButton
         , scrambleButton
         , (buttonToggle ("Start Recording", "Stop Recording") & zoomComponent (#options % #recording) state)
-        --, (buttonToggle ("Use Svg", "Use Html") & zoomComponent (#options % #useSvg) state)
         ]
     : ( flip map [Clockwise, AntiClockwise] $ \direction ->
           Html.div
@@ -117,9 +128,24 @@ checkBox label checked =
         ]
     ]
 
+recordButton :: Store -> Html m Store
+recordButton state = if state ^. #options % #recording then stopRecordingButton else startRecordingButton
+
+startRecordingButton :: Html m Store
+startRecordingButton =
+  Html.button
+    [ Html.onClick $ #options % #recording .~ True ]
+    [ Html.text $ "Start Recording" ]
 
 
-buttonToggle :: (Text, Text) -> Bool -> Html a Bool
+stopRecordingButton :: Html m Store
+stopRecordingButton =
+  Html.button
+    [ Html.onClick $ stopRecording ]
+    [ Html.text $ "Stop Recording" ]
+
+
+
 buttonToggle (enable, disable) on =
   Html.button
     [ Html.className "toggle"
@@ -144,16 +170,9 @@ scrambleButton =
     [ Html.onClickM $ do
         rotations <- for ([1..1000] :: [Int]) $ \_ -> (Endo . rotate) <$> uniformM globalStdGen
         let Endo scramble = fold rotations
-        pure $ (set #history []) . (over #gemini scramble)
+        pure $ (set #history EmptySequence) . (over #gemini scramble)
     ]
     [ Html.text "Scramble" ]
-
-debugView :: Store -> Html m a
-debugView state =
-  Html.div
-    [ Html.className "gemini-debug"]
-    [ Html.text $ prettyCompactText (state ^. #history % to (take 10))
-    ]
 
 
 -- | Utilities
