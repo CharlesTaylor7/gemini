@@ -58,9 +58,9 @@ rootView state =
         Key.P -> applyRotation $ Rotation RightRing AntiClockwise
         _     -> identity
     ]
-    [ buttonsRow state
+    [ controlPanel state
     , geminiView (state ^. #options) (state ^. #gemini)
-    , debugView state
+    --, debugView state
     ]
   where
     geminiView =
@@ -69,38 +69,38 @@ rootView state =
       else geminiHtmlView
 
 
-
-buttonsRow :: MonadIO m => Store -> Html m Store
-buttonsRow state =
+controlPanel :: MonadIO m => Store -> Html m Store
+controlPanel state =
   Html.div
-    [ Html.className "motion-buttons-row"
+    [ Html.className "control-panel"
     ]
-    [ Html.div
-        [ Html.className "motion-buttons-group"
+    ( Html.div
+        [ Html.className "button-group"
         ]
-        ( scrambleButton
-        : (buttonToggle ("Show Labels", "Hide Labels") & zoomComponent (#options % #showLabels) state)
-        : (buttonToggle ("Animate", "Disable Animation") & zoomComponent (#options % #animate) state)
-        --: (buttonToggle ("Use Svg", "Use Html") & zoomComponent (#options % #useSvg) state)
-        : ( flip map rotations $ \rotation ->
-              Html.button
-                [ Html.className "motion-button"
-                , Html.onClick $ applyRotation rotation
-                ]
-                [ Html.text $ prettyCompactText rotation
-                ]
-          )
-        )
-    ]
+        [ resetButton
+        , scrambleButton
+        , (buttonToggle ("Show Labels", "Hide Labels") & zoomComponent (#options % #showLabels) state)
+        , (buttonToggle ("Animate", "Disable Animation") & zoomComponent (#options % #animate) state)
+        --, (buttonToggle ("Use Svg", "Use Html") & zoomComponent (#options % #useSvg) state)
+        ]
+    : ( flip map [Clockwise, AntiClockwise] $ \direction ->
+          Html.div
+            [ Html.className "button-group"
+            ]
+            ( flip map rings $ \ring ->
+                let rotation = Rotation ring direction
+                in Html.button
+                    [ Html.className "motion-button"
+                    , Html.onClick $ applyRotation rotation
+                    ]
+                    [ Html.text $ prettyCompactText rotation
+                    ]
+            )
+      )
+    )
   where
-    rotations =
-      [ Rotation LeftRing Clockwise
-      , Rotation LeftRing AntiClockwise
-      , Rotation CenterRing Clockwise
-      , Rotation CenterRing AntiClockwise
-      , Rotation RightRing Clockwise
-      , Rotation RightRing AntiClockwise
-      ]
+    rings = [LeftRing, CenterRing, RightRing]
+
 
 
 buttonToggle :: (Text, Text) -> Bool -> Html a Bool
@@ -112,6 +112,14 @@ buttonToggle (enable, disable) on =
     [ Html.text $ if on then disable else enable
     ]
     where toggle = not
+
+
+resetButton :: Html m Store
+resetButton =
+  Html.button
+    [ Html.onClick $ const initialState]
+    [ Html.text "Reset" ]
+
 
 
 scrambleButton :: MonadIO m => Html m Store

@@ -34,15 +34,19 @@ body {
 .gemini {
 }
 
-.motion-buttons-row {
+.control-panel {
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    padding-top: 12px;
+    gap: 12px;
+    align-items: center;
 }
 
-.motion-buttons-group {
+.button-group {
+    width: 60vw;
     display: flex;
-    margin-top: 24px;
-    gap: 24px;
+    justify-content: center;
+    gap: 12px;
 }
 
 .motion-button {
