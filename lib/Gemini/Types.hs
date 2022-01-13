@@ -363,8 +363,24 @@ combineRotations rotations = Move { steps = steps, permutation = permutation }
       & fromList
 
     toMotion :: NonEmpty Rotation -> Motion
-    toMotion rs@(r:|_) = foldl' (\b a -> b) (Motion { amount = 0, rotation = r }) rs
+    toMotion rs@(r:|_) = foldl' combine (Motion { amount = 0, rotation = r }) rs
 
+    combine :: Motion -> Rotation -> Motion
+    combine m@Motion { rotation } r
+      | rotation == r = m & #amount %~ (+ 1)
+      | otherwise     = m & #amount %~ (subtract 1)
+
+    opposite :: RotationDirection -> RotationDirection
+    opposite = \case
+      Clockwise     -> AntiClockwise
+      AntiClockwise -> Clockwise
+
+    normalize :: Motion -> Motion
+    normalize m@Motion { amount}
+      | amount >= 0 = m
+      | otherwise   = m
+        & #amount %~ negate
+        & #rotation % #direction %~ opposite
 
     permutation :: GeminiPermutation
     permutation = foldMap rotationToPermutation rotations

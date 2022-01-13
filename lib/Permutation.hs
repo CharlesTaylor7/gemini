@@ -162,7 +162,7 @@ pairs x =
 
 
 -- | Faithfully promote a permutation into a larger group
-faithful :: forall n m. (CmpNat m n ~ LT) => Permutation m -> Permutation n
+faithful :: forall n m. (CmpNat m n ~ 'LT) => Permutation m -> Permutation n
 faithful = coerce
 
 
