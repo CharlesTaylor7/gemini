@@ -1,8 +1,8 @@
 {- | Manipulate permutations, show them in cycle notation
 -}
 module Permutation
-  ( Permutation, permutation, permute, faithful, forgetful
-  , Cycles(cycles), toCycles
+  ( Permutation, permute, faithful
+  , Cycles(cycles), toCycles, fromCycles
   , Semigroup(..)
   , Monoid(..)
   , Group(..)
@@ -128,17 +128,15 @@ toCycles p =
 --}
 
 
-{--
-fromCycles :: Cycles -> Permutation
+
+fromCycles :: Cycles Int -> Permutation n
 fromCycles Cycles { cycles } =
-  flip execState mempty $ do
+  flip execState identityPermutation $ do
     for_ cycles $ \cycle ->
       for_ (pairs cycle) $ \(x, y) -> do
-        -- increase bound item is larger
-        #bound %= max x
         -- update map
         #intMap % at x ?= y
---}
+
 
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
@@ -152,22 +150,15 @@ pairs x =
           go _          = []
       in go (a:as)
 
--- | constructor
-permutation :: forall n. KnownNat n => IntMap Int -> Permutation n
-permutation = Permutation . Map.filter (> bound @n)
 
 -- | Faithfully promote a permutation into a larger group
 faithful :: forall n m. (CmpNat m n ~ LT) => Permutation m -> Permutation n
 faithful = coerce
 
--- | Forgetfully map a permutation into a subgroup
-forgetful :: forall n m. (KnownNat n, CmpNat m n ~ GT) => Permutation m -> Permutation n
-forgetful = permutation . view #intMap
-
 bound :: forall n. KnownNat n => Int
 bound = fromIntegral $ natVal (Proxy :: Proxy n)
 
-newtype Permutation bound = Permutation
+newtype Permutation (n :: Nat) = Permutation
   { intMap :: IntMap Int
   }
   deriving stock (Generic)
@@ -182,7 +173,9 @@ instance KnownNat n => Semigroup (Permutation n) where
             at n ?= (permute p . permute q) n
 
 instance KnownNat n => Monoid (Permutation n) where
-  mempty = Permutation { intMap = mempty}
+  mempty = identityPermutation
+
+identityPermutation = Permutation mempty
 
 instance KnownNat n => Group (Permutation n) where
   invert p =
