@@ -1,4 +1,3 @@
-{-# options_ghc -Wwarn #-}
 module Gemini
   ( Store
   , initialState
@@ -31,7 +30,7 @@ applyRotation r = over #gemini (rotate r) . over #history (r :)
 
 initialState :: Store
 initialState = Store
-  { gemini = initialState
+  { gemini = initialGemini
   , history = []
   , options = Options
       { showLabels = False
