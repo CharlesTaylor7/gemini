@@ -173,7 +173,7 @@ permuteGemini :: GeminiPermutation -> Gemini -> Gemini
 permuteGemini p (Gemini disks) =
   Gemini $
   flip execState mempty $
-    for_ [1..54] $ \n -> do
+    for_ (domain p) $ \n -> do
       let disk = disks ^? ix n
       case disk of
         Nothing   -> pure ()

@@ -1,13 +1,12 @@
 {- | Manipulate permutations, show them in cycle notation
 -}
 module Permutation
-  ( Permutation(..), permute, faithful
+  ( Permutation(..), permute, faithful, domain
   , Cycle, cycle
   , Cycles, cycles, toCycles, fromCycles
   , Semigroup(..)
   , Monoid(..)
   , Group(..)
-  , test
   ) where
 
 import           Relude                 hiding (break, cycle)
@@ -171,6 +170,11 @@ natsUnder :: forall bound. KnownNat bound => [Int]
 natsUnder = [0..n-1]
   where
     n = fromIntegral $ natVal (Proxy :: Proxy bound)
+
+
+domain :: forall bound. KnownNat bound => Permutation bound -> [Int]
+domain _ = natsUnder @bound
+
 
 newtype Permutation (bound :: Nat) = Permutation
   { intMap :: IntMap Int

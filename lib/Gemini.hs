@@ -88,12 +88,11 @@ debugView state =
   Html.div
     [ Html.styleProp
         [ ("position", "absolute")
+        , ("top", "0")
         , ("left", "0")
         ]
     ]
-    [ Html.text "Hello"
-    --Html.text $ state ^. #history % to combineRotations % to prettyCompactText
-    ]
+    [ ]
 
 controlPanel :: MonadIO m => Store -> Html m Store
 controlPanel state =
