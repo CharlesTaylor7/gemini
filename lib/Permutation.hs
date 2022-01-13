@@ -2,13 +2,14 @@
 -}
 module Permutation
   ( Permutation, permute, faithful
-  , Cycles(cycles), toCycles, fromCycles
+  , Cycle, cycle
+  , Cycles, cycles, toCycles, fromCycles
   , Semigroup(..)
   , Monoid(..)
   , Group(..)
   ) where
 
-import           Relude                 hiding (break)
+import           Relude                 hiding (break, cycle)
 
 import           Data.Group
 
@@ -24,15 +25,24 @@ import           Prettyprinter          (Pretty (..))
 
 
 -- | Cycles backed by its cycle notation
-newtype Cycles a = Cycles { cycles :: Seq (Cycle a)}
-  deriving stock (Functor)
+newtype Cycles a = Cycles (Seq (Cycle a))
+  deriving stock (Functor, Foldable)
 
-type Cycle a = Seq a
+
+newtype Cycle a = Cycle (Seq a)
+  deriving stock (Functor, Foldable)
+
+
+cycle :: Foldable f => f a -> Cycle a
+cycle = Cycle . fromList . toList
+
+cycles :: Foldable f => f (Cycle a) -> Cycles a
+cycles = Cycles . fromList . toList
 
 
 -- | Show permutations in cycle notation
 instance Pretty a => Pretty (Cycles a) where
-  pretty Cycles { cycles } =
+  pretty (Cycles cycles) =
     flip foldMap cycles $ \cycle ->
       "(" <> foldMap pretty cycle <> ")"
 
@@ -46,9 +56,9 @@ applyMap map n = map ^? ix n & fromMaybe n
 
 
 data S = S
-  { toVisit :: !IntSet
-  , cycles  :: !(Seq (Cycle Int))
-  , current :: !(Cycle Int)
+  { toVisit  :: !IntSet
+  , complete :: !(Seq (Cycle Int))
+  , current  :: !(Seq Int)
   }
   deriving stock (Generic)
 
@@ -64,18 +74,18 @@ toCycles p =
   let
     seed = S
       { toVisit = fromList [1..(bound @n)]
-      , cycles = Seq.Empty
+      , complete = Seq.Empty
       , current = Seq.Empty
       }
   in
-    Cycles $ view #cycles $
+    Cycles $ view #complete $
     flip execState seed $ do
       loop $ do
         toVisit <- use #toVisit
         current <- use #current
         when (Set.null toVisit) $ do
           when (Seq.length current > 1) $ do
-            #cycles %= (:|> current)
+            #complete %= (:|> Cycle current)
             break
 
         when (Seq.length current == 0) $ do
@@ -96,7 +106,7 @@ toCycles p =
                 then #current %= (:|> next)
                 else do
                   when (Seq.length current > 1) $ do
-                    #cycles %= (:|> current)
+                    #complete %= (:|> Cycle current)
                   #current .= Seq.Empty
 
 {--
@@ -130,14 +140,12 @@ toCycles p =
 
 
 fromCycles :: Cycles Int -> Permutation n
-fromCycles Cycles { cycles } =
+fromCycles (Cycles cycles ) =
   flip execState identityPermutation $ do
     for_ cycles $ \cycle ->
       for_ (pairs cycle) $ \(x, y) -> do
         -- update map
         #intMap % at x ?= y
-
-
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
 pairs :: Foldable f => f a -> [(a, a)]

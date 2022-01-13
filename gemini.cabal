@@ -50,7 +50,7 @@ library
       DerivingStrategies
       DerivingVia
       DeriveGeneric
-      DeriveFunctor
+      DeriveTraversable
       DeriveAnyClass
       GeneralizedNewtypeDeriving
       StandaloneDeriving
@@ -103,7 +103,7 @@ executable gemini
       DerivingStrategies
       DerivingVia
       DeriveGeneric
-      DeriveFunctor
+      DeriveTraversable
       DeriveAnyClass
       GeneralizedNewtypeDeriving
       StandaloneDeriving
@@ -159,7 +159,7 @@ test-suite gemini-test
       DerivingStrategies
       DerivingVia
       DeriveGeneric
-      DeriveFunctor
+      DeriveTraversable
       DeriveAnyClass
       GeneralizedNewtypeDeriving
       StandaloneDeriving
