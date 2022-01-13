@@ -1,7 +1,7 @@
 {- | Manipulate permutations, show them in cycle notation
 -}
 module Permutation
-  ( Permutation, permute, faithful
+  ( Permutation(..), permute, faithful
   , Cycle, cycle
   , Cycles, cycles, toCycles, fromCycles
   , Semigroup(..)
@@ -69,11 +69,11 @@ break :: Monad m => MaybeT m a
 break = MaybeT $ pure $ Nothing
 
 
-toCycles :: forall n. KnownNat n => Permutation n -> Cycles Int
+toCycles :: forall bound. KnownNat bound => Permutation bound -> Cycles Int
 toCycles p =
   let
     seed = S
-      { toVisit = fromList [1..(bound @n)]
+      { toVisit = fromList $ natsUnder @bound
       , complete = Seq.Empty
       , current = Seq.Empty
       }
@@ -85,29 +85,29 @@ toCycles p =
         current <- use #current
         when (Set.null toVisit) $ do
           when (Seq.length current > 1) $ do
-            #complete %= (:|> Cycle current)
+            (#complete %= (:|> Cycle current))
             break
 
         when (Seq.length current == 0) $ do
           case Set.minView toVisit of
             Nothing               -> pure ()
             Just (next, toVisit') -> do
-              #toVisit .= toVisit'
-              #current .= next :<| Seq.Empty
+              (#toVisit .= toVisit')
+              (#current .= next :<| Seq.Empty)
 
         current <- use #current
         case current of
           (_ :|> last) -> do
             let next = permute p last
-            #toVisit %= Set.delete next
+            (#toVisit %= Set.delete next)
             case current of
               (first :<| _) -> do
                 if first /= last
                 then #current %= (:|> next)
                 else do
                   when (Seq.length current > 1) $ do
-                    #complete %= (:|> Cycle current)
-                  #current .= Seq.Empty
+                    (#complete %= (:|> Cycle current))
+                  (#current .= Seq.Empty)
 
 {--
   In python pseudo code:
@@ -138,7 +138,6 @@ toCycles p =
 --}
 
 
-
 fromCycles :: Cycles Int -> Permutation n
 fromCycles (Cycles cycles ) =
   flip execState identityPermutation $ do
@@ -163,21 +162,25 @@ pairs x =
 faithful :: forall n m. (CmpNat m n ~ LT) => Permutation m -> Permutation n
 faithful = coerce
 
-bound :: forall n. KnownNat n => Int
-bound = fromIntegral $ natVal (Proxy :: Proxy n)
 
-newtype Permutation (n :: Nat) = Permutation
+natsUnder :: forall bound. KnownNat bound => [Int]
+natsUnder = [0..n-1]
+  where
+    n = fromIntegral $ natVal (Proxy :: Proxy bound)
+
+newtype Permutation (bound :: Nat) = Permutation
   { intMap :: IntMap Int
   }
-  deriving stock (Generic)
+  deriving stock (Eq, Generic, Show)
+  deriving newtype (NFData)
 
 
-instance KnownNat n => Semigroup (Permutation n) where
+instance KnownNat bound => Semigroup (Permutation bound) where
   p <> q = Permutation { intMap }
     where
       intMap =
         flip execState mempty $
-          for_ [1..(bound @n)] $ \n ->
+          for_ (natsUnder @bound) $ \n ->
             at n ?= (permute p . permute q) n
 
 instance KnownNat n => Monoid (Permutation n) where
@@ -185,10 +188,10 @@ instance KnownNat n => Monoid (Permutation n) where
 
 identityPermutation = Permutation mempty
 
-instance KnownNat n => Group (Permutation n) where
+instance KnownNat bound => Group (Permutation bound) where
   invert p =
     Permutation $
     flip execState mempty $ do
-      for_ [1..bound @n] $ \n -> do
+      for_ (natsUnder @bound) $ \n -> do
         let k = permute p n
         at k ?= n

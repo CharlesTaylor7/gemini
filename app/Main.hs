@@ -1,5 +1,3 @@
-{-# language OverloadedLabels #-}
-{-# options_ghc -Wwarn #-}
 module Main where
 
 import           Relude

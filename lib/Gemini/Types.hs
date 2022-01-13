@@ -3,21 +3,25 @@ module Gemini.Types
     Gemini, geminiFromList, geminiIx, ringIndex , initialGemini, rotate
   , Location(..), location
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
+  , Move(..), Motion(..)
+  , combineRotations
     -- ui types
   , Store(..), Options(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>), pattern EmptySequence
   ) where
 
-import           Relude
+import           Relude                 hiding (cycle)
 
 import qualified Data.IntMap            as Map
 import qualified Data.List              as List
+import qualified Data.List.NonEmpty     as NE
 import           Data.Sequence          (Seq ((:<|), (:|>)))
 import qualified Data.Sequence          as Seq
 import qualified Data.Text              as Text
 import           Optics
 import           Optics.State.Operators
+import           Permutation
 import           Prettyprinter          (Pretty (..))
 import qualified Prettyprinter          as Pretty
 import           System.Random.Stateful
@@ -48,14 +52,19 @@ data Options = Options
 -- | Definitions
 data Move = Move
   { steps       :: !(Seq Motion)
-  , permutation :: !(Permutation 54)
+  , permutation :: !GeminiPermutation
   }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
 
 data Motion = Motion
   { amount   :: Int
   , rotation :: Rotation
   }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
 
+type GeminiPermutation = Permutation 54
 
 newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
   deriving stock (Eq, Show, Generic)
@@ -76,6 +85,12 @@ data Location = Location
 
 location r p = Location r (p `mod` 18)
 
+-- | Gemini transformations
+-- The 6 basic motions are called:
+-- L, L', C, C', R, R'
+-- L is a clockwise rotation of the left ring, L' is anticlockwise
+-- C is for the central ring
+-- R is for the right ring
 data Rotation = Rotation
   { ring      :: !Ring
   , direction :: !RotationDirection
@@ -142,14 +157,30 @@ instance Pretty Color where
 
 -- | Basic operations
 
--- | Gemini transformations
--- The 6 basic motions are called:
--- L, L', C, C', R, R'
--- L is a clockwise rotation of the leftmost ring, L' is anticlockwise
--- C is for the central ring
--- R is for the rightmost ring
 rotate :: Rotation -> Gemini -> Gemini
-rotate Rotation { ring = r, direction = d } g = flip execState g $
+rotate = permuteGemini . rotationToPermutation
+
+permuteGemini :: GeminiPermutation -> Gemini -> Gemini
+permuteGemini p (Gemini disks) =
+  Gemini $
+  flip execState mempty $
+    for_ [1..54] $ \n -> do
+      let disk = disks ^? ix n
+      case disk of
+        Nothing   -> pure ()
+        Just disk -> at (permute p n) ?= disk
+
+
+rotationToPermutation :: Rotation -> GeminiPermutation
+rotationToPermutation Rotation { ring, direction } =
+  fromCycles . cycles . Seq.singleton . cycle $
+  flip map positions $ locationToIndex . Location ring
+  where
+    positions = case direction of
+      Clockwise     -> [0..17]
+      AntiClockwise -> [17,16..0]
+  {--
+Rotation { ring = r, direction = d } g = flip execState g $
   for_ disks $ \(i, disk) ->
     case disk of
       Just disk -> geminiIx (Location r i) .= disk
@@ -162,6 +193,8 @@ rotate Rotation { ring = r, direction = d } g = flip execState g $
     disks = flip map [0..17] $ \p ->
       let next = p + step d
       in (p, g ^? geminiIx (location r next))
+--}
+
 
 
 -- | lookup location on gemini puzzle
@@ -308,3 +341,23 @@ areConsecutive locations = (numberOfRings == 1) || (numberOfRings == 2)
   where
     numberOfRings = length ringGroups
     ringGroups = locations & List.groupBy ((==) `on` view #ring)
+
+
+-- | Convert runs of rotations on the same ring in the same direction into groups
+-- calculate a permutation for the rotation
+combineRotations :: Seq Rotation -> Move
+combineRotations rotations = Move { steps = steps, permutation = permutation }
+  where
+    steps :: Seq Motion
+    steps = rotations
+      & toList
+      & NE.groupBy ((==) `on` view #ring)
+      & map toMotion
+      & fromList
+
+    toMotion :: NonEmpty Rotation -> Motion
+    toMotion rs@(r:|_) = foldl' (\b a -> b) (Motion { amount = 0, rotation = r }) rs
+
+
+    permutation :: GeminiPermutation
+    permutation = foldMap rotationToPermutation rotations

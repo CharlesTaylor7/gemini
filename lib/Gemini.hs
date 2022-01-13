@@ -26,9 +26,8 @@ import           Gemini.Types
 -- | UI Operations
 applyRotation :: Rotation -> Store -> Store
 applyRotation r state = state
-  { gemini = state ^. #gemini % to (rotate r)
-  , history
-  }
+  & #gemini %~ rotate r
+  & #history .~ history
   where
     history =
       if state ^. #options % #recording
@@ -37,7 +36,10 @@ applyRotation r state = state
 
 
 stopRecording :: Store -> Store
-stopRecording = error "todo"
+stopRecording state = state
+  & #options % #recording .~ False
+  & #moves %~ (:|> (state ^. #history % to combineRotations))
+  & #history .~ EmptySequence
 
 
 initialState :: Store
@@ -130,38 +132,32 @@ checkBox label checked =
         ]
     ]
 
+
 recordButton :: Store -> Html m Store
 recordButton state = if state ^. #options % #recording then stopRecordingButton else startRecordingButton
-
-startRecordingButton :: Html m Store
-startRecordingButton =
-  Html.button
-    [ Html.onClick $ #options % #recording .~ True ]
-    [ Html.text $ "Start Recording" ]
-
-
-stopRecordingButton :: Html m Store
-stopRecordingButton =
-  Html.button
-    [ Html.onClick $ stopRecording ]
-    [ Html.text $ "Stop Recording" ]
+  where
+    startRecordingButton :: Html m Store
+    startRecordingButton =
+      Html.button
+        [ Html.onClick $ #options % #recording .~ True ]
+        [ Html.text $ "Start Recording" ]
 
 
-
-buttonToggle (enable, disable) on =
-  Html.button
-    [ Html.className "toggle"
-    , Html.onClick toggle
-    ]
-    [ Html.text $ if on then disable else enable
-    ]
-    where toggle = not
+    stopRecordingButton :: Html m Store
+    stopRecordingButton =
+      Html.button
+        [ Html.onClick $ stopRecording ]
+        [ Html.text $ "Stop Recording" ]
 
 
 resetButton :: Html m Store
 resetButton =
   Html.button
-    [ Html.onClick $ const initialState]
+    [ Html.onClick $
+        (#history .~ EmptySequence) .
+        (#options % #recording .~ False) .
+        (#gemini .~ initialGemini)
+    ]
     [ Html.text "Reset" ]
 
 
