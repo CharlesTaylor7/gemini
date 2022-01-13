@@ -1,12 +1,13 @@
 {- | Manipulate permutations, show them in cycle notation
 -}
 module Permutation
-  ( Permutation, permutation, permute
+  ( Permutation, permutation, permute, faithful, forgetful
   , Cycles(cycles), toCycles
   ) where
 
 import           Relude                    hiding (break)
 
+import qualified Data.IntMap               as Map
 import qualified Data.IntSet               as Set
 import qualified Data.List.NonEmpty        as NE
 import           Data.Sequence             (Seq ((:<|), (:|>)))
@@ -55,11 +56,11 @@ break :: Monad m => MaybeT m a
 break = MaybeT $ pure $ Nothing
 
 
-toCycles :: KnownNat n => Permutation n -> Cycles Int
+toCycles :: forall n. KnownNat n => Permutation n -> Cycles Int
 toCycles p =
   let
     seed = S
-      { toVisit = fromList [1..(bound p)]
+      { toVisit = fromList [1..(bound @n)]
       , cycles = Seq.Empty
       , current = Seq.Empty
       }
@@ -148,13 +149,20 @@ pairs x =
           go _          = []
       in go (a:as)
 
+-- | constructor
+permutation :: forall n. KnownNat n => IntMap Int -> Permutation n
+permutation = Permutation . Map.filter (> bound @n)
 
-permutation :: IntMap Int -> Permutation n
-permutation intMap = Permutation { intMap }
-  -- , bound = maximumOf folded intMap & fromMaybe 0}
-  --
-bound :: forall n. KnownNat n => Permutation n -> Int
-bound _ = fromIntegral $ natVal (Proxy :: Proxy n)
+-- | Faithfully promote a permutation into a larger group
+faithful :: (CmpNat m n ~ GT) => Permutation n -> Permutation m
+faithful = coerce
+
+-- | Forgetfully map a permutation into a subgroup
+forgetful :: (KnownNat n, CmpNat m n ~ GT) => Permutation m -> Permutation n
+forgetful = permutation . view #intMap
+
+bound :: forall n. KnownNat n => Int
+bound = fromIntegral $ natVal (Proxy :: Proxy n)
 
 newtype Permutation bound = Permutation
   { intMap :: IntMap Int
@@ -167,7 +175,7 @@ instance KnownNat n => Semigroup (Permutation n) where
     where
       intMap =
         flip execState mempty $
-          for_ [1..(bound p)] $ \n ->
+          for_ [1..(bound @n)] $ \n ->
             at n ?= (permute p . permute q) n
 
 instance KnownNat n => Monoid (Permutation n) where
