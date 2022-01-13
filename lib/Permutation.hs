@@ -3,21 +3,24 @@
 module Permutation
   ( Permutation, permutation, permute, faithful, forgetful
   , Cycles(cycles), toCycles
+  , Semigroup(..)
+  , Monoid(..)
+  , Group(..)
   ) where
 
-import           Relude                    hiding (break)
+import           Relude                 hiding (break)
 
-import qualified Data.IntMap               as Map
-import qualified Data.IntSet               as Set
-import qualified Data.List.NonEmpty        as NE
-import           Data.Sequence             (Seq ((:<|), (:|>)))
-import qualified Data.Sequence             as Seq
+import           Data.Group
+
+import qualified Data.IntMap            as Map
+import qualified Data.IntSet            as Set
+import qualified Data.List.NonEmpty     as NE
+import           Data.Sequence          (Seq ((:<|), (:|>)))
+import qualified Data.Sequence          as Seq
 
 import           Optics
 import           Optics.State.Operators
-import           Prettyprinter             (Pretty (..))
-import qualified Prettyprinter             as Pretty
-import qualified Prettyprinter.Render.Text as Pretty
+import           Prettyprinter          (Pretty (..))
 
 
 -- | Cycles backed by its cycle notation
@@ -154,11 +157,11 @@ permutation :: forall n. KnownNat n => IntMap Int -> Permutation n
 permutation = Permutation . Map.filter (> bound @n)
 
 -- | Faithfully promote a permutation into a larger group
-faithful :: (CmpNat m n ~ GT) => Permutation n -> Permutation m
+faithful :: forall n m. (CmpNat m n ~ LT) => Permutation m -> Permutation n
 faithful = coerce
 
 -- | Forgetfully map a permutation into a subgroup
-forgetful :: (KnownNat n, CmpNat m n ~ GT) => Permutation m -> Permutation n
+forgetful :: forall n m. (KnownNat n, CmpNat m n ~ GT) => Permutation m -> Permutation n
 forgetful = permutation . view #intMap
 
 bound :: forall n. KnownNat n => Int
@@ -180,3 +183,11 @@ instance KnownNat n => Semigroup (Permutation n) where
 
 instance KnownNat n => Monoid (Permutation n) where
   mempty = Permutation { intMap = mempty}
+
+instance KnownNat n => Group (Permutation n) where
+  invert p =
+    Permutation $
+    flip execState mempty $ do
+      for_ [1..bound @n] $ \n -> do
+        let k = permute p n
+        at k ?= n
