@@ -1,8 +1,8 @@
 {- | Manipulate permutations, show them in cycle notation
 -}
 module Permutation
-  ( Permutation, permutation, apply
-  , Cycles(cycles), toCycles, fromCycles
+  ( Permutation, permutation, permute
+  , Cycles(cycles), toCycles
   ) where
 
 import           Relude                    hiding (break)
@@ -20,19 +20,21 @@ import qualified Prettyprinter.Render.Text as Pretty
 
 
 -- | Cycles backed by its cycle notation
-newtype Cycles = Cycles { cycles :: Seq Cycle }
-type Cycle = Seq Int
+newtype Cycles a = Cycles { cycles :: Seq (Cycle a)}
+  deriving stock (Functor)
+
+type Cycle a = Seq a
 
 
 -- | Show permutations in cycle notation
-instance Pretty Cycles where
+instance Pretty a => Pretty (Cycles a) where
   pretty Cycles { cycles } =
     flip foldMap cycles $ \cycle ->
-      "(" <> foldMap Pretty.unsafeViaShow cycle <> ")"
+      "(" <> foldMap pretty cycle <> ")"
 
 
-apply :: Permutation -> Int -> Int
-apply = applyMap . view #intMap
+permute :: Permutation n -> Int -> Int
+permute = applyMap . view #intMap
 
 
 applyMap :: IntMap Int -> Int -> Int
@@ -41,8 +43,8 @@ applyMap map n = map ^? ix n & fromMaybe n
 
 data S = S
   { toVisit :: !IntSet
-  , cycles  :: !(Seq Cycle)
-  , current :: !Cycle
+  , cycles  :: !(Seq (Cycle Int))
+  , current :: !(Cycle Int)
   }
   deriving stock (Generic)
 
@@ -53,12 +55,11 @@ break :: Monad m => MaybeT m a
 break = MaybeT $ pure $ Nothing
 
 
-toCycles :: Permutation -> Cycles
-toCycles Permutation { bound, intMap } =
+toCycles :: KnownNat n => Permutation n -> Cycles Int
+toCycles p =
   let
-    permute = applyMap intMap
     seed = S
-      { toVisit = fromList [1..bound]
+      { toVisit = fromList [1..(bound p)]
       , cycles = Seq.Empty
       , current = Seq.Empty
       }
@@ -83,7 +84,7 @@ toCycles Permutation { bound, intMap } =
         current <- use #current
         case current of
           (_ :|> last) -> do
-            let next = permute last
+            let next = permute p last
             #toVisit %= Set.delete next
             case current of
               (first :<| _) -> do
@@ -123,7 +124,7 @@ toCycles Permutation { bound, intMap } =
 --}
 
 
-
+{--
 fromCycles :: Cycles -> Permutation
 fromCycles Cycles { cycles } =
   flip execState mempty $ do
@@ -133,6 +134,7 @@ fromCycles Cycles { cycles } =
         #bound %= max x
         -- update map
         #intMap % at x ?= y
+--}
 
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
@@ -147,25 +149,26 @@ pairs x =
       in go (a:as)
 
 
-permutation :: IntMap Int -> Permutation
-permutation intMap = Permutation { intMap, bound = maximumOf folded intMap & fromMaybe 0}
+permutation :: IntMap Int -> Permutation n
+permutation intMap = Permutation { intMap }
+  -- , bound = maximumOf folded intMap & fromMaybe 0}
+  --
+bound :: forall n. KnownNat n => Permutation n -> Int
+bound _ = fromIntegral $ natVal (Proxy :: Proxy n)
 
-data Permutation = Permutation
-  { intMap :: !(IntMap Int)
-  , bound  :: !Int
+newtype Permutation bound = Permutation
+  { intMap :: IntMap Int
   }
   deriving stock (Generic)
 
 
-instance Semigroup Permutation where
-  Permutation { bound = m, intMap = p } <> Permutation { bound = n, intMap = q } =
-    Permutation { bound , intMap }
+instance KnownNat n => Semigroup (Permutation n) where
+  p <> q = Permutation { intMap }
     where
-      bound = max m n
       intMap =
         flip execState mempty $
-          for_ [1..bound] $ \n ->
-            at n ?= (applyMap p . applyMap q) n
+          for_ [1..(bound p)] $ \n ->
+            at n ?= (permute p . permute q) n
 
-instance Monoid Permutation where
-  mempty = Permutation { intMap = mempty, bound = 0 }
+instance KnownNat n => Monoid (Permutation n) where
+  mempty = Permutation { intMap = mempty}

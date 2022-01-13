@@ -55,6 +55,7 @@ default-extensions:
   - DerivingStrategies
   - DerivingVia
   - DeriveGeneric
+  - DeriveFunctor
   - DeriveAnyClass
   - GeneralizedNewtypeDeriving
   - StandaloneDeriving
