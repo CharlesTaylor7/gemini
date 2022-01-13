@@ -2,11 +2,12 @@
 -}
 module Permutation
   ( Permutation, permutation, apply
-  , cycles, toCycles, fromCycles
+  , Cycles(cycles), toCycles, fromCycles
   ) where
 
-import           Relude
+import           Relude                    hiding (break)
 
+import qualified Data.IntSet               as Set
 import qualified Data.List.NonEmpty        as NE
 import           Data.Sequence             (Seq ((:<|), (:|>)))
 import qualified Data.Sequence             as Seq
@@ -19,8 +20,9 @@ import qualified Prettyprinter.Render.Text as Pretty
 
 
 -- | Cycles backed by its cycle notation
-newtype Cycles = Cycles { cycles :: [Cycle] }
+newtype Cycles = Cycles { cycles :: Seq Cycle }
 type Cycle = Seq Int
+
 
 -- | Show permutations in cycle notation
 instance Pretty Cycles where
@@ -36,11 +38,61 @@ apply = applyMap . view #intMap
 applyMap :: IntMap Int -> Int -> Int
 applyMap map n = map ^? ix n & fromMaybe n
 
+
+data S = S
+  { toVisit :: !IntSet
+  , cycles  :: !(Seq Cycle)
+  , current :: !Cycle
+  }
+  deriving stock (Generic)
+
+loop :: Monad m => MaybeT m a -> m ()
+loop = void . runMaybeT . forever
+
+break :: Monad m => MaybeT m a
+break = MaybeT $ pure $ Nothing
+
+
 toCycles :: Permutation -> Cycles
-toCycles Permutation { intMap } = go (Cycles []) Empty 1
-  where
-    go :: Cycles -> Cycle -> Int -> Cycles
-    go acc cycle n = _
+toCycles Permutation { bound, intMap } =
+  let
+    permute = applyMap intMap
+    seed = S
+      { toVisit = fromList [1..bound]
+      , cycles = Seq.Empty
+      , current = Seq.Empty
+      }
+  in
+    Cycles $ view #cycles $
+    flip execState seed $ do
+      loop $ do
+        toVisit <- use #toVisit
+        current <- use #current
+        when (Set.null toVisit) $ do
+          when (Seq.length current > 1) $ do
+            #cycles %= (:|> current)
+            break
+
+        when (Seq.length current == 0) $ do
+          case Set.minView toVisit of
+            Nothing               -> pure ()
+            Just (next, toVisit') -> do
+              #toVisit .= toVisit'
+              #current .= next :<| Seq.Empty
+
+        current <- use #current
+        case current of
+          (_ :|> last) -> do
+            let next = permute last
+            #toVisit %= Set.delete next
+            case current of
+              (first :<| _) -> do
+                if first /= last
+                then #current %= (:|> next)
+                else do
+                  when (Seq.length current > 1) $ do
+                    #cycles %= (:|> current)
+                  #current .= Seq.Empty
 
 {--
   In python pseudo code:
