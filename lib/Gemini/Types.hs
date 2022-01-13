@@ -116,7 +116,7 @@ data RotationDirection
 
 instance Pretty Location where
   pretty Location { ring, position } =
-    pretty ring <> Pretty.unsafeViaShow position
+    pretty ring <> Pretty.viaShow position
 
 data Ring
   = LeftRing
@@ -140,7 +140,7 @@ data Disk = Disk
 
 instance Pretty Disk where
   pretty Disk { color, label } =
-    pretty color <> Pretty.unsafeViaShow label
+    pretty color <> Pretty.viaShow label
 
 
 data Color
@@ -247,7 +247,7 @@ indexToLocation n = Location ring p
         0 -> LeftRing
         1 -> CenterRing
         2 -> RightRing
-        _ -> error "impossible"
+        _ -> LeftRing
 
 geminiIx :: Location -> AffineTraversal' Gemini Disk
 geminiIx location = #geminiDiskMap % ix (locationToIndex location)
