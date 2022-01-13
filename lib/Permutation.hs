@@ -42,6 +42,36 @@ toCycles Permutation { intMap } = go (Cycles []) Empty 1
     go :: Cycles -> Cycle -> Int -> Cycles
     go acc cycle n = _
 
+{--
+  In python pseudo code:
+  def to_cycles(permutation):
+    to_visit = set(permutation)
+    cycles = []
+    current_cycle = []
+    while (true):
+      if len(to_visit) == 0:
+        if len(current_cycle) > 1:
+          cycles.append(current_cycle)
+        return cycles
+
+      if len(current_cycle) == 0:
+        min_from_set = min(to_visit)
+        to_visit.remove(min_from_set)
+        current_cycle.append(min_from_set)
+        continue
+
+      next = permutation[current_cycle[-1]]
+      to_visit.remove(next)
+      if next == current_cycle[0]:
+        if len(current_cycle) > 1:
+          cycles.append(current_cycle)
+        current_cycle = []
+      else:
+        current_cycle.append(next)
+--}
+
+
+
 fromCycles :: Cycles -> Permutation
 fromCycles Cycles { cycles } =
   flip execState mempty $ do
