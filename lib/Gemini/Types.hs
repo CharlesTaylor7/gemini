@@ -27,6 +27,7 @@ import qualified Prettyprinter          as Pretty
 import           System.Random.Stateful
 
 -- |
+pattern EmptySequence :: forall a. Seq a
 pattern EmptySequence = Seq.Empty
 
 -- | UI Definitions
@@ -90,6 +91,7 @@ data Location = Location
   deriving stock (Eq, Show, Ord, Generic)
   deriving anyclass (NFData)
 
+location :: Ring -> Int -> Location
 location r p = Location r (p `mod` 18)
 
 -- | Gemini transformations
@@ -202,13 +204,6 @@ Rotation { ring = r, direction = d } g = flip execState g $
       in (p, g ^? geminiIx (location r next))
 --}
 
-
-
--- | lookup location on gemini puzzle
-getDisk :: Gemini -> Location -> Maybe Disk
-getDisk (Gemini map) location = map ^? ix index
-  where
-    index = locationToIndex location
 
 geminiFromList :: [(Location, Disk)] -> Gemini
 geminiFromList items = Gemini $ fromList $
@@ -363,7 +358,7 @@ combineRotations rotations = Move { steps = steps, permutation = permutation }
       & fromList
 
     toMotion :: NonEmpty Rotation -> Motion
-    toMotion rs@(r:|_) = foldl' combine (Motion { amount = 0, rotation = r }) rs
+    toMotion rs@(r:|_) = normalize $ foldl' combine (Motion { amount = 0, rotation = r }) rs
 
     combine :: Motion -> Rotation -> Motion
     combine m@Motion { rotation } r

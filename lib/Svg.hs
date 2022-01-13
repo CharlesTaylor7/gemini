@@ -6,20 +6,13 @@ module Svg
 
 import           Relude                      hiding (Option)
 
-import           Optics                      hiding ((#))
-import           Prettyprinter               (Pretty (..))
-import qualified Prettyprinter               as Pretty
-import qualified Prettyprinter.Render.Text   as Pretty
-
-
 
 import           JSDOM                       (currentDocumentUnchecked)
 import           Language.Javascript.JSaddle (JSVal, (#))
 
 import           Shpadoinkle                 (Html, JSM, RawNode (..), baked)
 import qualified Shpadoinkle.Continuation    as Continuation
-import qualified Shpadoinkle.Html            as Html
-import qualified Shpadoinkle.Keyboard        as Key
+
 
 -- | Definitions
 data SvgElement
@@ -37,6 +30,7 @@ data SvgElement
 type AttributeList = [(Text, Text)]
 
 
+h :: Text -> AttributeList -> [SvgElement] -> SvgElement
 h = SvgElement
 
 circle :: AttributeList -> SvgElement
@@ -58,7 +52,7 @@ bake svgElement = baked $ do
       render SvgText { attributes, contents } = do
         element' <- document' # ("createElementNS" :: Text) $ (svgNamespace, "text" :: Text)
         for_ attributes $ element' # ("setAttribute" :: Text)
-        element' # ("append" :: Text) $ contents
+        void $ element' # ("append" :: Text) $ contents
         pure element'
 
       render SvgElement { name, attributes, children } = do

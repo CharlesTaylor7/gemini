@@ -2,17 +2,12 @@ module Gemini.Html where
 
 import           Relude
 
-import qualified Data.Text                 as Text
-import           Optics                    hiding ((#))
-import           Prettyprinter             (Pretty (..))
-import qualified Prettyprinter             as Pretty
-import qualified Prettyprinter.Render.Text as Pretty
+import qualified Data.Text        as Text
+import           Optics           hiding ((#))
 
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Html          as Html
-import qualified Shpadoinkle.Keyboard      as Key
-import           Shpadoinkle.Lens          (generalize)
+import qualified Shpadoinkle.Html as Html
 
 import           Gemini.Types
 
@@ -53,11 +48,6 @@ geminiHtmlView options gemini =
         ( disks r )
 
 
-    -- law of sines
-    ringOffset = (ringR - diskR) * (sine 80.0 / sine 50.0)
-    -- big angle = 100 degrees
-    -- small angle = 40 degrees
-    -- ringOffset = radius * (sin 100 / sin 40)
     sine = sin . toRadians
     cosine = cos . toRadians
     toRadians :: Double -> Double

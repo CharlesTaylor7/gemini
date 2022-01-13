@@ -7,6 +7,7 @@ module Permutation
   , Semigroup(..)
   , Monoid(..)
   , Group(..)
+  , test
   ) where
 
 import           Relude                 hiding (break, cycle)
