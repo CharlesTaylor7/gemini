@@ -100,10 +100,12 @@ toCycles p =
 
         current <- use #current
         case current of
+          Seq.Empty -> break
           (_ :|> last) -> do
             let next = permute p last
             (#toVisit %= Set.delete next)
             case current of
+              Seq.Empty -> break
               (first :<| _) -> do
                 if first /= last
                 then #current %= (:|> next)
