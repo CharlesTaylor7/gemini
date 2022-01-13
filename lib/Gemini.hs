@@ -46,16 +46,17 @@ rootView :: MonadIO m => Store -> Html m Store
 rootView state =
   Html.div
     [ Html.className "gemini-app"
+    , Html.tabIndex 0
     , Html.onKeydown $ \key ->
       case key of
-        -- the keyboard shortcuts are based on the top row of keys in the rightmost positions:
+        -- the keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
         -- T, Y, U, I, O, P
-        Key.T -> applyRotation $ Rotation LeftRing Clockwise
-        Key.Y -> applyRotation $ Rotation LeftRing AntiClockwise
-        Key.U -> applyRotation $ Rotation CenterRing Clockwise
-        Key.I -> applyRotation $ Rotation CenterRing AntiClockwise
-        Key.O -> applyRotation $ Rotation RightRing Clockwise
-        Key.P -> applyRotation $ Rotation RightRing AntiClockwise
+        Key.Q -> applyRotation $ Rotation LeftRing AntiClockwise
+        Key.W -> applyRotation $ Rotation LeftRing Clockwise
+        Key.T -> applyRotation $ Rotation CenterRing AntiClockwise
+        Key.Y -> applyRotation $ Rotation CenterRing Clockwise
+        Key.O -> applyRotation $ Rotation RightRing AntiClockwise
+        Key.P -> applyRotation $ Rotation RightRing Clockwise
         _     -> identity
     ]
     [ controlPanel state
