@@ -57,12 +57,19 @@ data Move = Move
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
+instance Pretty Move where
+  pretty = pretty . view #permutation
+
 data Motion = Motion
   { amount   :: Int
   , rotation :: Rotation
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
+
+instance Pretty Motion where
+  pretty Motion { amount, rotation } =
+    pretty amount <> pretty rotation
 
 type GeminiPermutation = Permutation 54
 

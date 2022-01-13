@@ -76,7 +76,7 @@ rootView state =
     ]
     [ controlPanel state
     , geminiView (state ^. #options) (state ^. #gemini)
-    --, debugView state
+    , debugView state
     ]
   where
     geminiView =
@@ -84,6 +84,15 @@ rootView state =
       then geminiSvgView
       else geminiHtmlView
 
+debugView state =
+  Html.div
+    [ Html.styleProp
+        [ ("position", "absolute")
+        , ("left", "0")
+        ]
+    ]
+    [ Html.text $ state ^. #history % to combineRotations % to prettyCompactText
+    ]
 
 controlPanel :: MonadIO m => Store -> Html m Store
 controlPanel state =

@@ -22,6 +22,7 @@ import qualified Data.Sequence          as Seq
 import           Optics
 import           Optics.State.Operators
 import           Prettyprinter          (Pretty (..))
+import qualified Prettyprinter          as Pretty
 
 
 -- | Cycles backed by its cycle notation
@@ -44,7 +45,9 @@ cycles = Cycles . fromList . toList
 instance Pretty a => Pretty (Cycles a) where
   pretty (Cycles cycles) =
     flip foldMap cycles $ \cycle ->
-      "(" <> foldMap pretty cycle <> ")"
+      "(" <>
+      (Pretty.hsep $ flip concatMap cycle $ \x -> [pretty x, "->"]) <>
+      ")"
 
 
 permute :: Permutation n -> Int -> Int
@@ -195,3 +198,7 @@ instance KnownNat bound => Group (Permutation bound) where
       for_ (natsUnder @bound) $ \n -> do
         let k = permute p n
         at k ?= n
+
+
+instance KnownNat bound => Pretty (Permutation bound) where
+  pretty = pretty . toCycles
