@@ -32,6 +32,7 @@ data Options = Options
   { showLabels :: !Bool
   , animate    :: !Bool
   , useSvg     :: !Bool
+  , recording  :: !Bool
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)

@@ -20,21 +20,15 @@ body {
 
 }
 
+
+/* root div */
 .gemini-app {
     height: 100vh;
     background-color: #9aaecd;
 }
 
-.gemini-wrapper {
-    margin-top: 10vh;
-    display: flex;
-    justify-content: space-around;
-}
 
-.gemini {
-    font-size: 35px;
-}
-
+/* UI Elements */
 .control-panel {
     display: flex;
     flex-direction: column;
@@ -53,6 +47,25 @@ body {
 .motion-button {
     height: 24px;
     width: 30px;
+}
+
+label {
+    display: flex;
+    align-items: center;
+}
+.label-text {
+    padding-right: 5px;
+}
+
+/* Gemini Puzzle */
+.gemini-wrapper {
+    margin-top: 10vh;
+    display: flex;
+    justify-content: space-around;
+}
+
+.gemini {
+    font-size: 35px;
 }
 
 .gemini-debug {

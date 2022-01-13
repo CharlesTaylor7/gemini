@@ -16,7 +16,7 @@ import           System.Random.Stateful    (globalStdGen, uniformM)
 import           Shpadoinkle
 import qualified Shpadoinkle.Html          as Html
 import qualified Shpadoinkle.Keyboard      as Key
-import           Shpadoinkle.Lens          (generalize)
+import qualified Shpadoinkle.Lens
 
 import           Gemini.Html               (geminiHtmlView)
 import           Gemini.Svg                (geminiSvgView)
@@ -36,6 +36,7 @@ initialState = Store
       { showLabels = False
       , animate = True
       , useSvg = False
+      , recording = False
       }
   }
 
@@ -77,10 +78,11 @@ controlPanel state =
     ( Html.div
         [ Html.className "button-group"
         ]
-        [ resetButton
+        [ (checkBox "Labels" & zoomComponent (#options % #showLabels) state)
+        , (checkBox "Animate" & zoomComponent (#options % #animate) state)
+        , resetButton
         , scrambleButton
-        , (buttonToggle ("Show Labels", "Hide Labels") & zoomComponent (#options % #showLabels) state)
-        , (buttonToggle ("Animate", "Disable Animation") & zoomComponent (#options % #animate) state)
+        , (buttonToggle ("Start Recording", "Stop Recording") & zoomComponent (#options % #recording) state)
         --, (buttonToggle ("Use Svg", "Use Html") & zoomComponent (#options % #useSvg) state)
         ]
     : ( flip map [Clockwise, AntiClockwise] $ \direction ->
@@ -100,6 +102,20 @@ controlPanel state =
     )
   where
     rings = [LeftRing, CenterRing, RightRing]
+
+checkBox :: Text -> Bool -> Html a Bool
+checkBox label checked =
+  Html.label_
+    [ Html.span
+        [ Html.className "label-text" ]
+        [ Html.text label ]
+    , Html.input'
+        [ Html.className "checkbox"
+        , Html.type' "checkbox"
+        , Html.checked checked
+        , Html.onCheck const
+        ]
+    ]
 
 
 
@@ -147,7 +163,7 @@ prettyCompactText = Pretty.renderStrict . Pretty.layoutCompact . pretty
 
 -- |
 zoomComponent :: Functor m => Lens' s a -> s -> (a -> Html m a) -> Html m s
-zoomComponent optic props component = component (props ^. optic) & generalizeOptic optic
+zoomComponent optic props component = component (props ^. optic) & generalize optic
 
-generalizeOptic :: (Functor m, Continuous f) => Lens' s a -> (f m a -> f m s)
-generalizeOptic optic = generalize $ toLensVL optic
+generalize :: (Functor m, Continuous f) => Lens' s a -> (f m a -> f m s)
+generalize optic = Shpadoinkle.Lens.generalize $ toLensVL optic
