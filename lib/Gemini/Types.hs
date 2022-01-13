@@ -1,6 +1,6 @@
 module Gemini.Types
   ( -- core types and operations
-    Gemini, geminiFromList, geminiIx, ringIndex , solvedGemini, rotate
+    Gemini, geminiFromList, geminiIx, ringIndex , initialGemini, rotate
   , Location(..), location
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
     -- ui types
@@ -9,6 +9,8 @@ module Gemini.Types
 
 import           Relude
 
+import qualified Data.IntMap            as Map
+import qualified Data.List              as List
 import qualified Data.Text              as Text
 import           Optics
 import           Optics.State.Operators
@@ -91,7 +93,7 @@ data Disk = Disk
   { color :: !Color
   , label :: !Int
   }
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic, Ord)
   deriving anyclass (NFData)
 
 instance Pretty Disk where
@@ -106,7 +108,7 @@ data Color
   | Red
   | Green
   | Blue
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic, Ord)
   deriving anyclass (NFData)
 
 instance Pretty Color where
@@ -158,14 +160,22 @@ locationToIndex = index . canonical
   where
     index Location { ring, position } = (ringIndex ring) * 18 + position
 
-    -- | identity if the position only has 1 possible description
-    -- if the position exists on two different rings, then prefer the left one
-    canonical :: Location -> Location
-    canonical (Location CenterRing 16) = Location LeftRing 2
-    canonical (Location CenterRing 11) = Location LeftRing 7
-    canonical (Location RightRing 16)  = Location CenterRing 2
-    canonical (Location RightRing 11)  = Location CenterRing 7
-    canonical location                 = location
+-- | if the position exists on two different rings, then prefer the left one
+canonical :: Location -> Location
+canonical (Location CenterRing 16) = Location LeftRing 2
+canonical (Location CenterRing 11) = Location LeftRing 7
+canonical (Location RightRing 16)  = Location CenterRing 2
+canonical (Location RightRing 11)  = Location CenterRing 7
+canonical location                 = location
+
+
+-- | if the position exists on two different rings, then prefer the right one
+inverseCanonical :: Location -> Location
+inverseCanonical (Location LeftRing 2)   = Location CenterRing 16
+inverseCanonical (Location LeftRing 7)   = Location CenterRing 11
+inverseCanonical (Location CenterRing 2) = Location RightRing 16
+inverseCanonical (Location CenterRing 7) = Location RightRing 11
+inverseCanonical location                = location
 
 
 -- | Invert a disk coordinate to its canonical location
@@ -202,8 +212,8 @@ allDisks
     diskSet color n = map (Disk color) [1..n]
 
 
-solvedGemini :: Gemini
-solvedGemini = geminiFromList
+initialGemini :: Gemini
+initialGemini = geminiFromList
   -- blue
   [ (Location LeftRing 12, Disk Blue 1)
   , (Location LeftRing 13, Disk Blue 2)
@@ -261,3 +271,20 @@ solvedGemini = geminiFromList
   , (Location RightRing 1, Disk Yellow 8)
   , (Location RightRing 2, Disk Yellow 9)
   ]
+
+
+isSolved :: Gemini -> Bool
+isSolved gemini =
+  gemini ^. #geminiDiskMap
+    & Map.toList
+    & map (over _1 indexToLocation)
+    & sortBy (compare `on` view _2)
+    & List.groupBy ((==) `on` view _2)
+    & map (map (view _1))
+    & all areConsecutive
+
+areConsecutive :: [Location] -> Bool
+areConsecutive locations = (numberOfRings == 1) || (numberOfRings == 2)
+  where
+    numberOfRings = length ringGroups
+    ringGroups = locations & List.groupBy ((==) `on` view #ring)

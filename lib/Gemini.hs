@@ -31,7 +31,7 @@ applyRotation r = over #gemini (rotate r) . over #history (r :)
 
 initialState :: Store
 initialState = Store
-  { gemini = solvedGemini
+  { gemini = initialState
   , history = []
   , options = Options
       { showLabels = False

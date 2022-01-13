@@ -24,3 +24,6 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - restyle / regroup button toolbar
 - undo button
 - pop confetti when solved
+- recording:
+    - start/stop record button
+    - display recorded motions as cycle notation
