@@ -29,6 +29,7 @@ pattern EmptySequence = Seq.Empty
 data Store = Store
   { gemini  :: !Gemini
   , history :: !(Seq Rotation)
+  ,moves    :: !(Seq Move)
   , options :: !Options
   }
   deriving stock (Eq, Generic, Show)
@@ -43,7 +44,19 @@ data Options = Options
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
+
 -- | Definitions
+data Move = Move
+  { steps       :: !(Seq Motion)
+  , permutation :: !(Permutation 54)
+  }
+
+data Motion = Motion
+  { amount   :: Int
+  , rotation :: Rotation
+  }
+
+
 newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (NFData)

@@ -35,6 +35,7 @@ applyRotation r state = state
       then state ^. #history % to ( :|> r)
       else EmptySequence
 
+
 stopRecording :: Store -> Store
 stopRecording = error "todo"
 
@@ -43,6 +44,7 @@ initialState :: Store
 initialState = Store
   { gemini = initialGemini
   , history = EmptySequence
+  , moves = EmptySequence
   , options = Options
       { showLabels = False
       , animate = True
@@ -94,7 +96,7 @@ controlPanel state =
         -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) state)
         , resetButton
         , scrambleButton
-        , (buttonToggle ("Start Recording", "Stop Recording") & zoomComponent (#options % #recording) state)
+        , recordButton state
         ]
     : ( flip map [Clockwise, AntiClockwise] $ \direction ->
           Html.div
