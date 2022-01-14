@@ -39,8 +39,13 @@ applyRotation rotation state = state
 stopRecording :: Store -> Store
 stopRecording state = state
   & #options % #recording .~ False
-  & #moves %~ (:|> (state ^. #history % to toMove))
+  & #moves %~ updateMoves
   & #history .~ EmptySequence
+  where
+    updateMoves =
+      case state ^. #history of
+        EmptySequence -> identity
+        motions       -> (:|> toMove motions)
 
 
 initialState :: Store
@@ -96,8 +101,8 @@ debugView state =
         , ("flex-direction", "column")
         ]
     ]
-    [ Html.div_ [ Html.text $ prettyCompactText $ state ^.. #history % folded ]
-    , Html.div_ [ Html.text $ prettyCompactText $ state ^.. #moves % folded ]
+    [ Html.div_ [ Html.text $ "Recorded : " <> (prettyCompactText $ state ^.. #history % folded) ]
+    , Html.div_ [ Html.text $ "Moves : " <> (prettyCompactText $ state ^.. #moves % folded) ]
     ]
 
 controlPanel :: MonadIO m => Store -> Html m Store
