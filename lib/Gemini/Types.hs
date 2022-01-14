@@ -255,19 +255,6 @@ ringIndex CenterRing = 1
 ringIndex RightRing  = 2
 
 
-allDisks :: [Disk]
-allDisks
-  =  diskSet White 9
-  <> diskSet Yellow 9
-  <> diskSet Black 8
-  <> diskSet Red 8
-  <> diskSet Green 8
-  <> diskSet Blue 8
-  where
-    diskSet :: Color -> Int -> [Disk]
-    diskSet color n = map (Disk color) [1..n]
-
-
 initialGemini :: Gemini
 initialGemini = geminiFromList
   -- blue
