@@ -51,20 +51,7 @@ instance Pretty a => Pretty (Cycles a) where
 
 
 permute :: Permutation n -> Int -> Int
-permute = applyMap . view #intMap
-
-
-applyMap :: IntMap Int -> Int -> Int
-applyMap map n = map ^? ix n & fromMaybe n
-
-
-data S = S
-  { toVisit  :: !IntSet
-  , complete :: !(Seq (Cycle Int))
-  , current  :: !(Seq Int)
-  }
-  deriving stock (Generic)
-
+permute (Permutation map) n = map ^? ix n & fromMaybe n
 
 
 -- | Set patterns
@@ -73,6 +60,15 @@ pattern SetMin min view <- (Set.minView -> Just (min, view))
 
 pattern SetEmpty :: IntSet
 pattern SetEmpty <- (Set.minView -> Nothing)
+
+-- | Accumulator for toCycles implementation
+data S = S
+  { toVisit  :: !IntSet
+  , complete :: !(Seq (Cycle Int))
+  , current  :: !(Seq Int)
+  }
+  deriving stock (Generic)
+
 
 toCycles :: forall bound. KnownNat bound => Permutation bound -> Cycles Int
 toCycles p = go seed
