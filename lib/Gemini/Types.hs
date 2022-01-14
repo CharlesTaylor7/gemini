@@ -31,10 +31,11 @@ import           System.Random.Stateful
 
 -- | UI Definitions
 data Store = Store
-  { gemini  :: !Gemini
-  , history :: !(Seq Motion)
-  , moves   :: !(Seq Move)
-  , options :: !Options
+  { gemini           :: !Gemini
+  , history          :: !(Seq Motion)
+  , moves            :: !(Seq Move)
+  , hoveredMoveIndex :: !(Maybe Int)
+  , options          :: !Options
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)

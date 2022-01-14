@@ -2,6 +2,7 @@ module Gemini.Html where
 
 import           Relude
 
+import           Data.Finitary
 import qualified Data.Text        as Text
 import           Optics           hiding ((#))
 
@@ -14,14 +15,16 @@ import           Utils
 
 
 
-geminiHtmlView :: forall a m. Options -> Gemini -> Html m a
-geminiHtmlView options gemini =
+geminiHtmlView :: forall a m. Store -> Html m a
+geminiHtmlView state =
   Html.div
     [ Html.className "gemini"
     ]
-    (  map ring [LeftRing, CenterRing, RightRing]
+    (  map ring inhabitants
     )
   where
+    gemini = state ^. #gemini
+    options = state ^. #options
     -- dimensions
     ringR = 150.0
     diskR = (ringR / 7.0)

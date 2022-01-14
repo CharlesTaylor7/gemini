@@ -5,6 +5,7 @@ module Gemini.Svg
 
 import           Relude
 
+import           Data.Finitary
 import qualified Data.Text        as Text
 import           Optics           hiding ((#))
 
@@ -17,8 +18,8 @@ import qualified Shpadoinkle.Html as Html
 import           Gemini.Types
 
 
-geminiSvgView :: forall a m. Options -> Gemini -> Html m a
-geminiSvgView options gemini =
+geminiSvgView :: forall a m. Store -> Html m a
+geminiSvgView state =
   Html.div
     [ Html.className "gemini-wrapper"]
     [ Svg.bake $
@@ -26,11 +27,14 @@ geminiSvgView options gemini =
         [ ("class", "gemini")
         , ("viewBox", "0 0 210 100")
         ]
-        (  map ringOutline [LeftRing, CenterRing, RightRing]
-        <> map ringDisks [LeftRing, CenterRing, RightRing]
+        (  map ringOutline inhabitants
+        <> map ringDisks inhabitants
         )
     ]
   where
+    gemini = state ^. #gemini
+    options = state ^. #options
+
     ringOutline :: Ring -> SvgElement
     ringOutline r =
       Svg.circle

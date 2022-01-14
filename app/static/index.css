@@ -10,6 +10,9 @@
   --disk-blue: #00aeff;
   --ring-background: #816c5b;
   --panel-border: #82a6e3;
+  --disk-outline-a: yellow;
+  --disk-outline-b: purple;
+  --disk-outline-c: orange;
 }
 
 * {
@@ -197,6 +200,18 @@ div.disk {
     text-align: center;
     border-radius: 100%;
     z-index: 1;
+}
+
+div.disk.disk-outline-a {
+    border: 1px solid var(--disk-outline-a);
+}
+
+div.disk.disk-outline-b {
+    border: 1px solid var(--disk-outline-b);
+}
+
+div.disk.disk-outline-c {
+    border: 1px solid var(--disk-outline-c);
 }
 
 div.disk.label {

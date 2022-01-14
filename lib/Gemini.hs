@@ -54,6 +54,7 @@ initialState = Store
   { gemini = initialGemini
   , history = Seq.Empty
   , moves = Seq.Empty
+  , hoveredMoveIndex = Nothing
   , options = Options
       { showLabels = False
       , animate = True
@@ -84,7 +85,7 @@ rootView state =
     [ controlPanel state
     , Html.div
       [ Html.className "gemini-wrapper" ]
-      [ geminiView (state ^. #options) (state ^. #gemini)
+      [ geminiView state
       , savedMovesPanel state
       ]
     ]
@@ -228,7 +229,7 @@ resetButton =
 
 
 
-scrambleButton :: MonadIO m => Html m Store
+scrambleButton :: forall m. MonadIO m => Html m Store
 scrambleButton =
   Html.button
     [ Html.onClickM $ do
