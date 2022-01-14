@@ -27,7 +27,7 @@ import qualified Prettyprinter          as Pretty
 
 -- | Cycles backed by its cycle notation
 newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
-  deriving stock (Functor)
+  deriving stock (Functor, Generic)
 
 
 newtype Cycle a = Cycle (Seq a)

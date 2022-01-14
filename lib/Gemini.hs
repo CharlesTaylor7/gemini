@@ -60,6 +60,7 @@ initialState = Store
       , animate = True
       , useSvg = False
       , recording = False
+      , debug = False
       }
   }
 
@@ -85,9 +86,10 @@ rootView state =
     [ controlPanel state
     , Html.div
       [ Html.className "gemini-wrapper" ]
-      [ geminiView state
-      , savedMovesPanel state
-      ]
+      ( geminiView state
+      : savedMovesPanel state
+      : if state ^. #options % #debug then [ debugView state ] else []
+      )
     ]
   where
     geminiView =
@@ -103,12 +105,13 @@ debugView state =
         [ ("position", "absolute")
         , ("top", "0")
         , ("left", "0")
+        , ("padding", "12px")
         , ("display", "flex")
         , ("flex-direction", "column")
         ]
     ]
     [ Html.div_ [ Html.text $ "Recorded : " <> (prettyCompactText $ state ^.. #history % folded) ]
-    , Html.div_ [ Html.text $ "Moves : " <> (prettyCompactText $ state ^.. #moves % folded) ]
+    , Html.div_ [ Html.text $ "Hovered : " <> (prettyCompactText $ state ^. #hoveredMoveIndex) ]
     ]
 
 savedMovesPanel :: Store -> Html m Store
@@ -127,7 +130,10 @@ savedMovesPanel state =
         , Html.onClick $ identity
         ]
         [ Html.button
-          [ Html.className "move-description" ]
+          [ Html.className "move-description"
+          , Html.onMouseenter $ #hoveredMoveIndex ?~ i
+          -- , Html.onMouseleave $ #hoveredMoveIndex .~ Nothing
+          ]
           [ Html.div
               [ Html.className "motions" ]
               [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> " :" ]
@@ -158,6 +164,7 @@ controlPanel state =
       [ buttonGroup "options"
         [ (checkBox "Labels" & zoomComponent (#options % #showLabels) state)
         , (checkBox "Animate" & zoomComponent (#options % #animate) state)
+        , (checkBox "Debug" & zoomComponent (#options % #debug) state)
         -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) state)
         ]
       , buttonGroup "actions"

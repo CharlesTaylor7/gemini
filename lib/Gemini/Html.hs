@@ -3,15 +3,24 @@ module Gemini.Html where
 import           Relude
 
 import           Data.Finitary
+import qualified Data.Sequence    as Seq
 import qualified Data.Text        as Text
 import           Optics           hiding ((#))
 
 
+import           Permutation
 import           Shpadoinkle
 import qualified Shpadoinkle.Html as Html
 
 import           Gemini.Types
 import           Utils
+
+
+activeCycles :: Store -> Seq (Cycle Location)
+activeCycles state = fromMaybe Seq.Empty $ do
+  i <- state ^. #hoveredMoveIndex
+  state ^? #moves % ix i % to moveCycles % #uncycles
+
 
 
 
@@ -25,6 +34,17 @@ geminiHtmlView state =
   where
     gemini = state ^. #gemini
     options = state ^. #options
+
+    highlightMap :: Map Location Text
+    highlightMap =
+      state
+      & activeCycles
+      & toList
+      & zip ['a'..]
+      & concatMap (\(letter, cycle) -> (cycle & toList & map  \loc -> (loc, show letter)))
+      & fromList
+
+
     -- dimensions
     ringR = 150.0
     diskR = (ringR / 7.0)
@@ -51,8 +71,9 @@ geminiHtmlView state =
     disks :: Ring -> [Html m a]
     disks ring = flip map [0..17] $ \position ->
       let
+        location = Location ring position
         (color, label) =
-          case gemini ^? geminiIx (Location ring position) of
+          case gemini ^? geminiIx location of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "unknown")
         r = ringR - diskR
@@ -61,9 +82,14 @@ geminiHtmlView state =
           ( r * (1 + cosine angle)
           , r * (1 + sine angle)
           )
+
+        highlightClass :: [Text]
+        highlightClass = case highlightMap ^? ix location of
+          Just x -> ["highlight", x ]
+          _      -> []
       in
         Html.div
-          [ Html.class' ["disk", color]
+          [ Html.class' ("disk" : color : highlightClass)
           , Html.styleProp
             [ ("width", show diskD <> "px")
             , ("height", show diskD <> "px")

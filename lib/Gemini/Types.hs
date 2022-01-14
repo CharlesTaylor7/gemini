@@ -41,20 +41,12 @@ data Store = Store
   deriving anyclass (NFData)
 
 
--- | Set keyed by insertion order
-data OrdSet a = OrdSet
-  { intMap :: !(IntMap a)
-  , next   :: !Int
-  }
-  deriving stock (Eq, Generic, Show)
-  deriving anyclass (NFData)
-
-
 data Options = Options
   { showLabels :: !Bool
   , animate    :: !Bool
   , useSvg     :: !Bool
   , recording  :: !Bool
+  , debug      :: !Bool
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
