@@ -54,16 +54,16 @@ data Options = Options
 
 -- | Definitions
 data Move = Move
-  { steps       :: !(Seq Motion)
+  { motions     :: !(Seq Motion)
   , permutation :: !GeminiPermutation
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
 instance Pretty Move where
-  pretty Move { steps, permutation } =
+  pretty Move { motions, permutation } =
     Pretty.vsep
-      [ pretty $ toList $ steps
+      [ pretty $ toList $ motions
       , pretty permutation
       ]
 
@@ -339,10 +339,14 @@ areConsecutive locations = (numberOfRings == 1) || (numberOfRings == 2)
 
 
 toPermutation :: Seq Motion -> GeminiPermutation
-toPermutation = error "todo"
+toPermutation = foldMap toPerm
+  where
+    toPerm :: Motion -> GeminiPermutation
+    toPerm Motion { amount, rotation } = stimes amount $ rotationToPermutation rotation
+
 
 toMove :: Seq Motion -> Move
-toMove = error "todo"
+toMove motions = Move { motions, permutation = toPermutation motions }
 
 continueMotion :: Rotation -> Seq Motion -> Seq Motion
 continueMotion rotation Seq.Empty         = fromList [ newMotion rotation ]
@@ -356,10 +360,6 @@ continueMotion rotation all@(ms :|> motion) =
 
 newMotion :: Rotation -> Motion
 newMotion rotation = Motion { amount = 1, rotation }
-
-
--- toMotion :: NonEmpty Rotation -> Motion
--- toMotion rs@(r:|_) = normalize $ foldl' combine (Motion { amount = 0, rotation = r }) rs
 
 combine :: Motion -> Rotation -> Motion
 combine m@Motion { rotation } r
