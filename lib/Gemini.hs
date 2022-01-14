@@ -93,7 +93,8 @@ debugView state =
         , ("left", "0")
         ]
     ]
-    [ ]
+    [ Html.text $ state ^. #history % to (combineRotations) % to prettyCompactText
+    ]
 
 controlPanel :: MonadIO m => Store -> Html m Store
 controlPanel state =

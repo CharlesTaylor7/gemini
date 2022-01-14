@@ -60,7 +60,11 @@ data Move = Move
   deriving anyclass (NFData)
 
 instance Pretty Move where
-  pretty = pretty . view #permutation
+  pretty Move { steps, permutation } =
+    Pretty.vsep
+      [ pretty $ toList $ steps
+      , pretty permutation
+      ]
 
 data Motion = Motion
   { amount   :: Int

@@ -59,9 +59,10 @@ applyMap map n = map ^? ix n & fromMaybe n
 
 
 data S = S
-  { toVisit  :: !IntSet
-  , complete :: !(Seq (Cycle Int))
-  , current  :: !(Seq Int)
+  { toVisit   :: !IntSet
+  , complete  :: !(Seq (Cycle Int))
+  , current   :: !(Seq Int)
+  , countdown :: !Int
   }
   deriving stock (Generic)
 
@@ -79,11 +80,15 @@ toCycles p =
       { toVisit = fromList $ natsUnder @bound
       , complete = Seq.Empty
       , current = Seq.Empty
+      , countdown = 51
       }
   in
     Cycles $ view #complete $
     flip execState seed $ do
       loop $ do
+        c <- (#countdown <%= subtract 1)
+        when (c == 0) $ break
+
         toVisit <- use #toVisit
         current <- use #current
         when (Set.null toVisit) $ do
