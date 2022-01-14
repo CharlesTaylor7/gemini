@@ -62,8 +62,9 @@ data Move = Move
 
 instance Pretty Move where
   pretty Move { motions, permutation } =
-    Pretty.vsep
+    Pretty.hsep
       [ pretty $ toList $ motions
+      , ": "
       , pretty permutation
       ]
 

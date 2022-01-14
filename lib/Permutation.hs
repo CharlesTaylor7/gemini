@@ -86,15 +86,15 @@ toCycles p =
     Cycles $ view #complete $
     flip execState seed $ do
       loop $ do
+        let pushCycle current = when (Seq.length current > 1) $ (#complete %= (:|> Cycle current))
         c <- (#countdown <%= subtract 1)
         when (c == 0) $ break
 
         toVisit <- use #toVisit
         current <- use #current
         when (Set.null toVisit) $ do
-          when (Seq.length current > 1) $ do
-            (#complete %= (:|> Cycle current))
-            break
+          pushCycle current
+          break
 
         when (Seq.length current == 0) $ do
           case Set.minView toVisit of
@@ -115,8 +115,7 @@ toCycles p =
                 if first /= last
                 then #current %= (:|> next)
                 else do
-                  when (Seq.length current > 1) $ do
-                    (#complete %= (:|> Cycle current))
+                  pushCycle current
                   (#current .= Seq.Empty)
 
 {--
