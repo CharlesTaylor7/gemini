@@ -13,6 +13,7 @@ module Gemini.Types
 
 import           Relude                 hiding (cycle)
 
+import           Data.Finitary
 import qualified Data.IntMap            as Map
 import qualified Data.List              as List
 import qualified Data.List.NonEmpty     as NE
@@ -105,7 +106,7 @@ data Rotation = Rotation
   , direction :: !RotationDirection
   }
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (NFData, Uniform)
+  deriving anyclass (NFData, Uniform, Finitary)
 
 instance Pretty Rotation where
   pretty Rotation { ring, direction } = pretty ring <> if direction == Clockwise then "" else "'"
@@ -114,7 +115,7 @@ data RotationDirection
   = Clockwise
   | AntiClockwise
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (NFData, Uniform)
+  deriving anyclass (NFData, Uniform, Finitary)
 
 instance Pretty Location where
   pretty Location { ring, position } =
@@ -125,7 +126,7 @@ data Ring
   | CenterRing
   | RightRing
   deriving stock (Eq, Show, Generic, Ord)
-  deriving anyclass (NFData, Uniform)
+  deriving anyclass (NFData, Uniform, Finitary)
 
 instance Pretty Ring where
   pretty LeftRing   = "L"

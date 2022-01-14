@@ -70,6 +70,7 @@ library
     , Shpadoinkle-lens
     , base >=4.14 && <4.16
     , containers
+    , finitary
     , groups
     , jsaddle
     , jsaddle-dom
@@ -124,6 +125,7 @@ executable gemini
     , Shpadoinkle-lens
     , base >=4.14 && <4.16
     , containers
+    , finitary
     , gemini
     , groups
     , jsaddle
@@ -179,6 +181,7 @@ test-suite gemini-test
     , Shpadoinkle-lens
     , base >=4.14 && <4.16
     , containers
+    , finitary
     , groups
     , jsaddle
     , jsaddle-dom

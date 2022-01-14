@@ -19,7 +19,7 @@ body {
     margin: 0;
 }
 
-button{
+button {
     cursor: pointer;
 }
 
@@ -34,7 +34,7 @@ button{
 /* UI Elements */
 .control-panel-wrapper {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-end;
 }
 
 .control-panel {
@@ -42,16 +42,20 @@ button{
     padding-top: 12px;
     display: flex;
     gap: 12px;
-    align-items: center;
+    justify-content: center;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
 }
 
 .button-group.actions {
+    gap: 12px;
 }
 
-.button-group.motions-clockwise {
-}
 
-.button-group.motions-anticlockwise {
+.button-group.motions {
 }
 
 .button-group.options {
@@ -88,6 +92,7 @@ button{
 
 .gemini {
     font-size: 35px;
+    user-select: none;
 }
 
 

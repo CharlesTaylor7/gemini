@@ -4,6 +4,7 @@ module Gemini
   , rootView
   ) where
 
+import           Data.Finitary
 import qualified Data.Text                 as Text
 import           Data.Traversable          (for)
 import           Optics                    hiding ((#))
@@ -100,37 +101,36 @@ controlPanel state =
     [ Html.className "control-panel-wrapper"
     ]
     [ Html.div
-        [ Html.className "control-panel"
+      [ Html.className "control-panel"
+      ]
+      [ buttonGroup "options"
+        [ (checkBox "Labels" & zoomComponent (#options % #showLabels) state)
+        , (checkBox "Animate" & zoomComponent (#options % #animate) state)
+        -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) state)
         ]
-        ( buttonGroup "options"
-            [ (checkBox "Labels" & zoomComponent (#options % #showLabels) state)
-            , (checkBox "Animate" & zoomComponent (#options % #animate) state)
-            -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) state)
-            ]
-        : buttonGroup "actions"
-            [ resetButton
-            , scrambleButton
-            , recordButton state
-            ]
-        : ( flip map [Clockwise, AntiClockwise] $ \direction ->
-              buttonGroup ("motion-" <> (Text.toLower $ show direction))
-                ( flip map rings $ \ring ->
-                    let rotation = Rotation ring direction
-                    in Html.button
-                        [ Html.className "motion-button"
-                        , Html.onClick $ applyRotation rotation
-                        ]
-                        [ Html.text $ prettyCompactText rotation
-                        ]
-                )
-          )
-        )
+      , buttonGroup "actions"
+        [ resetButton
+        , scrambleButton
+        , recordButton state
+        ]
+      ]
   ]
-  where
-    rings = [LeftRing, CenterRing, RightRing]
+
 
 buttonGroup :: Text -> [Html m a] -> Html m a
 buttonGroup className = Html.div [ Html.class' ["button-group", className] ]
+
+motionButtons :: Html m Store
+motionButtons =
+  buttonGroup "motions"
+    ( flip map inhabitants $ \rotation ->
+        Html.button
+          [ Html.className "motion-button"
+          , Html.onClick $ applyRotation rotation
+          ]
+          [ Html.text $ prettyCompactText rotation
+          ]
+    )
 
 
 checkBox :: Text -> Bool -> Html a Bool
