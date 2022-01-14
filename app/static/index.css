@@ -1,13 +1,5 @@
 @namespace svg url(http://www.w3.org/2000/svg);
-
-* {
-    margin: 0;
-}
-
-body {
-    margin: 0;
-}
-
+/* defaults */
 :root {
   --disk-unknown: purple;
   --disk-white: white;
@@ -17,7 +9,18 @@ body {
   --disk-green: #45ab36;
   --disk-blue: #00aeff;
   --ring-background: #816c5b;
+}
 
+* {
+    margin: 0;
+}
+
+body {
+    margin: 0;
+}
+
+button{
+    cursor: pointer;
 }
 
 
@@ -29,19 +32,30 @@ body {
 
 
 /* UI Elements */
-.control-panel {
+.control-panel-wrapper {
     display: flex;
-    flex-direction: column;
+    justify-content: space-around;
+}
+
+.control-panel {
+    width: 60vw;
     padding-top: 12px;
+    display: flex;
     gap: 12px;
     align-items: center;
 }
 
-.button-group {
-    width: 60vw;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
+.button-group.actions {
+}
+
+.button-group.motions-clockwise {
+}
+
+.button-group.motions-anticlockwise {
+}
+
+.button-group.options {
+    width: 75px;
 }
 
 .motion-button {
@@ -49,11 +63,19 @@ body {
     width: 30px;
 }
 
-label {
+.checkbox {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    cursor: pointer;
 }
-.label-text {
+
+.checkbox input {
+    cursor: pointer;
+}
+
+.checkbox-label {
     padding-right: 5px;
 }
 
@@ -85,7 +107,6 @@ div.disk {
     border-radius: 100%;
     z-index: 1;
 }
-
 
 div.disk.label {
     color: black;

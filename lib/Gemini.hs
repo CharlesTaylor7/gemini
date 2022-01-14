@@ -4,13 +4,13 @@ module Gemini
   , rootView
   ) where
 
-import           Relude
-
+import qualified Data.Text                 as Text
 import           Data.Traversable          (for)
 import           Optics                    hiding ((#))
 import           Prettyprinter             (Pretty (..))
 import qualified Prettyprinter             as Pretty
 import qualified Prettyprinter.Render.Text as Pretty
+import           Relude
 import           System.Random.Stateful    (globalStdGen, uniformM)
 
 import           Shpadoinkle
@@ -97,45 +97,51 @@ debugView state =
 controlPanel :: MonadIO m => Store -> Html m Store
 controlPanel state =
   Html.div
-    [ Html.className "control-panel"
+    [ Html.className "control-panel-wrapper"
     ]
-    ( Html.div
-        [ Html.className "button-group"
+    [ Html.div
+        [ Html.className "control-panel"
         ]
-        [ (checkBox "Labels" & zoomComponent (#options % #showLabels) state)
-        , (checkBox "Animate" & zoomComponent (#options % #animate) state)
-        -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) state)
-        , resetButton
-        , scrambleButton
-        , recordButton state
-        ]
-    : ( flip map [Clockwise, AntiClockwise] $ \direction ->
-          Html.div
-            [ Html.className "button-group"
+        ( buttonGroup "options"
+            [ (checkBox "Labels" & zoomComponent (#options % #showLabels) state)
+            , (checkBox "Animate" & zoomComponent (#options % #animate) state)
+            -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) state)
             ]
-            ( flip map rings $ \ring ->
-                let rotation = Rotation ring direction
-                in Html.button
-                    [ Html.className "motion-button"
-                    , Html.onClick $ applyRotation rotation
-                    ]
-                    [ Html.text $ prettyCompactText rotation
-                    ]
-            )
-      )
-    )
+        : buttonGroup "actions"
+            [ resetButton
+            , scrambleButton
+            , recordButton state
+            ]
+        : ( flip map [Clockwise, AntiClockwise] $ \direction ->
+              buttonGroup ("motion-" <> (Text.toLower $ show direction))
+                ( flip map rings $ \ring ->
+                    let rotation = Rotation ring direction
+                    in Html.button
+                        [ Html.className "motion-button"
+                        , Html.onClick $ applyRotation rotation
+                        ]
+                        [ Html.text $ prettyCompactText rotation
+                        ]
+                )
+          )
+        )
+  ]
   where
     rings = [LeftRing, CenterRing, RightRing]
 
+buttonGroup :: Text -> [Html m a] -> Html m a
+buttonGroup className = Html.div [ Html.class' ["button-group", className] ]
+
+
 checkBox :: Text -> Bool -> Html a Bool
 checkBox label checked =
-  Html.label_
+  Html.label
+    [ Html.className "checkbox" ]
     [ Html.span
-        [ Html.className "label-text" ]
+        [ Html.className "checkbox-label" ]
         [ Html.text label ]
     , Html.input'
-        [ Html.className "checkbox"
-        , Html.type' "checkbox"
+        [ Html.type' "checkbox"
         , Html.checked checked
         , Html.onCheck const
         ]
