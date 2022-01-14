@@ -87,10 +87,6 @@ rootView state =
       [ geminiView (state ^. #options) (state ^. #gemini)
       , savedMovesPanel state
       ]
-    , Html.script'
-      [ Html.src "https://unpkg.com/balance-text@3.3.0/balancetext.min.js"
-      , ("onload", PText "balanceText(), console.log('hello')")
-      ]
     ]
   where
     geminiView =
