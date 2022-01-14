@@ -84,7 +84,7 @@ toCycles p = go seed
       }
 
     pushCycle :: S -> S
-    pushCycle s@S { current, complete } = s
+    pushCycle s@S { current } = s
       & #current .~ Seq.Empty
       & if Seq.length current < 2
         then identity
@@ -94,6 +94,7 @@ toCycles p = go seed
     go s@S { toVisit = SetEmpty }                                = Cycles $ view #complete $ pushCycle s
     go s@S { toVisit = SetMin min toVisit, current = Seq.Empty } = go s { toVisit, current = fromList [min] }
     go s@S { current }                                           = do
+      -- these patterns are exhaustive when you take into account the previous two pattern guards
       let head = case current of h :<| _ -> h
       let tail = case current of _ :|> t -> t
       let next = permute p tail
@@ -102,34 +103,6 @@ toCycles p = go seed
       else go $ s
         & #current %~ (:|> next)
         & #toVisit %~ Set.delete next
-
-{--
-  In python pseudo code:
-  def to_cycles(permutation):
-    to_visit = set(permutation)
-    cycles = []
-    current_cycle = []
-    while (true):
-      if len(to_visit) == 0:
-        if len(current_cycle) > 1:
-          cycles.append(current_cycle)
-        return cycles
-
-      if len(current_cycle) == 0:
-        min_from_set = min(to_visit)
-        to_visit.remove(min_from_set)
-        current_cycle.append(min_from_set)
-        continue
-
-      next = permutation[current_cycle[-1]]
-      to_visit.remove(next)
-      if next == current_cycle[0]:
-        if len(current_cycle) > 1:
-          cycles.append(current_cycle)
-        current_cycle = []
-      else:
-        current_cycle.append(next)
---}
 
 
 fromCycles :: Cycles Int -> Permutation n
