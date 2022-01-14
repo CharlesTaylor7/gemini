@@ -71,55 +71,34 @@ loop = void . runMaybeT . forever
 break :: Monad m => MaybeT m a
 break = MaybeT $ pure $ Nothing
 
+pattern SetMin min view <- (Set.minView -> Just (min, view))
+pattern SetEmpty <- (Set.minView -> Nothing)
 
 toCycles :: forall bound. KnownNat bound => Permutation bound -> Cycles Int
-toCycles p =
-  let
+toCycles p = go seed
+  where
     seed = S
       { toVisit = fromList $ natsUnder @bound
       , complete = Seq.Empty
       , current = Seq.Empty
       }
-  in
-    cycles [ cycle [ 1, 2 ], cycle [40, 53] ]
-  {--
-    Cycles $ view #complete $
-    flip execState seed $ do
-      loop $ do
-        -- break early
-        let pushCycle current = when (Seq.length current > 1) $ (#complete %= (:|> Cycle current))
-        c <- (#countdown <%= subtract 1)
-        when (c == 0) $ break
 
-        toVisit <- use #toVisit
-        current <- use #current
-        when (Set.null toVisit) $ do
-          pushCycle current
-          break
+    go :: S -> Cycles Int
+    go s@S { toVisit = SetEmpty }                                = Cycles $ s ^. #complete :|> Cycle (s ^. #current)
+    go s@S { toVisit = SetMin min toVisit, current = Seq.Empty } = go s { toVisit, current = fromList [min] }
+    go s@S { current }                                           = do
+      let head = case current of h :<| _ -> h
+      let tail = case current of _ :|> t -> t
+      let next = permute p tail
+      if head == next
+      then go $ s
+        { complete = s ^. #complete :|> Cycle (s ^. #current)
+        , current = Seq.Empty
+        }
+      else go $ s
+        & #current %~ (:|> next)
+        & #toVisit %~ Set.delete next
 
-        when (Seq.length current == 0) $ do
-          case Set.minView toVisit of
-            Nothing               -> pure ()
-            Just (next, toVisit') -> do
-              (#toVisit .= toVisit')
-              (#current .= fromList [next])
-
-        current <- use #current
-        case current of
-          Seq.Empty -> break
-          (_ :|> last) -> do
-            let next = permute p last
-            (#toVisit %= Set.delete next)
-            case current of
-              Seq.Empty -> break
-              (first :<| _) -> do
-                if first /= last
-                then #current %= (:|> next)
-                else do
-                  pushCycle current
-                  (#current .= Seq.Empty)
-
---}
 {--
   In python pseudo code:
   def to_cycles(permutation):
