@@ -31,7 +31,8 @@ newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
 
 
 newtype Cycle a = Cycle (Seq a)
-  deriving stock (Eq, Generic, Show, Functor, Foldable)
+  deriving stock (Eq, Generic, Show)
+  deriving newtype (Functor, Foldable, FoldableWithIndex Int)
   deriving anyclass (NFData)
 
 

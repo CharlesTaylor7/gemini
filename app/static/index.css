@@ -10,7 +10,6 @@
   --disk-blue: #00aeff;
   --ring-background: #816c5b;
   --panel-border: #82a6e3;
-  --disk-highlight: #f237e3;
 }
 
 * {
@@ -193,13 +192,8 @@ div.disk {
     box-sizing: border-box;
 }
 
-div.disk.highlight {
-    border: 4px solid var(--disk-highlight);
-}
-
-div.disk.label {
+div.disk > .disk-label {
     color: black;
-    font-size: 10px;
 }
 
 div.disk.black > .disk-label {

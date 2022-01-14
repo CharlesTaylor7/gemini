@@ -27,8 +27,11 @@ geminiHtmlView state =
     gemini = state ^. #gemini
     options = state ^. #options
 
-    highlighted:: Set Location
-    highlighted = fromList $ state ^.. #hoveredCycle % non (Cycle Empty) % folded
+    activeCycleMap :: Map Location Int
+    activeCycleMap = state
+      & itoListOf (#hoveredCycle % non (Cycle Empty) % ifolded)
+      & map (\(i, x) -> (x, i + 1))
+      & fromList
 
     -- dimensions
     ringR = 150.0
@@ -57,10 +60,10 @@ geminiHtmlView state =
     disks ring = catMaybes $ flip map [0..17] $ \position ->
       let
         location = Location ring position
-        (color, label) =
+        (color, diskLabel) =
           case gemini ^? geminiIx location of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
-            Nothing                    -> ("unknown", "unknown")
+            Nothing                    -> ("unknown", "")
         r = ringR - diskR
         angle = fromIntegral position * 20.0 - 90.0
         (x, y) =
@@ -68,14 +71,21 @@ geminiHtmlView state =
           , r * (1 + sine angle)
           )
 
-        highlightClass :: Text
-        highlightClass = if highlighted ^. contains location then "highlight" else ""
+        defaultLabel :: Maybe Text
+        defaultLabel =
+          (options ^. #showLabels && isn't (#hoveredCycle % _Just) state) `orNothing` diskLabel
+
+        cycleLabel :: Maybe Text
+        cycleLabel = activeCycleMap ^? ix location <&> show
+
+        toLabelSpan label = Html.span [ ("className", "disk-label") ] [ Html.text label ]
+
       in
         if not $ isCanonical location
         then Nothing
         else Just $
           Html.div
-            [ Html.class' ["disk", color, highlightClass]
+            [ Html.class' ["disk", color]
             , Html.styleProp
               [ ("width", show diskD <> "px")
               , ("height", show diskD <> "px")
@@ -84,6 +94,8 @@ geminiHtmlView state =
               , ("top", show y <> "px")
               ]
             ]
-            if options ^. #showLabels
-            then [ Html.span [ ("className", "disk-label") ] [ Html.text label ] ]
-            else []
+            ( ((<>) `on` First) cycleLabel defaultLabel & toList <&> toLabelSpan )
+
+
+orNothing :: Bool -> a -> Maybe a
+bool `orNothing` a = if bool then Just a else Nothing
