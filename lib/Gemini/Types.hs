@@ -9,13 +9,12 @@ module Gemini.Types
     -- ui types
   , Store(..), Options(..)
     -- re export Seq constructors
-  , pattern (:<|), pattern (:|>), pattern EmptySequence
+  , pattern (:<|), pattern (:|>)
   ) where
 
 import           Relude                 hiding (cycle)
 
 import           Data.Finitary
-import qualified Data.InsertionOrdSet   as InsertionOrder
 import qualified Data.IntMap            as Map
 import qualified Data.List              as List
 import qualified Data.List.NonEmpty     as NE
@@ -29,15 +28,12 @@ import           Prettyprinter          (Pretty (..))
 import qualified Prettyprinter          as Pretty
 import           System.Random.Stateful
 
--- |
-pattern EmptySequence :: forall a. Seq a
-pattern EmptySequence = Seq.Empty
 
 -- | UI Definitions
 data Store = Store
   { gemini  :: !Gemini
   , history :: !(Seq Motion)
-  , moves   :: !(InsertionOrder.Set Move)
+  , moves   :: !(Seq Move)
   , options :: !Options
   }
   deriving stock (Eq, Generic, Show)

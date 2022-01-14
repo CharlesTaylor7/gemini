@@ -5,7 +5,7 @@ module Gemini
   ) where
 
 import           Data.Finitary
-import qualified Data.InsertionOrdSet      as InsertionOrder
+import qualified Data.Sequence             as Seq
 import qualified Data.Text                 as Text
 import           Data.Traversable          (for)
 import           Optics                    hiding ((#))
@@ -34,26 +34,26 @@ applyRotation rotation state = state
     updateHistory =
       if state ^. #options % #recording
       then continueMotion rotation
-      else const EmptySequence
+      else const Seq.Empty
 
 
 stopRecording :: Store -> Store
 stopRecording state = state
   & #options % #recording .~ False
   & #moves %~ updateMoves
-  & #history .~ EmptySequence
+  & #history .~ Seq.Empty
   where
     updateMoves =
       case state ^. #history of
-        EmptySequence -> identity
-        motions       -> InsertionOrder.insert (toMove motions)
+        Seq.Empty -> identity
+        motions   -> (:|> toMove motions)
 
 
 initialState :: Store
 initialState = Store
   { gemini = initialGemini
-  , history = EmptySequence
-  , moves = InsertionOrder.empty
+  , history = Seq.Empty
+  , moves = Seq.Empty
   , options = Options
       { showLabels = False
       , animate = True
@@ -112,7 +112,7 @@ savedMovesPanel state =
   Html.div
     [ Html.className "saved-moves"
     ]
-    ( itoListOf (#moves % #intMap % ifolded) state <&> moveView )
+    ( itoListOf (#moves % ifolded) state <&> moveView )
   where
     moveView :: (Int, Move) -> Html m Store
     moveView (i, move) =
@@ -123,7 +123,7 @@ savedMovesPanel state =
             [ Html.onClick $ identity]
             [ Html.text $ "apply" ]
           , Html.button
-            [ Html.onClick $ #moves %~ InsertionOrder.delete i ]
+            [ Html.onClick $ #moves %~ Seq.deleteAt i ]
             [ Html.text $ "delete" ]
           ]
         , Html.text $ prettyCompactText move
@@ -204,7 +204,7 @@ resetButton :: Html m Store
 resetButton =
   Html.button
     [ Html.onClick $
-        (#history .~ EmptySequence) .
+        (#history .~ Seq.Empty) .
         (#options % #recording .~ False) .
         (#gemini .~ initialGemini)
     ]
@@ -218,7 +218,7 @@ scrambleButton =
     [ Html.onClickM $ do
         rotations <- for ([1..1000] :: [Int]) $ \_ -> (Endo . rotate) <$> uniformM globalStdGen
         let Endo scramble = fold rotations
-        pure $ (set #history EmptySequence) . (over #gemini scramble)
+        pure $ (set #history Seq.Empty) . (over #gemini scramble)
     ]
     [ Html.text "Scramble" ]
 
