@@ -22,8 +22,6 @@ activeCycles state = fromMaybe Seq.Empty $ do
   state ^? #moves % ix i % to moveCycles % #uncycles
 
 
-
-
 geminiHtmlView :: forall a m. Store -> Html m a
 geminiHtmlView state =
   Html.div
@@ -41,7 +39,7 @@ geminiHtmlView state =
       & activeCycles
       & toList
       & zip ['a'..]
-      & concatMap (\(letter, cycle) -> (cycle & toList & map  \loc -> (loc, show letter)))
+      & concatMap (\(letter, cycle) -> (cycle & toList & map  \loc -> (loc, Text.singleton letter)))
       & fromList
 
 

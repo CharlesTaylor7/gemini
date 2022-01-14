@@ -157,16 +157,16 @@ button.delete-move {
     display: inline-block;
 }
 
-.cycle-0 {
-    color: yellow;
+.cycle.a {
+    color: var(--disk-highlight-a);
 }
 
-.cycle-1 {
-    color: blue;
+.cycle.b {
+    color: var(--disk-highlight-b);
 }
 
-.cycle-2 {
-    color: green;
+.cycle.c {
+    color: var(--disk-highlight-c);
 }
 
 
@@ -202,16 +202,20 @@ div.disk {
     z-index: 1;
 }
 
+div.disk.highlight {
+    border: 2px solid black
+}
+
 div.disk.highlight.a {
-    border: 1px solid var(--disk-highlight-a);
+    border-color: var(--disk-highlight-a);
 }
 
 div.disk.highlight.b {
-    border: 1px solid var(--disk-highlight-b);
+    border-color: var(--disk-highlight-b);
 }
 
 div.disk.highlight.c {
-    border: 1px solid var(--disk-highlight-c);
+    border-color: var(--disk-highlight-c);
 }
 
 div.disk.label {

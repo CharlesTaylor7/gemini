@@ -132,16 +132,16 @@ savedMovesPanel state =
         [ Html.button
           [ Html.className "move-description"
           , Html.onMouseenter $ #hoveredMoveIndex ?~ i
-          -- , Html.onMouseleave $ #hoveredMoveIndex .~ Nothing
+          , Html.onMouseleave $ #hoveredMoveIndex .~ Nothing
           ]
           [ Html.div
               [ Html.className "motions" ]
               [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> " :" ]
           , Html.div
               [ Html.className "cycles"]
-              ( flip map (itoList $ uncycles $ moveCycles move) $ \(i, cycle) ->
+              ( move & moveCycles & uncycles & toList & zip ['a'..] <&> \(letter, cycle) ->
                   Html.div
-                    [ Html.class' ([ "cycle", "cycle-" <> show i ] :: [Text]) ]
+                    [ Html.class' ([ "cycle", Text.singleton letter ] :: [Text]) ]
                     [ Html.text $ prettyCompactText $ cycle ]
               )
           ]
