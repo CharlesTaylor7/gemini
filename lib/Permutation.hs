@@ -65,13 +65,13 @@ data S = S
   }
   deriving stock (Generic)
 
-loop :: Monad m => MaybeT m a -> m ()
-loop = void . runMaybeT . forever
 
-break :: Monad m => MaybeT m a
-break = MaybeT $ pure $ Nothing
 
+-- | Set patterns
+pattern SetMin :: Set.Key -> IntSet -> IntSet
 pattern SetMin min view <- (Set.minView -> Just (min, view))
+
+pattern SetEmpty :: IntSet
 pattern SetEmpty <- (Set.minView -> Nothing)
 
 toCycles :: forall bound. KnownNat bound => Permutation bound -> Cycles Int
@@ -106,12 +106,7 @@ toCycles p = go seed
 
 
 fromCycles :: Cycles Int -> Permutation n
-fromCycles (Cycles cycles ) =
-  flip execState identityPermutation $ do
-    for_ cycles $ \cycle ->
-      for_ (pairs cycle) $ \(x, y) -> do
-        -- update map
-        #intMap % at x ?= y
+fromCycles (Cycles cycles ) = Permutation $ fromList $ concatMap pairs $ cycles
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
 pairs :: Foldable f => f a -> [(a, a)]
@@ -139,7 +134,7 @@ natsUnder = [0..n-1]
 domain :: forall bound. KnownNat bound => Permutation bound -> [Int]
 domain _ = natsUnder @bound
 
-
+-- Permutation definition and instances
 newtype Permutation (bound :: Nat) = Permutation
   { intMap :: IntMap Int
   }
@@ -171,3 +166,12 @@ instance KnownNat bound => Group (Permutation bound) where
 
 instance KnownNat bound => Pretty (Permutation bound) where
   pretty = pretty . toCycles
+
+
+
+-- looping utilities
+loop :: Monad m => MaybeT m a -> m ()
+loop = void . runMaybeT . forever
+
+break :: Monad m => MaybeT m a
+break = MaybeT $ pure $ Nothing
