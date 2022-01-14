@@ -5,6 +5,7 @@ module Gemini
   ) where
 
 import           Data.Finitary
+import qualified Data.InsertionOrdSet      as InsertionOrder
 import qualified Data.Text                 as Text
 import           Data.Traversable          (for)
 import           Optics                    hiding ((#))
@@ -45,14 +46,14 @@ stopRecording state = state
     updateMoves =
       case state ^. #history of
         EmptySequence -> identity
-        motions       -> (:|> toMove motions)
+        motions       -> InsertionOrder.insert (toMove motions)
 
 
 initialState :: Store
 initialState = Store
   { gemini = initialGemini
   , history = EmptySequence
-  , moves = EmptySequence
+  , moves = InsertionOrder.empty
   , options = Options
       { showLabels = False
       , animate = True
@@ -82,13 +83,14 @@ rootView state =
     ]
     [ controlPanel state
     , geminiView (state ^. #options) (state ^. #gemini)
-    , debugView state
+    , savedMovesPanel state
     ]
   where
     geminiView =
       if state ^. #options % #useSvg
       then geminiSvgView
       else geminiHtmlView
+
 
 debugView :: Store -> Html m a
 debugView state =
@@ -104,6 +106,23 @@ debugView state =
     [ Html.div_ [ Html.text $ "Recorded : " <> (prettyCompactText $ state ^.. #history % folded) ]
     , Html.div_ [ Html.text $ "Moves : " <> (prettyCompactText $ state ^.. #moves % folded) ]
     ]
+
+savedMovesPanel :: Store -> Html m Store
+savedMovesPanel state =
+  Html.div
+    [ Html.className "saved-moves"
+    ]
+    ( itoListOf (#moves % #intMap % ifolded) state <&> moveView )
+  where
+    moveView :: (Int, Move) -> Html m Store
+    moveView (i, move) =
+      Html.div
+        [ ]
+        [ Html.button
+          [ Html.onClick $ #moves %~ InsertionOrder.delete i ]
+          [ Html.text $ "delete" ]
+        ]
+
 
 controlPanel :: MonadIO m => Store -> Html m Store
 controlPanel state =

@@ -16,14 +16,10 @@ import           Gemini.Types
 geminiHtmlView :: forall a m. Options -> Gemini -> Html m a
 geminiHtmlView options gemini =
   Html.div
-    [ Html.className "gemini-wrapper"
+    [ Html.className "gemini"
     ]
-    [ Html.div
-        [ Html.className "gemini"
-        ]
-        (  map ring [LeftRing, CenterRing, RightRing]
-        )
-    ]
+    (  map ring [LeftRing, CenterRing, RightRing]
+    )
   where
     -- dimensions
     ringR = 150.0

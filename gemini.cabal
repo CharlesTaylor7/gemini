@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Data.InsertionOrdSet
       Gemini
       Gemini.Html
       Gemini.Svg

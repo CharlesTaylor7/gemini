@@ -164,7 +164,6 @@ instance KnownNat bound => Pretty (Permutation bound) where
   pretty = pretty . toCycles
 
 
-
 -- looping utilities
 loop :: Monad m => MaybeT m a -> m ()
 loop = void . runMaybeT . forever

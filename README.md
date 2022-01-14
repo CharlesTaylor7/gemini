@@ -11,19 +11,29 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ## UI
 - scramble: apply 1000 random moves and clear the history buffer
-- undo: undo the last move
 - reset button: reset to a solved state
-- L: rotate left ring clockwise, 
-- L': rotate left ring anticlockwise
-
-## TODO
-- Attach image of puzzle to readme
-- scripting: record seqeuences of moves, give them names and replay them
-- solve button: solve by algorithms
-- arrow butons over each ring
-- restyle / regroup button toolbar
-- undo button
-- pop confetti when solved
 - recording:
     - start/stop record button
     - display recorded motions as cycle notation
+
+## TODO
+- Attach image of puzzle to readme
+
+### Features
+- solve button: solve by algorithms
+- animate transitions
+
+### UI improvements
+- guide that explains keyboard controls
+- arrow butons over each ring
+- restyle / regroup button toolbar
+- provide labels for the ring positions
+
+### Saved Moves sidebar
+- layout on side of screen
+- delete saved move
+- apply saved move
+
+### On Solve
+- pop confetti 
+- show number of moves to solve

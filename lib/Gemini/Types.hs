@@ -15,6 +15,7 @@ module Gemini.Types
 import           Relude                 hiding (cycle)
 
 import           Data.Finitary
+import qualified Data.InsertionOrdSet   as InsertionOrder
 import qualified Data.IntMap            as Map
 import qualified Data.List              as List
 import qualified Data.List.NonEmpty     as NE
@@ -36,11 +37,21 @@ pattern EmptySequence = Seq.Empty
 data Store = Store
   { gemini  :: !Gemini
   , history :: !(Seq Motion)
-  , moves   :: !(Seq Move)
+  , moves   :: !(InsertionOrder.Set Move)
   , options :: !Options
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
+
+
+-- | Set keyed by insertion order
+data OrdSet a = OrdSet
+  { intMap :: !(IntMap a)
+  , next   :: !Int
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
+
 
 data Options = Options
   { showLabels :: !Bool
@@ -248,8 +259,7 @@ indexToLocation n = Location ring p
     ring = case r of
         0 -> LeftRing
         1 -> CenterRing
-        2 -> RightRing
-        _ -> LeftRing
+        _ -> RightRing
 
 geminiIx :: Location -> AffineTraversal' Gemini Disk
 geminiIx location = #geminiDiskMap % ix (locationToIndex location)
