@@ -30,9 +30,12 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - provide labels for the ring positions
 
 ### Saved Moves sidebar
-- layout on side of screen
-- delete saved move
-- apply saved move
+- on hover, highlight positions that are permuted
+- highlight each cycle with a different color
+- highlight disks that match each cycle
+
+- fix border & box shadows on buttons
+
 
 ### On Solve
 - pop confetti 

@@ -122,30 +122,27 @@ savedMovesPanel state =
     moveView :: (Int, Move) -> Html m Store
     moveView (i, move) =
       Html.div
-        [ Html.className "move" ]
-        [ Html.div
+        [ Html.className "move"
+        , Html.onClick $ identity
+        ]
+        [ Html.button
           [ Html.className "move-description" ]
-          [ Html.span
+          [ Html.div
               [ Html.className "motions" ]
-              [ Html.text $ prettyCompactText $ move ^.. #motions % folded ]
-          , Html.text ":"
-          , Html.span
+              [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> " :" ]
+          , Html.div
               [ Html.className "cycles"]
-              ( flip map (toList $ uncycles $ moveCycles move) $ \cycle ->
-                  Html.span
-                    [ Html.className "cycle" ]
+              ( flip map (itoList $ uncycles $ moveCycles move) $ \(i, cycle) ->
+                  Html.div
+                    [ Html.class' ([ "cycle", "cycle-" <> show i ] :: [Text]) ]
                     [ Html.text $ prettyCompactText $ cycle ]
               )
           ]
-        , Html.div
-          [ Html.className "move-buttons" ]
-          [ Html.button
-            [ Html.onClick $ identity]
-            [ Html.text $ "apply" ]
-          , Html.button
-            [ Html.onClick $ #moves %~ Seq.deleteAt i ]
-            [ Html.text $ "delete" ]
-          ]
+        , Html.button
+            [ Html.className "delete-move"
+            , Html.onClick $ #moves %~ Seq.deleteAt i
+            ]
+            [ Html.text $ "x" ]
         ]
 
 
