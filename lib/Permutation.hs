@@ -46,7 +46,7 @@ instance Pretty a => Pretty (Cycles a) where
   pretty (Cycles cycles) =
     flip foldMap cycles $ \cycle ->
       "(" <>
-      (Pretty.hsep $ flip concatMap cycle $ \x -> [pretty x, "->"]) <>
+      (Pretty.hsep $ flip concatMap cycle $ \x -> [pretty x, "→"]) <>
       ")"
 
 
@@ -59,10 +59,9 @@ applyMap map n = map ^? ix n & fromMaybe n
 
 
 data S = S
-  { toVisit   :: !IntSet
-  , complete  :: !(Seq (Cycle Int))
-  , current   :: !(Seq Int)
-  , countdown :: !Int
+  { toVisit  :: !IntSet
+  , complete :: !(Seq (Cycle Int))
+  , current  :: !(Seq Int)
   }
   deriving stock (Generic)
 
@@ -80,7 +79,6 @@ toCycles p =
       { toVisit = fromList $ natsUnder @bound
       , complete = Seq.Empty
       , current = Seq.Empty
-      , countdown = 51
       }
   in
     cycles [ cycle [ 1, 2 ], cycle [40, 53] ]

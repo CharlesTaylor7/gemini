@@ -71,6 +71,8 @@ default-extensions:
   - TypeOperators
   - TypeFamilies
   - AllowAmbiguousTypes
+  - ViewPatterns
+  - PatternSynonyms
 
 ghc-options:
   # general
