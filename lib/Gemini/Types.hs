@@ -347,6 +347,7 @@ combineRotations rotations = Move { steps = steps, permutation = permutation }
       & toList
       & NE.groupBy ((==) `on` view #ring)
       & map toMotion
+      & filter ((> 0) . view #amount)
       & fromList
 
     toMotion :: NonEmpty Rotation -> Motion
@@ -363,11 +364,15 @@ combineRotations rotations = Move { steps = steps, permutation = permutation }
       AntiClockwise -> Clockwise
 
     normalize :: Motion -> Motion
-    normalize m@Motion { amount}
-      | amount >= 0 = m
-      | otherwise   = m
-        & #amount %~ negate
-        & #rotation % #direction %~ opposite
+    normalize motion = do
+      let sign = if motion ^. directionL == Clockwise then 1 else -1
+      let n = (sign * (motion ^. #amount)) `mod` 18
+      if n <= 9
+      then motion & #amount .~ n & directionL .~ Clockwise
+      else motion & #amount .~ ((-n) `mod` 18) & directionL .~ AntiClockwise
+      where
+        directionL :: Lens' Motion RotationDirection
+        directionL = #rotation % #direction
 
     permutation :: GeminiPermutation
     permutation = foldMap rotationToPermutation rotations
