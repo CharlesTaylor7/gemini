@@ -83,18 +83,22 @@ toCycles p = go seed
       , current = Seq.Empty
       }
 
+    pushCycle :: S -> S
+    pushCycle s@S { current, complete } = s
+      & #current .~ Seq.Empty
+      & if Seq.length current < 2
+        then identity
+        else #complete %~ (:|> Cycle current)
+
     go :: S -> Cycles Int
-    go s@S { toVisit = SetEmpty }                                = Cycles $ s ^. #complete :|> Cycle (s ^. #current)
+    go s@S { toVisit = SetEmpty }                                = Cycles $ view #complete $ pushCycle s
     go s@S { toVisit = SetMin min toVisit, current = Seq.Empty } = go s { toVisit, current = fromList [min] }
     go s@S { current }                                           = do
       let head = case current of h :<| _ -> h
       let tail = case current of _ :|> t -> t
       let next = permute p tail
       if head == next
-      then go $ s
-        { complete = s ^. #complete :|> Cycle (s ^. #current)
-        , current = Seq.Empty
-        }
+      then go $ pushCycle s
       else go $ s
         & #current %~ (:|> next)
         & #toVisit %~ Set.delete next
