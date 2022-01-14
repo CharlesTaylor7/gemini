@@ -105,6 +105,7 @@ div.ring {
     position: relative;
     border-radius: 100%;
     background-color: var(--ring-background);
+    flex-shrink: 0;
 }
 div.disk {
     position: absolute;

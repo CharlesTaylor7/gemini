@@ -118,9 +118,15 @@ savedMovesPanel state =
     moveView (i, move) =
       Html.div
         [ ]
-        [ Html.button
-          [ Html.onClick $ #moves %~ InsertionOrder.delete i ]
-          [ Html.text $ "delete" ]
+        [ Html.div_
+          [ Html.button
+            [ Html.onClick $ identity]
+            [ Html.text $ "apply" ]
+          , Html.button
+            [ Html.onClick $ #moves %~ InsertionOrder.delete i ]
+            [ Html.text $ "delete" ]
+          ]
+        , Html.text $ prettyCompactText move
         ]
 
 
