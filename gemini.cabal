@@ -25,13 +25,13 @@ source-repository head
 
 library
   exposed-modules:
-      Data.InsertionOrdSet
       Gemini
       Gemini.Html
       Gemini.Svg
       Gemini.Types
       Permutation
       Svg
+      Utils
   other-modules:
       Paths_gemini
   hs-source-dirs:

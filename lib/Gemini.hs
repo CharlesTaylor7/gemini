@@ -4,25 +4,24 @@ module Gemini
   , rootView
   ) where
 
-import           Data.Finitary
-import qualified Data.Sequence             as Seq
-import qualified Data.Text                 as Text
-import           Data.Traversable          (for)
-import           Optics                    hiding ((#))
-import           Prettyprinter             (Pretty (..))
-import qualified Prettyprinter             as Pretty
-import qualified Prettyprinter.Render.Text as Pretty
 import           Relude
-import           System.Random.Stateful    (globalStdGen, uniformM)
+
+import           Data.Finitary
+import qualified Data.Sequence          as Seq
+import qualified Data.Text              as Text
+import           Data.Traversable       (for)
+import           Optics                 hiding ((#))
+import           System.Random.Stateful (globalStdGen, uniformM)
+import           Utils
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Html          as Html
-import qualified Shpadoinkle.Keyboard      as Key
-import qualified Shpadoinkle.Lens
+import qualified Shpadoinkle.Html       as Html
+import qualified Shpadoinkle.Keyboard   as Key
 
-import           Gemini.Html               (geminiHtmlView)
-import           Gemini.Svg                (geminiSvgView)
+import           Gemini.Html            (geminiHtmlView)
+import           Gemini.Svg             (geminiSvgView)
 import           Gemini.Types
+
 
 
 -- | UI Operations
@@ -117,8 +116,9 @@ savedMovesPanel state =
     moveView :: (Int, Move) -> Html m Store
     moveView (i, move) =
       Html.div
-        [ ]
-        [ Html.div_
+        [ Html.className "move" ]
+        [ Html.div
+          [ Html.className "move-buttons" ]
           [ Html.button
             [ Html.onClick $ identity]
             [ Html.text $ "apply" ]
@@ -223,14 +223,3 @@ scrambleButton =
     [ Html.text "Scramble" ]
 
 
--- | Utilities
-prettyCompactText :: forall a. Pretty a => a -> Text
-prettyCompactText = Pretty.renderStrict . Pretty.layoutCompact . pretty
-
-
--- |
-zoomComponent :: Functor m => Lens' s a -> s -> (a -> Html m a) -> Html m s
-zoomComponent optic props component = component (props ^. optic) & generalize optic
-
-generalize :: (Functor m, Continuous f) => Lens' s a -> (f m a -> f m s)
-generalize optic = Shpadoinkle.Lens.generalize $ toLensVL optic

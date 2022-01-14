@@ -100,6 +100,7 @@ button {
 div.gemini {
     display: flex;
     flex-direction: row;
+    width: 630px;
 }
 div.ring {
     position: relative;
@@ -107,6 +108,19 @@ div.ring {
     background-color: var(--ring-background);
     flex-shrink: 0;
 }
+
+div.ring-L {
+
+}
+
+div.ring-C {
+    right: 135px;
+}
+
+div.ring-R {
+    right: 270px;
+}
+
 div.disk {
     position: absolute;
     text-align: center;

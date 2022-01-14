@@ -10,6 +10,7 @@ import           Shpadoinkle
 import qualified Shpadoinkle.Html as Html
 
 import           Gemini.Types
+import           Utils
 
 
 
@@ -26,19 +27,14 @@ geminiHtmlView options gemini =
     diskR = (ringR / 7.0)
     ringD = 2 * ringR
     diskD = 2 * diskR
-    ringShift = \case
-      LeftRing   -> ("left", show (0.9 * ringR) <> "px")
-      CenterRing -> ("left", "0")
-      RightRing  -> ("right", show (0.9 * ringR) <> "px")
 
     ring :: Ring -> Html m a
     ring r =
       Html.div
-        [ Html.className "ring"
+        [ Html.class' [ "ring", "ring-" <> prettyCompactText r ]
         , Html.styleProp
             [ ("width", show ringD <> "px")
             , ("height", show ringD <> "px")
-            , ringShift r
             ]
         ]
         ( disks r )
@@ -76,4 +72,3 @@ geminiHtmlView options gemini =
           if options ^. #showLabels
           then [ Html.span [ ("className", "disk-label") ] [ Html.text label ] ]
           else []
-
