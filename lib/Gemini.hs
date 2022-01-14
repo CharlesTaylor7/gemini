@@ -46,7 +46,7 @@ stopRecording state = state
     updateMoves =
       case state ^. #history of
         Seq.Empty -> identity
-        motions   -> (toMove motions <|:)
+        motions   -> (toMove motions :<|)
 
 
 initialState :: Store
@@ -54,7 +54,7 @@ initialState = Store
   { gemini = initialGemini
   , history = Seq.Empty
   , moves = Seq.Empty
-  , hoveredMoveIndex = Nothing
+  , hoveredCycle = Nothing
   , options = Options
       { showLabels = False
       , animate = True
@@ -111,7 +111,7 @@ debugView state =
         ]
     ]
     [ Html.div_ [ Html.text $ "Recorded : " <> (prettyCompactText $ state ^.. #history % folded) ]
-    , Html.div_ [ Html.text $ "Hovered : " <> (prettyCompactText $ state ^. #hoveredMoveIndex) ]
+    , Html.div_ [ Html.text $ "Hovered : " <> (prettyCompactText $ state ^. #hoveredCycle) ]
     ]
 
 savedMovesPanel :: Store -> Html m Store
@@ -127,18 +127,18 @@ savedMovesPanel state =
         , Html.onClick $ identity
         ]
         [ Html.button
-          [ Html.className "move-description"
-          , Html.onMouseenter $ #hoveredMoveIndex ?~ i
-          , Html.onMouseleave $ #hoveredMoveIndex .~ Nothing
-          ]
+          [ Html.className "move-description" ]
           [ Html.div
               [ Html.className "motions" ]
               [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> " :" ]
           , Html.div
               [ Html.className "cycles"]
-              ( move & moveCycles & uncycles & toList & zip ['a'..] <&> \(letter, cycle) ->
+              ( move & moveCycles & uncycles & toList <&> \cycle ->
                   Html.div
-                    [ Html.class' ([ "cycle", Text.singleton letter ] :: [Text]) ]
+                    [ Html.className "cycle"
+                    , Html.onMouseenter $ #hoveredCycle ?~ cycle
+                    , Html.onMouseleave $ #hoveredCycle .~ Nothing
+                    ]
                     [ Html.text $ prettyCompactText $ cycle ]
               )
           ]

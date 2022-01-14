@@ -1,7 +1,7 @@
 module Gemini.Types
   ( -- core types and operations
     Gemini, geminiFromList, geminiIx, ringIndex , initialGemini, rotate
-  , Location(..), location
+  , Location(..), location, isCanonical
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
   , toMove
@@ -31,11 +31,11 @@ import           System.Random.Stateful
 
 -- | UI Definitions
 data Store = Store
-  { gemini           :: !Gemini
-  , history          :: !(Seq Motion)
-  , moves            :: !(Seq Move)
-  , hoveredMoveIndex :: !(Maybe Int)
-  , options          :: !Options
+  { gemini       :: !Gemini
+  , history      :: !(Seq Motion)
+  , moves        :: !(Seq Move)
+  , hoveredCycle :: !(Maybe (Cycle Location))
+  , options      :: !Options
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -226,6 +226,7 @@ locationToIndex = index . canonical
   where
     index Location { ring, position } = (ringIndex ring) * 18 + position
 
+
 -- | if the position exists on two different rings, then prefer the left one
 canonical :: Location -> Location
 canonical (Location CenterRing 16) = Location LeftRing 2
@@ -234,6 +235,7 @@ canonical (Location RightRing 16)  = Location CenterRing 2
 canonical (Location RightRing 11)  = Location CenterRing 7
 canonical location                 = location
 
+isCanonical location = canonical location == location
 
 -- | if the position exists on two different rings, then prefer the right one
 inverseCanonical :: Location -> Location

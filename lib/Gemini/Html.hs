@@ -16,12 +16,6 @@ import           Gemini.Types
 import           Utils
 
 
-activeCycles :: Store -> Seq (Cycle Location)
-activeCycles state = fromMaybe Seq.Empty $ do
-  i <- state ^. #hoveredMoveIndex
-  state ^? #moves % ix i % to moveCycles % #uncycles
-
-
 geminiHtmlView :: forall a m. Store -> Html m a
 geminiHtmlView state =
   Html.div
@@ -33,15 +27,8 @@ geminiHtmlView state =
     gemini = state ^. #gemini
     options = state ^. #options
 
-    highlightMap :: Map Location Text
-    highlightMap =
-      state
-      & activeCycles
-      & toList
-      & zip ['a'..]
-      & concatMap (\(letter, cycle) -> (cycle & toList & map  \loc -> (loc, Text.singleton letter)))
-      & fromList
-
+    highlighted:: Set Location
+    highlighted = fromList $ state ^.. #hoveredCycle % non (Cycle Empty) % folded
 
     -- dimensions
     ringR = 150.0
@@ -67,7 +54,7 @@ geminiHtmlView state =
     toRadians th = (th * pi) / 180.0
 
     disks :: Ring -> [Html m a]
-    disks ring = flip map [0..17] $ \position ->
+    disks ring = catMaybes $ flip map [0..17] $ \position ->
       let
         location = Location ring position
         (color, label) =
@@ -81,21 +68,22 @@ geminiHtmlView state =
           , r * (1 + sine angle)
           )
 
-        highlightClass :: [Text]
-        highlightClass = case highlightMap ^? ix location of
-          Just x -> ["highlight", x ]
-          _      -> []
+        highlightClass :: Text
+        highlightClass = if highlighted ^. contains location then "highlight" else ""
       in
-        Html.div
-          [ Html.class' ("disk" : color : highlightClass)
-          , Html.styleProp
-            [ ("width", show diskD <> "px")
-            , ("height", show diskD <> "px")
-            , ("line-height", show diskD <> "px")
-            , ("left", show x <> "px")
-            , ("top", show y <> "px")
+        if not $ isCanonical location
+        then Nothing
+        else Just $
+          Html.div
+            [ Html.class' ["disk", color, highlightClass]
+            , Html.styleProp
+              [ ("width", show diskD <> "px")
+              , ("height", show diskD <> "px")
+              , ("line-height", show diskD <> "px")
+              , ("left", show x <> "px")
+              , ("top", show y <> "px")
+              ]
             ]
-          ]
-          if options ^. #showLabels
-          then [ Html.span [ ("className", "disk-label") ] [ Html.text label ] ]
-          else []
+            if options ^. #showLabels
+            then [ Html.span [ ("className", "disk-label") ] [ Html.text label ] ]
+            else []

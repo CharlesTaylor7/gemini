@@ -2,7 +2,7 @@
 -}
 module Permutation
   ( Permutation(..), permute, faithful, domain
-  , Cycle, cycle
+  , Cycle(..), cycle
   , Cycles(..), cycles, toCycles, fromCycles
   , Semigroup(..)
   , Monoid(..)
@@ -31,7 +31,8 @@ newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
 
 
 newtype Cycle a = Cycle (Seq a)
-  deriving stock (Functor, Foldable)
+  deriving stock (Eq, Generic, Show, Functor, Foldable)
+  deriving anyclass (NFData)
 
 
 cycle :: Foldable f => f a -> Cycle a

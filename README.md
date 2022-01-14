@@ -23,19 +23,16 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - solve button: solve by algorithms
 - animate transitions
 
-### UI improvements
-- guide that explains keyboard controls
-- arrow butons over each ring
-- restyle / regroup button toolbar
-- provide labels for the ring positions
-
 ### Saved Moves sidebar
-- on hover, highlight positions that are permuted
-- highlight each cycle with a different color
-- highlight disks that match each cycle
-
+- on hover over a cycle, highlight positions, and give them a label for their order in the cycle
 - fix border & box shadows on buttons
+- collapsble panel 
 
+### Gemini Controls
+- need explanation in header
+- keyboard controls
+- click and drag based controls
+- arrow buttons above each ring?
 
 ### On Solve
 - pop confetti 
