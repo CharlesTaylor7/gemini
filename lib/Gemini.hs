@@ -46,7 +46,7 @@ stopRecording state = state
     updateMoves =
       case state ^. #history of
         Seq.Empty -> identity
-        motions   -> (:|> toMove motions)
+        motions   -> (toMove motions <|:)
 
 
 initialState :: Store
@@ -83,13 +83,13 @@ rootView state =
         Key.P -> applyRotation $ Rotation RightRing Clockwise
         _     -> identity
     ]
-    [ controlPanel state
+    [ header state
     , Html.div
       [ Html.className "gemini-wrapper" ]
-      ( geminiView state
-      : savedMovesPanel state
-      : if state ^. #options % #debug then [ debugView state ] else []
-      )
+      [ geminiView state
+      , savedMovesPanel state
+      ]
+    , if state ^. #options % #debug then debugView state else Html.span'_
     ]
   where
     geminiView =
@@ -150,10 +150,10 @@ savedMovesPanel state =
         ]
 
 
-controlPanel :: MonadIO m => Store -> Html m Store
-controlPanel state =
-  Html.div
-    [ Html.className "control-panel-wrapper"
+header :: MonadIO m => Store -> Html m Store
+header state =
+  Html.header
+    [ Html.className "header"
     ]
     [ Html.div
       [ Html.className "control-panel"

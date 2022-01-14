@@ -21,6 +21,7 @@
 
 body {
     margin: 0;
+    overflow: hidden;
 }
 
 button {
@@ -36,17 +37,16 @@ button {
 
 
 /* UI Elements */
-.control-panel-wrapper {
+.header {
     display: flex;
     justify-content: flex-end;
 }
 
 .control-panel {
-    width: 60vw;
-    padding-top: 12px;
     display: flex;
     gap: 12px;
-    justify-content: center;
+    justify-content: flex-end;
+    padding: 20px;
 }
 
 .button-group {
@@ -56,6 +56,7 @@ button {
 
 .button-group.actions {
     gap: 12px;
+    width: 110px;
 }
 
 
@@ -89,7 +90,6 @@ button {
 
 /* Gemini Puzzle */
 .gemini-wrapper {
-    margin-top: 10vh;
     display: flex;
     justify-content: space-between;
 }
@@ -108,6 +108,9 @@ button {
     flex-direction: column;
     gap: 12px;
     margin: 0 20px;
+    overflow-y: scroll;
+    padding: 12px;
+    max-height: calc(100vh - 130px);
 }
 
 .move {
