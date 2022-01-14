@@ -29,6 +29,7 @@ library
       Gemini.Html
       Gemini.Svg
       Gemini.Types
+      Html.LoadScript
       Permutation
       Svg
       Utils
