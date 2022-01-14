@@ -4,7 +4,8 @@ module Gemini.Types
   , Location(..), location
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..)
-  , combineRotations
+  , toMove
+  , continueMotion
     -- ui types
   , Store(..), Options(..)
     -- re export Seq constructors
@@ -34,8 +35,8 @@ pattern EmptySequence = Seq.Empty
 -- | UI Definitions
 data Store = Store
   { gemini  :: !Gemini
-  , history :: !(Seq Rotation)
-  ,moves    :: !(Seq Move)
+  , history :: !(Seq Motion)
+  , moves   :: !(Seq Move)
   , options :: !Options
   }
   deriving stock (Eq, Generic, Show)
@@ -337,42 +338,47 @@ areConsecutive locations = (numberOfRings == 1) || (numberOfRings == 2)
     ringGroups = locations & List.groupBy ((==) `on` view #ring)
 
 
--- | Convert runs of rotations on the same ring in the same direction into groups
--- calculate a permutation for the rotation
-combineRotations :: Seq Rotation -> Move
-combineRotations rotations = Move { steps = steps, permutation = permutation }
-  where
-    steps :: Seq Motion
-    steps = rotations
-      & toList
-      & NE.groupBy ((==) `on` view #ring)
-      & map toMotion
-      & filter ((> 0) . view #amount)
-      & fromList
+toPermutation :: Seq Motion -> GeminiPermutation
+toPermutation = error "todo"
 
-    toMotion :: NonEmpty Rotation -> Motion
-    toMotion rs@(r:|_) = normalize $ foldl' combine (Motion { amount = 0, rotation = r }) rs
+toMove :: Seq Motion -> Move
+toMove = error "todo"
 
-    combine :: Motion -> Rotation -> Motion
-    combine m@Motion { rotation } r
-      | rotation == r = m & #amount %~ (+ 1)
-      | otherwise     = m & #amount %~ (subtract 1)
+continueMotion :: Rotation -> Seq Motion -> Seq Motion
+continueMotion rotation Seq.Empty         = fromList [ newMotion rotation ]
+continueMotion rotation all@(ms :|> motion) =
+  if rotation ^. #ring /= motion ^. #rotation % #ring
+  then all :|> newMotion rotation
+  else case normalize (combine motion rotation) of
+    Just m -> ms :|> m
+    _      -> ms
 
-    opposite :: RotationDirection -> RotationDirection
-    opposite = \case
-      Clockwise     -> AntiClockwise
-      AntiClockwise -> Clockwise
 
-    normalize :: Motion -> Motion
-    normalize motion = do
-      let sign = if motion ^. directionL == Clockwise then 1 else -1
-      let n = (sign * (motion ^. #amount)) `mod` 18
-      if n <= 9
-      then motion & #amount .~ n & directionL .~ Clockwise
-      else motion & #amount .~ ((-n) `mod` 18) & directionL .~ AntiClockwise
-      where
-        directionL :: Lens' Motion RotationDirection
-        directionL = #rotation % #direction
+newMotion :: Rotation -> Motion
+newMotion rotation = Motion { amount = 1, rotation }
 
-    permutation :: GeminiPermutation
-    permutation = foldMap rotationToPermutation rotations
+
+-- toMotion :: NonEmpty Rotation -> Motion
+-- toMotion rs@(r:|_) = normalize $ foldl' combine (Motion { amount = 0, rotation = r }) rs
+
+combine :: Motion -> Rotation -> Motion
+combine m@Motion { rotation } r
+  | rotation == r = m & #amount %~ (+ 1)
+  | otherwise     = m & #amount %~ (subtract 1)
+
+opposite :: RotationDirection -> RotationDirection
+opposite = \case
+  Clockwise     -> AntiClockwise
+  AntiClockwise -> Clockwise
+
+normalize :: Motion -> Maybe Motion
+normalize Motion { amount = 0 } = Nothing
+normalize motion = Just $ do
+  let sign = if motion ^. directionL == Clockwise then 1 else -1
+  let n = (sign * (motion ^. #amount)) `mod` 18
+  if n <= 9
+  then motion & #amount .~ n & directionL .~ Clockwise
+  else motion & #amount .~ ((-n) `mod` 18) & directionL .~ AntiClockwise
+
+directionL :: Lens' Motion RotationDirection
+directionL = #rotation % #direction

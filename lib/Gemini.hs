@@ -26,20 +26,20 @@ import           Gemini.Types
 
 -- | UI Operations
 applyRotation :: Rotation -> Store -> Store
-applyRotation r state = state
-  & #gemini %~ rotate r
-  & #history .~ history
+applyRotation rotation state = state
+  & #gemini %~ rotate rotation
+  & #history %~ updateHistory
   where
-    history =
+    updateHistory =
       if state ^. #options % #recording
-      then state ^. #history % to ( :|> r)
-      else EmptySequence
+      then continueMotion rotation
+      else const EmptySequence
 
 
 stopRecording :: Store -> Store
 stopRecording state = state
   & #options % #recording .~ False
-  & #moves %~ (:|> (state ^. #history % to combineRotations))
+  & #moves %~ (:|> (state ^. #history % to toMove))
   & #history .~ EmptySequence
 
 
@@ -85,15 +85,19 @@ rootView state =
       then geminiSvgView
       else geminiHtmlView
 
+debugView :: Store -> Html m a
 debugView state =
   Html.div
     [ Html.styleProp
         [ ("position", "absolute")
         , ("top", "0")
         , ("left", "0")
+        , ("display", "flex")
+        , ("flex-direction", "column")
         ]
     ]
-    [ Html.text $ state ^. #history % to (combineRotations) % to prettyCompactText
+    [ Html.div_ [ Html.text $ prettyCompactText $ state ^.. #history % folded ]
+    , Html.div_ [ Html.text $ prettyCompactText $ state ^.. #moves % folded ]
     ]
 
 controlPanel :: MonadIO m => Store -> Html m Store
