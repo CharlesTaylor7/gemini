@@ -3,7 +3,7 @@
 module Permutation
   ( Permutation(..), permute, faithful, domain
   , Cycle, cycle
-  , Cycles, cycles, toCycles, fromCycles
+  , Cycles(..), cycles, toCycles, fromCycles
   , Semigroup(..)
   , Monoid(..)
   , Group(..)
@@ -26,8 +26,8 @@ import qualified Prettyprinter          as Pretty
 
 
 -- | Cycles backed by its cycle notation
-newtype Cycles a = Cycles (Seq (Cycle a))
-  deriving stock (Functor, Foldable)
+newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
+  deriving stock (Functor)
 
 
 newtype Cycle a = Cycle (Seq a)
@@ -43,11 +43,13 @@ cycles = Cycles . fromList . toList
 
 -- | Show permutations in cycle notation
 instance Pretty a => Pretty (Cycles a) where
-  pretty (Cycles cycles) =
-    flip foldMap cycles $ \cycle ->
-      "(" <>
-      (Pretty.hsep $ flip concatMap cycle $ \x -> [pretty x, "→"]) <>
-      ")"
+    pretty = prettyList . toList . uncycles
+
+instance Pretty a => Pretty (Cycle a) where
+    pretty cycle
+      =  "("
+      <> (Pretty.sep $ map pretty $ toList cycle)
+      <> ")"
 
 
 permute :: Permutation n -> Int -> Int

@@ -3,7 +3,7 @@ module Gemini.Types
     Gemini, geminiFromList, geminiIx, ringIndex , initialGemini, rotate
   , Location(..), location
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
-  , Move(..), Motion(..)
+  , Move(..), Motion(..), moveCycles
   , toMove
   , continueMotion
     -- ui types
@@ -85,6 +85,8 @@ data Motion = Motion
 instance Pretty Motion where
   pretty Motion { amount, rotation } =
     pretty amount <> pretty rotation
+
+  prettyList = Pretty.sep . fmap pretty
 
 type GeminiPermutation = Permutation 54
 
@@ -179,6 +181,8 @@ instance Pretty Color where
 
 
 -- | Basic operations
+moveCycles :: Move -> Cycles Location
+moveCycles = fmap indexToLocation . toCycles . view #permutation
 
 rotate :: Rotation -> Gemini -> Gemini
 rotate = permuteGemini . rotationToPermutation

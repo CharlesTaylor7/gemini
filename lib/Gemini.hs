@@ -11,6 +11,7 @@ import qualified Data.Sequence          as Seq
 import qualified Data.Text              as Text
 import           Data.Traversable       (for)
 import           Optics                 hiding ((#))
+import           Permutation
 import           System.Random.Stateful (globalStdGen, uniformM)
 import           Utils
 
@@ -81,8 +82,11 @@ rootView state =
         _     -> identity
     ]
     [ controlPanel state
-    , geminiView (state ^. #options) (state ^. #gemini)
-    , savedMovesPanel state
+    , Html.div
+        [ Html.className "gemini-wrapper" ]
+        [ geminiView (state ^. #options) (state ^. #gemini)
+        , savedMovesPanel state
+        ]
     ]
   where
     geminiView =
@@ -109,15 +113,31 @@ debugView state =
 savedMovesPanel :: Store -> Html m Store
 savedMovesPanel state =
   Html.div
-    [ Html.className "saved-moves"
+    [ Html.className "saved-moves-panel" ]
+    [ Html.div
+      [ Html.className "saved-moves-content" ]
+      ( itoListOf (#moves % ifolded) state <&> moveView )
     ]
-    ( itoListOf (#moves % ifolded) state <&> moveView )
   where
     moveView :: (Int, Move) -> Html m Store
     moveView (i, move) =
       Html.div
         [ Html.className "move" ]
         [ Html.div
+          [ Html.className "move-description" ]
+          [ Html.span
+              [ Html.className "motions" ]
+              [ Html.text $ prettyCompactText $ move ^.. #motions % folded ]
+          , Html.text ":"
+          , Html.span
+              [ Html.className "cycles"]
+              ( flip map (toList $ uncycles $ moveCycles move) $ \cycle ->
+                  Html.span
+                    [ Html.className "cycle" ]
+                    [ Html.text $ prettyCompactText $ cycle ]
+              )
+          ]
+        , Html.div
           [ Html.className "move-buttons" ]
           [ Html.button
             [ Html.onClick $ identity]
@@ -126,7 +146,6 @@ savedMovesPanel state =
             [ Html.onClick $ #moves %~ Seq.deleteAt i ]
             [ Html.text $ "delete" ]
           ]
-        , Html.text $ prettyCompactText move
         ]
 
 
@@ -221,5 +240,3 @@ scrambleButton =
         pure $ (set #history Seq.Empty) . (over #gemini scramble)
     ]
     [ Html.text "Scramble" ]
-
-

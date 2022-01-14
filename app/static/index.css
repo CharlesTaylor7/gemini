@@ -9,6 +9,7 @@
   --disk-green: #45ab36;
   --disk-blue: #00aeff;
   --ring-background: #816c5b;
+  --panel-border: #82a6e3;
 }
 
 * {
@@ -87,12 +88,49 @@ button {
 .gemini-wrapper {
     margin-top: 10vh;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
 .gemini {
     font-size: 35px;
     user-select: none;
+    height: 300px;
+    width: 630px;
+    margin: 0 20px;
+}
+
+.saved-moves-panel {
+    flex: 1 0 200px;
+    margin: 0 20px;
+    border: 5px solid var(--panel-border);
+}
+
+.saved-moves-content {
+    padding: 12px;
+}
+
+.move {
+    display: flex;
+    justify-content: space-between;
+}
+
+.move span {
+    display: inline-block;
+}
+
+.move-description {
+    align-self: center;
+}
+
+.move-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.cycle {
+    display: inline-block;
 }
 
 
@@ -100,8 +138,8 @@ button {
 div.gemini {
     display: flex;
     flex-direction: row;
-    width: 630px;
-}
+} 
+
 div.ring {
     position: relative;
     border-radius: 100%;
@@ -170,7 +208,6 @@ div.disk.blue {
 /* svg gemini */
 svg.gemini {
     display: block;
-    height: 300px;
 }
 
 circle.ring {
