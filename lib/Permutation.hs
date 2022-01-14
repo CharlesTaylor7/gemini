@@ -83,9 +83,12 @@ toCycles p =
       , countdown = 51
       }
   in
+    cycles [ cycle [ 1, 2 ], cycle [40, 53] ]
+  {--
     Cycles $ view #complete $
     flip execState seed $ do
       loop $ do
+        -- break early
         let pushCycle current = when (Seq.length current > 1) $ (#complete %= (:|> Cycle current))
         c <- (#countdown <%= subtract 1)
         when (c == 0) $ break
@@ -101,7 +104,7 @@ toCycles p =
             Nothing               -> pure ()
             Just (next, toVisit') -> do
               (#toVisit .= toVisit')
-              (#current .= next :<| Seq.Empty)
+              (#current .= fromList [next])
 
         current <- use #current
         case current of
@@ -118,6 +121,7 @@ toCycles p =
                   pushCycle current
                   (#current .= Seq.Empty)
 
+--}
 {--
   In python pseudo code:
   def to_cycles(permutation):

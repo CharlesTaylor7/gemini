@@ -65,7 +65,7 @@ instance Pretty Move where
     Pretty.hsep
       [ pretty $ toList $ motions
       , ": "
-      , pretty permutation
+      , pretty $ fmap indexToLocation $ toCycles $ permutation
       ]
 
 data Motion = Motion
