@@ -227,7 +227,7 @@ div.ring {
     border-radius: 100%;
     background-color: var(--ring-background);
     flex-shrink: 0;
-    box-shadow: 10px 0px 5px rgb(0 0 0 / 48%);
+    box-shadow: 5px 0px 2px rgb(0 0 0 / 50%);
 }
 
 div.ring-L {
@@ -249,6 +249,7 @@ div.disk {
     z-index: 1;
     box-sizing: border-box;
     cursor: grab;
+    box-shadow: 1px 1px 3px rgb(28 25 23 / 50%);
 }
 
 .dragging div.disk {
