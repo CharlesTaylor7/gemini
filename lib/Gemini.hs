@@ -19,7 +19,7 @@ import           Shpadoinkle
 import qualified Shpadoinkle.Html       as Html
 import qualified Shpadoinkle.Keyboard   as Key
 
-import           Gemini.Html            (geminiHtmlView)
+import           Gemini.Html            (diskCenter, geminiHtmlView, ringCenter)
 import           Gemini.Svg             (geminiSvgView)
 import           Gemini.Types
 
@@ -103,15 +103,29 @@ rootView state =
 
 debugView :: Store -> Html m a
 debugView state =
-  Html.div
+  if state ^. #options % #debug % to not
+  then Html.div'_
+  else Html.div
     [ Html.styleProp
         [ ("padding", "12px")
         , ("display", "flex")
         , ("flex-direction", "column")
         ]
     ]
-    [ Html.div_ [ Html.text $ "Recorded : " <> (prettyCompactText $ state ^.. #history % folded) ]
-    , Html.div_ [ Html.text $ "Drag : " <> (prettyCompactText $ state ^. #drag) ] ]
+    [ Html.div_
+      ( Html.text "Drag : "
+      : (state ^.. #drag % _Just % to dragView % folded)
+      )
+    ]
+  where
+    dragView DragState { start, end, angle, ring, origin } =
+      [ Html.div_ [ Html.text $ "start: " <> prettyCompactText (diskCenter start) ]
+      , Html.div_ [ Html.text $ "end: " <> prettyCompactText end ]
+      , Html.div_ [ Html.text $ "origin: " <> prettyCompactText origin ]
+      , Html.div_ [ Html.text $ "angle: " <> prettyCompactText angle ]
+      , Html.div_ [ Html.text $ "ring: " <> prettyCompactText ring ]
+      ]
+
 
 savedMovesPanel :: Store -> Html m Store
 savedMovesPanel state =
@@ -157,7 +171,7 @@ header state =
   Html.header
     [ Html.className "header"
     ]
-    [ if state ^. #options % #debug then debugView state else Html.span'_
+    [ debugView state
     , Html.div
       [ Html.className "control-panel"
       ]
