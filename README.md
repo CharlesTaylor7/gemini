@@ -25,8 +25,6 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - animate transitions
 
 ### Saved Moves sidebar
-- on hover over a cycle, highlight positions, and give them a label for their order in the cycle
-- fix border & box shadows on buttons
 - collapsble panel 
 
 ### Gemini Controls
