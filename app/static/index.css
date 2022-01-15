@@ -131,6 +131,7 @@ button {
 }
 
 .gemini {
+    position: relative;
     font-size: 35px;
     user-select: none;
     height: 300px;

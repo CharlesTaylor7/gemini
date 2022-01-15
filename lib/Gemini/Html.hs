@@ -62,6 +62,7 @@ angle center start end = acos (dot / mag)
     Point { x = x1, y = y1 } = start ~~ center
     Point { x = x2, y = y2 } = end ~~ center
 
+
 geminiHtmlView :: forall m. Store -> Html m Store
 geminiHtmlView state =
   Html.div
@@ -78,6 +79,26 @@ geminiHtmlView state =
         pure $ Continuation.Pure $ identity
     ]
     (  map ring inhabitants
+    <> if not (state ^. #options % #debug)
+       then []
+       else
+        flip map inhabitants $ \location ->
+          let
+            Point x y = diskCenter location
+          in
+            Html.div'
+              [ Html.styleProp
+                [ ("position", "absolute")
+                , ("border-radius", "100%")
+                , ("left",  show x <> "px")
+                , ("top",  show y <> "px")
+                , ("width", "10px")
+                , ("height", "10px")
+                , ("background-color", "pink")
+                , ("z-index", "2")
+                ]
+              , Html.textProp "data-location" (show location)
+              ]
     )
   where
     gemini = state ^. #gemini
@@ -144,13 +165,3 @@ geminiHtmlView state =
             ]
             ( ((<>) `on` First) cycleLabel defaultLabel & toList <&> toLabelSpan )
 
-
-
-{--
-          , state ^. #options % #debug `orNothing`
-              Html.div
-                [ Html.styleProp
-                  [ (position
-                  ]
-                ]
-                --}

@@ -121,10 +121,10 @@ newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
 data Location = Location
   { ring     :: !Ring
   , position :: !(Cyclic 18)
-  -- ^ positions run from 0 to 17 inclusive. They start at the topmost position, and run clockwise from their
+  -- ^ Positions start at the top of the ring, run clockwise from there
   }
   deriving stock (Eq, Show, Ord, Generic)
-  deriving anyclass (NFData)
+  deriving anyclass (NFData, Finitary)
 
 location :: Ring -> Int -> Location
 location r p = Location r (cyclic p)
