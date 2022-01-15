@@ -55,6 +55,7 @@ data DragState = DragState
   { start :: !Location
   , ring  :: !Ring
   , angle :: !Double
+  , end   :: !Point
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)

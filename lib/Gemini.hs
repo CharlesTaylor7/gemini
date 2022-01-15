@@ -93,7 +93,6 @@ rootView state =
       [ geminiView state
       , savedMovesPanel state
       ]
-    , if state ^. #options % #debug then debugView state else Html.span'_
     ]
   where
     geminiView =
@@ -106,10 +105,7 @@ debugView :: Store -> Html m a
 debugView state =
   Html.div
     [ Html.styleProp
-        [ ("position", "absolute")
-        , ("top", "0")
-        , ("left", "0")
-        , ("padding", "12px")
+        [ ("padding", "12px")
         , ("display", "flex")
         , ("flex-direction", "column")
         ]
@@ -161,7 +157,8 @@ header state =
   Html.header
     [ Html.className "header"
     ]
-    [ Html.div
+    [ if state ^. #options % #debug then debugView state else Html.span'_
+    , Html.div
       [ Html.className "control-panel"
       ]
       [ buttonGroup "options"

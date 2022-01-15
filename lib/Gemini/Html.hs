@@ -56,13 +56,13 @@ toDegrees :: Double -> Double
 toDegrees th = (th * 180) / pi
 
 -- | angle between two points, in degrees
-angleBetween :: Point -> Point -> Point -> Double
-angleBetween center start end = toRadians $ asin (cross / mag)
+angleBetween :: Point -> Point -> Double
+angleBetween start end = toRadians $ asin (cross / mag)
   where
     cross = x1*y2 - x2*y1
     mag = sqrt $ (x1*x1 + y1*y1) * (x2*x2 + y2*y2)
-    Point { x = x1, y = y1 } = start ~~ center
-    Point { x = x2, y = y2 } = end ~~ center
+    Point { x = x1, y = y1 } = start
+    Point { x = x2, y = y2 } = end
 
 
 geminiHtmlView :: forall m. Store -> Html m Store
@@ -77,14 +77,26 @@ geminiHtmlView state =
     , Html.listenRaw "mousemove" $ \node event -> do
         x :: Double <- toJSVal event ! ("offsetX" :: Text) >>= fromJSValUnchecked
         y :: Double <- toJSVal event ! ("offsetY" :: Text) >>= fromJSValUnchecked
+        case state ^. #drag of
+          Nothing -> pure ()
+          Just drag -> do
+            let origin = drag ^. #ring % to ringCenter
+            let start = drag ^. #start % to diskCenter
+
+            let Point start_x start_y = start ~~ origin
+            let Point end_x end_y = Point x y ~~ origin
+
+            void $ jsg ("console" :: Text) # ("log" :: Text) $ (start_x, start_y, end_x, end_y)
 
         pure $ Continuation.Pure $
-          (#drag % _Just) %~ \drag ->
+          (#drag % _Just) %~ \drag -> do
+            let origin = drag ^. #ring % to ringCenter
+            let start = drag ^. #start % to diskCenter
+            let end = (Point x y ~~ origin)
             drag
-              & #angle .~ angleBetween
-                (drag ^. #ring % to ringCenter)
-                (drag ^. #start % to diskCenter)
-                (Point x y)
+              & #angle .~ angleBetween (start ~~ origin)  end
+              & #end .~ end
+                -- (Point x y)
     ]
     (  map ring inhabitants
     )
@@ -142,7 +154,7 @@ geminiHtmlView state =
                 , (color, True)
                 , ("dragging", Just location == (state ^? #drag % _Just % #start))
                 ]
-            , Html.onMousedown $ #drag ?~ DragState { start = location, angle = 0, ring }
+            , Html.onMousedown $ #drag ?~ DragState { start = location, angle = 0, ring, end = diskCenter location }
             , Html.styleProp
               [ ("width", show diskD <> "px")
               , ("height", show diskD <> "px")
