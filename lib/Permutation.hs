@@ -144,9 +144,11 @@ newtype Permutation (bound :: Nat) = Permutation
 
 instance KnownNat bound => Semigroup (Permutation bound) where
   p <> q = natsUnder @bound
-    & map (\n -> (n, permute q $ permute p $ n))
+    & map (\n -> (n, composed n))
     & fromList
     & Permutation
+    where
+      composed = permute q . permute p
 
 instance KnownNat n => Monoid (Permutation n) where
   mempty = identityPermutation
@@ -164,11 +166,3 @@ instance KnownNat bound => Group (Permutation bound) where
 
 instance KnownNat bound => Pretty (Permutation bound) where
   pretty = pretty . toCycles
-
-
--- looping utilities
-loop :: Monad m => MaybeT m a -> m ()
-loop = void . runMaybeT . forever
-
-break :: Monad m => MaybeT m a
-break = MaybeT $ pure $ Nothing

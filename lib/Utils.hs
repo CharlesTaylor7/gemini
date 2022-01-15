@@ -3,9 +3,11 @@ module Utils
   , zoomComponent
   , generalize
   , orNothing
+  , loop
+  , break
   ) where
 
-import           Relude
+import           Relude                    hiding (break)
 
 import           Optics
 import           Prettyprinter             (Pretty (..))
@@ -32,3 +34,11 @@ generalize optic = Shpadoinkle.Lens.generalize $ toLensVL optic
 
 orNothing :: Bool -> a -> Maybe a
 bool `orNothing` a = if bool then Just a else Nothing
+
+
+-- looping utilities
+loop :: Monad m => MaybeT m a -> m ()
+loop = void . runMaybeT . forever
+
+break :: Monad m => MaybeT m a
+break = MaybeT $ pure $ Nothing
