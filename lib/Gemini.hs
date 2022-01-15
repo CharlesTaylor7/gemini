@@ -54,7 +54,10 @@ initialState = Store
   { gemini = initialGemini
   , history = Seq.Empty
   , moves = Seq.Empty
-  , hoveredCycle = Nothing
+  , hovered = HoverState
+    { activeCycle = Nothing
+    , overMove = False
+    }
   , options = Options
       { showLabels = False
       , animate = True
@@ -111,7 +114,6 @@ debugView state =
         ]
     ]
     [ Html.div_ [ Html.text $ "Recorded : " <> (prettyCompactText $ state ^.. #history % folded) ]
-    , Html.div_ [ Html.text $ "Hovered : " <> (prettyCompactText $ state ^. #hoveredCycle) ]
     ]
 
 savedMovesPanel :: Store -> Html m Store
@@ -132,12 +134,15 @@ savedMovesPanel state =
               [ Html.className "motions" ]
               [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> ":" ]
           , Html.div
-              [ Html.className "cycles"]
+              [ Html.className "cycles"
+              , Html.onMouseenter $ #hovered % #overMove .~ True
+              , Html.onMouseleave $ #hovered % #overMove .~ False
+              ]
               ( move & moveCycles & uncycles & toList <&> \cycle ->
                   Html.div
                     [ Html.className "cycle"
-                    , Html.onMouseenter $ #hoveredCycle ?~ cycle
-                    , Html.onMouseleave $ #hoveredCycle .~ Nothing
+                    , Html.onMouseenter $ #hovered % #activeCycle ?~ cycle
+                    , Html.onMouseleave $ #hovered % #activeCycle .~ Nothing
                     ]
                     [ Html.text $ prettyCompactText $ cycle ]
               )

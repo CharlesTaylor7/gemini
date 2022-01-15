@@ -7,7 +7,7 @@ module Gemini.Types
   , toMove
   , continueMotion
     -- ui types
-  , Store(..), Options(..)
+  , Store(..), Options(..), HoverState(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   ) where
@@ -31,15 +31,21 @@ import           System.Random.Stateful
 
 -- | UI Definitions
 data Store = Store
-  { gemini       :: !Gemini
-  , history      :: !(Seq Motion)
-  , moves        :: !(Seq Move)
-  , hoveredCycle :: !(Maybe (Cycle Location))
-  , options      :: !Options
+  { gemini  :: !Gemini
+  , history :: !(Seq Motion)
+  , moves   :: !(Seq Move)
+  , hovered :: !HoverState
+  , options :: !Options
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
+data HoverState = HoverState
+  { activeCycle :: !(Maybe (Cycle Location))
+  , overMove    :: !Bool
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
 
 data Options = Options
   { showLabels :: !Bool
