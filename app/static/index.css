@@ -41,6 +41,11 @@ button {
     -moz-appearance: none;
 }
 
+/* drag */
+.dragging {
+    cursor: grabbing;
+}
+
 /* root div */
 .gemini-app {
     height: 100vh;
@@ -244,10 +249,9 @@ div.disk {
     cursor: grab;
 }
 
-div.disk:active {
-    cursor: grabbing; 
+.dragging div.disk {
+    cursor: grabbing;
 }
-
 
 div.disk > .disk-label {
     color: black;

@@ -15,12 +15,19 @@ import           Gemini.Types
 import           Permutation
 import           Utils
 
+endDrag :: Store -> Store
+endDrag = #drag .~ Nothing
 
 
 geminiHtmlView :: forall m. Store -> Html m Store
 geminiHtmlView state =
   Html.div
-    [ Html.className "gemini"
+    [ Html.class'
+      [ ("gemini" :: Text, True)
+      , ("dragging", isn't (#drag % _Nothing) state)
+      ]
+    , Html.onMouseup $ endDrag
+    , Html.onMouseleave $ endDrag
     , Html.listenRaw "mousemove" $ \node event -> do
         x <- toJSVal event ! ("offsetX" :: Text) >>= fromJSValUnchecked
         y <- toJSVal event ! ("offsetY" :: Text) >>= fromJSValUnchecked
@@ -87,11 +94,14 @@ geminiHtmlView state =
         toLabelSpan label = Html.span [ ("className", "disk-label") ] [ Html.text label ]
 
       in
-        if not $ isCanonical location
-        then Nothing
-        else Just $
+        isCanonical location `orNothing`
           Html.div
-            [ Html.class' ["disk", color]
+            [ Html.class'
+                [ ("disk", True)
+                , (color, True)
+                , ("dragging", Just location == (state ^? #drag % _Just % #start))
+                ]
+            , Html.onMousedown $ #drag ?~ DragState { start = location, angle = 0, ring }
             , Html.styleProp
               [ ("width", show diskD <> "px")
               , ("height", show diskD <> "px")
