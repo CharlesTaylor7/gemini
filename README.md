@@ -18,6 +18,7 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ## TODO
 - Attach image of puzzle to readme
+- make everthing 25% bigger
 
 ### Features
 - solve button: solve by algorithms

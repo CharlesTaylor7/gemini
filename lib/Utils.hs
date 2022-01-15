@@ -2,6 +2,7 @@ module Utils
   ( prettyCompactText
   , zoomComponent
   , generalize
+  , orNothing
   ) where
 
 import           Relude
@@ -27,3 +28,7 @@ zoomComponent optic props component = component (props ^. optic) & generalize op
 
 generalize :: (Functor m, Continuous f) => Lens' s a -> (f m a -> f m s)
 generalize optic = Shpadoinkle.Lens.generalize $ toLensVL optic
+
+
+orNothing :: Bool -> a -> Maybe a
+bool `orNothing` a = if bool then Just a else Nothing

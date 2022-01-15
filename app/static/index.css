@@ -10,6 +10,8 @@
   --disk-blue: #00aeff;
   --ring-background: #816c5b;
   --panel-border: #82a6e3;
+  --button-background: #0069ed;
+  --button-background-hover: #0053ba;
 }
 
 * {
@@ -21,10 +23,23 @@ body {
     overflow: hidden;
 }
 
+/* button reset */
 button {
+    color: #000000;
+    display: inline-block;
+    border: none;
+    margin: 0;
+    text-decoration: none;
+    user-select: none;
+    font-family: sans-serif;
+    font-size: 1rem;
     cursor: pointer;
+    text-align: center;
+    border-radius: 10px;
+    /* background-color: gray; */
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
-
 
 /* root div */
 .gemini-app {
@@ -56,6 +71,25 @@ button {
     width: 110px;
 }
 
+.action-button {
+    color: white;
+    background: var(--button-background);
+    box-shadow: 3px 3px 3px rgb(0 0 0 / 48%);
+    transition:
+        background 250ms ease-in-out,
+        transform 250ms ease-in-out,
+        box-shadow 250ms ease-in-out;
+}
+
+.action-button:hover,
+.action-button:active {
+    background: var(--button-background-hover);
+}
+
+.action-button:active {
+    box-shadow: none;
+    transform: translate(1px, 1px);
+}
 
 .button-group.motions {
 }
@@ -127,13 +161,24 @@ button {
     padding: 4px 6px;
 }
 
-button.delete-move {
+.delete-move {
+    --width: 25px;
+    flex: 0 0 var(--width);
+    height: var(--width);
     border-radius: 100%;
     text-align: center;
-    --height: 25px;
-    height: var(--height);
-    width: var(--height);
+    font-size: 15px;
+    font-weight: bold ;
+    background-color: #efefef;
+    transition:
+        background-color 250ms ease-in-out;
 }
+
+
+.delete-move:hover {
+    background-color: rgb(253 2 2);
+}
+
 
 .move-buttons {
     display: flex;
@@ -146,11 +191,11 @@ button.delete-move {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-left: 10px;
 }
 
 .cycle {
-    /* color: black */
+    text-align: left;
+    padding-left: 10px;
 }
 
 .cycle:hover {

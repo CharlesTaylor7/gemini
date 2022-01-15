@@ -123,10 +123,8 @@ savedMovesPanel state =
     moveView :: (Int, Move) -> Html m Store
     moveView (i, move) =
       Html.div
-        [ Html.className "move"
-        , Html.onClick $ identity
-        ]
-        [ Html.button
+        [ Html.className "move" ]
+        [ Html.div
           [ Html.className "move-description" ]
           [ Html.div
               [ Html.className "motions" ]
@@ -146,7 +144,7 @@ savedMovesPanel state =
             [ Html.className "delete-move"
             , Html.onClick $ #moves %~ Seq.deleteAt i
             ]
-            [ Html.text $ "x" ]
+            [ Html.text $ "✕" ]
         ]
 
 
@@ -204,26 +202,30 @@ checkBox label checked =
     ]
 
 
+actionButton :: [(Text, Prop m a)] -> [Html m a] -> Html m a
+actionButton props = Html.button $ Html.className "action-button" : props
+
+
 recordButton :: Store -> Html m Store
 recordButton state = if state ^. #options % #recording then stopRecordingButton else startRecordingButton
   where
     startRecordingButton :: Html m Store
     startRecordingButton =
-      Html.button
+      actionButton
         [ Html.onClick $ #options % #recording .~ True ]
         [ Html.text $ "Start Recording" ]
 
 
     stopRecordingButton :: Html m Store
     stopRecordingButton =
-      Html.button
+      actionButton
         [ Html.onClick $ stopRecording ]
         [ Html.text $ "Stop Recording" ]
 
 
 resetButton :: Html m Store
 resetButton =
-  Html.button
+  actionButton
     [ Html.onClick $
         (#history .~ Seq.Empty) .
         (#options % #recording .~ False) .
@@ -235,7 +237,7 @@ resetButton =
 
 scrambleButton :: forall m. MonadIO m => Html m Store
 scrambleButton =
-  Html.button
+  actionButton
     [ Html.onClickM $ do
         rotations <- for ([1..1000] :: [Int]) $ \_ -> (Endo . rotate) <$> uniformM globalStdGen
         let Endo scramble = fold rotations

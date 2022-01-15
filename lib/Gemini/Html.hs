@@ -95,7 +95,3 @@ geminiHtmlView state =
               ]
             ]
             ( ((<>) `on` First) cycleLabel defaultLabel & toList <&> toLabelSpan )
-
-
-orNothing :: Bool -> a -> Maybe a
-bool `orNothing` a = if bool then Just a else Nothing
