@@ -15,16 +15,15 @@ import           Gemini.Types
 import           Permutation
 import           Utils
 
-text :: Text -> Text
-text = identity
+
 
 geminiHtmlView :: forall m. Store -> Html m Store
 geminiHtmlView state =
   Html.div
     [ Html.className "gemini"
     , Html.listenRaw "mousemove" $ \node event -> do
-        x <- toJSVal event ! text "offsetX" >>= fromJSValUnchecked
-        y <- toJSVal event ! text "offsetY" >>= fromJSValUnchecked
+        x <- toJSVal event ! ("offsetX" :: Text) >>= fromJSValUnchecked
+        y <- toJSVal event ! ("offsetY" :: Text) >>= fromJSValUnchecked
         pure $ Continuation.Pure $ (#mouse % #x .~ x) . (#mouse % #y .~ y)
     ]
     (  map ring inhabitants
