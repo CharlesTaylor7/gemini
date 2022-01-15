@@ -24,8 +24,8 @@ endDrag = #drag .~ Nothing
 ringCenter :: Ring -> Point
 ringCenter = \case
   LeftRing   -> Point 150 150
-  CenterRing -> Point (300 - 135) 150
-  RightRing  -> Point (450 - 270) 150
+  CenterRing -> Point (450 - 135) 150
+  RightRing  -> Point (750 - 270) 150
 
 
 diskCenter :: Location -> Point
@@ -52,13 +52,15 @@ cosine = cos . toRadians
 toRadians :: Double -> Double
 toRadians th = (th * pi) / 180.0
 
+toDegrees :: Double -> Double
+toDegrees th = (th * 180) / pi
 
 -- | angle between two points, in degrees
-angle :: Point -> Point -> Point -> Double
-angle center start end = acos (dot / mag)
+angleBetween :: Point -> Point -> Point -> Double
+angleBetween center start end = toRadians $ asin (cross / mag)
   where
-    dot = x1 * x2 + y1 * y2
-    mag = sqrt $ (x1*x1 + y1*y1) * (x2 * x2 + y2 * y2)
+    cross = x1*y2 - x2*y1
+    mag = sqrt $ (x1*x1 + y1*y1) * (x2*x2 + y2*y2)
     Point { x = x1, y = y1 } = start ~~ center
     Point { x = x2, y = y2 } = end ~~ center
 
@@ -73,32 +75,18 @@ geminiHtmlView state =
     , Html.onMouseup $ endDrag
     , Html.onMouseleave $ endDrag
     , Html.listenRaw "mousemove" $ \node event -> do
-        x <- toJSVal event ! ("offsetX" :: Text) >>= fromJSValUnchecked
-        y <- toJSVal event ! ("offsetY" :: Text) >>= fromJSValUnchecked
-        let z = x + y :: Double
-        pure $ Continuation.Pure $ identity
+        x :: Double <- toJSVal event ! ("offsetX" :: Text) >>= fromJSValUnchecked
+        y :: Double <- toJSVal event ! ("offsetY" :: Text) >>= fromJSValUnchecked
+
+        pure $ Continuation.Pure $
+          (#drag % _Just) %~ \drag ->
+            drag
+              & #angle .~ angleBetween
+                (drag ^. #ring % to ringCenter)
+                (drag ^. #start % to diskCenter)
+                (Point x y)
     ]
     (  map ring inhabitants
-    <> if not (state ^. #options % #debug)
-       then []
-       else
-        flip map inhabitants $ \location ->
-          let
-            Point x y = diskCenter location
-          in
-            Html.div'
-              [ Html.styleProp
-                [ ("position", "absolute")
-                , ("border-radius", "100%")
-                , ("left",  show x <> "px")
-                , ("top",  show y <> "px")
-                , ("width", "10px")
-                , ("height", "10px")
-                , ("background-color", "pink")
-                , ("z-index", "2")
-                ]
-              , Html.textProp "data-location" (show location)
-              ]
     )
   where
     gemini = state ^. #gemini
@@ -163,5 +151,24 @@ geminiHtmlView state =
               , ("top", show y <> "px")
               ]
             ]
-            ( ((<>) `on` First) cycleLabel defaultLabel & toList <&> toLabelSpan )
-
+            ( catMaybes
+              [ getFirst $ ((<>) `on` First) cycleLabel defaultLabel <&> toLabelSpan
+              , (state ^. #options % #debug && ( state ^? #drag % _Just % #start == Just location))
+                `orNothing`
+                    let
+                      d = "10px"
+                    in
+                      Html.div'
+                        [ Html.styleProp
+                          [ ("position", "absolute")
+                          , ("border-radius", "100%")
+                          , ("left",  show (diskR - 5) <> "px")
+                          , ("top",  show (diskR - 5) <> "px")
+                          , ("width", d)
+                          , ("height", d)
+                          , ("background-color", "purple")
+                          , ("z-index", "2")
+                          ]
+                        ]
+              ]
+            )
