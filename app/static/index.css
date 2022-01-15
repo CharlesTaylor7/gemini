@@ -156,13 +156,36 @@ button {
     background: #c8d0ff;
     border: none;
     padding: 0;
-    margin-right: 12px;
     border-radius: 10px;
-    padding: 4px 6px;
+    padding: 6px 12px;
+    font-family: monospace;
+}
+
+.motions {
+    user-select: none;
+}
+
+.cycles {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    cursor: default;
+    padding-left: 12px;
+}
+
+.cycle {
+    text-align: left;
+    user-select: none;
+    flex: 1 1 auto;
+}
+
+.cycle:hover {
+    background-color: #85bcff;
 }
 
 .delete-move {
-    --width: 25px;
+    margin-left: 12px;
+    --width: 23px;
     flex: 0 0 var(--width);
     height: var(--width);
     border-radius: 100%;
@@ -174,33 +197,8 @@ button {
         background-color 250ms ease-in-out;
 }
 
-
 .delete-move:hover {
-    background-color: gray;
-}
-
-
-.move-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.cycles {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    cursor: default;
-}
-
-.cycle {
-    text-align: left;
-    padding-left: 10px;
-}
-
-.cycle:hover {
-    background-color: #85bcff;
+    background-color: #c4c4c4;
 }
 
 

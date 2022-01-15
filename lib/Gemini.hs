@@ -128,7 +128,7 @@ savedMovesPanel state =
           [ Html.className "move-description" ]
           [ Html.div
               [ Html.className "motions" ]
-              [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> " :" ]
+              [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> ":" ]
           , Html.div
               [ Html.className "cycles"]
               ( move & moveCycles & uncycles & toList <&> \cycle ->
