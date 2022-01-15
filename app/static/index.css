@@ -227,6 +227,7 @@ div.ring {
     border-radius: 100%;
     background-color: var(--ring-background);
     flex-shrink: 0;
+    box-shadow: 10px 0px 5px rgb(0 0 0 / 48%);
 }
 
 div.ring-L {
