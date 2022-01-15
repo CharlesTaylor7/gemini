@@ -143,12 +143,10 @@ newtype Permutation (bound :: Nat) = Permutation
 
 
 instance KnownNat bound => Semigroup (Permutation bound) where
-  p <> q = Permutation { intMap }
-    where
-      intMap =
-        flip execState mempty $
-          for_ (natsUnder @bound) $ \n ->
-            at n ?= (permute p . permute q) n
+  p <> q = natsUnder @bound
+    & map (\n -> (n, permute q $ permute p $ n))
+    & fromList
+    & Permutation
 
 instance KnownNat n => Monoid (Permutation n) where
   mempty = identityPermutation
