@@ -156,13 +156,10 @@ instance KnownNat n => Monoid (Permutation n) where
 identityPermutation = Permutation mempty
 
 instance KnownNat bound => Group (Permutation bound) where
-  invert p =
-    Permutation $
-    flip execState mempty $ do
-      for_ (natsUnder @bound) $ \n -> do
-        let k = permute p n
-        at k ?= n
-
+  invert p = natsUnder @bound
+    & map (\n -> (permute p n, n))
+    & fromList
+    & Permutation
 
 instance KnownNat bound => Pretty (Permutation bound) where
   pretty = pretty . toCycles
