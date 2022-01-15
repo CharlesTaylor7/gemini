@@ -2,7 +2,9 @@ module Gemini.Html where
 
 import           Relude
 
+import           Data.Cyclic
 import           Data.Finitary
+import           Data.Permutation
 import qualified Data.Sequence               as Seq
 import qualified Data.Text                   as Text
 import           Language.Javascript.JSaddle (JSVal, fromJSValUnchecked, jsg, toJSVal, (!), (#))
@@ -12,12 +14,53 @@ import qualified Shpadoinkle.Continuation    as Continuation
 import qualified Shpadoinkle.Html            as Html
 
 import           Gemini.Types
-import           Permutation
 import           Utils
+
 
 endDrag :: Store -> Store
 endDrag = #drag .~ Nothing
 
+
+ringCenter :: Ring -> Point
+ringCenter = \case
+  LeftRing   -> Point 150 150
+  CenterRing -> Point (300 - 135) 150
+  RightRing  -> Point (450 - 270) 150
+
+
+diskCenter :: Location -> Point
+diskCenter location = Point x y <> ringCenter (location ^. #ring)
+  where
+    angle = fromIntegral (location ^. #position % #unCyclic) * 20.0 - 90.0
+    r = ringR - diskR
+    (x, y) =
+      ( r * cosine angle
+      , r * sine angle
+      )
+
+
+-- dimensions
+ringR = 150.0
+diskR = (ringR / 7.0)
+ringD = 2 * ringR
+diskD = 2 * diskR
+
+-- math utils
+sine = sin . toRadians
+cosine = cos . toRadians
+
+toRadians :: Double -> Double
+toRadians th = (th * pi) / 180.0
+
+
+-- | angle between two points, in degrees
+angle :: Point -> Point -> Point -> Double
+angle center start end = acos (dot / mag)
+  where
+    dot = x1 * x2 + y1 * y2
+    mag = sqrt $ (x1*x1 + y1*y1) * (x2 * x2 + y2 * y2)
+    Point { x = x1, y = y1 } = start ~~ center
+    Point { x = x2, y = y2 } = end ~~ center
 
 geminiHtmlView :: forall m. Store -> Html m Store
 geminiHtmlView state =
@@ -46,11 +89,6 @@ geminiHtmlView state =
       & map (\(i, x) -> (x, i + 1))
       & fromList
 
-    -- dimensions
-    ringR = 150.0
-    diskR = (ringR / 7.0)
-    ringD = 2 * ringR
-    diskD = 2 * diskR
 
     ring :: Ring -> Html m Store
     ring r =
@@ -64,21 +102,16 @@ geminiHtmlView state =
         ( disks r )
 
 
-    sine = sin . toRadians
-    cosine = cos . toRadians
-    toRadians :: Double -> Double
-    toRadians th = (th * pi) / 180.0
-
     disks :: Ring -> [Html m Store]
-    disks ring = catMaybes $ flip map [0..17] $ \position ->
+    disks ring = catMaybes $ flip map inhabitants $ \position ->
       let
         location = Location ring position
         (color, diskLabel) =
           case gemini ^? geminiIx location of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "")
+        angle = fromIntegral (unCyclic position) * 20.0 - 90.0
         r = ringR - diskR
-        angle = fromIntegral position * 20.0 - 90.0
         (x, y) =
           ( r * (1 + cosine angle)
           , r * (1 + sine angle)
@@ -92,7 +125,6 @@ geminiHtmlView state =
         cycleLabel = activeCycleMap ^? ix location <&> show
 
         toLabelSpan label = Html.span [ ("className", "disk-label") ] [ Html.text label ]
-
       in
         isCanonical location `orNothing`
           Html.div
@@ -111,3 +143,14 @@ geminiHtmlView state =
               ]
             ]
             ( ((<>) `on` First) cycleLabel defaultLabel & toList <&> toLabelSpan )
+
+
+
+{--
+          , state ^. #options % #debug `orNothing`
+              Html.div
+                [ Html.styleProp
+                  [ (position
+                  ]
+                ]
+                --}

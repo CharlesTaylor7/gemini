@@ -5,6 +5,7 @@ module Utils
   , orNothing
   , loop
   , break
+  , knownInt
   ) where
 
 import           Relude                    hiding (break)
@@ -42,3 +43,8 @@ loop = void . runMaybeT . forever
 
 break :: Monad m => MaybeT m a
 break = MaybeT $ pure $ Nothing
+
+
+-- | make KnownNat easier to use
+knownInt :: forall n. KnownNat n => Int
+knownInt = fromIntegral $ natVal @n (Proxy :: Proxy n)

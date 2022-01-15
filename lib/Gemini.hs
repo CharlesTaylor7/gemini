@@ -7,11 +7,11 @@ module Gemini
 import           Relude
 
 import           Data.Finitary
+import           Data.Permutation
 import qualified Data.Sequence          as Seq
 import qualified Data.Text              as Text
 import           Data.Traversable       (for)
 import           Optics                 hiding ((#))
-import           Permutation
 import           System.Random.Stateful (globalStdGen, uniformM)
 import           Utils
 

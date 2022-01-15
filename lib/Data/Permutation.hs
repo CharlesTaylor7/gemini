@@ -1,6 +1,6 @@
 {- | Manipulate permutations, show them in cycle notation
 -}
-module Permutation
+module Data.Permutation
   ( Permutation(..), permute, faithful, domain
   , Cycle(..), cycle
   , Cycles(..), cycles, toCycles, fromCycles
@@ -23,6 +23,8 @@ import           Optics
 import           Optics.State.Operators
 import           Prettyprinter          (Pretty (..))
 import qualified Prettyprinter          as Pretty
+
+import           Utils                  (knownInt)
 
 
 newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
@@ -125,9 +127,7 @@ faithful = coerce
 
 
 natsUnder :: forall bound. KnownNat bound => [Int]
-natsUnder = [0..n-1]
-  where
-    n = fromIntegral $ natVal (Proxy :: Proxy bound)
+natsUnder = [0..knownInt @bound - 1]
 
 
 domain :: forall bound. KnownNat bound => Permutation bound -> [Int]

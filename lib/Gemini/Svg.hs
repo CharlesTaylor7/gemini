@@ -17,6 +17,9 @@ import qualified Shpadoinkle.Html as Html
 
 import           Gemini.Types
 
+import           Data.Cyclic
+import           Data.Permutation
+
 
 geminiSvgView :: forall a m. Store -> Html m a
 geminiSvgView state =
@@ -66,14 +69,14 @@ geminiSvgView state =
     ringY = ringR
 
     disks :: Ring -> [SvgElement]
-    disks ring = flip map [0..17] $ \position ->
+    disks ring = flip map inhabitants $ \position ->
       let
         (color, label) =
           case gemini ^? geminiIx (Location ring position) of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "unknown")
         r = ringR - diskR
-        angle = fromIntegral position * 20.0 - 90.0
+        angle = fromIntegral (unCyclic position) * 20.0 - 90.0
         (x, y) =
           ( r * (cosine angle) + ringX ring
           , r * (sine angle) + ringY

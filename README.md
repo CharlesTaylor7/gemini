@@ -31,6 +31,7 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - need explanation in header
 - keyboard controls
 - click and drag based controls
+- touch controls on mobile / tablet
 - arrow buttons above each ring?
 
 ### On Solve

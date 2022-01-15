@@ -36,6 +36,7 @@ dependencies:
 - random
 - groups
 - finitary
+- finite-typelits
 
 
 default-extensions:

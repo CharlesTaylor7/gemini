@@ -25,11 +25,12 @@ source-repository head
 
 library
   exposed-modules:
+      Data.Cyclic
+      Data.Permutation
       Gemini
       Gemini.Html
       Gemini.Svg
       Gemini.Types
-      Permutation
       Svg
       Utils
   other-modules:
@@ -74,6 +75,7 @@ library
     , base >=4.14 && <4.16
     , containers
     , finitary
+    , finite-typelits
     , groups
     , jsaddle
     , jsaddle-dom
@@ -131,6 +133,7 @@ executable gemini
     , base >=4.14 && <4.16
     , containers
     , finitary
+    , finite-typelits
     , gemini
     , groups
     , jsaddle
@@ -189,6 +192,7 @@ test-suite gemini-test
     , base >=4.14 && <4.16
     , containers
     , finitary
+    , finite-typelits
     , groups
     , jsaddle
     , jsaddle-dom
