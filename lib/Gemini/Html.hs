@@ -29,7 +29,7 @@ geminiHtmlView state =
 
     activeCycleMap :: Map Location Int
     activeCycleMap = state
-      & itoListOf (#hovered % #activeCycle % non (Cycle Empty) % ifolded)
+      & itoListOf (#mouse % #activeCycle % non (Cycle Empty) % ifolded)
       & map (\(i, x) -> (x, i + 1))
       & fromList
 
@@ -73,7 +73,7 @@ geminiHtmlView state =
 
         defaultLabel :: Maybe Text
         defaultLabel =
-          (options ^. #showLabels && state ^. #hovered % #overMove % to not) `orNothing` diskLabel
+          (options ^. #showLabels && state ^. #mouse % #overMove % to not) `orNothing` diskLabel
 
         cycleLabel :: Maybe Text
         cycleLabel = activeCycleMap ^? ix location <&> show
