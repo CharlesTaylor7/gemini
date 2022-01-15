@@ -7,7 +7,7 @@ module Gemini.Types
   , toMove
   , continueMotion
     -- ui types
-  , Store(..), Options(..), MouseState(..)
+  , Store(..), HoverState(..), DragState(..), Options(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   ) where
@@ -34,17 +34,24 @@ data Store = Store
   { gemini  :: !Gemini
   , history :: !(Seq Motion)
   , moves   :: !(Seq Move)
-  , mouse   :: !MouseState
+  , hover   :: !HoverState
+  , drag    :: !(Maybe DragState)
   , options :: !Options
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
-data MouseState = MouseState
+data HoverState = HoverState
   { activeCycle :: !(Maybe (Cycle Location))
   , overMove    :: !Bool
-  , x           :: !Double
-  , y           :: !Double
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
+
+data DragState = DragState
+  { start :: !Location
+  , ring  :: !Ring
+  , angle :: !Double
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)

@@ -24,7 +24,8 @@ geminiHtmlView state =
     , Html.listenRaw "mousemove" $ \node event -> do
         x <- toJSVal event ! ("offsetX" :: Text) >>= fromJSValUnchecked
         y <- toJSVal event ! ("offsetY" :: Text) >>= fromJSValUnchecked
-        pure $ Continuation.Pure $ (#mouse % #x .~ x) . (#mouse % #y .~ y)
+        let z = x + y :: Double
+        pure $ Continuation.Pure $ identity
     ]
     (  map ring inhabitants
     )
@@ -34,7 +35,7 @@ geminiHtmlView state =
 
     activeCycleMap :: Map Location Int
     activeCycleMap = state
-      & itoListOf (#mouse % #activeCycle % non (Cycle Empty) % ifolded)
+      & itoListOf (#hover % #activeCycle % non (Cycle Empty) % ifolded)
       & map (\(i, x) -> (x, i + 1))
       & fromList
 
@@ -78,7 +79,7 @@ geminiHtmlView state =
 
         defaultLabel :: Maybe Text
         defaultLabel =
-          (options ^. #showLabels && state ^. #mouse % #overMove % to not) `orNothing` diskLabel
+          (options ^. #showLabels && state ^. #hover % #overMove % to not) `orNothing` diskLabel
 
         cycleLabel :: Maybe Text
         cycleLabel = activeCycleMap ^? ix location <&> show

@@ -245,8 +245,9 @@ div.disk {
 }
 
 div.disk:active {
-    cursor: grabbing;
+    cursor: grabbing; 
 }
+
 
 div.disk > .disk-label {
     color: black;
