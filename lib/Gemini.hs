@@ -118,7 +118,9 @@ savedMovesPanel :: Store -> Html m Store
 savedMovesPanel state =
   Html.div
     [ Html.className "saved-moves-panel" ]
-    ( itoListOf (#moves % ifolded) state <&> moveView )
+    (  (itoListOf (#moves % ifolded) state <&> moveView)
+    <> [ Html.div' [ Html.className "scrollbar-pad" ] ]
+    )
   where
     moveView :: (Int, Move) -> Html m Store
     moveView (i, move) =
