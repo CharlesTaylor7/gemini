@@ -176,7 +176,7 @@ button {
 
 
 .delete-move:hover {
-    background-color: rgb(253 2 2);
+    background-color: gray;
 }
 
 
@@ -191,6 +191,7 @@ button {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    cursor: default;
 }
 
 .cycle {
@@ -199,9 +200,8 @@ button {
 }
 
 .cycle:hover {
-    background-color: yellow;
+    background-color: #85bcff;
 }
-
 
 
 /* html gemini */
