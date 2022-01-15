@@ -241,6 +241,11 @@ div.disk {
     border-radius: 100%;
     z-index: 1;
     box-sizing: border-box;
+    cursor: grab;
+}
+
+div.disk:active {
+    cursor: grabbing;
 }
 
 div.disk > .disk-label {

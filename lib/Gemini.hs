@@ -57,6 +57,8 @@ initialState = Store
   , mouse = MouseState
     { activeCycle = Nothing
     , overMove = False
+    , x = 0
+    , y = 0
     }
   , options = Options
       { showLabels = False
@@ -114,7 +116,7 @@ debugView state =
         ]
     ]
     [ Html.div_ [ Html.text $ "Recorded : " <> (prettyCompactText $ state ^.. #history % folded) ]
-    ]
+    , Html.div_ [ Html.text $ "Mouse : " <> (show $ state ^. #mouse) ] ]
 
 savedMovesPanel :: Store -> Html m Store
 savedMovesPanel state =

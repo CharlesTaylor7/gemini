@@ -3,23 +3,29 @@ module Gemini.Html where
 import           Relude
 
 import           Data.Finitary
-import qualified Data.Sequence    as Seq
-import qualified Data.Text        as Text
-import           Optics           hiding ((#))
-
-
-import           Permutation
-import           Shpadoinkle
-import qualified Shpadoinkle.Html as Html
+import qualified Data.Sequence               as Seq
+import qualified Data.Text                   as Text
+import           Language.Javascript.JSaddle (JSVal, fromJSValUnchecked, jsg, toJSVal, (!), (#))
+import           Optics                      hiding ((#))
+import           Shpadoinkle                 hiding (text)
+import qualified Shpadoinkle.Continuation    as Continuation
+import qualified Shpadoinkle.Html            as Html
 
 import           Gemini.Types
+import           Permutation
 import           Utils
 
+text :: Text -> Text
+text = identity
 
-geminiHtmlView :: forall a m. Store -> Html m a
+geminiHtmlView :: forall m. Store -> Html m Store
 geminiHtmlView state =
   Html.div
     [ Html.className "gemini"
+    , Html.listenRaw "mousemove" $ \node event -> do
+        x <- toJSVal event ! text "offsetX" >>= fromJSValUnchecked
+        y <- toJSVal event ! text "offsetY" >>= fromJSValUnchecked
+        pure $ Continuation.Pure $ (#mouse % #x .~ x) . (#mouse % #y .~ y)
     ]
     (  map ring inhabitants
     )
@@ -39,7 +45,7 @@ geminiHtmlView state =
     ringD = 2 * ringR
     diskD = 2 * diskR
 
-    ring :: Ring -> Html m a
+    ring :: Ring -> Html m Store
     ring r =
       Html.div
         [ Html.class' [ "ring", "ring-" <> prettyCompactText r ]
@@ -56,7 +62,7 @@ geminiHtmlView state =
     toRadians :: Double -> Double
     toRadians th = (th * pi) / 180.0
 
-    disks :: Ring -> [Html m a]
+    disks :: Ring -> [Html m Store]
     disks ring = catMaybes $ flip map [0..17] $ \position ->
       let
         location = Location ring position

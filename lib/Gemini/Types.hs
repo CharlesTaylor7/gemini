@@ -43,6 +43,8 @@ data Store = Store
 data MouseState = MouseState
   { activeCycle :: !(Maybe (Cycle Location))
   , overMove    :: !Bool
+  , x           :: !Double
+  , y           :: !Double
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
