@@ -60,14 +60,6 @@ data Move = Move
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
-instance Pretty Move where
-  pretty Move { motions, permutation } =
-    Pretty.hsep
-      [ pretty $ toList $ motions
-      , ": "
-      , pretty $ fmap indexToLocation $ toCycles $ permutation
-      ]
-
 data Motion = Motion
   { amount   :: Int
   , rotation :: Rotation

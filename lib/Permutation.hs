@@ -25,7 +25,6 @@ import           Prettyprinter          (Pretty (..))
 import qualified Prettyprinter          as Pretty
 
 
--- | Cycles backed by its cycle notation
 newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
   deriving stock (Functor, Generic)
 
@@ -44,8 +43,8 @@ cycles = Cycles . fromList . toList
 
 
 -- | Show permutations in cycle notation
-instance Pretty a => Pretty (Cycles a) where
-    pretty = prettyList . toList . uncycles
+-- instance Pretty a => Pretty (Cycles a) where
+    -- pretty = prettyList . toList . uncycles
 
 instance Pretty a => Pretty (Cycle a) where
     pretty cycle
@@ -160,6 +159,3 @@ instance KnownNat bound => Group (Permutation bound) where
     & map (\n -> (permute p n, n))
     & fromList
     & Permutation
-
-instance KnownNat bound => Pretty (Permutation bound) where
-  pretty = pretty . toCycles
