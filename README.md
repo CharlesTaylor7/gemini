@@ -34,6 +34,12 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - touch controls on mobile / tablet
 - arrow buttons above each ring?
 
+### Drag controls
+- handle mobile touch events
+- on drag end, snap to nearest position
+- make 4 disks on intersections, non draggable
+- enforce that disks on the intersections always rotate with the rotating ring
+
 ### On Solve
 - pop confetti 
 - show number of moves to solve

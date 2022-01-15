@@ -59,8 +59,8 @@ toDegrees th = (th * 180) / pi
 angleBetween :: Point -> Point -> Double
 angleBetween start end = toDegrees $ sign * acos (dot / mag)
   where
-    sign = if cross >= 0 then 1 else -1
-    cross = x1*y2 - x2*y1
+    -- angle has the same sign as the cross product
+    sign = if x1*y2 >= x2*y1 then 1 else -1
     dot = x1*x2 + y1*y2
     mag = sqrt $ (x1*x1 + y1*y1) * (x2*x2 + y2*y2)
     Point { x = x1, y = y1 } = start
