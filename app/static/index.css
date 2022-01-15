@@ -1,17 +1,17 @@
 @namespace svg url(http://www.w3.org/2000/svg);
 /* defaults */
 :root {
-  --disk-unknown: purple;
-  --disk-white: white;
-  --disk-black: black;
-  --disk-yellow: #fadd00;
-  --disk-red: #ad0000;
-  --disk-green: #45ab36;
-  --disk-blue: #00aeff;
-  --ring-background: #816c5b;
-  --panel-border: #82a6e3;
-  --button-background: #0069ed;
-  --button-background-hover: #0053ba;
+    --disk-unknown: purple;
+    --disk-white: white;
+    --disk-black: black;
+    --disk-yellow: #fadd00;
+    --disk-red: #ad0000;
+    --disk-green: #45ab36;
+    --disk-blue: #00aeff;
+    --ring-background: #816c5b;
+    --panel-border: #82a6e3;
+    --button-background: #0069ed;
+    --button-background-hover: #0053ba;
 }
 
 * {
