@@ -60,6 +60,13 @@ data DragState = DragState
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
+instance Pretty DragState where
+  pretty DragState { start, ring, angle, end }
+    =  pretty ring
+    <> pretty start
+    <> pretty end
+    <> pretty angle
+
 data Options = Options
   { showLabels :: !Bool
   , animate    :: !Bool
@@ -97,6 +104,8 @@ data Point = Point
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (NFData)
+instance Pretty Point where
+  pretty (Point x y) = pretty (x, y)
 
 instance Semigroup Point where
   Point x1 y1 <> Point x2 y2 = Point (x1 + x2) (y1 + y2)
@@ -127,6 +136,10 @@ data Location = Location
   deriving stock (Eq, Show, Ord, Generic)
   deriving anyclass (NFData, Finitary)
 
+instance Pretty Location where
+  pretty Location { ring, position = Cyclic n} =
+    pretty ring <> Pretty.viaShow n
+
 location :: Ring -> Int -> Location
 location r p = Location r (cyclic p)
 
@@ -152,9 +165,6 @@ data RotationDirection
   deriving stock (Eq, Show, Generic)
   deriving anyclass (NFData, Uniform, Finitary)
 
-instance Pretty Location where
-  pretty Location { ring, position } =
-    pretty ring <> Pretty.viaShow position
 
 data Ring
   = LeftRing

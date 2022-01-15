@@ -111,7 +111,7 @@ debugView state =
         ]
     ]
     [ Html.div_ [ Html.text $ "Recorded : " <> (prettyCompactText $ state ^.. #history % folded) ]
-    , Html.div_ [ Html.text $ "Drag : " <> (show $ state ^. #drag) ] ]
+    , Html.div_ [ Html.text $ "Drag : " <> (prettyCompactText $ state ^. #drag) ] ]
 
 savedMovesPanel :: Store -> Html m Store
 savedMovesPanel state =
