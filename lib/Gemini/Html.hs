@@ -8,6 +8,7 @@ import           Data.Cyclic
 import           Data.Finitary
 import           Data.Permutation
 import qualified Data.Sequence               as Seq
+import           Data.Set.Optics
 import qualified Data.Text                   as Text
 import           Language.Javascript.JSaddle (JSVal, fromJSValUnchecked, jsg, toJSVal, (!), (#))
 import           Optics                      hiding ((#))
@@ -22,8 +23,8 @@ import           Utils
 
 
 endDrag :: Store -> Store
-endDrag state =
-  flip execState state $ do
+endDrag store =
+  flip execState store $ do
     drag <- use #drag
     case drag of
       Nothing -> pure ()
@@ -61,12 +62,27 @@ toDegrees :: Double -> Double
 toDegrees th = (th * 180) / pi
 
 
+draggedOver :: Store -> Set Location
+draggedOver store = setOf (folded % to sibling % _Just) $ activeLocations store
+
+activeLocations :: Store -> [Location]
+activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
+
+activeRing :: Store -> Maybe Ring
+activeRing store = inhabitants & filter (isActive store) & preview (ix 0)
+
+isActive :: Store -> Ring -> Bool
+isActive store r = fromMaybe False $ do
+  drag <- store ^. #drag
+  pure $ drag ^. #ring == r
+
+
 geminiHtmlView :: forall m. Store -> Html m Store
-geminiHtmlView state =
+geminiHtmlView store =
   Html.div
     [ Html.class'
       [ ("gemini" :: Text, True)
-      , ("dragging", isn't (#drag % _Nothing) state)
+      , ("dragging", isn't (#drag % _Nothing) store)
       ]
     , Html.onMouseup $ endDrag
     , Html.onMouseleave $ endDrag
@@ -90,16 +106,14 @@ geminiHtmlView state =
     (  map ring inhabitants
     )
   where
-    gemini = state ^. #gemini
-    options = state ^. #options
+    gemini = store ^. #gemini
+    options = store ^. #options
 
     activeCycleMap :: Map Location Int
-    activeCycleMap = state
+    activeCycleMap = store
       & itoListOf (#hover % #activeCycle % non (Cycle Empty) % ifolded)
       & map (\(i, x) -> (x, i + 1))
       & fromList
-
-
     ring :: Ring -> Html m Store
     ring r =
       Html.div
@@ -121,7 +135,7 @@ geminiHtmlView state =
 
     dragAngle :: Ring -> Maybe Double
     dragAngle r = do
-      drag <- state ^. #drag
+      drag <- store ^. #drag
       guard $ drag ^. #ring == r
       pure $ drag ^. #currentAngle
 
@@ -141,7 +155,7 @@ geminiHtmlView state =
           )
 
         defaultLabel :: Maybe Text
-        defaultLabel = (options ^. #showLabels && state ^. #hover % #overMove % to not) `orNothing` diskLabel
+        defaultLabel = (options ^. #showLabels && store ^. #hover % #overMove % to not) `orNothing` diskLabel
 
         cycleLabel :: Maybe Text
         cycleLabel = activeCycleMap ^? ix location <&> show
@@ -153,6 +167,7 @@ geminiHtmlView state =
               [ ("disk", True)
               , (color, True)
               , ("drag-disabled", isIntersection location)
+              , ("hidden", draggedOver store ^. contains location)
               ]
             , Html.onMousedown $
                 if isIntersection location

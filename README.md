@@ -36,9 +36,9 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ### Drag controls
 - handle mobile touch events
-- make 4 disks on intersections, non draggable
-- enforce that disks on the intersections always rotate with the rotating ring
+- hide/remove disks on the intersections which are not rotating
 - animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
+- it feels jerky during the snap
 
 ### On Solve
 - pop confetti 

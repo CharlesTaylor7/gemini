@@ -1,7 +1,7 @@
 module Gemini.Types
   ( -- core types and operations
     Gemini, geminiFromList, geminiIx, ringIndex , initialGemini
-  , Location(..), location, isCanonical, isIntersection
+  , Location(..), location, isCanonical, isIntersection, sibling
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
   , toMove, toMotion
@@ -290,6 +290,10 @@ isCanonical location = canonical location == location
 
 isIntersection :: Location -> Bool
 isIntersection l = canonical l /= l || inverseCanonical l /= l
+
+-- | The other name for this location, if it has one
+sibling :: Location -> Maybe Location
+sibling l = filter (/= l) [canonical l, inverseCanonical l] ^? ix 0
 
 
 -- | Invert a disk coordinate to its canonical location
