@@ -31,7 +31,7 @@ endDrag state =
         (#drag .= Nothing)
         let ring = drag ^. #ring
         let theta = drag ^. #currentAngle
-        let n = truncate $ (theta / 20) - 0.5
+        let n = floor $ (theta / 20) + 0.5
         let direction = if signum n > 0 then Clockwise else AntiClockwise
         let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
         modify $ applyMotionToStore motion
