@@ -28,7 +28,8 @@ import           Utils                  (knownInt)
 
 
 newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
-  deriving stock (Functor, Generic)
+  deriving stock (Eq, Generic, Show, Functor)
+  deriving anyclass (NFData)
 
 
 newtype Cycle a = Cycle (Seq a)

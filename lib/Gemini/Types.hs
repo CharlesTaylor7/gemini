@@ -73,8 +73,8 @@ data Options = Options
 
 
 data Move = Move
-  { motions     :: !(Seq Motion)
-  , permutation :: !GeminiPermutation
+  { motions    :: !(Seq Motion)
+  , moveCycles :: !(Cycles Location)
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -210,7 +210,9 @@ instance Pretty Color where
   pretty Blue   = "U"
 
 
--- | Basic operations
+--  Basic operations
+--
+-- | Typeclass for things that describe permutations of the Gemini puzzle
 class ToPermutation a where
   toPerm :: a -> GeminiPermutation
 
@@ -236,8 +238,9 @@ instance ToPermutation Motion where
   toPerm Motion { amount, rotation } = (`pow` amount) $ toPerm rotation
 
 
-moveCycles :: Move -> Cycles Location
-moveCycles = fmap indexToLocation . toCycles . view #permutation
+
+locationCycles :: GeminiPermutation -> Cycles Location
+locationCycles = fmap indexToLocation . toCycles
 
 
 applyToGemini :: ToPermutation a => a -> Gemini -> Gemini
@@ -394,7 +397,7 @@ areConsecutive locations = (numberOfRings == 1) || (numberOfRings == 2)
 
 
 toMove :: Seq Motion -> Move
-toMove motions = Move { motions, permutation = toPerm motions }
+toMove motions = Move { motions, moveCycles = locationCycles $ toPerm motions }
 
 
 applyToHistory :: Motion -> Seq Motion -> Seq Motion
