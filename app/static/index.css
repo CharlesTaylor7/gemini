@@ -12,8 +12,6 @@
     --panel-border: #82a6e3;
     --button-background: #0069ed;
     --button-background-hover: #0053ba;
-    --z-index-rotating-ring: 1;
-    --z-index-disk: 2;
 }
 
 * {
@@ -235,7 +233,7 @@ div.ring {
 }
 
 div.ring.dragging {
-    z-index: var(--z-index-ring-rotating);
+    z-index: 2;
 }
 
 div.ring-L {
@@ -254,7 +252,7 @@ div.disk {
     position: absolute;
     text-align: center;
     border-radius: 100%;
-    z-index: var(--z-index-disk);
+    z-index: 5;
     box-sizing: border-box;
     cursor: grab;
     box-shadow: 1px 1px 3px rgb(28 25 23 / 50%);
