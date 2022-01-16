@@ -111,15 +111,3 @@ executables:
     dependencies:
     - gemini
     - Shpadoinkle-backend-pardiff
-
-
-tests:
-  gemini-test:
-    main:                Spec.hs
-    source-dirs:         test
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - mars-rover
