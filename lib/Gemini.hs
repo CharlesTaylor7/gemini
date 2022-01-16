@@ -21,33 +21,10 @@ import qualified Shpadoinkle.Keyboard   as Key
 import           Gemini.Html            (geminiHtmlView)
 import           Gemini.Svg             (geminiSvgView)
 import           Gemini.Types
+import           Gemini.UI.Actions
 
 
-
--- | UI Operations
-applyRotation :: Rotation -> Store -> Store
-applyRotation rotation state = state
-  & #gemini %~ rotate rotation
-  & #history %~ updateHistory
-  where
-    updateHistory =
-      if state ^. #options % #recording
-      then continueMotion rotation
-      else const Seq.Empty
-
-
-stopRecording :: Store -> Store
-stopRecording state = state
-  & #options % #recording .~ False
-  & #moves %~ updateMoves
-  & #history .~ Seq.Empty
-  where
-    updateMoves =
-      case state ^. #history of
-        Seq.Empty -> identity
-        motions   -> (toMove motions :<|)
-
-
+-- | Initial state of the app
 initialState :: Store
 initialState = Store
   { gemini = initialGemini
@@ -68,6 +45,7 @@ initialState = Store
   , debugLog = ""
   }
 
+applyRotation r = applyMotionToStore $ toMotion r
 
 -- | Components
 rootView :: MonadIO m => Store -> Html m Store

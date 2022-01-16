@@ -4,8 +4,8 @@ module Gemini.Types
   , Location(..), location, isCanonical
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
-  , toMove
-  , continueMotion
+  , toMove, toMotion
+  , applyToGemini, applyToHistory
     -- ui types
   , Store(..), HoverState(..), DragState(..), Options(..)
   , Point(..)
@@ -80,8 +80,8 @@ data Move = Move
   deriving anyclass (NFData)
 
 data Motion = Motion
-  { amount   :: Int
-  , rotation :: Rotation
+  { amount   :: !Int
+  , rotation :: !Rotation
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -89,8 +89,8 @@ data Motion = Motion
 instance Pretty Motion where
   pretty Motion { amount, rotation } =
     pretty amount <> pretty rotation
-
   prettyList = Pretty.sep . fmap pretty
+
 
 data Point = Point
   { x :: !Double
@@ -216,6 +216,10 @@ moveCycles = fmap indexToLocation . toCycles . view #permutation
 
 rotate :: Rotation -> Gemini -> Gemini
 rotate = permuteGemini . rotationToPermutation
+
+applyToGemini :: Motion -> Gemini -> Gemini
+applyToGemini Motion { amount, rotation } =
+  permuteGemini $ stimes amount $ rotationToPermutation rotation
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
 permuteGemini p (Gemini disks) =
@@ -377,23 +381,23 @@ toPermutation = foldMap toPerm
 toMove :: Seq Motion -> Move
 toMove motions = Move { motions, permutation = toPermutation motions }
 
-continueMotion :: Rotation -> Seq Motion -> Seq Motion
-continueMotion rotation Seq.Empty         = fromList [ newMotion rotation ]
-continueMotion rotation all@(ms :|> motion) =
-  if rotation ^. #ring /= motion ^. #rotation % #ring
-  then all :|> newMotion rotation
-  else case normalize (combine motion rotation) of
+applyToHistory :: Motion -> Seq Motion -> Seq Motion
+applyToHistory motion Seq.Empty           = fromList [ motion ]
+applyToHistory next all@(ms :|> prev) =
+  if next ^. #rotation % #ring /= prev ^. #rotation % #ring
+  then all :|> next
+  else case normalize (combine prev next) of
     Just m -> ms :|> m
     _      -> ms
 
 
-newMotion :: Rotation -> Motion
-newMotion rotation = Motion { amount = 1, rotation }
+toMotion :: Rotation -> Motion
+toMotion rotation = Motion { amount = 1, rotation }
 
-combine :: Motion -> Rotation -> Motion
-combine m@Motion { rotation } r
-  | rotation == r = m & #amount %~ (+ 1)
-  | otherwise     = m & #amount %~ (subtract 1)
+combine :: Motion -> Motion -> Motion
+combine x@(Motion m1 r1) (Motion m2 r2)
+  | r1 == r2  = x & #amount %~ (+ m2)
+  | otherwise = x & #amount %~ (subtract m2)
 
 opposite :: RotationDirection -> RotationDirection
 opposite = \case

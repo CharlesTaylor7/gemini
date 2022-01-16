@@ -74,6 +74,7 @@ default-extensions:
   - AllowAmbiguousTypes
   - ViewPatterns
   - PatternSynonyms
+  - FlexibleInstances
 
 ghc-options:
   # general

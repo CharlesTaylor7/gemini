@@ -11,16 +11,31 @@ import qualified Data.Sequence               as Seq
 import qualified Data.Text                   as Text
 import           Language.Javascript.JSaddle (JSVal, fromJSValUnchecked, jsg, toJSVal, (!), (#))
 import           Optics                      hiding ((#))
+import           Optics.State.Operators
 import           Shpadoinkle                 hiding (text)
 import qualified Shpadoinkle.Continuation    as Continuation
 import qualified Shpadoinkle.Html            as Html
 
 import           Gemini.Types
+import           Gemini.UI.Actions
 import           Utils
 
 
 endDrag :: Store -> Store
-endDrag = #drag .~ Nothing
+endDrag state =
+  flip execState state $ do
+    drag <- use #drag
+    case drag of
+      Nothing -> pure ()
+      Just drag -> do
+        (#drag .= Nothing)
+        let ring = drag ^. #ring
+        let theta = drag ^. #currentAngle
+        let n = truncate $ (theta / 20) - 0.5
+        let sign = signum n
+        let direction = if signum n > 0 then Clockwise else AntiClockwise
+        let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
+        modify $ applyMotionToStore motion
 
 
 ringCenter :: Ring -> Point
