@@ -1,6 +1,6 @@
 module Gemini
   ( Store
-  , initialState
+  , initialStore
   , rootView
   ) where
 
@@ -25,8 +25,8 @@ import           Gemini.UI.Actions
 
 
 -- | Initial state of the app
-initialState :: Store
-initialState = Store
+initialStore :: Store
+initialStore = Store
   { gemini = initialGemini
   , history = Seq.Empty
   , moves = Seq.Empty
@@ -45,11 +45,12 @@ initialState = Store
   , debugLog = ""
   }
 
+applyRotation :: Rotation -> Store -> Store
 applyRotation r = applyMotionToStore $ toMotion r
 
 -- | Components
 rootView :: MonadIO m => Store -> Html m Store
-rootView state =
+rootView store =
   Html.div
     [ Html.className "gemini-app"
     , Html.tabIndex 0
@@ -65,23 +66,23 @@ rootView state =
         Key.P -> applyRotation $ Rotation RightRing Clockwise
         _     -> identity
     ]
-    [ header state
+    [ header store
     , Html.div
       [ Html.className "gemini-wrapper" ]
-      [ geminiView state
-      , savedMovesPanel state
+      [ geminiView store
+      , savedMovesPanel store
       ]
     ]
   where
     geminiView =
-      if state ^. #options % #useSvg
+      if store ^. #options % #useSvg
       then geminiSvgView
       else geminiHtmlView
 
 
 debugView :: Store -> Html m a
-debugView state =
-  if state ^. #options % #debug % to not
+debugView store =
+  if store ^. #options % #debug % to not
   then Html.div'_
   else Html.div
     [ Html.styleProp
@@ -90,14 +91,14 @@ debugView state =
         , ("flex-direction", "column")
         ]
     ]
-    [ Html.text $ "Log : " <> state ^. #debugLog ]
+    [ Html.text $ "Log : " <> store ^. #debugLog ]
 
 
 savedMovesPanel :: Store -> Html m Store
-savedMovesPanel state =
+savedMovesPanel store =
   Html.div
     [ Html.className "saved-moves-panel" ]
-    (  (itoListOf (#moves % ifolded) state <&> moveView)
+    (  (itoListOf (#moves % ifolded) store <&> moveView)
     <> [ Html.div' [ Html.className "scrollbar-pad" ] ]
     )
   where
@@ -133,24 +134,24 @@ savedMovesPanel state =
 
 
 header :: MonadIO m => Store -> Html m Store
-header state =
+header store =
   Html.header
     [ Html.className "header"
     ]
-    [ debugView state
+    [ debugView store
     , Html.div
       [ Html.className "control-panel"
       ]
       [ buttonGroup "options"
-        [ (checkBox "Labels" & zoomComponent (#options % #showLabels) state)
-        , (checkBox "Animate" & zoomComponent (#options % #animate) state)
-        , (checkBox "Debug" & zoomComponent (#options % #debug) state)
-        -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) state)
+        [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store)
+        , (checkBox "Animate" & zoomComponent (#options % #animate) store)
+        , (checkBox "Debug" & zoomComponent (#options % #debug) store)
+        -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) store)
         ]
       , buttonGroup "actions"
         [ resetButton
         , scrambleButton
-        , recordButton state
+        , recordButton store
         ]
       ]
   ]
@@ -192,7 +193,7 @@ actionButton props = Html.button $ Html.className "action-button" : props
 
 
 recordButton :: Store -> Html m Store
-recordButton state = if state ^. #options % #recording then stopRecordingButton else startRecordingButton
+recordButton store = if store ^. #options % #recording then stopRecordingButton else startRecordingButton
   where
     startRecordingButton :: Html m Store
     startRecordingButton =

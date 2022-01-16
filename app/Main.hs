@@ -7,7 +7,7 @@ import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
 import           Shpadoinkle.Html            (addStyle)
 import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
 
-import           Gemini                      (Store, initialState, rootView)
+import           Gemini                      (Store, initialStore, rootView)
 
 main :: IO ()
 main = dev
@@ -19,7 +19,7 @@ port = 8080
 
 dev :: IO ()
 dev = do
-  let initialPage = app initialState
+  let initialPage = app initialStore
   let staticFolder = "app/static/"
   liveWithStatic port initialPage staticFolder
 
@@ -27,10 +27,10 @@ dev = do
 main' :: IO ()
 main' = do
   _ <- error "Need to implement static server"
-  runJSorWarp port $ app initialState
+  runJSorWarp port $ app initialStore
 
 
 app :: Store -> JSM ()
-app state = do
+app store = do
   addStyle "index.css"
-  simple runParDiff state rootView stage
+  simple runParDiff store rootView stage
