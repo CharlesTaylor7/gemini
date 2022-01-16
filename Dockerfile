@@ -4,4 +4,4 @@ WORKDIR /build-dir
 RUN cabal update
 COPY [".", "/build-dir"]
 RUN cabal build
-ENTRYPOINT ["cabal", "run", "hello-world-exe"]
+ENTRYPOINT ["cabal", "run", "gemini"]
