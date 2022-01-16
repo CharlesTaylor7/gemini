@@ -1,11 +1,12 @@
 module Gemini.Types
   ( -- core types and operations
-    Gemini, geminiFromList, geminiIx, ringIndex , initialGemini, rotate
+    Gemini, geminiFromList, geminiIx, ringIndex , initialGemini
   , Location(..), location, isCanonical, isIntersection
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
   , toMove, toMotion
   , applyToGemini, applyToHistory
+  , ToPermutation(..)
     -- ui types
   , Store(..), HoverState(..), DragState(..), Options(..)
   , Point(..)
@@ -211,14 +212,38 @@ instance Pretty Color where
 
 
 -- | Basic operations
+class ToPermutation a where
+  toPerm :: a -> GeminiPermutation
+
+instance (Foldable f, ToPermutation a) => ToPermutation (f a) where
+  toPerm = foldMap toPerm
+
+instance ToPermutation GeminiPermutation where
+  toPerm = identity
+
+instance ToPermutation (Cycles Int)  where
+  toPerm = fromCycles
+
+instance ToPermutation Rotation where
+  toPerm Rotation { ring, direction } =
+    fromCycles . cycles . Seq.singleton . cycle $
+    flip map positions $ locationToIndex . Location ring
+    where
+      positions = case direction of
+        Clockwise     -> inhabitants
+        AntiClockwise -> reverse inhabitants
+
+instance ToPermutation Motion where
+  toPerm Motion { amount, rotation } = (`pow` amount) $ toPerm rotation
+
+
 moveCycles :: Move -> Cycles Location
 moveCycles = fmap indexToLocation . toCycles . view #permutation
 
-rotate :: Rotation -> Gemini -> Gemini
-rotate = permuteGemini . rotationToPermutation
 
-applyToGemini :: Motion -> Gemini -> Gemini
-applyToGemini = permuteGemini . motionToPerm
+applyToGemini :: ToPermutation a => a -> Gemini -> Gemini
+applyToGemini = permuteGemini . toPerm
+
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
 permuteGemini p (Gemini disks) =
@@ -229,16 +254,6 @@ permuteGemini p (Gemini disks) =
       case disk of
         Nothing   -> pure ()
         Just disk -> at (permute p n) ?= disk
-
-
-rotationToPermutation :: Rotation -> GeminiPermutation
-rotationToPermutation Rotation { ring, direction } =
-  fromCycles . cycles . Seq.singleton . cycle $
-  flip map positions $ locationToIndex . Location ring
-  where
-    positions = case direction of
-      Clockwise     -> inhabitants
-      AntiClockwise -> reverse inhabitants
 
 
 
@@ -375,15 +390,9 @@ areConsecutive locations = (numberOfRings == 1) || (numberOfRings == 2)
     ringGroups = locations & List.groupBy ((==) `on` view #ring)
 
 
-toPermutation :: Seq Motion -> GeminiPermutation
-toPermutation = foldMap motionToPerm
-
-motionToPerm :: Motion -> GeminiPermutation
-motionToPerm Motion { amount, rotation } = (`pow` amount) $ rotationToPermutation rotation
-
-
 toMove :: Seq Motion -> Move
-toMove motions = Move { motions, permutation = toPermutation motions }
+toMove motions = Move { motions, permutation = toPerm motions }
+
 
 applyToHistory :: Motion -> Seq Motion -> Seq Motion
 applyToHistory motion Seq.Empty           = fromList [ motion ]

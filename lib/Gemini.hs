@@ -229,3 +229,5 @@ scrambleButton =
         pure $ (set #history Seq.Empty) . (over #gemini scramble)
     ]
     [ Html.text "Scramble" ]
+
+    where rotate = applyToGemini @Rotation
