@@ -258,6 +258,10 @@ div.disk {
     box-shadow: 1px 1px 3px rgb(28 25 23 / 50%);
 }
 
+div.disk.drag-disabled {
+    cursor: not-allowed;
+}
+
 .dragging div.disk {
     cursor: grabbing;
 }

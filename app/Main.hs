@@ -26,7 +26,7 @@ dev = do
 
 main' :: IO ()
 main' = do
-  error "Need to implement static server"
+  _ <- error "Need to implement static server"
   runJSorWarp port $ app initialState
 
 

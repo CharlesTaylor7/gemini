@@ -32,7 +32,6 @@ endDrag state =
         let ring = drag ^. #ring
         let theta = drag ^. #currentAngle
         let n = truncate $ (theta / 20) - 0.5
-        let sign = signum n
         let direction = if signum n > 0 then Clockwise else AntiClockwise
         let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
         modify $ applyMotionToStore motion
@@ -127,7 +126,7 @@ geminiHtmlView state =
       pure $ drag ^. #currentAngle
 
     disks :: Ring -> [Html m Store]
-    disks ring = catMaybes $ flip map inhabitants $ \position ->
+    disks ring = flip map inhabitants $ \position ->
       let
         location = Location ring position
         (color, diskLabel) =
@@ -149,10 +148,16 @@ geminiHtmlView state =
 
         toLabelSpan label = Html.span [ ("className", "disk-label") ] [ Html.text label ]
       in
-        isCanonical location `orNothing`
           Html.div
-            [ Html.class' [ "disk" , color ]
-            , Html.onMousedown $ #drag ?~ DragState { ring, initialAngle = angle, currentAngle = 0 }
+            [ Html.class'
+              [ ("disk", True)
+              , (color, True)
+              , ("drag-disabled", isIntersection location)
+              ]
+            , Html.onMousedown $
+                if isIntersection location
+                then identity
+                else (#drag ?~ DragState { ring, initialAngle = angle, currentAngle = 0 })
             , Html.styleProp
               [ ("width", show diskD <> "px")
               , ("height", show diskD <> "px")
