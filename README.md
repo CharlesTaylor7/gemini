@@ -50,3 +50,5 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ### Bugs
 - cycle labels are sometimes hidden for intersection disks
+- on starting a drag, the intersection disks visibly sink down into ring. 
+    - this is because they are normally  2 disks on top of each other, and one hides during a drag

@@ -99,6 +99,7 @@ onDrag = \node event -> do
       let pointRelativeToRing = mouse ~~ origin
       drag & #currentAngle .~ (angle pointRelativeToRing - initialAngle drag)
 
+
 angle :: Point -> Double
 angle (Point x y) = atan2 y x & toDegrees
 
@@ -175,7 +176,7 @@ geminiHtmlView store =
         cycleLabel :: Maybe Text
         cycleLabel = activeCycleMap ^? ix location <&> show
 
-        toLabelSpan label = Html.span [ ("className", "disk-label") ] [ Html.text label ]
+        toLabelSpan label = Html.div [ ("className", "disk-label") ] [ Html.text label ]
       in
           Html.div
             ( Html.class'

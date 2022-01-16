@@ -12,6 +12,9 @@
     --panel-border: #82a6e3;
     --button-background: #0069ed;
     --button-background-hover: #0053ba;
+    --z-index-ring-dragging: 1;
+    --z-index-disk: 2;
+    --z-index-disk-label: 3;
 }
 
 * {
@@ -233,7 +236,7 @@ div.ring {
 }
 
 div.ring.dragging {
-    z-index: 2;
+    z-index: var(--z-index-ring-dragging);
 }
 
 div.ring-L {
@@ -252,11 +255,12 @@ div.disk {
     position: absolute;
     text-align: center;
     border-radius: 100%;
-    z-index: 5;
+    z-index: var(--z-index-disk);
     box-sizing: border-box;
     cursor: grab;
     box-shadow: 1px 1px 3px rgb(28 25 23 / 50%);
 }
+
 
 div.disk.hidden {
     display: none;
@@ -271,6 +275,7 @@ div.disk.drag-disabled {
 }
 
 div.disk > .disk-label {
+    z-index: var(--z-index-disk-label);
     color: black;
 }
 
