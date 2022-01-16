@@ -39,13 +39,12 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - on drag end, snap to nearest position
 - make 4 disks on intersections, non draggable
 - enforce that disks on the intersections always rotate with the rotating ring
+- animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
 
 ### On Solve
 - pop confetti 
 - show number of moves to solve
 
 ### Refactoring
-- debug-log
 - ApplyMove typeclass
-- calculate drag angles more directly; delete diskCenter
-
+- css variables for z-indexes
