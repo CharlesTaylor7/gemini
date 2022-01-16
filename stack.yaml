@@ -14,7 +14,7 @@ extra-deps:
   
 # shpadoinkle
 - git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-  commit: 4142a5211592122630523f30d906c7c067700932
+  commit: d95d5b1affd63f024469538db0d9567346ec7f21
   subdirs:
   - core
   - html

@@ -7,6 +7,7 @@ import           Language.Javascript.JSaddle.Warp (run)
 import           Shpadoinkle                      (JSM)
 import           Shpadoinkle.Backend.ParDiff      (runParDiff, stage)
 import           Shpadoinkle.Html                 (addStyle)
+import           Shpadoinkle.Run                  (liveWithStatic, simple)
 
 import           Gemini                           (Store, initialStore, rootView)
 

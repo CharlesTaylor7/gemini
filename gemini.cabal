@@ -79,6 +79,7 @@ library
     , groups
     , jsaddle
     , jsaddle-dom
+    , jsaddle-warp
     , mtl
     , optics >=0.4
     , prettyprinter
@@ -139,6 +140,7 @@ executable gemini
     , groups
     , jsaddle
     , jsaddle-dom
+    , jsaddle-warp
     , mtl
     , optics >=0.4
     , prettyprinter
@@ -198,6 +200,7 @@ test-suite gemini-test
     , groups
     , jsaddle
     , jsaddle-dom
+    , jsaddle-warp
     , mars-rover
     , mtl
     , optics >=0.4

@@ -30,6 +30,7 @@ dependencies:
 - prettyprinter
 - jsaddle
 - jsaddle-dom
+- jsaddle-warp
 - Shpadoinkle
 - Shpadoinkle-html
 - Shpadoinkle-lens
