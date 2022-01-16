@@ -65,7 +65,6 @@ data DragState = DragState
 data Options = Options
   { showLabels :: !Bool
   , animate    :: !Bool
-  , useSvg     :: !Bool
   , recording  :: !Bool
   , debug      :: !Bool
   }

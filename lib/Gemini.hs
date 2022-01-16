@@ -19,7 +19,6 @@ import qualified Shpadoinkle.Html       as Html
 import qualified Shpadoinkle.Keyboard   as Key
 
 import           Gemini.Html            (geminiHtmlView)
-import           Gemini.Svg             (geminiSvgView)
 import           Gemini.Types
 import           Gemini.UI.Actions
 
@@ -38,7 +37,6 @@ initialStore = Store
   , options = Options
       { showLabels = False
       , animate = True
-      , useSvg = False
       , recording = False
       , debug = False
       }
@@ -69,15 +67,10 @@ rootView store =
     [ header store
     , Html.div
       [ Html.className "gemini-wrapper" ]
-      [ geminiView store
+      [ geminiHtmlView store
       , savedMovesPanel store
       ]
     ]
-  where
-    geminiView =
-      if store ^. #options % #useSvg
-      then geminiSvgView
-      else geminiHtmlView
 
 
 debugView :: Store -> Html m a
@@ -151,7 +144,6 @@ header store =
         [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store)
         , (checkBox "Animate" & zoomComponent (#options % #animate) store)
         , (checkBox "Debug" & zoomComponent (#options % #debug) store)
-        -- , (checkBox "Svg" & zoomComponent (#options % #useSvg) store)
         ]
       , buttonGroup "actions"
         [ resetButton

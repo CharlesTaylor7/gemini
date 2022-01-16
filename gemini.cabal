@@ -29,10 +29,8 @@ library
       Data.Permutation
       Gemini
       Gemini.Html
-      Gemini.Svg
       Gemini.Types
       Gemini.UI.Actions
-      Svg
       Utils
   other-modules:
       Paths_gemini
