@@ -1,6 +1,7 @@
 resolver: lts-18.14
 system-ghc: true
 compiler: ghc-8.10.7
+allow-newer: true
 packages:
 - .
 extra-deps:

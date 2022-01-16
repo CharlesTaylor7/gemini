@@ -2,15 +2,17 @@ module Main where
 
 import           Relude
 
-import           Shpadoinkle                 (JSM)
-import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
-import           Shpadoinkle.Html            (addStyle)
-import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
+import           Language.Javascript.JSaddle.Warp (run)
 
-import           Gemini                      (Store, initialStore, rootView)
+import           Shpadoinkle                      (JSM)
+import           Shpadoinkle.Backend.ParDiff      (runParDiff, stage)
+import           Shpadoinkle.Html                 (addStyle)
+
+import           Gemini                           (Store, initialStore, rootView)
+
 
 main :: IO ()
-main = runJSorWarp port $ app initialStore
+main = run port $ app initialStore
 
 
 port :: Int
@@ -22,7 +24,6 @@ dev = do
   let initialPage = app initialStore
   let staticFolder = "static/"
   liveWithStatic port initialPage staticFolder
-
 
 
 app :: Store -> JSM ()
