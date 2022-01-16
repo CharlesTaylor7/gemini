@@ -9,7 +9,6 @@ import           Relude
 import           Data.Finitary
 import           Data.Permutation
 import qualified Data.Sequence          as Seq
-import qualified Data.Text              as Text
 import           Data.Traversable       (for)
 import           Optics                 hiding ((#))
 import           System.Random.Stateful (globalStdGen, uniformM)
@@ -113,17 +112,7 @@ debugView state =
         , ("flex-direction", "column")
         ]
     ]
-    [ Html.div_
-      ( Html.text "Drag : "
-      : (state ^.. #drag % _Just % to dragView % folded)
-      )
-    ]
-  where
-    dragView DragState { initialAngle, currentAngle, ring } =
-      [ Html.div_ [ Html.text $ "start: " <> prettyCompactText initialAngle ]
-      , Html.div_ [ Html.text $ "current: " <> prettyCompactText currentAngle ]
-      , Html.div_ [ Html.text $ "ring: " <> prettyCompactText ring ]
-      ]
+    [ Html.text $ "Log : " <> state ^. #debugLog ]
 
 
 savedMovesPanel :: Store -> Html m Store
