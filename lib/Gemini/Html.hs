@@ -1,4 +1,6 @@
-module Gemini.Html where
+module Gemini.Html
+  ( geminiHtmlView
+  ) where
 
 import           Relude
 
@@ -28,17 +30,6 @@ ringCenter = \case
   RightRing  -> Point (750 - 270) 150
 
 
-diskCenter :: Location -> Point
-diskCenter location = Point x y <> ringCenter (location ^. #ring)
-  where
-    angle = fromIntegral (location ^. #position % #unCyclic) * 20.0 - 90.0
-    r = ringR - diskR
-    (x, y) =
-      ( r * cosine angle
-      , r * sine angle
-      )
-
-
 -- dimensions
 ringR = 150.0
 diskR = (ringR / 7.0)
@@ -54,17 +45,6 @@ toRadians th = (th * pi) / 180.0
 
 toDegrees :: Double -> Double
 toDegrees th = (th * 180) / pi
-
--- | angle between two points, in degrees
-angleBetween :: Point -> Point -> Double
-angleBetween start end = toDegrees $ sign * acos (dot / mag)
-  where
-    -- angle has the same sign as the cross product
-    sign = if x1*y2 >= x2*y1 then 1 else -1
-    dot = x1*x2 + y1*y2
-    mag = sqrt $ (x1*x1 + y1*y1) * (x2*x2 + y2*y2)
-    Point { x = x1, y = y1 } = start
-    Point { x = x2, y = y2 } = end
 
 
 geminiHtmlView :: forall m. Store -> Html m Store
@@ -131,7 +111,6 @@ geminiHtmlView state =
       guard $ drag ^. #ring == r
       pure $ drag ^. #currentAngle
 
-
     disks :: Ring -> [Html m Store]
     disks ring = catMaybes $ flip map inhabitants $ \position ->
       let
@@ -148,8 +127,7 @@ geminiHtmlView state =
           )
 
         defaultLabel :: Maybe Text
-        defaultLabel =
-          (options ^. #showLabels && state ^. #hover % #overMove % to not) `orNothing` diskLabel
+        defaultLabel = (options ^. #showLabels && state ^. #hover % #overMove % to not) `orNothing` diskLabel
 
         cycleLabel :: Maybe Text
         cycleLabel = activeCycleMap ^? ix location <&> show
@@ -169,4 +147,3 @@ geminiHtmlView state =
               ]
             ]
             [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]
-

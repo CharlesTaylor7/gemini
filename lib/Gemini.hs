@@ -19,7 +19,7 @@ import           Shpadoinkle
 import qualified Shpadoinkle.Html       as Html
 import qualified Shpadoinkle.Keyboard   as Key
 
-import           Gemini.Html            (diskCenter, geminiHtmlView, ringCenter)
+import           Gemini.Html            (geminiHtmlView)
 import           Gemini.Svg             (geminiSvgView)
 import           Gemini.Types
 
