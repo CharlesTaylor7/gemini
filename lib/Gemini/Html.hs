@@ -138,21 +138,18 @@ geminiHtmlView store =
         [ Html.class'
           [ ("ring", True)
           , ("ring-" <> prettyCompactText r, True)
-          , ("dragging", isJust $ dragAngle r)
+          , ("dragging", isActive store r)
           ]
 
         , Html.styleProp
-            ( ("width", show ringD <> "px")
-            : ("height", show ringD <> "px")
-            : case dragAngle r of
-                  Just angle -> [("transform", "rotate(" <> show angle <> "deg)")]
-                  Nothing    -> []
-            )
+            [ ("width", show ringD <> "px")
+            , ("height", show ringD <> "px")
+            ]
         ]
         ( disks r )
 
-    dragAngle :: Ring -> Maybe Double
-    dragAngle r = do
+    dragAngle :: Ring -> Double
+    dragAngle r = fromMaybe 0 $ do
       drag <- store ^. #drag
       guard $ drag ^. #ring == r
       pure $ drag ^. #currentAngle
@@ -165,7 +162,7 @@ geminiHtmlView store =
           case gemini ^? geminiIx location of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "")
-        diskAngle = fromIntegral (unCyclic position) * 20.0 - 90.0
+        diskAngle = fromIntegral (unCyclic position) * 20.0 - 90.0 + dragAngle ring
         r = ringR - diskR
         (x, y) =
           ( r * (1 + cosine diskAngle)
