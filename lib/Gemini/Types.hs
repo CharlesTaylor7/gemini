@@ -218,8 +218,7 @@ rotate :: Rotation -> Gemini -> Gemini
 rotate = permuteGemini . rotationToPermutation
 
 applyToGemini :: Motion -> Gemini -> Gemini
-applyToGemini Motion { amount, rotation } =
-  permuteGemini $ stimes amount $ rotationToPermutation rotation
+applyToGemini = permuteGemini . motionToPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
 permuteGemini p (Gemini disks) =
@@ -377,10 +376,10 @@ areConsecutive locations = (numberOfRings == 1) || (numberOfRings == 2)
 
 
 toPermutation :: Seq Motion -> GeminiPermutation
-toPermutation = foldMap toPerm
-  where
-    toPerm :: Motion -> GeminiPermutation
-    toPerm Motion { amount, rotation } = stimes amount $ rotationToPermutation rotation
+toPermutation = foldMap motionToPerm
+
+motionToPerm :: Motion -> GeminiPermutation
+motionToPerm Motion { amount, rotation } = (`pow` amount) $ rotationToPermutation rotation
 
 
 toMove :: Seq Motion -> Move
