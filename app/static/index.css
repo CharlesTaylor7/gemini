@@ -11,9 +11,6 @@
     --panel-border: #82a6e3;
     --button-background: #0069ed;
     --button-background-hover: #0053ba;
-    --z-index-ring-dragging: 1;
-    --z-index-disk: 2;
-    --z-index-disk-label: 3;
 }
 
 * {
@@ -229,13 +226,10 @@ button {
     border-radius: 100%;
     background-color: var(--ring-background);
     flex-shrink: 0;
-    /*
-    box-shadow: 5px 0px 2px rgb(0 0 0 / 50%);
-    */
 }
 
 .ring.dragging {
-    z-index: var(--z-index-ring-dragging);
+    z-index: 1;
 }
 
 .ring-L {
@@ -254,9 +248,9 @@ button {
     position: absolute;
     text-align: center;
     border-radius: 100%;
-    z-index: var(--z-index-disk);
     box-sizing: border-box;
     cursor: grab;
+    z-index: 2;
     box-shadow: 1px 1px 3px rgb(28 25 23 / 50%);
 }
 
@@ -273,8 +267,9 @@ button {
     cursor: grabbing;
 }
 
-.disk > .disk-label {
-    z-index: var(--z-index-disk-label);
+
+.disk-label {
+    position: relative;
     color: black;
 }
 

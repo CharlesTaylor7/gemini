@@ -65,6 +65,18 @@ toDegrees th = (th * 180) / pi
 draggedOver :: Store -> Set Location
 draggedOver store = setOf (folded % to sibling % _Just) $ activeLocations store
 
+cycleOver :: Store -> Set Location
+cycleOver store = setOf (#hover % #activeCycle % _Just % folded % to sibling % _Just) $ store
+
+hiddenLocations :: Store -> Set Location
+hiddenLocations = hidden
+  where
+    hidden = draggedOver <> cycleOver
+    noncanonical store =
+      case hidden store of
+        Empty -> inhabitants & filter (not . isCanonical) & fromList
+        set   -> set
+
 activeLocations :: Store -> [Location]
 activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
 
@@ -183,7 +195,7 @@ geminiHtmlView store =
               [ ("disk", True)
               , (color, True)
               , ("drag-disabled", isIntersection location)
-              , ("hidden", draggedOver store ^. contains location)
+              , ("hidden", hiddenLocations store ^. contains location)
               ]
             : Html.styleProp
               [ ("width", show diskD <> "px")
