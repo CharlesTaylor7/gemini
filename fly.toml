@@ -39,5 +39,5 @@ processes = []
     timeout = "2s"
 
 [[statics]]
-  guest_path = "public/"
+  guest_path = "static/public/"
   url_prefix = "public/"

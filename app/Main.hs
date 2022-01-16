@@ -20,12 +20,12 @@ port = 8080
 dev :: IO ()
 dev = do
   let initialPage = app initialStore
-  let staticFolder = "public/"
+  let staticFolder = "static/"
   liveWithStatic port initialPage staticFolder
 
 
 
 app :: Store -> JSM ()
 app store = do
-  addStyle "public/index.css"
+  addStyle "./public/index.css"
   simple runParDiff store rootView stage
