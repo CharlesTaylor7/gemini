@@ -167,22 +167,21 @@ geminiHtmlView store =
         toLabelSpan label = Html.span [ ("className", "disk-label") ] [ Html.text label ]
       in
           Html.div
-            [ Html.class'
+            ( Html.class'
               [ ("disk", True)
               , (color, True)
               , ("drag-disabled", isIntersection location)
               , ("hidden", draggedOver store ^. contains location)
               ]
-            , Html.onMousedown $
-                if isIntersection location
-                then identity
-                else (#drag ?~ DragState { ring, initialAngle = angle, currentAngle = 0 })
-            , Html.styleProp
+            : Html.styleProp
               [ ("width", show diskD <> "px")
               , ("height", show diskD <> "px")
               , ("line-height", show diskD <> "px")
               , ("left", show x <> "px")
               , ("top", show y <> "px")
               ]
-            ]
+            : if isIntersection location
+              then []
+              else [ Html.onMousedown $ #drag ?~ DragState { ring, initialAngle = angle, currentAngle = 0 } ]
+            )
             [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]
