@@ -34,12 +34,13 @@ import           System.Random.Stateful (Uniform (..))
 
 -- | UI Definitions
 data Store = Store
-  { gemini  :: !Gemini
-  , history :: !(Seq Motion)
-  , moves   :: !(Seq Move)
-  , hover   :: !HoverState
-  , drag    :: !(Maybe DragState)
-  , options :: !Options
+  { gemini   :: !Gemini
+  , history  :: !(Seq Motion)
+  , moves    :: !(Seq Move)
+  , hover    :: !HoverState
+  , drag     :: !(Maybe DragState)
+  , options  :: !Options
+  , debugLog :: !Text
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -52,11 +53,9 @@ data HoverState = HoverState
   deriving anyclass (NFData)
 
 data DragState = DragState
-  { start  :: !Location
-  , ring   :: !Ring
-  , angle  :: !Double
-  , end    :: !Point
-  , origin :: !Point
+  { ring         :: !Ring
+  , initialAngle :: !Double
+  , currentAngle :: !Double
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -237,21 +236,7 @@ rotationToPermutation Rotation { ring, direction } =
     positions = case direction of
       Clockwise     -> inhabitants
       AntiClockwise -> reverse inhabitants
-  {--
-Rotation { ring = r, direction = d } g = flip execState g $
-  for_ disks $ \(i, disk) ->
-    case disk of
-      Just disk -> geminiIx (Location r i) .= disk
-      _         -> pure ()
-  where
-    step Clockwise     = -1
-    step AntiClockwise = 1
 
-    disks :: [(Int, Maybe Disk)]
-    disks = flip map [0..17] $ \p ->
-      let next = p + step d
-      in (p, g ^? geminiIx (location r next))
---}
 
 
 geminiFromList :: [(Location, Disk)] -> Gemini

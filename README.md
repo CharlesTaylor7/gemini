@@ -43,3 +43,9 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 ### On Solve
 - pop confetti 
 - show number of moves to solve
+
+### Refactoring
+- debug-log
+- ApplyMove typeclass
+- calculate drag angles more directly; delete diskCenter
+

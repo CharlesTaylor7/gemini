@@ -86,27 +86,12 @@ geminiHtmlView state =
 
         let mouse = Point (client_x - g_x) (client_y - g_y)
 
-        case state ^. #drag of
-          Nothing -> pure ()
-          Just drag -> do
-            let origin = drag ^. #ring % to ringCenter
-            let start = drag ^. #start % to diskCenter
-
-            let Point start_x start_y = start ~~ origin
-            let Point end_x end_y = mouse ~~ origin
-            pure ()
-            -- void $ jsg ("console" :: Text) # ("log" :: Text) $ (start_x, start_y, end_x, end_y)
-            -- void $ jsg ("console" :: Text) # ("log" :: Text) $ toJSVal node
-
         pure $ Continuation.Pure $
           (#drag % _Just) %~ \drag -> do
             let origin = drag ^. #ring % to ringCenter
-            let start = (drag ^. #start % to diskCenter ~~ origin)
-            let end = mouse ~~ origin
-            drag
-              & #angle .~ angleBetween start end
-              & #origin .~ origin
-              & #end .~ mouse
+            let Point x y = mouse ~~ origin
+            let mouseAngle = atan2 y x & toDegrees
+            drag & #currentAngle .~ (mouseAngle - initialAngle drag)
     ]
     (  map ring inhabitants
     )
@@ -144,7 +129,7 @@ geminiHtmlView state =
     dragAngle r = do
       drag <- state ^. #drag
       guard $ drag ^. #ring == r
-      pure $ drag ^. #angle
+      pure $ drag ^. #currentAngle
 
 
     disks :: Ring -> [Html m Store]
@@ -173,13 +158,8 @@ geminiHtmlView state =
       in
         isCanonical location `orNothing`
           Html.div
-            [ Html.class'
-                [ ("disk", True)
-                , (color, True)
-                , ("dragging", Just location == (state ^? #drag % _Just % #start))
-                ]
-            , Html.onMousedown $ #drag ?~ DragState
-                { start = location, angle = 0, ring, end = diskCenter location, origin = mempty }
+            [ Html.class' [ "disk" , color ]
+            , Html.onMousedown $ #drag ?~ DragState { ring, initialAngle = angle, currentAngle = 0 }
             , Html.styleProp
               [ ("width", show diskD <> "px")
               , ("height", show diskD <> "px")
@@ -188,24 +168,5 @@ geminiHtmlView state =
               , ("top", show y <> "px")
               ]
             ]
-            ( catMaybes
-              [ getFirst $ ((<>) `on` First) cycleLabel defaultLabel <&> toLabelSpan
-              , (state ^. #options % #debug && ( state ^? #drag % _Just % #start == Just location))
-                `orNothing`
-                    let
-                      d = "10px"
-                    in
-                      Html.div'
-                        [ Html.styleProp
-                          [ ("position", "absolute")
-                          , ("border-radius", "100%")
-                          , ("left",  show (diskR - 5) <> "px")
-                          , ("top",  show (diskR - 5) <> "px")
-                          , ("width", d)
-                          , ("height", d)
-                          , ("background-color", "purple")
-                          , ("z-index", "2")
-                          ]
-                        ]
-              ]
-            )
+            [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]
+

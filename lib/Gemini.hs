@@ -66,6 +66,7 @@ initialState = Store
       , recording = False
       , debug = False
       }
+  , debugLog = ""
   }
 
 
@@ -118,11 +119,9 @@ debugView state =
       )
     ]
   where
-    dragView DragState { start, end, angle, ring, origin } =
-      [ Html.div_ [ Html.text $ "start: " <> prettyCompactText (diskCenter start) ]
-      , Html.div_ [ Html.text $ "end: " <> prettyCompactText end ]
-      , Html.div_ [ Html.text $ "origin: " <> prettyCompactText origin ]
-      , Html.div_ [ Html.text $ "angle: " <> prettyCompactText angle ]
+    dragView DragState { initialAngle, currentAngle, ring } =
+      [ Html.div_ [ Html.text $ "start: " <> prettyCompactText initialAngle ]
+      , Html.div_ [ Html.text $ "current: " <> prettyCompactText currentAngle ]
       , Html.div_ [ Html.text $ "ring: " <> prettyCompactText ring ]
       ]
 
