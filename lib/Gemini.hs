@@ -91,7 +91,12 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    [ Html.text $ "Log : " <> store ^. #debugLog ]
+    ( Html.text ( "Log : " <> store ^. #debugLog)
+    : case store ^. #drag of
+        Nothing -> []
+        Just drag ->
+          [ Html.text $ "Drag: " <> show drag ]
+    )
 
 
 savedMovesPanel :: Store -> Html m Store

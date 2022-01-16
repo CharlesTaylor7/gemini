@@ -10,7 +10,7 @@ import           Data.Permutation
 import qualified Data.Sequence               as Seq
 import           Data.Set.Optics
 import qualified Data.Text                   as Text
-import           Language.Javascript.JSaddle (JSVal, fromJSValUnchecked, jsg, toJSVal, (!), (#))
+import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, jsg, (!), (#))
 import           Optics                      hiding ((#))
 import           Optics.State.Operators
 import           Shpadoinkle                 hiding (text)
@@ -76,27 +76,41 @@ isActive store r = fromMaybe False $ do
   drag <- store ^. #drag
   pure $ drag ^. #ring == r
 
-onDrag :: RawNode -> RawEvent -> JSM (Continuation m Store)
-onDrag = \node event -> do
-  geminiOffset <- toJSVal node # ("getBoundingClientRect" :: Text) $ ()
+
+mousePosition :: RawNode -> RawEvent -> JSM Point
+mousePosition = \node event -> do
+  geminiNode <- jsCall node "closest" (".gemini" :: Text)
+  geminiOffset <- jsCall geminiNode "getBoundingClientRect" ()
   g_x <- geminiOffset ! ("left" :: Text) >>= fromJSValUnchecked
   g_y <- geminiOffset ! ("top" :: Text) >>= fromJSValUnchecked
 
   client_x <- toJSVal event ! ("clientX" :: Text) >>= fromJSValUnchecked
   client_y <- toJSVal event ! ("clientY" :: Text) >>= fromJSValUnchecked
 
-  let mouse = Point (client_x - g_x) (client_y - g_y)
+  pure $ Point (client_x - g_x) (client_y - g_y)
 
+
+onDrag :: RawNode -> RawEvent -> JSM (Continuation m Store)
+onDrag = \node event -> do
+  mouse <- mousePosition node event
   pure $ Continuation.Pure $
     (#drag % _Just) %~ \drag -> do
       let origin = drag ^. #ring % to ringCenter
-      let Point x y = mouse ~~ origin
-      let mouseAngle = atan2 y x & toDegrees
-      drag & #currentAngle .~ (mouseAngle - initialAngle drag)
+      let pointRelativeToRing = mouse ~~ origin
+      drag & #currentAngle .~ (angle pointRelativeToRing - initialAngle drag)
+
+angle :: Point -> Double
+angle (Point x y) = atan2 y x & toDegrees
 
 
+jsCall :: (ToJSVal js, MakeArgs args) => js -> Text -> args -> JSM JSVal
+jsCall js method args = toJSVal js # method $ args
 
-geminiHtmlView :: forall m. Store -> Html m Store
+jsConsoleLog :: Text -> JSM ()
+jsConsoleLog text = void $ jsg ("console" :: Text) # ("log" :: Text) $ text
+
+
+geminiHtmlView :: forall m. Applicative m => Store -> Html m Store
 geminiHtmlView store =
   Html.div
     [ Html.class'
@@ -151,11 +165,11 @@ geminiHtmlView store =
           case gemini ^? geminiIx location of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "")
-        angle = fromIntegral (unCyclic position) * 20.0 - 90.0
+        diskAngle = fromIntegral (unCyclic position) * 20.0 - 90.0
         r = ringR - diskR
         (x, y) =
-          ( r * (1 + cosine angle)
-          , r * (1 + sine angle)
+          ( r * (1 + cosine diskAngle)
+          , r * (1 + sine diskAngle)
           )
 
         defaultLabel :: Maybe Text
@@ -182,6 +196,17 @@ geminiHtmlView store =
               ]
             : if isIntersection location
               then []
-              else [ Html.onMousedown $ #drag ?~ DragState { ring, initialAngle = angle, currentAngle = 0 } ]
+              else pure $
+                ( "mousedown"
+                , listenerProp $ \node event -> do
+                    mouse <- mousePosition node event
+                    pure $ Continuation.pur $
+                      (#drag ?~ DragState
+                        { ring
+                        , initialAngle = angle (mouse ~~ ringCenter ring)
+                        , currentAngle = 0
+                        }
+                      )
+                )
             )
             [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]

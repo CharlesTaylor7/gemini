@@ -47,3 +47,6 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 ### Refactoring
 - ApplyMove typeclass
 - css variables for z-indexes
+
+### Bugs
+- cycle labels are sometimes hidden for intersection disks
