@@ -36,9 +36,10 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ### Drag controls
 - handle mobile touch events
-- hide/remove disks on the intersections which are not rotating
 - animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
 - it feels jerky during the snap
+- handle ambiguous case. During my user testing, I often wanted to drag an intersection disk.
+
 
 ### On Solve
 - pop confetti 
@@ -49,6 +50,5 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - css variables for z-indexes
 
 ### Bugs
-- cycle labels are sometimes hidden for intersection disks
 - on starting a drag, the intersection disks visibly sink down into ring. 
     - this is because they are normally  2 disks on top of each other, and one hides during a drag
