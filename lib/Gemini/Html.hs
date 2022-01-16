@@ -76,6 +76,25 @@ isActive store r = fromMaybe False $ do
   drag <- store ^. #drag
   pure $ drag ^. #ring == r
 
+onDrag :: RawNode -> RawEvent -> JSM (Continuation m Store)
+onDrag = \node event -> do
+  geminiOffset <- toJSVal node # ("getBoundingClientRect" :: Text) $ ()
+  g_x <- geminiOffset ! ("left" :: Text) >>= fromJSValUnchecked
+  g_y <- geminiOffset ! ("top" :: Text) >>= fromJSValUnchecked
+
+  client_x <- toJSVal event ! ("clientX" :: Text) >>= fromJSValUnchecked
+  client_y <- toJSVal event ! ("clientY" :: Text) >>= fromJSValUnchecked
+
+  let mouse = Point (client_x - g_x) (client_y - g_y)
+
+  pure $ Continuation.Pure $
+    (#drag % _Just) %~ \drag -> do
+      let origin = drag ^. #ring % to ringCenter
+      let Point x y = mouse ~~ origin
+      let mouseAngle = atan2 y x & toDegrees
+      drag & #currentAngle .~ (mouseAngle - initialAngle drag)
+
+
 
 geminiHtmlView :: forall m. Store -> Html m Store
 geminiHtmlView store =
@@ -86,22 +105,7 @@ geminiHtmlView store =
       ]
     , Html.onMouseup $ endDrag
     , Html.onMouseleave $ endDrag
-    , Html.listenRaw "mousemove" $ \node event -> do
-        geminiOffset <- toJSVal node # ("getBoundingClientRect" :: Text) $ ()
-        g_x <- geminiOffset ! ("left" :: Text) >>= fromJSValUnchecked
-        g_y <- geminiOffset ! ("top" :: Text) >>= fromJSValUnchecked
-
-        client_x <- toJSVal event ! ("clientX" :: Text) >>= fromJSValUnchecked
-        client_y <- toJSVal event ! ("clientY" :: Text) >>= fromJSValUnchecked
-
-        let mouse = Point (client_x - g_x) (client_y - g_y)
-
-        pure $ Continuation.Pure $
-          (#drag % _Just) %~ \drag -> do
-            let origin = drag ^. #ring % to ringCenter
-            let Point x y = mouse ~~ origin
-            let mouseAngle = atan2 y x & toDegrees
-            drag & #currentAngle .~ (mouseAngle - initialAngle drag)
+    , ("mousemove", listenerProp onDrag)
     ]
     (  map ring inhabitants
     )
