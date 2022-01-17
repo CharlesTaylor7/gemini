@@ -6,14 +6,14 @@ RUN mkdir -p gemini
 WORKDIR /gemini
 
 # copy files for build
-COPY stack.yaml package.yaml gemini.cabal README.md app/ lib/ /gemini/
+COPY . .
 
 # configure stack
 RUN stack upgrade
 RUN stack setup 
 
 # large haskell packages, separate steps
-RUN stack install --resolver lts-18.21 lens
+RUN stack install lens
 RUN stack install aeson attoparsec base64-bytestring bytestring containers deepseq primitive process random
 RUN stack install jsaddle
 RUN stack install jsaddle-dom
