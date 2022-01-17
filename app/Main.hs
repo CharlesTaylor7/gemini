@@ -35,5 +35,7 @@ app store = do
 
 getPort :: IO Int
 getPort = do
-  let toPortOrDefault = fromMaybe 8080 . (>>= readMaybe)
-  toPortOrDefault <$> lookupEnv "PORT"
+  maybePort <- lookupEnv "PORT"
+  pure $ fromMaybe 8080 $ do
+    portString <- maybePort
+    readMaybe portString
