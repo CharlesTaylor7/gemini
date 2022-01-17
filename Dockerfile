@@ -7,5 +7,6 @@ WORKDIR /build-dir
 RUN apt-get update && apt-get install -y libpcre++-dev
 RUN cabal update
 COPY [".", "/build-dir"]
-RUN cabal build
+RUN cabal build --only-dependencies -j4
+RUN cabal build -j4
 ENTRYPOINT ["cabal", "run", "gemini"]

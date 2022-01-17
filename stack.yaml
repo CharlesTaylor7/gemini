@@ -11,6 +11,10 @@ extra-deps:
 - optics-extra-0.4
 - optics-th-0.4
 
+# misc
+- random-1.2.1
+- finitary-2.1.1.0
+- finite-typelits-0.1.4.2
   
 # shpadoinkle
 - git: https://gitlab.com/charlestaylor95/shpadoinkle.git
@@ -32,6 +36,3 @@ extra-deps:
 - jsaddle-dom-0.9.4.0@sha256:e9557e5a6df02bf089acab3e053ee3d4b523acebfe9ede9b5091d12cee760780,75700
 - ref-tf-0.4.0.2@sha256:69de3550250e0cd69f45d080359cb314a9487c915024349c75b78732bbee9332,1134
 - warp-3.2.28@sha256:b32fb8fed7ace4bd206fd897c388c00cdb915ec7e34ee61dc6397d518d9e651c,11186
-- random-1.2.1
-- finitary-2.1.1.0
-- finite-typelits-0.1.4.2
