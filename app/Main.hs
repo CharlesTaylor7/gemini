@@ -2,18 +2,17 @@ module Main where
 
 import           Relude
 
-import           Language.Javascript.JSaddle.Warp (run)
 
-import           Shpadoinkle                      (JSM)
-import           Shpadoinkle.Backend.ParDiff      (runParDiff, stage)
-import           Shpadoinkle.Html                 (addStyle)
-import           Shpadoinkle.Run                  (liveWithStatic, simple)
+import           Shpadoinkle                 (JSM)
+import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
+import           Shpadoinkle.Html            (addStyle)
+import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
 
-import           Gemini                           (Store, initialStore, rootView)
+import           Gemini                      (Store, initialStore, rootView)
 
 
 main :: IO ()
-main = run port $ app initialStore
+main = runJSorWarp port $ app initialStore
 
 
 port :: Int
