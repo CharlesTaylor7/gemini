@@ -14,8 +14,9 @@ RUN stack setup
 
 # large haskell packages, separate steps
 RUN stack install --resolver lts-18.21 lens
-RUN stack install --resolver lts-18.21 jsaddle-dom
-RUN stack install --resolver lts-18.21 aeson wai text mtl transformers parsec
+RUN stack install attoparsec random
+RUN stack install jsaddle-dom
+RUN stack install aeson wai text mtl transformers parsec
 
 
 # build remaining dependencies
