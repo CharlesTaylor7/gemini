@@ -1,9 +1,12 @@
-#
-# Multi stage
-#
-
 # pull base
 FROM fpco/stack-build:lts-18.21 
+
+# make a dir for the project
+RUN mkdir -p gemini
+WORKDIR /gemini
+
+# copy files
+COPY stack.yaml package.yaml gemini.cabal app/ lib/ /gemini/
 
 # configure stack
 RUN stack upgrade
@@ -13,16 +16,11 @@ RUN stack setup
 RUN stack install --resolver lts-18.21 lens
 RUN stack install --resolver lts-18.21 aeson wai text mtl transformers parsec
 
-# make a dir for the project
-RUN mkdir -p gemini
-WORKDIR /gemini
 
-# copy only the stack.yaml and the cabal file; build only dependencies
-COPY stack.yaml gemini.cabal /gemini/
-RUN stack setup && stack install --resolver lts-18.21 --dependencies-only 
+# build remaining dependencies
+RUN  stack install --resolver lts-18.21 --dependencies-only 
 
-# compile the haskell app
-WORKDIR /gemini
+# compile the server
 RUN stack build gemini:server
 
 #
