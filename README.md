@@ -18,7 +18,8 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ## TODO
 - Attach image of puzzle to readme
-- make everthing 25% bigger
+- make design responsive to screen size
+- build with ghcjs
 
 ### Features
 - solve button: solve by algorithms
@@ -35,10 +36,10 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 - arrow buttons above each ring?
 
 ### Drag controls
-- handle mobile touch events
 - animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
 - it feels jerky during the snap
 - handle ambiguous case. During my user testing, I often wanted to drag an intersection disk.
+- user test on mobile
 
 
 ### On Solve
