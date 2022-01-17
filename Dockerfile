@@ -3,17 +3,17 @@
 #
 
 # pull base
-FROM fpco/stack-build:lts.18-21 
+FROM fpco/stack-build:lts-18.21 
 
 # configure stack
 RUN stack upgrade
 RUN stack setup 
 
 # large haskell packages, separate steps
-RUN stack install --resolver lts.18-21 lens
-RUN stack install --resolver lts.18-21 jsaddle-dom
+RUN stack install --resolver lts-18.21 lens
+RUN stack install --resolver lts-18.21 jsaddle-dom
 
-RUN stack install --resolver lts.18-21 aeson servant-server wai text warp mtl transformers parsec
+RUN stack install --resolver lts-18.21 aeson servant-server wai text warp mtl transformers parsec
 
 # make a dir for the project
 RUN mkdir -p reversible-debugger
@@ -21,7 +21,7 @@ WORKDIR /reversible-debugger
 
 # copy only the stack.yaml and the cabal file; build only dependencies
 COPY stack.yaml reversible-debugger.cabal /reversible-debugger/
-RUN stack setup && stack install --resolver lts.18-21 --dependencies-only 
+RUN stack setup && stack install --resolver lts-18.21 --dependencies-only 
 
 # compile the haskell app
 WORKDIR /reversible-debugger
@@ -32,7 +32,7 @@ RUN stack build reversible-debugger:server
 #
 
 # pull same base
-FROM fpco/stack-build:lts.18-21 
+FROM fpco/stack-build:lts-18.21 
 
 # expose a port for local dev. heroku seems to find the port 
 EXPOSE 8080
@@ -42,7 +42,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 # Executable(s) from build stage (stage 0, therefore `--from=0`).
-COPY --from=0 /reversible-debugger/.stack-work/install/x86_64-linux/lts.18-21/8.0.2/bin/server /app/server
+COPY --from=0 /reversible-debugger/.stack-work/install/x86_64-linux/lts-18.21/8.0.2/bin/server /app/server
 
 # make user for the app (unsure if needed)
 RUN useradd app
