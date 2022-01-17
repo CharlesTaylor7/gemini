@@ -14,13 +14,14 @@ RUN stack setup
 
 # large haskell packages, separate steps
 RUN stack install --resolver lts-18.21 lens
-RUN stack install attoparsec random
+RUN stack install aeson attoparsec base64-bytestring bytestring containers deepseq primitive process random
+RUN stack install jsaddle
 RUN stack install jsaddle-dom
-RUN stack install aeson wai text mtl transformers parsec
+RUN stack install wai
 
 
 # build remaining dependencies
-RUN  stack install --resolver lts-18.21 --dependencies-only 
+RUN  stack install --dependencies-only 
 
 # compile the server
 RUN stack build gemini:server
