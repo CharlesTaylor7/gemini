@@ -12,20 +12,19 @@ RUN stack setup
 # large haskell packages, separate steps
 RUN stack install --resolver lts-18.21 lens
 RUN stack install --resolver lts-18.21 jsaddle-dom
-
-RUN stack install --resolver lts-18.21 aeson servant-server wai text warp mtl transformers parsec
+RUN stack install --resolver lts-18.21 aeson wai text warp mtl transformers parsec
 
 # make a dir for the project
-RUN mkdir -p reversible-debugger
-WORKDIR /reversible-debugger
+RUN mkdir -p gemini
+WORKDIR /gemini
 
 # copy only the stack.yaml and the cabal file; build only dependencies
-COPY stack.yaml reversible-debugger.cabal /reversible-debugger/
+COPY stack.yaml gemini.cabal /gemini/
 RUN stack setup && stack install --resolver lts-18.21 --dependencies-only 
 
 # compile the haskell app
-WORKDIR /reversible-debugger
-RUN stack build reversible-debugger:server
+WORKDIR /gemini
+RUN stack build gemini:server
 
 #
 # runtime
@@ -42,7 +41,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 # Executable(s) from build stage (stage 0, therefore `--from=0`).
-COPY --from=0 /reversible-debugger/.stack-work/install/x86_64-linux/lts-18.21/8.0.2/bin/server /app/server
+COPY --from=0 /gemini/.stack-work/install/x86_64-linux/lts-18.21/8.10.7/bin/server /app/server
 
 # make user for the app (unsure if needed)
 RUN useradd app
