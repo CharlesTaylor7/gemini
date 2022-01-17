@@ -9,4 +9,4 @@ RUN cabal update
 COPY [".", "/build-dir"]
 RUN cabal build --only-dependencies -j4
 RUN cabal build -j4
-ENTRYPOINT ["cabal", "run", "gemini"]
+CMD ["cabal", "run", "gemini"]
