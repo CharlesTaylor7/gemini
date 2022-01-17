@@ -88,8 +88,11 @@ isActive store r = fromMaybe False $ do
   drag <- store ^. #drag
   pure $ drag ^. #ring == r
 
+data EventType
+  = Mouse
+  | Touch
 
-mousePosition :: RawNode -> RawEvent -> JSM Point
+mousePosition :: EventType -> RawNode -> RawEvent -> JSM Point
 mousePosition = \node event -> do
   geminiNode <- jsCall node "closest" (".gemini" :: Text)
   geminiOffset <- jsCall geminiNode "getBoundingClientRect" ()
@@ -204,6 +207,10 @@ geminiHtmlView store =
               , ("left", show x <> "px")
               , ("top", show y <> "px")
               ]
+            : ("touchstart", listenerProp $ \node event -> do
+                  pure ()
+              )
+
             : if isIntersection location
               then []
               else pure $
