@@ -9,7 +9,10 @@ FROM fpco/stack-build:lts.18-21
 RUN stack upgrade
 RUN stack setup 
 
-# large haskell packages, separate step for better caching
+# large haskell packages, separate steps
+RUN stack install --resolver lts.18-21 lens
+RUN stack install --resolver lts.18-21 jsaddle-dom
+
 RUN stack install --resolver lts.18-21 aeson servant-server wai text warp mtl transformers parsec
 
 # make a dir for the project
