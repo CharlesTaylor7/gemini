@@ -2,6 +2,8 @@ module Main where
 
 import           Relude
 
+import           System.Environment          (lookupEnv)
+import           Text.Read                   (readMaybe)
 
 import           Shpadoinkle                 (JSM)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
@@ -12,17 +14,16 @@ import           Gemini                      (Store, initialStore, rootView)
 
 
 main :: IO ()
-main = runJSorWarp port $ app initialStore
-
-
-port :: Int
-port = 8080
+main = do
+  port <- getPort
+  runJSorWarp port $ app initialStore
 
 
 dev :: IO ()
 dev = do
   let initialPage = app initialStore
   let staticFolder = "static/"
+  port <- getPort
   liveWithStatic port initialPage staticFolder
 
 
@@ -30,3 +31,9 @@ app :: Store -> JSM ()
 app store = do
   addStyle "./public/index.css"
   simple runParDiff store rootView stage
+
+
+getPort :: IO Int
+getPort = do
+  let toPortOrDefault = fromMaybe 8080 . (>>= readMaybe)
+  toPortOrDefault <$> lookupEnv "PORT"
