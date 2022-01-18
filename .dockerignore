@@ -6,3 +6,5 @@ heroku.yml
 dev.sh
 Dockerfile
 .dockerignore
+.stylish-haskell.yaml
+.gitignore

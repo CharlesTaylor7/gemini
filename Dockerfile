@@ -21,7 +21,8 @@ COPY stack.yaml package.yaml gemini.cabal .
 RUN stack install --dependencies-only
 
 # build app code
-COPY app/ lib/ .
+COPY . .
+RUN stack setup
 RUN stack install gemini:server
 
 
@@ -40,6 +41,7 @@ WORKDIR /app
 
 # copy binary from previous stage
 COPY --from=0  /root/.local/bin/server  /app/server
+RUN wc "/app/server"
 
 # start the server
 CMD ["/app/server"]

@@ -11,11 +11,7 @@ ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
 ## Deploy
 Fresh builds of the docker image will take about 2 hours. Most of that time is spent compiling jsaddle-dom.
-On mac, I get Out of Memory errors, unless I remove the swap limit during the build:
-
-$ docker build --memory-swap -1
-
-Use heroku as registry and deploy
+Run `./deploy.sh`
 
 ## UI
 - scramble: apply 1000 random moves and clear the history buffer
