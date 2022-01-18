@@ -1,25 +1,28 @@
 # pull base
 FROM fpco/stack-build:lts-18.21
 
+# stack global project
+RUN mkdir -p ~/.stack/global-project
+
+# copy stack.yaml into global dir
+COPY stack.yaml  ~/.stack/global-project/stack.yaml
+
+# configure stack
+RUN stack upgrade && stack setup
+
 # make a dir for the project
 RUN mkdir -p gemini
 WORKDIR /gemini
 
-# copy files for build
-COPY stack.yaml  .
 
-# configure stack
-RUN stack upgrade
-RUN stack setup
-
-# jsaddle-dom deps & commone haskell packages
+# build jsaddle-dom deps 
 RUN stack install lens aeson attoparsec base64-bytestring bytestring containers deepseq primitive process random jsaddle unordered-containers
 
-# largest dependency
+# build jsaddle-dom (this takes between 90-120 minutes)
 RUN stack install jsaddle-dom
 
 # copy remaining files for build
-COPY stack.yaml  .
+COPY .  .
 
 # build remaining dependencies
 RUN stack install --dependencies-only
