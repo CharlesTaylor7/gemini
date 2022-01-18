@@ -1,2 +1,1 @@
-docker build --memory-swap -1 -t ninjapenguin/gemini-server:latest .
-docker run -it -t ninjapenguin/gemini-server:latest --network=host
+docker run -p 8080:8080 -it ninjapenguin/gemini-server:latest
