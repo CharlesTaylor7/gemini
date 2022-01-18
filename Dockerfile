@@ -10,6 +10,9 @@ COPY global.stack.yaml  /root/.stack/global-project/stack.yaml
 # build jsaddle-dom deps 
 RUN stack install lens aeson attoparsec base64-bytestring bytestring containers deepseq primitive process random jsaddle unordered-containers
 
+# append allow-newer: true to the global config
+RUN echo "allow-newer: true" >> /root/.stack/config.yaml
+
 # build jsaddle-dom (this takes between 90-120 minutes)
 RUN stack install jsaddle-dom
 
