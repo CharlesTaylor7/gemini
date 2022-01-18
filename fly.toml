@@ -44,3 +44,7 @@ processes = []
 [[statics]]
   guest_path = "public/"
   url_prefix = "public/"
+
+[[statics]]
+guest_path = "/public/styles"
+url_prefix = "/styles"
