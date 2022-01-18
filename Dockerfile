@@ -1,11 +1,11 @@
 # pull base
 FROM fpco/stack-build:lts-18.21
 
-# copy stack.yaml into global dir
-COPY stack.yaml  /root/.stack/global-project/stack.yaml
+RUN mkdir build/
+WORKDIR build/
 
-# configure stack
-RUN stack upgrade && stack setup
+# copy stack.yaml into global dir
+COPY global.stack.yaml  /root/.stack/global-project/stack.yaml
 
 # build jsaddle-dom deps 
 RUN stack install lens aeson attoparsec base64-bytestring bytestring containers deepseq primitive process random jsaddle unordered-containers
@@ -13,14 +13,18 @@ RUN stack install lens aeson attoparsec base64-bytestring bytestring containers 
 # build jsaddle-dom (this takes between 90-120 minutes)
 RUN stack install jsaddle-dom
 
-# copy remaining files for build
-COPY .  .
+# copy application code for build
+COPY . .
+
+# configure stack
+RUN stack upgrade && stack setup
 
 # build remaining dependencies
 RUN stack install --dependencies-only
 
 # build the server
 RUN stack install gemini:server
+
 
 ##########
 # Runtime
