@@ -19,15 +19,26 @@ RUN stack install jsaddle
 RUN stack install jsaddle-dom
 RUN stack install wai
 
-
 # build remaining dependencies
 RUN  stack install --dependencies-only 
 
 # compile the server
-RUN stack build gemini:server
+RUN stack install gemini:server
 
-# expose a port for local dev. heroku seems to find the port 
+##########
+# Runtime
+##########
+
+# pull same base
+FROM fpco/stack-build:lts-18.21
+
+# expose a port for local dev
 EXPOSE 8080
 
+RUN mkdir -p /app
+WORKDIR /app
+
+
+COPY --from=0  ~/.local/bin/server  /app/server
 # start the server 
-CMD ["stack", "run", "gemini:server" ]
+CMD ["/app/server"]
