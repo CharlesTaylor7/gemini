@@ -2,8 +2,7 @@ resolver: lts-18.21
 system-ghc: true
 compiler: ghc-8.10.7
 allow-newer: true
-packages:
-- .
+packages: []
 extra-deps:
 # optics
 - optics-0.4

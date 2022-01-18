@@ -9,6 +9,10 @@ Project goals:
 ## Run Dev Server
 ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
 
+## Deploy
+Fresh builds of the docker image will take about 2 hours. Most of that time is spent compiling jsaddle-dom.
+Run `./deploy.sh`
+
 ## UI
 - scramble: apply 1000 random moves and clear the history buffer
 - reset button: reset to a solved state
