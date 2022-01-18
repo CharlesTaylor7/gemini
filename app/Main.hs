@@ -14,10 +14,13 @@ import           Gemini                      (Store, initialStore, rootView)
 
 
 main :: IO ()
-main = do
+main = dev
+{--
+do
   port <- getPort
   putStrLn $ "Listening on port " <> show port
   runJSorWarp port $ app initialStore
+--}
 
 
 dev :: IO ()
@@ -30,7 +33,7 @@ dev = do
 
 app :: Store -> JSM ()
 app store = do
-  addStyle "./public/index.css"
+  addStyle "./styles/index.css"
   simple runParDiff store rootView stage
 
 
