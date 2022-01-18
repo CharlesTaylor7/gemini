@@ -24,6 +24,8 @@ Run `./deploy.sh`
 - Attach image of puzzle to readme
 - make design responsive to screen size
 - build with ghcjs
+- optimize layout for mobile
+
 
 ### Features
 - solve button: solve by algorithms

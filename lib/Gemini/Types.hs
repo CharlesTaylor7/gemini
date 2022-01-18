@@ -4,12 +4,12 @@ module Gemini.Types
   , Location(..), location, isCanonical, isIntersection, sibling
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
+  , Point(..)
   , toMove, toMotion
   , applyToGemini, applyToHistory
   , ToPermutation(..)
     -- ui types
   , Store(..), HoverState(..), DragState(..), Options(..)
-  , Point(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   ) where
@@ -67,6 +67,8 @@ data Options = Options
   , animate    :: !Bool
   , recording  :: !Bool
   , debug      :: !Bool
+  , isProd     :: !Bool
+  , isMobile   :: !Bool
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)

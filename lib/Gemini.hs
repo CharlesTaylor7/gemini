@@ -1,7 +1,9 @@
 module Gemini
-  ( Store
-  , initialStore
+  ( initialStore
   , rootView
+  , AppEnv(..)
+  , Store(..)
+  , Options(..)
   ) where
 
 import           Relude
@@ -22,10 +24,13 @@ import           Gemini.Html            (geminiHtmlView)
 import           Gemini.Types
 import           Gemini.UI.Actions
 
+data AppEnv
+  = Prod
+  | Dev
 
 -- | Initial state of the app
-initialStore :: Store
-initialStore = Store
+initialStore :: AppEnv -> Store
+initialStore appEnv = Store
   { gemini = initialGemini
   , history = Seq.Empty
   , moves = Seq.Empty
@@ -39,6 +44,8 @@ initialStore = Store
       , animate = True
       , recording = False
       , debug = False
+      , isMobile = False
+      , isProd = case appEnv of { Prod -> True; Dev -> False; }
       }
   , debugLog = ""
   }
@@ -67,9 +74,11 @@ rootView store =
     [ header store
     , Html.div
       [ Html.className "gemini-wrapper" ]
-      [ geminiHtmlView store
-      , savedMovesPanel store
-      ]
+      (catMaybes $
+        [ Just $ geminiHtmlView store
+        , (store ^. #options % #isMobile % to not) `orNothing` savedMovesPanel store
+        ]
+      )
     ]
 
 
@@ -140,15 +149,20 @@ header store =
     , Html.div
       [ Html.className "control-panel"
       ]
-      [ buttonGroup "options"
-        [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store)
-        , (checkBox "Animate" & zoomComponent (#options % #animate) store)
-        , (checkBox "Debug" & zoomComponent (#options % #debug) store)
-        ]
-      , buttonGroup "actions"
-        [ resetButton
-        , scrambleButton
-        , recordButton store
+      [ buttonGroup "options" $
+        [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
+        <> if store ^. #options % #isProd
+           then []
+           else
+            [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
+            , (checkBox "Mobile" & zoomComponent (#options % #isMobile) store)
+            , (checkBox "Prod" & zoomComponent (#options % #isProd) store)
+            -- , (checkBox "Animate" & zoomComponent (#options % #animate) store)
+            ]
+      , buttonGroup "actions" $ catMaybes
+        [ Just scrambleButton
+        , Just resetButton
+        , (store ^. #options % #isMobile % to not) `orNothing` recordButton store
         ]
       ]
   ]
