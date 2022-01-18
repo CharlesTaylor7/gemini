@@ -26,14 +26,14 @@ do
 dev :: IO ()
 dev = do
   let initialPage = app initialStore
-  let staticFolder = "static/"
+  let staticFolder = "public/"
   port <- getPort
   liveWithStatic port initialPage staticFolder
 
 
 app :: Store -> JSM ()
 app store = do
-  addStyle "./styles/index.css"
+  addStyle "/public/styles/index.css"
   simple runParDiff store rootView stage
 
 

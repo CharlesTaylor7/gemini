@@ -41,5 +41,11 @@ WORKDIR /app
 # copy binary from previous stage
 COPY --from=0 /root/.local/bin/server /app/server
 
+# copy static assets into image
+COPY public/ /app/public/
+
+# test for styles
+RUN echo /app/public/styles/index.css
+
 # start the server
 ENTRYPOINT ["/app/server"]

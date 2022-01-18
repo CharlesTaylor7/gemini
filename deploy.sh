@@ -4,8 +4,8 @@ docker build --memory-swap -1 -t ninjapenguin/gemini-server .
 docker push ninjapenguin/gemini-server
 
 # Deploy to fly.io
-fly deploy --detach
+fly deploy
 
 # Deploy to heroku 
-heroku container:push web
-heroku container:release web
+# heroku container:push web
+# heroku container:release web
