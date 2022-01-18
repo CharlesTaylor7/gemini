@@ -73,13 +73,18 @@ rootView store =
     ]
     [ header store
     , Html.div
-      [ Html.className "gemini-wrapper" ]
+      [ Html.class'
+        [ ("gemini-wrapper", True)
+        , ("mobile" :: Text, isMobile)
+        ]
+      ]
       (catMaybes $
         [ Just $ geminiHtmlView store
-        , (store ^. #options % #isMobile % to not) `orNothing` savedMovesPanel store
+        , (not isMobile) `orNothing` savedMovesPanel store
         ]
       )
     ]
+    where isMobile = store ^. #options % #isMobile
 
 
 debugView :: Store -> Html m a
@@ -150,10 +155,13 @@ header store =
       [ Html.className "control-panel"
       ]
       [ buttonGroup "options" $
-        [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
-        <> if store ^. #options % #isProd
-           then []
-           else
+         if store ^. #options % #isMobile
+         then []
+         else [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
+        <>
+          if store ^. #options % #isProd
+          then []
+          else
             [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
             , (checkBox "Mobile" & zoomComponent (#options % #isMobile) store)
             , (checkBox "Prod" & zoomComponent (#options % #isProd) store)

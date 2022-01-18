@@ -129,6 +129,10 @@ button {
     justify-content: space-between;
 }
 
+.gemini-wrapper {
+    justify-content: space-evenly;
+}
+
 .gemini {
     position: relative;
     font-size: 35px;

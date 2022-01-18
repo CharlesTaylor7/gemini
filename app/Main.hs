@@ -3,7 +3,7 @@ module Main where
 import           Relude
 
 import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
-                                              (!), (#))
+                                              (!), (#), (<#))
 import           Optics                      ((%), (.~), (^.))
 import           Shpadoinkle                 (JSM)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
@@ -37,6 +37,8 @@ app store = do
 
   let store' = store & #options % #isMobile .~ isMobile
 
+  -- set page title
+  jsg ("document" :: Text) <# ("title" :: Text) $ ("Gemini" :: Text)
   addStyle cssStylePath
   simple runParDiff store' rootView stage
     where
