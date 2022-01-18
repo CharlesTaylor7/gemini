@@ -16,6 +16,9 @@ RUN echo "allow-newer: true" >> /root/.stack/config.yaml
 # build jsaddle-dom (this takes between 90-120 minutes)
 RUN stack install jsaddle-dom
 
+# build other large deps
+RUN stack install relude finitary groups jsaddle-warp
+
 # build remaining dependencies
 COPY stack.yaml package.yaml gemini.cabal .
 RUN stack install --dependencies-only
