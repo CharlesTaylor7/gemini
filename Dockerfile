@@ -39,7 +39,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 # copy binary from previous stage
-COPY --from=0 /root/.local/bin/server  /app/server
+COPY --from=0 /root/.local/bin/server /app/server
 
 # start the server
-CMD ["/app/server"]
+ENTRYPOINT ["/app/server"]
