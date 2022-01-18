@@ -33,10 +33,7 @@ RUN stack install gemini:server
 ##########
 
 # pull same base
-FROM fpco/stack-build:lts-18.21
-
-# expose a port for local dev
-EXPOSE 8080
+FROM ubuntu:18.04
 
 RUN mkdir -p /app
 WORKDIR /app
