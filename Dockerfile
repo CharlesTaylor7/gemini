@@ -1,28 +1,30 @@
 # pull base
-FROM fpco/stack-build:lts-18.21 
+FROM fpco/stack-build:lts-18.21
 
 # make a dir for the project
 RUN mkdir -p gemini
 WORKDIR /gemini
 
 # copy files for build
-COPY . .
+COPY stack.yaml  .
 
 # configure stack
 RUN stack upgrade
-RUN stack setup 
+RUN stack setup
 
-# large haskell packages, separate steps
-RUN stack install lens
-RUN stack install aeson attoparsec base64-bytestring bytestring containers deepseq primitive process random
-RUN stack install jsaddle
+# jsaddle-dom deps & commone haskell packages
+RUN stack install lens aeson attoparsec base64-bytestring bytestring containers deepseq primitive process random jsaddle unordered-containers
+
+# largest dependency
 RUN stack install jsaddle-dom
-RUN stack install wai
+
+# copy remaining files for build
+COPY stack.yaml  .
 
 # build remaining dependencies
-RUN  stack install --dependencies-only 
+RUN stack install --dependencies-only
 
-# compile the server
+# build the server
 RUN stack install gemini:server
 
 ##########
@@ -38,7 +40,8 @@ EXPOSE 8080
 RUN mkdir -p /app
 WORKDIR /app
 
-
+# copy binary from previous stage
 COPY --from=0  ~/.local/bin/server  /app/server
-# start the server 
+
+# start the server
 CMD ["/app/server"]

@@ -5,3 +5,5 @@ stack.yaml.lock
 fly.toml
 heroku.yml
 dev.sh
+Dockerfile
+.dockerignore
