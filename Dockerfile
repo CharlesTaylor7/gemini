@@ -16,16 +16,12 @@ RUN echo "allow-newer: true" >> /root/.stack/config.yaml
 # build jsaddle-dom (this takes between 90-120 minutes)
 RUN stack install jsaddle-dom
 
-# copy application code for build
-COPY . .
-
-# configure stack
-RUN stack upgrade && stack setup
-
 # build remaining dependencies
+COPY stack.yaml package.yaml gemini.cabal .
 RUN stack install --dependencies-only
 
-# build the server
+# build app code
+COPY app/ lib/ .
 RUN stack install gemini:server
 
 
