@@ -7,7 +7,7 @@ kill_timeout = 300
 processes = []
 
 [build]
-  image = "registry.heroku.com/gemini-puzzle/web"
+  image = "registry.hub.docker.com/ninjapenguin/gemini-server:latest"
 
 [env]
 
