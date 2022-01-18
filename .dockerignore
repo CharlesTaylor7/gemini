@@ -1,4 +1,5 @@
 *
+!global.stack.yaml
 !app/ 
 !lib/ 
 !README.md 
