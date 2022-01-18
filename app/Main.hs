@@ -3,7 +3,6 @@ module Main where
 import           Relude
 
 import           System.Environment          (lookupEnv)
-import           Text.Read                   (readMaybe)
 
 import           Shpadoinkle                 (JSM)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
@@ -17,21 +16,32 @@ main :: IO ()
 main = do
   port <- getPort
   putStrLn $ "Listening on port " <> show port
-  runJSorWarp port $ app initialStore
+  runJSorWarp port $ app Prod initialStore
 
 
 dev :: IO ()
 dev = do
-  let initialPage = app initialStore
+  let initialPage = app Dev initialStore
   let staticFolder = "public/"
   port <- getPort
   liveWithStatic port initialPage staticFolder
 
 
-app :: Store -> JSM ()
-app store = do
-  addStyle "/public/styles/index.css"
+data AppEnv
+  = Prod
+  | Dev
+  deriving stock (Eq)
+
+
+app :: AppEnv -> Store -> JSM ()
+app appEnv store = do
+  addStyle cssStylePath
   simple runParDiff store rootView stage
+    where
+      cssStylePath =
+        case appEnv of
+          Prod -> "/public/styles/index.css"
+          Dev  -> "./styles/index.css"
 
 
 getPort :: IO Int
