@@ -6,6 +6,9 @@ kill_signal = "SIGINT"
 kill_timeout = 300
 processes = []
 
+[build]
+  image = "registry.heroku.com/gemini-puzzle/web"
+
 [env]
 
 [experimental]
