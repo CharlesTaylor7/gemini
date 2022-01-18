@@ -14,13 +14,10 @@ import           Gemini                      (Store, initialStore, rootView)
 
 
 main :: IO ()
-main = dev
-{--
-do
+main = do
   port <- getPort
   putStrLn $ "Listening on port " <> show port
   runJSorWarp port $ app initialStore
---}
 
 
 dev :: IO ()
