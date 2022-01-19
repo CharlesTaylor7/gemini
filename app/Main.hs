@@ -1,10 +1,10 @@
 module Main where
 
-import           Relude
-
+import           Control.Exception           (throwIO)
 import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
                                               (!), (#), (<#))
 import           Optics                      ((%), (.~), (^.))
+import           Relude
 import           Shpadoinkle                 (JSM)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
 import           Shpadoinkle.Html            (addStyle)
@@ -12,12 +12,13 @@ import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simpl
 import           System.Environment          (lookupEnv)
 
 import           Gemini                      (AppEnv (..), Options (..), Store (..), initialStore, rootView)
+import           Gemini.Env
 
 
 
 main :: IO ()
 main = do
-  port <- getPort
+  Env { port }  <- getEnv
   putStrLn $ "Listening on port " <> show port
   runJSorWarp port $ app $ initialStore Prod
 
@@ -26,7 +27,7 @@ dev :: IO ()
 dev = do
   let initialPage = app $ initialStore Dev
   let staticFolder = "public/"
-  port <- getPort
+  Env { port }  <- getEnv
   liveWithStatic port initialPage staticFolder
 
 
@@ -48,9 +49,14 @@ app store = do
           False -> "./styles/index.css"
 
 
-getPort :: IO Int
-getPort = do
-  maybePort <- lookupEnv "PORT"
-  pure $ fromMaybe 8080 $ do
-    portString <- maybePort
-    readMaybe portString
+data Env = Env
+  { port   :: !Int
+  , commit :: !Text
+  }
+
+
+getEnv :: IO Env
+getEnv = do
+  port <- envOptional "PORT" 8000
+  commit <- envOptional "COMMIT" "master"
+  pure $ Env { port, commit }
