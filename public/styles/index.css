@@ -81,28 +81,30 @@ button {
     padding: 20px;
 }
 
-.button-group {
+.button-group.options {
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
+    align-items: flex-end;
+    width: 65px;
+}
+
+.buttion-group.options .checkbox {
 }
 
 .button-group.actions {
+    display: flex;
+    flex-flow: row no-wrap;
+    align-items: center;
     gap: 12px;
-    width: 110px;
 }
 
-
-.mobile .button-group {
-    flex-direction: row;
-    gap: 20px;
-    width: auto;
-}
-    
 
 .action-button {
+    display: block;
     color: white;
     padding: 6px 12px;
     width: 98px;
+
     background: var(--button-background);
     box-shadow: 3px 3px 3px rgb(0 0 0 / 48%);
     transition:
@@ -121,18 +123,6 @@ button {
     transform: translate(1px, 1px);
 }
 
-
-.button-group.motions {
-}
-
-.button-group.options {
-    width: 75px;
-}
-
-.motion-button {
-    height: 24px;
-    width: 30px;
-}
 
 .checkbox {
     display: flex;

@@ -26,7 +26,7 @@ main = do
 dev :: IO ()
 dev = do
   let initialPage = app $ initialStore Dev
-  let staticFolder = "public/"
+  let staticFolder = "./"
   Env { port }  <- getEnv
   liveWithStatic port initialPage staticFolder
 
@@ -34,13 +34,8 @@ dev = do
 app :: Store -> JSM ()
 app store = do
   setTitle "Gemini"
-  addStyle cssStylePath
-  simple runParDiff store' rootView stage
-    where
-      cssStylePath =
-        case store ^. #options % #isProd of
-          True  -> "/public/styles/index.css"
-          False -> "./styles/index.css"
+  addStyle "/public/styles/index.css"
+  simple runParDiff store rootView stage
 
 
 setTitle :: Text -> JSM ()

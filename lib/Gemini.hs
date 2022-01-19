@@ -69,7 +69,7 @@ keyboardMotions =
 rootView :: MonadIO m => Store -> Html m Store
 rootView store =
   Html.div
-    [ Html.class' [ ("gemini-app" :: Text, True), ("mobile", isMobile) ]
+    [ Html.className "gemini-app"
     , Html.tabIndex 0
     , keyboardMotions
     ]
@@ -78,10 +78,6 @@ rootView store =
       [ Html.className "gemini-flex-wrapper" ]
       [ geminiHtmlView store ]
     ]
-    where
-      isMobile = store ^. #options % #isMobile
-    --, (not isMobile) `orNothing` savedMovesPanel store
-
 
 debugView :: Store -> Html m a
 debugView store =

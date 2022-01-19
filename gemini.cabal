@@ -27,6 +27,7 @@ library
       Data.Cyclic
       Data.Permutation
       Gemini
+      Gemini.Env
       Gemini.Html
       Gemini.Types
       Gemini.UI.Actions
