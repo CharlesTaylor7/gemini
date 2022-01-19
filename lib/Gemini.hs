@@ -154,13 +154,14 @@ header store =
         [ (store ^. #options % #isMobile % to not) `orNothing`
             (
               buttonGroup "options" $
-                ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
+                ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store)
+                  , (checkBox "Mobile" & zoomComponent (#options % #isMobile) store)
+                  ]
                 <>
                   if store ^. #options % #isProd
                   then []
                   else
                     [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
-                    , (checkBox "Mobile" & zoomComponent (#options % #isMobile) store)
                     , (checkBox "Prod" & zoomComponent (#options % #isProd) store)
                     -- , (checkBox "Animate" & zoomComponent (#options % #animate) store)
                     ]
