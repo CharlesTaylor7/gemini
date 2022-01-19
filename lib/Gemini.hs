@@ -57,7 +57,7 @@ applyRotation r = applyMotionToStore $ toMotion r
 rootView :: MonadIO m => Store -> Html m Store
 rootView store =
   Html.div
-    [ Html.className "gemini-app"
+    [ Html.class' [ ("gemini-app" :: Text, True), ("mobile", isMobile) ]
     , Html.tabIndex 0
     , Html.onKeydown $ \key ->
       case key of
@@ -73,12 +73,8 @@ rootView store =
     ]
     [ header store
     , Html.div
-      [ Html.class'
-        [ ("gemini-wrapper", True)
-        , ("mobile" :: Text, isMobile)
-        ]
-      ]
-      (catMaybes $
+      [ Html.className "gemini-wrapper" ]
+      ( catMaybes $
         [ Just $ geminiHtmlView store
         , (not isMobile) `orNothing` savedMovesPanel store
         ]
@@ -154,26 +150,30 @@ header store =
     , Html.div
       [ Html.className "control-panel"
       ]
-      [ buttonGroup "options" $
-         if store ^. #options % #isMobile
-         then []
-         else [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
-        <>
-          if store ^. #options % #isProd
-          then []
-          else
-            [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
-            , (checkBox "Mobile" & zoomComponent (#options % #isMobile) store)
-            , (checkBox "Prod" & zoomComponent (#options % #isProd) store)
-            -- , (checkBox "Animate" & zoomComponent (#options % #animate) store)
+      ( catMaybes $
+        [ (store ^. #options % #isMobile % to not) `orNothing`
+            (
+              buttonGroup "options" $
+                ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
+                <>
+                  if store ^. #options % #isProd
+                  then []
+                  else
+                    [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
+                    , (checkBox "Mobile" & zoomComponent (#options % #isMobile) store)
+                    , (checkBox "Prod" & zoomComponent (#options % #isProd) store)
+                    -- , (checkBox "Animate" & zoomComponent (#options % #animate) store)
+                    ]
+                )
+            )
+        , Just $ buttonGroup "actions" $ catMaybes
+            [ Just scrambleButton
+            , Just resetButton
+            , (store ^. #options % #isMobile % to not) `orNothing` recordButton store
             ]
-      , buttonGroup "actions" $ catMaybes
-        [ Just scrambleButton
-        , Just resetButton
-        , (store ^. #options % #isMobile % to not) `orNothing` recordButton store
         ]
-      ]
-  ]
+      )
+    ]
 
 
 buttonGroup :: Text -> [Html m a] -> Html m a

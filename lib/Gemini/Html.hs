@@ -166,6 +166,7 @@ geminiHtmlView store =
   where
     gemini = store ^. #gemini
     options = store ^. #options
+    isMobile = options ^. #isMobile
 
     activeCycleMap :: Map Location Int
     activeCycleMap = store
@@ -237,4 +238,6 @@ geminiHtmlView store =
                    , ("touchstart" , listenerProp $ startDrag ring)
                    ]
             )
-            [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]
+            if isMobile
+            then []
+            else [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]

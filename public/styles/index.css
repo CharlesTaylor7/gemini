@@ -28,6 +28,7 @@ button {
     display: inline-block;
     border: none;
     margin: 0;
+    padding: 0;
     text-decoration: none;
     user-select: none;
     font-family: sans-serif;
@@ -75,8 +76,17 @@ button {
     width: 110px;
 }
 
+
+.mobile .button-group {
+    flex-direction: row;
+    gap: 20px;
+    width: auto;
+}
+    
+
 .action-button {
     color: white;
+    padding: 6px 12px;
     background: var(--button-background);
     box-shadow: 3px 3px 3px rgb(0 0 0 / 48%);
     transition:
@@ -94,6 +104,7 @@ button {
     box-shadow: none;
     transform: translate(1px, 1px);
 }
+
 
 .button-group.motions {
 }
@@ -129,7 +140,7 @@ button {
     justify-content: space-between;
 }
 
-.gemini-wrapper {
+.mobile .gemini-wrapper {
     justify-content: space-evenly;
 }
 
