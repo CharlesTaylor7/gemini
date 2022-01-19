@@ -70,7 +70,10 @@ keyboardMotions =
 rootView :: MonadIO m => Store -> Html m Store
 rootView store =
   Html.div
-    [ Html.className "gemini-app"
+    [ Html.class'
+      [ ("gemini-app", True)
+      , ("dragging" :: Text, isn't (#drag % _Nothing) store)
+      ]
     , Html.tabIndex 0
     , keyboardMotions
     -- on drag
@@ -88,6 +91,7 @@ rootView store =
       [ geminiHtmlView store ]
     ]
 
+
 debugView :: Store -> Html m a
 debugView store =
   if store ^. #options % #debug % to not
@@ -97,9 +101,7 @@ debugView store =
         [ ("padding", "12px")
         , ("display", "flex")
         , ("flex-direction", "column")
-
         ]
-
     ]
     ( Html.text ( "Log : " <> store ^. #debugLog)
     : case store ^. #drag of
@@ -243,7 +245,6 @@ resetButton =
         (#gemini .~ initialGemini)
     ]
     [ Html.text "Reset" ]
-
 
 
 scrambleButton :: forall m. MonadIO m => Html m Store
