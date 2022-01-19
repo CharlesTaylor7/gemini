@@ -7,97 +7,19 @@ import           Relude
 import           Data.Cyclic
 import           Data.Finitary
 import           Data.Permutation
-import qualified Data.Sequence               as Seq
 import           Data.Set.Optics
 import qualified Data.Text                   as Text
 import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
                                               (!), (#))
 import           Optics                      hiding ((#))
-import           Optics.State.Operators
 import           Shpadoinkle                 hiding (text)
-import qualified Shpadoinkle.Continuation    as Continuation
 import qualified Shpadoinkle.Html            as Html
 
 import           Gemini.Types
 import           Gemini.UI.Actions
+import           Gemini.UI.EventHandlers
 import           Utils
 
-type RawEventHandler m = RawNode -> RawEvent -> JSM (Continuation m Store)
-
-
-mousePosition :: RawNode -> RawEvent -> JSM Point
-mousePosition = \node event -> do
-  geminiNode <- jsCall node "closest" (".gemini" :: Text)
-  geminiOffset <- jsCall geminiNode "getBoundingClientRect" ()
-  g_x <- geminiOffset ! ("left" :: Text) >>= fromJSValUnchecked
-  g_y <- geminiOffset ! ("top" :: Text) >>= fromJSValUnchecked
-
-  jsConsoleLog =<< toJSVal event
-
-  isMouseEvent <- event `instanceOf` jsg ("MouseEvent"::Text)
-
-  object <-
-      case isMouseEvent of
-        True  -> toJSVal event
-        False -> toJSVal event ! ("changedTouches" :: Text) !! 0
-
-  client_x <- object ! ("clientX" :: Text) >>= fromJSValUnchecked
-  client_y <- object ! ("clientY" :: Text) >>= fromJSValUnchecked
-
-  pure $ Point (client_x - g_x) (client_y - g_y)
-
-
-startDrag :: Ring -> RawEventHandler m
-startDrag ring node event = do
-  mouse <- mousePosition node event
-  pure $ Continuation.pur $
-    (#drag ?~ DragState
-      { ring
-      , initialAngle = angle (mouse ~~ ringCenter ring)
-      , currentAngle = 0
-      }
-    )
-
-
-onDrag :: RawEventHandler m
-onDrag node event = do
-  mouse <- mousePosition node event
-  pure $ Continuation.Pure $
-    (updateDrag mouse) .
-    (#debugLog .~ show mouse)
-
-
-updateDrag :: Point -> Store -> Store
-updateDrag mouse = (#drag % _Just) %~ \drag -> do
-  let origin = drag ^. #ring % to ringCenter
-  let pointRelativeToRing = mouse ~~ origin
-  drag & #currentAngle .~ (angle pointRelativeToRing - initialAngle drag)
-
-
-endDrag :: RawEventHandler m
-endDrag node event = do
-  mouse <- mousePosition node event
-  pure $ Continuation.Pure $
-    execState $ do
-      modify $ updateDrag mouse
-      drag <- use #drag
-      case drag of
-        Nothing -> pure ()
-        Just drag -> do
-          (#drag .= Nothing)
-          let ring = drag ^. #ring
-          let theta = drag ^. #currentAngle
-          let n = floor $ (theta / 20) + 0.5
-          let direction = if signum n > 0 then Clockwise else AntiClockwise
-          let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
-          modify $ applyMotionToStore motion
-
-
-ringCenter :: Ring -> Point
-ringCenter = \case
-  LeftRing   -> Point 150 150
-  CenterRing -> Point (450 - 135) 150
-  RightRing  -> Point (750 - 270) 150
 
 
 -- dimensions
@@ -163,6 +85,7 @@ geminiHtmlView store =
       [ ("gemini" :: Text, True)
       , ("dragging", isn't (#drag % _Nothing) store)
       ]
+
     -- on drag
     , ("mousemove", listenerProp onDrag)
     , ("touchmove", listenerProp onDrag)
