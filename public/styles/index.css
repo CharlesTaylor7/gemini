@@ -52,11 +52,20 @@ button {
     background-color: #9aaecd;
 }
 
+.gemini-flex-wrapper {
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
 
 /* UI Elements */
 .header {
+    position: absolute;
+    width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .control-panel {
@@ -135,18 +144,6 @@ button {
     padding-right: 5px;
 }
 
-/* Gemini Puzzle */
-.gemini-wrapper {
-    display: flex;
-    justify-content: space-between;
-}
-
-
-
-.mobile .gemini-wrapper {
-    flex-direction: column;
-    align-items: center;
-}
 
 .gemini {
     position: relative;
@@ -154,12 +151,8 @@ button {
     user-select: none;
     height: 300px;
     width: 630px;
-    margin: 0 20px;
 }
 
-.mobile .gemini {
-    padding-top: 100px;
-}
 
 .saved-moves-panel {
     flex: 0 1 auto;

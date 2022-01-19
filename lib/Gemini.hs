@@ -74,11 +74,10 @@ rootView store =
     , Html.tabIndex 0
     , keyboardMotions
     ]
-    [ Html.div
-      [ Html.className "gemini-wrapper" ]
-      [ header store
-      , geminiHtmlView store
-      ]
+    [ header store
+    , Html.div
+      [ Html.className "gemini-flex-wrapper" ]
+      [ geminiHtmlView store ]
     ]
     where
       isMobile = store ^. #options % #isMobile
