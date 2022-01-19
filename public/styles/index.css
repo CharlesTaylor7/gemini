@@ -17,6 +17,10 @@
     margin: 0;
 }
 
+html {
+    height: 100%;
+}
+
 body {
     margin: 0;
     overflow: hidden;
@@ -48,7 +52,9 @@ button {
 
 /* root div */
 .gemini-app {
-    height: 100vh;
+    position: fixed;
+    height: 100%;
+    width: 100%;
     background-color: #9aaecd;
 }
 
