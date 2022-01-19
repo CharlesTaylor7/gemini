@@ -41,7 +41,6 @@ initialStore appEnv = Store
   , drag = Nothing
   , options = Options
       { showLabels = False
-      , animate = True
       , recording = False
       , debug = False
       , isMobile = False
@@ -163,7 +162,6 @@ header store =
                   else
                     [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
                     , (checkBox "Prod" & zoomComponent (#options % #isProd) store)
-                    -- , (checkBox "Animate" & zoomComponent (#options % #animate) store)
                     ]
                 )
             )

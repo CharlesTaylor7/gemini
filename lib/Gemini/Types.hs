@@ -64,7 +64,6 @@ data DragState = DragState
 
 data Options = Options
   { showLabels :: !Bool
-  , animate    :: !Bool
   , recording  :: !Bool
   , debug      :: !Bool
   , isProd     :: !Bool
