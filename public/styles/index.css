@@ -88,9 +88,6 @@ button {
     width: 65px;
 }
 
-.buttion-group.options .checkbox {
-}
-
 .button-group.actions {
     display: flex;
     flex-flow: row no-wrap;
