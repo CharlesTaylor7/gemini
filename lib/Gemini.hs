@@ -53,23 +53,26 @@ initialStore appEnv = Store
 applyRotation :: Rotation -> Store -> Store
 applyRotation r = applyMotionToStore $ toMotion r
 
+keyboardMotions :: (Text, Prop m Store)
+keyboardMotions =
+  Html.onKeydown $ \case
+    -- the keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
+    Key.Q -> applyRotation $ Rotation LeftRing AntiClockwise
+    Key.W -> applyRotation $ Rotation LeftRing Clockwise
+    Key.T -> applyRotation $ Rotation CenterRing AntiClockwise
+    Key.Y -> applyRotation $ Rotation CenterRing Clockwise
+    Key.O -> applyRotation $ Rotation RightRing AntiClockwise
+    Key.P -> applyRotation $ Rotation RightRing Clockwise
+    _     -> identity
+
+
 -- | Components
 rootView :: MonadIO m => Store -> Html m Store
 rootView store =
   Html.div
     [ Html.class' [ ("gemini-app" :: Text, True), ("mobile", isMobile) ]
     , Html.tabIndex 0
-    , Html.onKeydown $ \key ->
-      case key of
-        -- the keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
-        -- T, Y, U, I, O, P
-        Key.Q -> applyRotation $ Rotation LeftRing AntiClockwise
-        Key.W -> applyRotation $ Rotation LeftRing Clockwise
-        Key.T -> applyRotation $ Rotation CenterRing AntiClockwise
-        Key.Y -> applyRotation $ Rotation CenterRing Clockwise
-        Key.O -> applyRotation $ Rotation RightRing AntiClockwise
-        Key.P -> applyRotation $ Rotation RightRing Clockwise
-        _     -> identity
+    , keyboardMotions
     ]
     [ Html.div
       [ Html.className "gemini-wrapper" ]
