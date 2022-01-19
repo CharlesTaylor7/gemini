@@ -1,15 +1,15 @@
 module Main where
 
-import           Control.Exception           (throwIO)
+
+import           Relude
+
 import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
                                               (!), (#), (<#))
 import           Optics                      ((%), (.~), (^.))
-import           Relude
 import           Shpadoinkle                 (JSM)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
 import           Shpadoinkle.Html            (addStyle)
 import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
-import           System.Environment          (lookupEnv)
 
 import           Gemini                      (AppEnv (..), Options (..), Store (..), initialStore, rootView)
 import           Gemini.Env
@@ -33,13 +33,7 @@ dev = do
 
 app :: Store -> JSM ()
 app store = do
-  match <- jsg ("window" :: Text) # ("matchMedia" :: Text) $ ("only screen and (max-width: 760px)" :: Text)
-  isMobile <- match ! ("matches" :: Text) >>= fromJSValUnchecked
-
-  let store' = store & #options % #isMobile .~ isMobile
-
-  -- set page title
-  jsg ("document" :: Text) <# ("title" :: Text) $ ("Gemini" :: Text)
+  setTitle "Gemini"
   addStyle cssStylePath
   simple runParDiff store' rootView stage
     where
@@ -47,6 +41,10 @@ app store = do
         case store ^. #options % #isProd of
           True  -> "/public/styles/index.css"
           False -> "./styles/index.css"
+
+
+setTitle :: Text -> JSM ()
+setTitle title = jsg ("document" :: Text) <# ("title" :: Text) $ title
 
 
 data Env = Env
