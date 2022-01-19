@@ -71,16 +71,15 @@ rootView store =
         Key.P -> applyRotation $ Rotation RightRing Clockwise
         _     -> identity
     ]
-    [ header store
-    , Html.div
+    [ Html.div
       [ Html.className "gemini-wrapper" ]
-      ( catMaybes $
-        [ Just $ geminiHtmlView store
-        , (not isMobile) `orNothing` savedMovesPanel store
-        ]
-      )
+      [ header store
+      , geminiHtmlView store
+      ]
     ]
-    where isMobile = store ^. #options % #isMobile
+    where
+      isMobile = store ^. #options % #isMobile
+    --, (not isMobile) `orNothing` savedMovesPanel store
 
 
 debugView :: Store -> Html m a
@@ -143,11 +142,10 @@ savedMovesPanel store =
 
 header :: MonadIO m => Store -> Html m Store
 header store =
-  Html.header
+  Html.div
     [ Html.className "header"
     ]
-    [ debugView store
-    , Html.div
+    [ Html.div
       [ Html.className "control-panel"
       ]
       ( catMaybes $
