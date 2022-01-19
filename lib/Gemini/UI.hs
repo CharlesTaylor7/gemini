@@ -1,4 +1,4 @@
-module Gemini
+module Gemini.UI
   ( initialStore
   , rootView
   , AppEnv(..)
@@ -10,19 +10,20 @@ import           Relude
 
 import           Data.Finitary
 import           Data.Permutation
-import qualified Data.Sequence          as Seq
-import           Data.Traversable       (for)
-import           Optics                 hiding ((#))
-import           System.Random.Stateful (globalStdGen, uniformM)
+import qualified Data.Sequence           as Seq
+import           Data.Traversable        (for)
+import           Optics                  hiding ((#))
+import           System.Random.Stateful  (globalStdGen, uniformM)
 import           Utils
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Html       as Html
-import qualified Shpadoinkle.Keyboard   as Key
+import qualified Shpadoinkle.Html        as Html
+import qualified Shpadoinkle.Keyboard    as Key
 
-import           Gemini.Html            (geminiHtmlView)
+import           Gemini.Html             (geminiHtmlView)
 import           Gemini.Types
 import           Gemini.UI.Actions
+import           Gemini.UI.EventHandlers
 
 data AppEnv
   = Prod
@@ -72,6 +73,14 @@ rootView store =
     [ Html.className "gemini-app"
     , Html.tabIndex 0
     , keyboardMotions
+    -- on drag
+    , ("mousemove", listenerProp onDrag)
+    , ("touchmove", listenerProp onDrag)
+    -- end drag
+    , ("mouseup", listenerProp endDrag)
+    , ("mouseleave", listenerProp endDrag)
+    , ("touchend", listenerProp endDrag)
+    , ("touchcancel", listenerProp endDrag)
     ]
     [ header store
     , Html.div
@@ -88,7 +97,9 @@ debugView store =
         [ ("padding", "12px")
         , ("display", "flex")
         , ("flex-direction", "column")
+
         ]
+
     ]
     ( Html.text ( "Log : " <> store ^. #debugLog)
     : case store ^. #drag of

@@ -11,8 +11,8 @@ import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
 import           Shpadoinkle.Html            (addStyle)
 import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
 
-import           Gemini                      (AppEnv (..), Options (..), Store (..), initialStore, rootView)
 import           Gemini.Env
+import           Gemini.UI                   (AppEnv (..), Options (..), Store (..), initialStore, rootView)
 
 
 

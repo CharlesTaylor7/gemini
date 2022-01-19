@@ -26,11 +26,12 @@ library
   exposed-modules:
       Data.Cyclic
       Data.Permutation
-      Gemini
       Gemini.Env
       Gemini.Html
       Gemini.Types
+      Gemini.UI
       Gemini.UI.Actions
+      Gemini.UI.EventHandlers
       Utils
   other-modules:
       Paths_gemini

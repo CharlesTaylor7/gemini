@@ -85,15 +85,6 @@ geminiHtmlView store =
       [ ("gemini" :: Text, True)
       , ("dragging", isn't (#drag % _Nothing) store)
       ]
-
-    -- on drag
-    , ("mousemove", listenerProp onDrag)
-    , ("touchmove", listenerProp onDrag)
-    -- end drag
-    , ("mouseup", listenerProp endDrag)
-    , ("mouseleave", listenerProp endDrag)
-    , ("touchend", listenerProp endDrag)
-    , ("touchcancel", listenerProp endDrag)
     ]
     (  map ring inhabitants
     )
