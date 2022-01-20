@@ -27,6 +27,7 @@ Run `./deploy.sh`
 - test performance of a ghcjs build
 - solve button: solve by algorithms
 - animate transitions
+- footer link to github
 
 ### Saved Moves sidebar
 - collapsble panel 

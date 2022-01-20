@@ -56,19 +56,18 @@ button {
     height: 100%;
     width: 100%;
     background-color: #9aaecd;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
 }
 
 .gemini-flex-wrapper {
-    height: 100%;
     display: flex;
     justify-content: space-around;
-    align-items: center;
 }
 
-
-/* UI Elements */
+/* header */
 .header {
-    position: absolute;
     width: 100%;
     display: flex;
     justify-content: space-around;
@@ -137,16 +136,28 @@ button {
     padding-right: 5px;
 }
 
+/* footer */
+.footer {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+}
 
-.gemini {
-    position: relative;
-    font-size: 35px;
-    user-select: none;
-    height: 300px;
-    width: 630px;
+.link {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.link > img {
+    height: 20px;
+    padding-right: 5px;
 }
 
 
+
+/* saved moves panel */
 .saved-moves-panel {
     flex: 0 1 auto;
     display: flex;
@@ -224,8 +235,13 @@ button {
 }
 
 
-/* html gemini */
+/* puzzle */
 .gemini {
+    position: relative;
+    font-size: 35px;
+    user-select: none;
+    height: 300px;
+    width: 630px;
     display: flex;
     flex-direction: row;
 } 

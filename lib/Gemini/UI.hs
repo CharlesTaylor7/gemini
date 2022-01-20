@@ -1,9 +1,10 @@
 module Gemini.UI
   ( initialStore
   , rootView
-  , AppEnv(..)
   , Store(..)
   , Options(..)
+  , Deployment(..)
+  , Env(..)
   ) where
 
 import           Relude
@@ -25,13 +26,10 @@ import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
 
-data AppEnv
-  = Prod
-  | Dev
 
 -- | Initial state of the app
-initialStore :: AppEnv -> Store
-initialStore appEnv = Store
+initialStore :: Env -> Store
+initialStore env = Store
   { gemini = initialGemini
   , history = Seq.Empty
   , moves = Seq.Empty
@@ -45,10 +43,11 @@ initialStore appEnv = Store
       , recording = False
       , debug = False
       , isMobile = False
-      , isProd = case appEnv of { Prod -> True; Dev -> False; }
       }
   , debugLog = ""
+  , env = env
   }
+
 
 applyRotation :: Rotation -> Store -> Store
 applyRotation r = applyMotionToStore $ toMotion r
@@ -89,6 +88,7 @@ rootView store =
     , Html.div
       [ Html.className "gemini-flex-wrapper" ]
       [ geminiHtmlView store ]
+    , footer store
     ]
 
 
@@ -150,14 +150,12 @@ savedMovesPanel store =
         ]
 
 
-header :: MonadIO m => Store -> Html m Store
+header :: forall m. MonadIO m => Store -> Html m Store
 header store =
   Html.div
-    [ Html.className "header"
-    ]
+    [ Html.className "header" ]
     [ Html.div
-      [ Html.className "control-panel"
-      ]
+      [ Html.className "control-panel" ]
       ( catMaybes $
         [ (store ^. #options % #isMobile % to not) `orNothing`
             (
@@ -166,11 +164,11 @@ header store =
                   , (checkBox "Mobile" & zoomComponent (#options % #isMobile) store)
                   ]
                 <>
-                  if store ^. #options % #isProd
+                  if store ^. isProdL
                   then []
                   else
                     [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
-                    , (checkBox "Prod" & zoomComponent (#options % #isProd) store)
+                    , (checkBox "Prod" & zoomComponent isProdL store)
                     ]
                 )
             )
@@ -182,6 +180,40 @@ header store =
         ]
       )
     ]
+  where
+    isProdL :: Lens' Store Bool
+    isProdL = #env % #deployment % iso (== Prod) (bool Prod Dev)
+
+
+footer :: forall m. MonadIO m => Store -> Html m Store
+footer store =
+  Html.div
+    [ Html.className "footer" ]
+    [ Html.div
+      [ Html.className "links" ]
+      [
+         hyperlink
+            "public/icons/GitHub.png"
+            ( "https://github.com/CharlesTaylor7/gemini/tree/"
+            <> store ^. #env % #commit
+            <> "#readme"
+            )
+            "View Source"
+
+      ]
+    ]
+  where
+    hyperlink :: Text -> Text -> Text -> Html m a
+    hyperlink iconSrc linkUrl display =
+      Html.a
+        [ Html.className "link"
+        , Html.href linkUrl
+        , Html.target "_blank"
+        , Html.rel "noopener noreferrer"
+        ]
+        [ Html.img [ Html.src iconSrc ] []
+        , Html.text display
+        ]
 
 
 buttonGroup :: Text -> [Html m a] -> Html m a

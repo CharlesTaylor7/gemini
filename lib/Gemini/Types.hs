@@ -9,7 +9,7 @@ module Gemini.Types
   , applyToGemini, applyToHistory
   , ToPermutation(..)
     -- ui types
-  , Store(..), HoverState(..), DragState(..), Options(..)
+  , Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   ) where
@@ -41,10 +41,12 @@ data Store = Store
   , hover    :: !HoverState
   , drag     :: !(Maybe DragState)
   , options  :: !Options
+  , env      :: !Env
   , debugLog :: !Text
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
+
 
 data HoverState = HoverState
   { activeCycle :: !(Maybe (Cycle Location))
@@ -66,13 +68,29 @@ data Options = Options
   { showLabels :: !Bool
   , recording  :: !Bool
   , debug      :: !Bool
-  , isProd     :: !Bool
   , isMobile   :: !Bool
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
 
+data Env = Env
+  { port       :: !Int
+  , commit     :: !Text
+  , deployment :: !Deployment
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
+
+
+data Deployment
+  = Prod
+  | Dev
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
+
+
+-- | Core Definitions
 data Move = Move
   { motions    :: !(Seq Motion)
   , moveCycles :: !(Cycles Location)
@@ -117,7 +135,6 @@ instance Monoid Point where
 instance Group Point where
   invert (Point x y) = Point (-x) (-y)
 
--- | Core Definitions
 type GeminiPermutation = Permutation 54
 
 newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }

@@ -12,23 +12,23 @@ import           Shpadoinkle.Html            (addStyle)
 import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
 
 import           Gemini.Env
-import           Gemini.UI                   (AppEnv (..), Options (..), Store (..), initialStore, rootView)
+import           Gemini.UI
 
 
 
 main :: IO ()
 main = do
-  Env { port }  <- getEnv
+  env@Env { port }  <- getEnv Prod
   putStrLn $ "Listening on port " <> show port
-  runJSorWarp port $ app $ initialStore Prod
+  runJSorWarp port $ app $ initialStore env
 
 
 dev :: IO ()
 dev = do
-  let initialPage = app $ initialStore Dev
+  env@Env { port }  <- getEnv Dev
+  let spa = app $ initialStore env
   let staticFolder = "./"
-  Env { port }  <- getEnv
-  liveWithStatic port initialPage staticFolder
+  liveWithStatic port spa staticFolder
 
 
 app :: Store -> JSM ()
@@ -42,14 +42,8 @@ setTitle :: Text -> JSM ()
 setTitle title = jsg ("document" :: Text) <# ("title" :: Text) $ title
 
 
-data Env = Env
-  { port   :: !Int
-  , commit :: !Text
-  }
-
-
-getEnv :: IO Env
-getEnv = do
+getEnv :: Deployment -> IO Env
+getEnv deployment = do
   port <- envOptional "PORT" 8000
   commit <- envOptional "COMMIT" "master"
-  pure $ Env { port, commit }
+  pure $ Env { deployment, port, commit }
