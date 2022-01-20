@@ -298,6 +298,24 @@ isIntersection l = canonical l /= l || inverseCanonical l /= l
 sibling :: Location -> Maybe Location
 sibling l = filter (/= l) [canonical l, inverseCanonical l] ^? ix 0
 
+-- | Get a location on a specific ring, if it has a name on that ring
+onRing :: Location -> Ring -> Maybe Location
+onRing (Location CenterRing 16) LeftRing  = Just $ Location LeftRing 2
+onRing (Location LeftRing 2) CenterRing   = Just $ Location CenterRing 16
+
+onRing (Location CenterRing 11) LeftRing  = Just $ Location LeftRing 7
+onRing (Location LeftRing 7) CenterRing   = Just $ Location CenterRing 11
+
+onRing (Location RightRing 16) CenterRing = Just $ Location CenterRing 2
+onRing (Location CenterRing 2) RightRing  = Just $ Location RightRing 16
+
+onRing (Location RightRing 11) CenterRing = Just $ Location CenterRing 7
+onRing (Location CenterRing 7) RightRing  = Just $ Location RightRing 11
+
+onRing l@(Location source _) target
+  | source == target = Just l
+  | otherwise        = Nothing
+
 
 -- | Invert a disk coordinate to its canonical location
 indexToLocation :: Int -> Location
@@ -390,11 +408,30 @@ isSolved gemini =
     & map (map (view _1))
     & all areConsecutive
 
+
 areConsecutive :: [Location] -> Bool
-areConsecutive locations = (numberOfRings == 1) || (numberOfRings == 2)
+areConsecutive ls =
+  if numberOfRings > 2
+  then False
+  else ls
+    & map (`onRing` mostCommonRing)
+    & sequenceA
+    & maybe False (pairwiseConsecutive . map (view (#position)))
   where
-    numberOfRings = length ringGroups
-    ringGroups = locations & List.groupBy ((==) `on` view #ring)
+    mostCommonRing :: Ring
+    mostCommonRing = ringGroups & List.maximumBy (compare `on` length) & head & view #ring
+
+    -- ringGroups :: [NonEmpty Location]
+    ringGroups = ls & NE.groupBy ((==) `on` view #ring)
+
+    numberOfRings :: Int
+    numberOfRings = length ls
+
+
+pairwiseConsecutive :: KnownNat n => [Cyclic n] -> Bool
+pairwiseConsecutive (m:n:rest) = m - n == 1 && pairwiseConsecutive (n:rest)
+pairwiseConsecutive _          = True
+
 
 
 toMove :: Seq Motion -> Move

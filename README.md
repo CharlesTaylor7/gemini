@@ -21,13 +21,10 @@ Run `./deploy.sh`
     - display recorded motions as cycle notation
 
 ## TODO
+### Misc
 - Attach image of puzzle to readme
 - make design responsive to screen size
-- build with ghcjs
-- optimize layout for mobile
-
-
-### Features
+- test performance of a ghcjs build
 - solve button: solve by algorithms
 - animate transitions
 
@@ -47,14 +44,10 @@ Run `./deploy.sh`
 - handle ambiguous case. During my user testing, I often wanted to drag an intersection disk.
 - user test on mobile
 
-
 ### On Solve
 - pop confetti 
 - show number of moves to solve
 
-### Refactoring
-- ApplyMove typeclass
-- css variables for z-indexes
 
 ### Bugs
 - on starting a drag, the intersection disks visibly sink down into ring. 
