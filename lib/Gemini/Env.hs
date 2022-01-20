@@ -1,11 +1,11 @@
-module Gemini.Env 
+module Gemini.Env
   ( EnvVarException(..)
   , envOptional, envRequired
   ) where
 
+import           Control.Exception  (throwIO)
 import           Relude
-import           Control.Exception (throwIO)
-import           System.Environment          (lookupEnv)
+import           System.Environment (lookupEnv)
 
 
 
@@ -31,7 +31,6 @@ envOptional var def = do
 envRequired :: Read a => String -> IO a
 envRequired var = do
   maybeVar <- lookupEnv var
-  let converted = do
+  either throwIO pure $ do
       var <- maybeVar & note (Unset var)
       readMaybe var & note (InvalidFormat var)
-  converted & either throwIO pure
