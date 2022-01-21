@@ -5,3 +5,39 @@ package regex-pcre
 
 package finitary
     flags: -bitvec -vector
+
+source-repository-package
+    type: git
+    location: https://gitlab.com/charlestaylor95/shpadoinkle.git
+    tag: 4142a5211592122630523f30d906c7c067700932
+    subdir: core
+
+source-repository-package
+    type: git
+    location: https://gitlab.com/charlestaylor95/shpadoinkle.git
+    tag: 4142a5211592122630523f30d906c7c067700932
+    subdir: html
+
+source-repository-package
+    type: git
+    location: https://gitlab.com/charlestaylor95/shpadoinkle.git
+    tag: 4142a5211592122630523f30d906c7c067700932
+    subdir: lens
+
+source-repository-package
+    type: git
+    location: https://gitlab.com/charlestaylor95/shpadoinkle.git
+    tag: 4142a5211592122630523f30d906c7c067700932
+    subdir: backends/pardiff
+  
+source-repository-package
+    type: git
+    location: https://github.com/athanclark/jsaddle.git
+    tag: ebd898c6b4a7c5181a22d42be28e42677a6828b9
+    subdir: jsaddle
+
+source-repository-package
+    type: git
+    location: https://github.com/athanclark/jsaddle.git
+    tag: ebd898c6b4a7c5181a22d42be28e42677a6828b9
+    subdir: jsaddle-warp
