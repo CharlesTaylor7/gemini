@@ -1,5 +1,5 @@
 module Gemini.Html
-  ( geminiHtmlView
+  ( geminiView
   ) where
 
 import           Relude
@@ -80,8 +80,8 @@ jsConsoleLog :: JSVal -> JSM ()
 jsConsoleLog text = void $ jsg ("console" :: Text) # ("log" :: Text) $ text
 
 
-geminiHtmlView :: forall m. Applicative m => Store -> Html m Store
-geminiHtmlView store =
+geminiView :: forall m. Applicative m => Store -> Html m Store
+geminiView store =
   Html.div
     [ Html.class'
       [ ("gemini" :: Text, True)
@@ -106,7 +106,8 @@ geminiHtmlView store =
       Html.div
         [ Html.class'
           [ ("ring", True)
-          , ("dragging" :: Text, isActive store ring)
+          , (ringClass ring, True)
+          , ("dragging", isActive store ring)
           ]
         , Html.styleProp [ ringOffset ring ]
         ]

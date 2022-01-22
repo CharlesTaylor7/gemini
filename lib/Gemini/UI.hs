@@ -21,7 +21,7 @@ import           Shpadoinkle
 import qualified Shpadoinkle.Html        as Html
 import qualified Shpadoinkle.Keyboard    as Key
 
-import           Gemini.Html             (geminiHtmlView)
+import           Gemini.Html             (geminiView)
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
@@ -66,7 +66,7 @@ keyboardMotions =
 
 
 -- | Components
-rootView :: MonadIO m => Store -> Html m Store
+rootView :: MonadJSM m => Store -> Html m Store
 rootView store =
   Html.div
     [ Html.class'
@@ -85,9 +85,7 @@ rootView store =
     , ("touchcancel", listenerProp endDrag)
     ]
     [ header store
-    , Html.div
-      [ Html.className "gemini-flex-wrapper" ]
-      [ geminiHtmlView store ]
+    , geminiView store
     , footer store
     ]
 

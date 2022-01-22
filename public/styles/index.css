@@ -63,8 +63,7 @@ button {
 }
 
 .gemini-flex-wrapper {
-    display: flex;
-    justify-content: center;
+    display: contents;
 }
 
 /* header */
@@ -242,11 +241,13 @@ button {
     position: relative;
     font-size: 35px;
     user-select: none;
+    flex: 1 1 auto;
+    margin: 0 -20%;
 }
 
 .ring {
-    width: var(--ring-diameter);
-    height: var(--ring-diameter);
+    width: 33%;
+    margin: 15% 0;
     position: relative;
     border-radius: 100%;
     background-color: var(--ring-background);

@@ -4,6 +4,7 @@ module Gemini.UI.EventHandlers
   , endDrag
   , mousePosition
   , RawEventHandler
+  , ringClass
   ) where
 
 import           Relude
@@ -19,13 +20,21 @@ import qualified Shpadoinkle.Continuation    as Continuation
 import           Gemini.Types
 import           Gemini.UI.Actions
 
+ringClass :: Ring -> Text
+ringClass = \case
+  LeftRing   -> "left"
+  CenterRing -> "center"
+  RightRing  -> "right"
+
 
 type RawEventHandler m = RawNode -> RawEvent -> JSM (Continuation m Store)
 
-getGeminiOrigin :: JSM Point
-getGeminiOrigin = do
-  elem <- jsCall (jsg ("document" :: Text)) "getElementsByClassName" ("gemini" :: Text) >>= (!! 0)
+getRingCenter :: Ring -> JSM Point
+getRingCenter ring = do
+  elem <- jsCall (jsg ("document" :: Text)) "querySelector" (".ring." <> ringClass ring)
   rect <- jsCall elem "getBoundingClientRect" ()
+  jsConsoleLog rect
+  -- TODO get center not top left point of box
   x <- rect ! ("left" :: Text) >>= fromJSValUnchecked
   y <- rect ! ("top" :: Text) >>= fromJSValUnchecked
   pure $ Point x y
@@ -47,38 +56,42 @@ mousePosition event = do
 
 startDrag :: Ring -> RawEventHandler m
 startDrag ring _ event = do
-  origin <- getGeminiOrigin
+  origin <- getRingCenter ring
   mouse <- mousePosition event
   pure $ Continuation.pur $
     (#drag ?~ DragState
       { ring
-      , initialAngle = angle (mouse ~~ origin ~~ ringCenter ring)
+      , initialAngle = angle (mouse ~~ origin)
       , currentAngle = 0
       }
     )
 
 
-onDrag :: RawEventHandler m
+onDrag :: MonadJSM m => RawEventHandler m
 onDrag _ event = do
-  origin <- getGeminiOrigin
+  -- origin <- getRingCenter ring
   mouse <- mousePosition event
-  pure $ Continuation.Pure $ updateDrag (mouse ~~ origin)
+  pure $ updateDrag mouse
 
 
-updateDrag :: Point -> Store -> Store
-updateDrag mouse = (#drag % _Just) %~ \drag -> do
-  let origin = drag ^. #ring % to ringCenter
-  let pointRelativeToRing = mouse ~~ origin
-  drag & #currentAngle .~ (angle pointRelativeToRing - initialAngle drag)
+updateDrag :: MonadJSM m => Point -> Continuation m Store
+updateDrag mouse = kleisli $ \store ->
+  case store ^. #drag of
+    Nothing -> pure Continuation.done
+    Just drag -> liftJSM $ do
+      origin <- drag ^. #ring % to getRingCenter
+      let pointRelativeToRing = mouse ~~ origin
+      pure $ Continuation.pur $ (#drag % _Just % #currentAngle) .~ (angle pointRelativeToRing - initialAngle drag)
 
 
-endDrag :: RawEventHandler m
+endDrag :: MonadJSM m => RawEventHandler m
 endDrag _ event = do
-  origin <- getGeminiOrigin
   mouse <- mousePosition event
-  pure $ Continuation.Pure $
+  pure $
+    (updateDrag mouse)
+    `before`
+    (Continuation.Pure $
     execState $ do
-      modify $ updateDrag (mouse ~~ origin)
       drag <- use #drag
       case drag of
         Nothing -> pure ()
@@ -90,7 +103,7 @@ endDrag _ event = do
           let direction = if signum n > 0 then Clockwise else AntiClockwise
           let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
           modify $ applyMotionToStore motion
-
+    )
 
 ringCenter :: Ring -> Point
 ringCenter = \case
