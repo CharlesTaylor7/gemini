@@ -7,7 +7,7 @@
     --disk-red: #ad0000;
     --disk-green: #45ab36;
     --disk-blue: #00aeff;
-    --ring-diameter: 400px;
+    --ring-diameter: 350px;
     --ring-background: #816c5b;
     --panel-border: #82a6e3;
     --button-background: #0069ed;
@@ -64,14 +64,14 @@ button {
 
 .gemini-flex-wrapper {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
 }
 
 /* header */
 .header {
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
 }
 
 .control-panel {
@@ -238,11 +238,15 @@ button {
 
 /* puzzle */
 .gemini {
+    display: flex;
     position: relative;
     font-size: 35px;
     user-select: none;
+}
 
 .ring {
+    width: var(--ring-diameter);
+    height: var(--ring-diameter);
     position: relative;
     border-radius: 100%;
     background-color: var(--ring-background);
@@ -253,8 +257,9 @@ button {
     z-index: 1;
 }
 
-
 .disk {
+    height: 14%;
+    width: 14%;
     position: absolute;
     text-align: center;
     border-radius: 100%;

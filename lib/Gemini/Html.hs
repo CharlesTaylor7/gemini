@@ -22,6 +22,14 @@ import           Utils
 
 
 
+ringOffset :: Ring -> (Text, Text)
+ringOffset = \case
+  LeftRing   -> ("left", show percent <> "%")
+  CenterRing -> ("", "")
+  RightRing  -> ("right", show percent <> "%")
+  where
+    percent = 15
+
 
 -- math utils
 sine = sin . toRadians
@@ -80,7 +88,7 @@ geminiHtmlView store =
       , ("dragging", isn't (#drag % _Nothing) store)
       ]
     ]
-    (  map ring inhabitants
+    (  map ringView inhabitants
     )
   where
     gemini = store ^. #gemini
@@ -92,16 +100,17 @@ geminiHtmlView store =
       & itoListOf (#hover % #activeCycle % non (Cycle Empty) % ifolded)
       & map (\(i, x) -> (x, i + 1))
       & fromList
-    ring :: Ring -> Html m Store
-    ring r =
+
+    ringView :: Ring -> Html m Store
+    ringView ring =
       Html.div
         [ Html.class'
           [ ("ring", True)
-          , ("dragging" :: Text, isActive store r)
+          , ("dragging" :: Text, isActive store ring)
           ]
-        , Html.styleProp [ ("right", show (ringIndex r * 45) <> "%") ]
+        , Html.styleProp [ ringOffset ring ]
         ]
-        ( disks r )
+        ( disks ring )
 
     dragAngle :: Ring -> Double
     dragAngle r = fromMaybe 0 $ do
