@@ -7,6 +7,7 @@
     --disk-red: #ad0000;
     --disk-green: #45ab36;
     --disk-blue: #00aeff;
+    --ring-diameter: 400px;
     --ring-background: #816c5b;
     --panel-border: #82a6e3;
     --button-background: #0069ed;
@@ -240,11 +241,6 @@ button {
     position: relative;
     font-size: 35px;
     user-select: none;
-    height: 300px;
-    width: 630px;
-    display: flex;
-    flex-direction: row;
-} 
 
 .ring {
     position: relative;
@@ -257,17 +253,6 @@ button {
     z-index: 1;
 }
 
-.ring-L {
-
-}
-
-.ring-C {
-    right: 135px;
-}
-
-.ring-R {
-    right: 270px;
-}
 
 .disk {
     position: absolute;

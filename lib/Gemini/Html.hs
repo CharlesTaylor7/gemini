@@ -22,11 +22,6 @@ import           Utils
 
 
 
--- dimensions
-ringR = 150.0
-diskR = (ringR / 7.0)
-ringD = 2 * ringR
-diskD = 2 * diskR
 
 -- math utils
 sine = sin . toRadians
@@ -66,7 +61,6 @@ isActive store r = fromMaybe False $ do
   pure $ drag ^. #ring == r
 
 
-
 angle :: Point -> Double
 angle (Point x y) = atan2 y x & toDegrees
 
@@ -103,14 +97,9 @@ geminiHtmlView store =
       Html.div
         [ Html.class'
           [ ("ring", True)
-          , ("ring-" <> prettyCompactText r, True)
-          , ("dragging", isActive store r)
+          , ("dragging" :: Text, isActive store r)
           ]
-
-        , Html.styleProp
-            [ ("width", show ringD <> "px")
-            , ("height", show ringD <> "px")
-            ]
+        , Html.styleProp [ ("right", show (ringIndex r * 45) <> "%") ]
         ]
         ( disks r )
 
@@ -129,10 +118,10 @@ geminiHtmlView store =
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "")
         diskAngle = fromIntegral (unCyclic position) * 20.0 - 90.0 + dragAngle ring
-        r = ringR - diskR
+        k = 43
         (x, y) =
-          ( r * (1 + cosine diskAngle)
-          , r * (1 + sine diskAngle)
+          ( k * (1 + cosine diskAngle)
+          , k * (1 + sine diskAngle)
           )
 
         defaultLabel :: Maybe Text
@@ -151,11 +140,8 @@ geminiHtmlView store =
               , ("hidden", hiddenLocations store ^. contains location)
               ]
             : Html.styleProp
-              [ ("width", show diskD <> "px")
-              , ("height", show diskD <> "px")
-              , ("line-height", show diskD <> "px")
-              , ("left", show x <> "px")
-              , ("top", show y <> "px")
+              [ ("left", show x <> "%")
+              , ("top", show y <> "%")
               ]
             : if isIntersection location
               then []
