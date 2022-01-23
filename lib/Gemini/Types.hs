@@ -63,6 +63,10 @@ data DragState = DragState
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
+instance Pretty DragState where
+  pretty DragState { location, initialPoint, currentPoint }
+    = Pretty.sep [pretty location, pretty initialPoint, pretty currentPoint ]
+
 
 data DomInfo = DomInfo
   { ringCenters :: !(Map Ring Point)

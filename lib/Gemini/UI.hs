@@ -104,11 +104,10 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    ( (Html.text $ show $ store ^. #dom)
-    : case store ^. #drag of
-        Nothing -> []
-        Just drag ->
-          [ Html.text $ "Drag: " <> show drag ]
+    ( catMaybes $
+      [ flip fmap (store ^. #drag) $
+          \drag -> Html.text $ prettyCompactText $ drag
+      ]
     )
   )
 

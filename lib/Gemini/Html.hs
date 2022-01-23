@@ -54,8 +54,10 @@ hiddenLocations = hidden
 activeLocations :: Store -> [Location]
 activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
 
+
 activeRing :: Store -> Maybe Ring
-activeRing store = inhabitants & filter (isActive store) & preview (ix 0)
+activeRing = preview $ to dragAngle % _Just % _1 % #ring
+
 
 isActive :: Store -> Ring -> Bool
 isActive store r = fromMaybe False $ do
@@ -169,7 +171,7 @@ geminiView store =
         toLabelSpan label = Html.div [ ("className", "disk-label") ] [ Html.text label ]
 
         isDraggedDisk :: Location -> Bool
-        isDraggedDisk l = Just l == store ^? #drag % _Just % #location
+        isDraggedDisk l = Just l == dragged ^? _Just % _1
 
         onDragStart = listenerProp $ startDrag location
       in
