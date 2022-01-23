@@ -150,7 +150,7 @@ geminiView store =
         draggedAngle :: Double
         draggedAngle = fromMaybe 0 $ do
            (draggedRing, angle) <- dragged
-           guard $ ring == draggedRing
+           guard $ ring == draggedRing ^. #ring
            pure angle
 
         diskAngle = fromIntegral (unCyclic position) * 20.0 - 90.0 + draggedAngle

@@ -99,37 +99,39 @@ let distanceToRing :: Ring -> JSM (Double, Double)
                 pure $ (abs (norm p - radius), angle p)
 -}
 
--- | angle of current ring being dragged
--- TODO: reimplement
-dragAngle :: Store -> Maybe (Ring, Disk, Double)
+disambiguate :: DragState -> Location
+disambiguate = undefined
+
+-- | angle of current ring being dragged, (via location that disambiguates)
+dragAngle :: Store -> Maybe (Location, Double)
 dragAngle store =
   case store ^. #drag of
     Nothing -> Nothing
     Just drag -> do
-      let ring :: Ring
-          ring = case drag ^. #location % to dragRing of
-            Obvious ring -> ring
-            Ambiguous ring1 ring2 -> do
-              let distanceToRing :: Ring -> Double
-                  distanceToRing ring = do
+      let location :: Location
+          location = case drag ^. #location % to dragRing of
+            Obvious location -> location
+            Ambiguous loc1 loc2 -> do
+              let distanceTo :: Location -> Double
+                  distanceTo loc = do
                     let radius = store ^. #dom ^. #ringRadius
-                    let Just origin = store ^? #dom % #ringCenters % ix ring
+                    let Just origin = store ^? #dom % #ringCenters % ix (loc ^. #ring)
                     let mouse = drag ^. #currentPoint
                     let p = mouse ~~ origin
                     abs (norm p - radius)
-              if distanceToRing ring1 <= distanceToRing ring2 then ring1 else ring2
+              if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
 
       let angleWith :: Point -> Double
           angleWith point = do
             let radius = store ^. #dom ^. #ringRadius
-            let Just origin = store ^? #dom % #ringCenters % ix ring
+            let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
             let mouse = drag ^. #currentPoint
             let p = point ~~ origin
             angle p
 
       let DragState { initialPoint, currentPoint } = drag
       let currentAngle = angleWith currentPoint - angleWith initialPoint
-      Just $ (ring, currentAngle)
+      Just $ (location, currentAngle)
 
 
 
