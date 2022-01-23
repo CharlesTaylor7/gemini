@@ -56,7 +56,7 @@ data HoverState = HoverState
   deriving anyclass (NFData)
 
 data DragState = DragState
-  { ring         :: !Ring
+  { location     :: !Location
   , initialAngle :: !Double
   , currentAngle :: !Double
   }
@@ -158,8 +158,6 @@ instance Pretty Location where
   pretty Location { ring, position = Cyclic n} =
     pretty ring <> Pretty.viaShow n
 
-location :: Ring -> Int -> Location
-location r p = Location r (cyclic p)
 
 -- | Gemini transformations
 -- The 6 basic motions are called:

@@ -23,14 +23,13 @@ Run `./deploy.sh`
 ## TODO
 ### Misc
 - Attach image of puzzle to readme
-- make design responsive to screen size
 - test performance of a ghcjs build
 - solve button: solve by algorithms
 - animate transitions
 - footer link to github
 
 ### Saved Moves sidebar
-- collapsble panel 
+- collapsible panel 
 
 ### Gemini Controls
 - need explanation in header
@@ -44,6 +43,7 @@ Run `./deploy.sh`
 - it feels jerky during the snap
 - handle ambiguous case. During my user testing, I often wanted to drag an intersection disk.
 - user test on mobile
+- need visual indicator of which disk is being dragged.
 
 ### On Solve
 - pop confetti 

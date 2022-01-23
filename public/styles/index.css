@@ -285,6 +285,10 @@ button {
     box-shadow: 1px 1px 3px rgb(28 25 23 / 50%);
 }
 
+.disk.dragging {
+    border: 2px solid magenta;
+}
+
 
 .disk.hidden {
     display: none;

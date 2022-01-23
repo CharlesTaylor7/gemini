@@ -54,13 +54,13 @@ mousePosition event = do
   pure $ Point x y
 
 
-startDrag :: Ring -> RawEventHandler m
-startDrag ring _ event = do
-  origin <- getRingCenter ring
+startDrag :: Location -> RawEventHandler m
+startDrag location _ event = do
+  origin <- getRingCenter $ location ^. #ring
   mouse <- mousePosition event
   pure $ Continuation.pur $
     (#drag ?~ DragState
-      { ring
+      { location
       , initialAngle = angle (mouse ~~ origin)
       , currentAngle = 0
       }
@@ -79,7 +79,7 @@ updateDrag mouse = kleisli $ \store ->
   case store ^. #drag of
     Nothing -> pure Continuation.done
     Just drag -> liftJSM $ do
-      origin <- drag ^. #ring % to getRingCenter
+      origin <- drag ^. #location % #ring % to getRingCenter
       let pointRelativeToRing = mouse ~~ origin
       pure $ Continuation.pur $ (#drag % _Just % #currentAngle) .~ (angle pointRelativeToRing - initialAngle drag)
 
@@ -97,7 +97,7 @@ endDrag _ event = do
         Nothing -> pure ()
         Just drag -> do
           (#drag .= Nothing)
-          let ring = drag ^. #ring
+          let ring = drag ^. #location % #ring
           let theta = drag ^. #currentAngle
           let n = floor $ (theta / 20) + 0.5
           let direction = if signum n > 0 then Clockwise else AntiClockwise

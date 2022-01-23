@@ -56,7 +56,7 @@ activeRing store = inhabitants & filter (isActive store) & preview (ix 0)
 isActive :: Store -> Ring -> Bool
 isActive store r = fromMaybe False $ do
   drag <- store ^. #drag
-  pure $ drag ^. #ring == r
+  pure $ drag ^. #location % #ring == r
 
 
 angle :: Point -> Double
@@ -105,7 +105,7 @@ geminiView store =
     dragAngle :: Ring -> Double
     dragAngle r = fromMaybe 0 $ do
       drag <- store ^. #drag
-      guard $ drag ^. #ring == r
+      guard $ drag ^. #location % #ring == r
       pure $ drag ^. #currentAngle
 
     disks :: Ring -> [Html m Store]
@@ -130,12 +130,17 @@ geminiView store =
         cycleLabel = activeCycleMap ^? ix location <&> show
 
         toLabelSpan label = Html.div [ ("className", "disk-label") ] [ Html.text label ]
+
+        isDraggedDisk :: Location -> Bool
+        isDraggedDisk l = Just l == store ^? #drag % _Just % #location
+
       in
           Html.div
             ( Html.class'
               [ ("disk", True)
               , (color, True)
               , ("drag-disabled", isIntersection location)
+              , ("dragging", isDraggedDisk location)
               , ("hidden", hiddenLocations store ^. contains location)
               ]
             : Html.styleProp
@@ -144,8 +149,8 @@ geminiView store =
               ]
             : if isIntersection location
               then []
-              else [ ("mousedown" , listenerProp $ startDrag ring)
-                   , ("touchstart" , listenerProp $ startDrag ring)
+              else [ ("mousedown" , listenerProp $ startDrag location)
+                   , ("touchstart" , listenerProp $ startDrag location)
                    ]
             )
             if isMobile
