@@ -33,11 +33,11 @@ getRingCenter :: Ring -> JSM Point
 getRingCenter ring = do
   elem <- jsCall (jsg ("document" :: Text)) "querySelector" (".ring." <> ringClass ring)
   rect <- jsCall elem "getBoundingClientRect" ()
-  jsConsoleLog rect
-  -- TODO get center not top left point of box
+  w <- rect ! ("width" :: Text) >>= fromJSValUnchecked
+  h <- rect ! ("height" :: Text) >>= fromJSValUnchecked
   x <- rect ! ("left" :: Text) >>= fromJSValUnchecked
   y <- rect ! ("top" :: Text) >>= fromJSValUnchecked
-  pure $ Point x y
+  pure $ Point (x + w/2) (y + h/2)
 
 
 mousePosition :: RawEvent -> JSM Point
