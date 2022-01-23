@@ -101,7 +101,7 @@ let distanceToRing :: Ring -> JSM (Double, Double)
 
 -- | angle of current ring being dragged
 -- TODO: reimplement
-dragAngle :: Store -> Maybe (Ring, Double)
+dragAngle :: Store -> Maybe (Ring, Disk, Double)
 dragAngle store =
   case store ^. #drag of
     Nothing -> Nothing

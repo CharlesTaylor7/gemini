@@ -342,14 +342,14 @@ onRing l@(Location source _) target
   | otherwise        = Nothing
 
 
-data DragRing = Obvious Ring | Ambiguous Ring Ring
+data Choice a = Obvious a | Ambiguous a a
 
 
-dragRing :: Location -> DragRing
+dragRing :: Location -> Choice Location
 dragRing loc1 =
   case sibling loc1 of
-    Nothing   -> Obvious $ loc1 ^. #ring
-    Just loc2 -> Ambiguous (loc1 ^. #ring) (loc2 ^. #ring)
+    Nothing   -> Obvious $ loc1
+    Just loc2 -> Ambiguous loc1 loc2
 
 
 -- | Invert a disk coordinate to its canonical location
