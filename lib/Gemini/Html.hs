@@ -53,16 +53,9 @@ hiddenLocations = hidden
 
 activeLocations :: Store -> [Location]
 activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
-
-
-activeRing :: Store -> Maybe Ring
-activeRing = preview $ to dragAngle % _Just % _1 % #ring
-
-
-isActive :: Store -> Ring -> Bool
-isActive store r = fromMaybe False $ do
-  drag <- store ^. #drag
-  pure $ drag ^. #location % #ring == r
+  where
+    activeRing :: Store -> Maybe Ring
+    activeRing = preview $ to dragAngle % _Just % _1 % #ring
 
 
 angle :: Point -> Double
@@ -134,7 +127,6 @@ geminiView store =
       Html.div
         [ Html.class'
           [ (ringClass ring, True)
-          , ("dragging", isActive store ring)
           ]
         ]
         ( disks ring

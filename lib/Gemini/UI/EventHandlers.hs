@@ -76,31 +76,21 @@ endDrag _ event = do
   pure $ Continuation.Pure $
     execState $ do
       modify $ updateDrag mouse
-      drag <- use #drag
+      drag <- dragAngle <$> get
       case drag of
         Nothing -> pure ()
-        Just drag -> do
+        Just (location, theta) -> do
           (#drag .= Nothing)
-          -- TODO: reimplement
-          pure ()
-          {--
-          let ring = drag ^. #location % #ring
-          let theta = drag ^. #currentAngle
+          let ring = location ^. #ring
           let n = floor $ (theta / 20) + 0.5
           let direction = if signum n > 0 then Clockwise else AntiClockwise
           let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
           modify $ applyMotionToStore motion
-          --}
-          {-
-let distanceToRing :: Ring -> JSM (Double, Double)
-              distanceToRing ring = do
-                (origin, radius) <- getRingCoordinates ring
-                let p = mouse ~~ origin
-                pure $ (abs (norm p - radius), angle p)
--}
+
 
 disambiguate :: DragState -> Location
 disambiguate = undefined
+
 
 -- | angle of current ring being dragged, (via location that disambiguates)
 dragAngle :: Store -> Maybe (Location, Double)

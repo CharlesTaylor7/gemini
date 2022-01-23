@@ -269,10 +269,6 @@ button {
     right: 15%;
 }
 
-.ring.dragging {
-    z-index: 1;
-}
-
 .disk {
     height: 14%;
     width: 14%;
@@ -307,6 +303,7 @@ button {
     position: relative;
     color: black;
     user-select: none;
+    font-size: 1em;
 }
 
 .disk.black > .disk-label {
