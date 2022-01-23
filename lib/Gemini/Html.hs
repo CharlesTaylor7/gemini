@@ -134,12 +134,13 @@ geminiView store =
         isDraggedDisk :: Location -> Bool
         isDraggedDisk l = Just l == store ^? #drag % _Just % #location
 
+        onDragStart = listenerProp $ startDrag location
       in
           Html.div
             ( Html.class'
               [ ("disk", True)
               , (color, True)
-              , ("drag-disabled", isIntersection location)
+              -- , ("drag-disabled", isIntersection location)
               , ("dragging", isDraggedDisk location)
               , ("hidden", hiddenLocations store ^. contains location)
               ]
@@ -147,11 +148,9 @@ geminiView store =
               [ ("left", show x <> "%")
               , ("top", show y <> "%")
               ]
-            : if isIntersection location
-              then []
-              else [ ("mousedown" , listenerProp $ startDrag location)
-                   , ("touchstart" , listenerProp $ startDrag location)
-                   ]
+            : [ ("mousedown" , onDragStart)
+              , ("touchstart" , onDragStart)
+              ]
             )
             if isMobile
             then []

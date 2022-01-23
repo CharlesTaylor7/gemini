@@ -4,12 +4,13 @@ module Gemini.Types
   , Location(..), location, isCanonical, isIntersection, sibling
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
-  , Point(..)
+  , Point(..), norm
   , toMove, toMotion
   , applyToGemini, applyToHistory
   , ToPermutation(..)
     -- ui types
   , Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..)
+  , DragRing(..), dragRing
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   ) where
@@ -62,6 +63,9 @@ data DragState = DragState
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
+
+
+data DragRing = Obvious Ring | Ambiguous Ring Ring
 
 
 data Options = Options
@@ -117,6 +121,9 @@ data Point = Point
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (NFData)
+
+norm :: Point -> Double
+norm Point { x, y } = sqrt $ x*x + y*y
 
 instance Pretty Point where
   pretty (Point x y)
@@ -274,7 +281,6 @@ permuteGemini p (Gemini disks) =
         Just disk -> at (permute p n) ?= disk
 
 
-
 geminiFromList :: [(Location, Disk)] -> Gemini
 geminiFromList items = Gemini $ fromList $
   map (\(location, disk) -> (locationToIndex location, disk)) items
@@ -330,6 +336,12 @@ onRing (Location CenterRing 7) RightRing  = Just $ Location RightRing 11
 onRing l@(Location source _) target
   | source == target = Just l
   | otherwise        = Nothing
+
+dragRing :: Location -> DragRing
+dragRing loc1 =
+  case sibling loc1 of
+    Nothing   -> Obvious $ loc1 ^. #ring
+    Just loc2 -> Ambiguous (loc1 ^. #ring) (loc2 ^. #ring)
 
 
 -- | Invert a disk coordinate to its canonical location
