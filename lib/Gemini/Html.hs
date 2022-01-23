@@ -6,9 +6,11 @@ import           Relude
 
 import           Data.Cyclic
 import           Data.Finitary
+import qualified Data.Map                    as Map
 import           Data.Permutation
 import           Data.Set.Optics
 import qualified Data.Text                   as Text
+import           Data.Traversable            (for)
 import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
                                               (!), (#))
 import           Optics                      hiding ((#))
@@ -81,6 +83,28 @@ geminiView store =
       ]
     ]
     (  map ringView inhabitants
+    <> [ Html.script'
+          [ ("load", listenerProp $ \_ _ -> do
+              ringInfo :: [(Ring, Point, Double)] <- for inhabitants $ \ring -> do
+                let selector = ringClass ring & Text.words & Text.intercalate "."
+                elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
+                rect <- jsCall elem "getBoundingClientRect" ()
+                width <- rect ! ("width" :: Text) >>= fromJSValUnchecked
+                left <- rect ! ("left" :: Text) >>= fromJSValUnchecked
+                top <- rect ! ("top" :: Text) >>= fromJSValUnchecked
+                let radius = width / 2;
+                pure $ (ring, Point (left + radius) (top + radius), radius)
+
+              let ((_, _, ringRadius) : _) = ringInfo
+                  domInfo = DomInfo
+                    { ringRadius
+                    , ringCenters = ringInfo & map (\(a, b, c) -> (a, b)) & Map.fromList
+                    }
+
+              pure $ Continuation.pur $ #dom .~ domInfo
+            )
+          ]
+       ]
     )
   where
     gemini = store ^. #gemini
@@ -103,14 +127,7 @@ geminiView store =
           , ("dragging", isActive store ring)
           ]
         ]
-        ( Html.script'
-          [ ("load", listenerProp $ \event node -> do
-              -- TODO: set ring centers and ring radius
-              pure $ Continuation.pur $ identity
-            )
-          ]
-
-        : disks ring
+        ( disks ring
         )
 
     disks :: Ring -> [Html m Store]

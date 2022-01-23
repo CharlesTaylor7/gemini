@@ -94,11 +94,10 @@ rootView store =
     ]
 
 
-debugView :: Store -> Html m a
+debugView :: Store -> Maybe (Html m a)
 debugView store =
-  if store ^. #options % #debug % to not
-  then Html.div'_
-  else Html.div
+  (store ^. #options % #debug) `orNothing`
+  ( Html.div
     [ Html.styleProp
         [ ("padding", "12px")
         , ("display", "flex")
@@ -111,6 +110,7 @@ debugView store =
         Just drag ->
           [ Html.text $ "Drag: " <> show drag ]
     )
+  )
 
 
 savedMovesPanel :: Store -> Html m Store
@@ -159,7 +159,8 @@ header store =
     [ Html.div
       [ Html.className "control-panel" ]
       ( catMaybes $
-        [ (store ^. #options % #isMobile % to not) `orNothing`
+        [ debugView store
+        , (store ^. #options % #isMobile % to not) `orNothing`
             (
               buttonGroup "options" $
                 ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store)

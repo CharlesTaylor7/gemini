@@ -23,27 +23,13 @@ import           Gemini.UI.Actions
 
 
 ringClass :: Ring -> Text
-ringClass = \case
+ringClass = const "ring " <> \case
   LeftRing   -> "left"
   CenterRing -> "center"
   RightRing  -> "right"
 
 
 type RawEventHandler m = RawNode -> RawEvent -> JSM (Continuation m Store)
-
-getRingCenter :: Ring -> JSM Point
-getRingCenter = fmap fst . getRingCoordinates
-
-getRingCoordinates :: Ring -> JSM (Point, Double)
-getRingCoordinates ring = do
-  elem <- jsCall (jsg ("document" :: Text)) "querySelector" (".ring." <> ringClass ring)
-  rect <- jsCall elem "getBoundingClientRect" ()
-  w <- rect ! ("width" :: Text) >>= fromJSValUnchecked
-  x <- rect ! ("left" :: Text) >>= fromJSValUnchecked
-  y <- rect ! ("top" :: Text) >>= fromJSValUnchecked
-  let r = w/2;
-  pure $ (Point (x + r) (y + r), r)
-
 
 mousePosition :: RawEvent -> JSM Point
 mousePosition event = do
