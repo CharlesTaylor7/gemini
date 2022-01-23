@@ -102,7 +102,35 @@ let distanceToRing :: Ring -> JSM (Double, Double)
 -- | angle of current ring being dragged
 -- TODO: reimplement
 dragAngle :: Store -> Maybe (Ring, Double)
-dragAngle store = Nothing
+dragAngle store =
+  case store ^. #drag of
+    Nothing -> Nothing
+    Just drag -> do
+      let ring :: Ring
+          ring = case drag ^. #location % to dragRing of
+            Obvious ring -> ring
+            Ambiguous ring1 ring2 -> do
+              let distanceToRing :: Ring -> Double
+                  distanceToRing ring = do
+                    let radius = store ^. #dom ^. #ringRadius
+                    let Just origin = store ^? #dom % #ringCenters % ix ring
+                    let mouse = drag ^. #currentPoint
+                    let p = mouse ~~ origin
+                    abs (norm p - radius)
+              if distanceToRing ring1 <= distanceToRing ring2 then ring1 else ring2
+
+      let angleWith :: Point -> Double
+          angleWith point = do
+            let radius = store ^. #dom ^. #ringRadius
+            let Just origin = store ^? #dom % #ringCenters % ix ring
+            let mouse = drag ^. #currentPoint
+            let p = point ~~ origin
+            angle p
+
+      let DragState { initialPoint, currentPoint } = drag
+      let currentAngle = angleWith currentPoint - angleWith initialPoint
+      Just $ (ring, currentAngle)
+
 
 
 -- dimensions
