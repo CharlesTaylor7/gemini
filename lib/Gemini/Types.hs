@@ -1,7 +1,7 @@
 module Gemini.Types
   ( -- core types and operations
     Gemini, geminiFromList, geminiIx, ringIndex , initialGemini
-  , Location(..), location, isCanonical, isIntersection, sibling, DragRing(..), dragRing
+  , Location(..), location, isCanonical, isIntersection, sibling, Choice(..), dragRing
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
   , Point(..), norm

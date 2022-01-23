@@ -88,7 +88,6 @@ geminiView store =
     <> [ invisibleOnLoadView $ \_ _ -> do
           ringInfo :: [(Ring, Point)] <- for inhabitants $ \ring -> do
             let selector = ringClass ring & Text.words & Text.intercalate "." & ("." <>)
-            jsConsoleLog =<< toJSVal selector
             elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
             rect <- jsCall elem "getBoundingClientRect" ()
             width <- rect ! ("width" :: Text) >>= fromJSValUnchecked
@@ -132,8 +131,7 @@ geminiView store =
     ringView ring =
       Html.div
         [ Html.class'
-          [ ("ring", True)
-          , (ringClass ring, True)
+          [ (ringClass ring, True)
           , ("dragging", isActive store ring)
           ]
         ]
