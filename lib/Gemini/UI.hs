@@ -10,6 +10,7 @@ module Gemini.UI
 import           Relude
 
 import           Data.Finitary
+import qualified Data.Map                as Map
 import           Data.Permutation
 import qualified Data.Sequence           as Seq
 import           Data.Traversable        (for)
@@ -45,7 +46,10 @@ initialStore env = Store
       , isMobile = False
       }
   , env = env
-  , ringCenter = mempty
+  , dom = DomInfo
+    { ringCenters = mempty
+    , ringRadius = 0
+    }
   }
 
 
@@ -101,7 +105,8 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    ( case store ^. #drag of
+    ( (Html.text $ show $ store ^. #dom)
+    : case store ^. #drag of
         Nothing -> []
         Just drag ->
           [ Html.text $ "Drag: " <> show drag ]

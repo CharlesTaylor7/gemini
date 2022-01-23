@@ -1,7 +1,7 @@
 module Gemini.Types
   ( -- core types and operations
     Gemini, geminiFromList, geminiIx, ringIndex , initialGemini
-  , Location(..), location, isCanonical, isIntersection, sibling
+  , Location(..), location, isCanonical, isIntersection, sibling, DragRing(..), dragRing
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
   , Point(..), norm
@@ -9,8 +9,7 @@ module Gemini.Types
   , applyToGemini, applyToHistory
   , ToPermutation(..)
     -- ui types
-  , Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..)
-  , DragRing(..), dragRing
+  , Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   ) where
@@ -36,14 +35,14 @@ import           System.Random.Stateful (Uniform (..))
 
 -- | UI Definitions
 data Store = Store
-  { gemini     :: !Gemini
-  , history    :: !(Seq Motion)
-  , moves      :: !(Seq Move)
-  , hover      :: !HoverState
-  , drag       :: !(Maybe DragState)
-  , ringCenter :: !(Map Ring Point)
-  , options    :: !Options
-  , env        :: !Env
+  { gemini  :: !Gemini
+  , history :: !(Seq Motion)
+  , moves   :: !(Seq Move)
+  , hover   :: !HoverState
+  , drag    :: !(Maybe DragState)
+  , options :: !Options
+  , env     :: !Env
+  , dom     :: !DomInfo
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -65,7 +64,12 @@ data DragState = DragState
   deriving anyclass (NFData)
 
 
-data DragRing = Obvious Ring | Ambiguous Ring Ring
+data DomInfo = DomInfo
+  { ringCenters :: !(Map Ring Point)
+  , ringRadius  :: !Double
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
 
 
 data Options = Options
@@ -336,6 +340,10 @@ onRing (Location CenterRing 7) RightRing  = Just $ Location RightRing 11
 onRing l@(Location source _) target
   | source == target = Just l
   | otherwise        = Nothing
+
+
+data DragRing = Obvious Ring | Ambiguous Ring Ring
+
 
 dragRing :: Location -> DragRing
 dragRing loc1 =

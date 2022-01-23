@@ -13,6 +13,7 @@ import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fro
                                               (!), (#))
 import           Optics                      hiding ((#))
 import           Shpadoinkle                 hiding (text)
+import qualified Shpadoinkle.Continuation    as Continuation
 import qualified Shpadoinkle.Html            as Html
 
 import           Gemini.Types
@@ -102,7 +103,15 @@ geminiView store =
           , ("dragging", isActive store ring)
           ]
         ]
-        ( disks ring )
+        ( Html.script'
+          [ ("load", listenerProp $ \event node -> do
+              -- TODO: set ring centers and ring radius
+              pure $ Continuation.pur $ identity
+            )
+          ]
+
+        : disks ring
+        )
 
     disks :: Ring -> [Html m Store]
     disks ring = flip map inhabitants $ \position ->

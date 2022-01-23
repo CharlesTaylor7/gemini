@@ -77,13 +77,7 @@ onDrag _ event = do
   mouse <- mousePosition event
   pure $ Continuation.pur $ updateDrag mouse
 
-  {-
-let distanceToRing :: Ring -> JSM (Double, Double)
-              distanceToRing ring = do
-                (origin, radius) <- getRingCoordinates ring
-                let p = mouse ~~ origin
-                pure $ (abs (norm p - radius), angle p)
--}
+
 
 
 updateDrag :: Point -> Store -> Store
@@ -102,6 +96,7 @@ endDrag _ event = do
         Just drag -> do
           (#drag .= Nothing)
           -- TODO: reimplement
+          pure ()
           {--
           let ring = drag ^. #location % #ring
           let theta = drag ^. #currentAngle
@@ -110,10 +105,19 @@ endDrag _ event = do
           let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
           modify $ applyMotionToStore motion
           --}
+          {-
+let distanceToRing :: Ring -> JSM (Double, Double)
+              distanceToRing ring = do
+                (origin, radius) <- getRingCoordinates ring
+                let p = mouse ~~ origin
+                pure $ (abs (norm p - radius), angle p)
+-}
 
 -- | angle of current ring being dragged
+-- TODO: reimplement
 dragAngle :: Store -> Maybe (Ring, Double)
-dragAngle = undefined
+dragAngle store = Nothing
+
 
 -- dimensions
 -- math utils
