@@ -29,7 +29,7 @@ ringClass = const "ring " <> \case
   RightRing  -> "right"
 
 
-type RawEventHandler m = RawNode -> RawEvent -> JSM (Continuation m Store)
+type RawEventHandler m a = RawNode -> RawEvent -> JSM (Continuation m a)
 
 mousePosition :: RawEvent -> JSM Point
 mousePosition event = do
@@ -45,7 +45,7 @@ mousePosition event = do
   pure $ Point x y
 
 
-startDrag :: Location -> RawEventHandler m
+startDrag :: Location -> RawEventHandler m Store
 startDrag location _ event = do
   mouse <- mousePosition event
   pure $ Continuation.pur $
@@ -57,7 +57,7 @@ startDrag location _ event = do
     )
 
 
-onDrag :: MonadJSM m => RawEventHandler m
+onDrag :: MonadJSM m => RawEventHandler m Store
 onDrag _ event = do
   -- origin <- getRingCenter ring
   mouse <- mousePosition event
@@ -70,7 +70,7 @@ updateDrag :: Point -> Store -> Store
 updateDrag = set $ #drag % _Just % #currentPoint
 
 
-endDrag :: MonadJSM m => RawEventHandler m
+endDrag :: MonadJSM m => RawEventHandler m Store
 endDrag _ event = do
   mouse <- mousePosition event
   pure $ Continuation.Pure $

@@ -83,27 +83,37 @@ geminiView store =
       ]
     ]
     (  map ringView inhabitants
-    <> [ Html.script'
-          [ ("load", listenerProp $ \_ _ -> do
-              ringInfo :: [(Ring, Point, Double)] <- for inhabitants $ \ring -> do
-                let selector = ringClass ring & Text.words & Text.intercalate "."
+    -- On load, we capture dom info about the radius of each ring, and their centers.
+    -- TODO: listen to window resize to update this info
+    <> [ invisibleOnLoadView $ \_ _ -> do
+          ringInfo :: [(Ring, Point)] <- for inhabitants $ \ring -> do
+            let selector = ringClass ring & Text.words & Text.intercalate "." & ("." <>)
+            jsConsoleLog =<< toJSVal selector
+            elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
+            rect <- jsCall elem "getBoundingClientRect" ()
+            width <- rect ! ("width" :: Text) >>= fromJSValUnchecked
+            left <- rect ! ("left" :: Text) >>= fromJSValUnchecked
+            top <- rect ! ("top" :: Text) >>= fromJSValUnchecked
+            let radius = width / 2;
+            pure $ (ring, Point (left + radius) (top + radius))
+
+          let getDiameter :: Text -> JSM Double
+              getDiameter selector = do
                 elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
                 rect <- jsCall elem "getBoundingClientRect" ()
-                width <- rect ! ("width" :: Text) >>= fromJSValUnchecked
-                left <- rect ! ("left" :: Text) >>= fromJSValUnchecked
-                top <- rect ! ("top" :: Text) >>= fromJSValUnchecked
-                let radius = width / 2;
-                pure $ (ring, Point (left + radius) (top + radius), radius)
+                rect ! ("width" :: Text) >>= fromJSValUnchecked
 
-              let ((_, _, ringRadius) : _) = ringInfo
-                  domInfo = DomInfo
-                    { ringRadius
-                    , ringCenters = ringInfo & map (\(a, b, c) -> (a, b)) & Map.fromList
-                    }
+          ringRadius <- do
+            ring <- getDiameter ".ring"
+            disk <- getDiameter ".disk"
+            pure $ (ring - disk) / 2
 
-              pure $ Continuation.pur $ #dom .~ domInfo
-            )
-          ]
+          let domInfo = DomInfo
+                { ringRadius
+                , ringCenters = ringInfo & Map.fromList
+                }
+
+          pure $ Continuation.pur $ #dom .~ domInfo
        ]
     )
   where
@@ -183,3 +193,15 @@ geminiView store =
             if isMobile
             then []
             else [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]
+
+
+-- | A cheap trick. Shpadoinkle doesn't have an onmount event like react.
+-- So I'm embedding an invisible image with an onload event.
+-- The image is already used elsewhere on the page so this should incur minimal overhead.
+invisibleOnLoadView :: RawEventHandler m a -> Html m a
+invisibleOnLoadView handler =
+  Html.img'
+    [ ("style", textProp "display: none")
+    , ("src", textProp "public/icons/GitHub.png")
+    , ("load", listenerProp handler)
+    ]
