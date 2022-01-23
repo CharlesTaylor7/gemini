@@ -41,9 +41,12 @@ Run `./deploy.sh`
 ### Drag controls
 - animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
 - it feels jerky during the snap
-- handle ambiguous case. During my user testing, I often wanted to drag an intersection disk.
 - user test on mobile
-- need visual indicator of which disk is being dragged.
+
+#### Ambiguous case
+- handle it; during my user testing, I often wanted to drag an intersection disk.
+- lock the choice in early. Only allow changing the rotation ring if the mouse passes through a narrow band
+ around the starting location
 
 ### On Solve
 - pop confetti 
