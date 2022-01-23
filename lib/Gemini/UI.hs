@@ -85,7 +85,7 @@ rootView store =
     , ("touchcancel", listenerProp endDrag)
     ]
     [ header store
-    , geminiView store
+    , Html.div [ Html.className "gemini-row" ] [ geminiView store ]
     , footer store
     ]
 

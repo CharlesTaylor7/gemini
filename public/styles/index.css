@@ -236,22 +236,37 @@ button {
 
 
 /* puzzle */
+.gemini-row {
+    display: flex;
+    justify-content: center;
+}
+
 .gemini {
     display: flex;
     position: relative;
     font-size: 35px;
     user-select: none;
-    flex: 1 1 auto;
-    margin: 0 -20%;
+    height: var(--ring-diameter);
+    width: calc(3 * var(--ring-diameter));
+    flex-shrink: 0;
 }
 
 .ring {
-    width: 33%;
-    margin: 15% 0;
+    width: 100%;
     position: relative;
     border-radius: 100%;
     background-color: var(--ring-background);
-    flex-shrink: 0;
+}
+
+.ring.left {
+    left: 15%;
+}
+
+.ring.center {
+}
+
+.ring.right {
+    right: 15%;
 }
 
 .ring.dragging {

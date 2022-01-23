@@ -21,16 +21,6 @@ import           Gemini.UI.EventHandlers
 import           Utils
 
 
-
-ringOffset :: Ring -> (Text, Text)
-ringOffset = \case
-  LeftRing   -> ("left", show percent <> "%")
-  CenterRing -> ("", "")
-  RightRing  -> ("right", show percent <> "%")
-  where
-    percent = 15
-
-
 -- math utils
 sine = sin . toRadians
 cosine = cos . toRadians
@@ -109,7 +99,6 @@ geminiView store =
           , (ringClass ring, True)
           , ("dragging", isActive store ring)
           ]
-        , Html.styleProp [ ringOffset ring ]
         ]
         ( disks ring )
 
