@@ -21,12 +21,13 @@ import           Gemini.UI.EventHandlers
 import           Utils
 
 
--- math utils
 sine = sin . toRadians
 cosine = cos . toRadians
 
+
 toRadians :: Double -> Double
 toRadians th = (th * pi) / 180.0
+
 
 toDegrees :: Double -> Double
 toDegrees th = (th * 180) / pi
@@ -84,6 +85,7 @@ geminiView store =
     gemini = store ^. #gemini
     options = store ^. #options
     isMobile = options ^. #isMobile
+    dragged = dragAngle store
 
     activeCycleMap :: Map Location Int
     activeCycleMap = store
@@ -102,12 +104,6 @@ geminiView store =
         ]
         ( disks ring )
 
-    dragAngle :: Ring -> Double
-    dragAngle r = fromMaybe 0 $ do
-      drag <- store ^. #drag
-      guard $ drag ^. #location % #ring == r
-      pure $ drag ^. #currentAngle
-
     disks :: Ring -> [Html m Store]
     disks ring = flip map inhabitants $ \position ->
       let
@@ -116,7 +112,14 @@ geminiView store =
           case gemini ^? geminiIx location of
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "")
-        diskAngle = fromIntegral (unCyclic position) * 20.0 - 90.0 + dragAngle ring
+
+        draggedAngle :: Double
+        draggedAngle = fromMaybe 0 $ do
+           (draggedRing, angle) <- dragged
+           guard $ ring == draggedRing
+           pure angle
+
+        diskAngle = fromIntegral (unCyclic position) * 20.0 - 90.0 + draggedAngle
         k = 43
         (x, y) =
           ( k * (1 + cosine diskAngle)
@@ -140,7 +143,6 @@ geminiView store =
             ( Html.class'
               [ ("disk", True)
               , (color, True)
-              -- , ("drag-disabled", isIntersection location)
               , ("dragging", isDraggedDisk location)
               , ("hidden", hiddenLocations store ^. contains location)
               ]

@@ -36,14 +36,14 @@ import           System.Random.Stateful (Uniform (..))
 
 -- | UI Definitions
 data Store = Store
-  { gemini   :: !Gemini
-  , history  :: !(Seq Motion)
-  , moves    :: !(Seq Move)
-  , hover    :: !HoverState
-  , drag     :: !(Maybe DragState)
-  , options  :: !Options
-  , env      :: !Env
-  , debugLog :: !Text
+  { gemini     :: !Gemini
+  , history    :: !(Seq Motion)
+  , moves      :: !(Seq Move)
+  , hover      :: !HoverState
+  , drag       :: !(Maybe DragState)
+  , ringCenter :: !(Map Ring Point)
+  , options    :: !Options
+  , env        :: !Env
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)

@@ -5,6 +5,7 @@ module Gemini.UI.EventHandlers
   , mousePosition
   , RawEventHandler
   , ringClass
+  , dragAngle
   ) where
 
 import           Relude
@@ -60,13 +61,12 @@ mousePosition event = do
 
 startDrag :: Location -> RawEventHandler m
 startDrag location _ event = do
-  origin <- getRingCenter $ location ^. #ring
   mouse <- mousePosition event
   pure $ Continuation.pur $
     (#drag ?~ DragState
       { location
-      , initialAngle = angle (mouse ~~ origin)
-      , currentAngle = 0
+      , initialPoint = mouse
+      , currentPoint = mouse
       }
     )
 
@@ -75,56 +75,45 @@ onDrag :: MonadJSM m => RawEventHandler m
 onDrag _ event = do
   -- origin <- getRingCenter ring
   mouse <- mousePosition event
-  pure $ updateDrag mouse
+  pure $ Continuation.pur $ updateDrag mouse
 
-
-updateDrag :: MonadJSM m => Point -> Continuation m Store
-updateDrag mouse = kleisli $ \store ->
-  case store ^. #drag of
-    Nothing -> pure Continuation.done
-    Just drag -> liftJSM $ do
-      case drag ^. #location % to dragRing of
-        Obvious ring          -> do
-          origin <- getRingCenter ring
-          let pointRelativeToRing = mouse ~~ origin
-          pure $ Continuation.pur $ (#drag % _Just % #currentAngle) .~ (angle pointRelativeToRing - initialAngle drag)
-        Ambiguous ring1 ring2 -> do
-          let distanceToRing :: Ring -> JSM (Double, Double)
+  {-
+let distanceToRing :: Ring -> JSM (Double, Double)
               distanceToRing ring = do
                 (origin, radius) <- getRingCoordinates ring
                 let p = mouse ~~ origin
                 pure $ (abs (norm p - radius), angle p)
+-}
 
-          (d1, angle1) <- distanceToRing ring1
-          (d2, angle2) <- distanceToRing ring2
-          let angle = if d1 <= d2
-                      then angle1
-                      else angle2
-          pure $ Continuation.pur $ (#drag % _Just % #currentAngle) .~ (angle - initialAngle drag)
 
+updateDrag :: Point -> Store -> Store
+updateDrag = set $ #drag % _Just % #currentPoint
 
 
 endDrag :: MonadJSM m => RawEventHandler m
 endDrag _ event = do
   mouse <- mousePosition event
-  pure $
-    (updateDrag mouse)
-    `before`
-    (Continuation.Pure $
+  pure $ Continuation.Pure $
     execState $ do
+      modify $ updateDrag mouse
       drag <- use #drag
       case drag of
         Nothing -> pure ()
         Just drag -> do
           (#drag .= Nothing)
+          -- TODO: reimplement
+          {--
           let ring = drag ^. #location % #ring
           let theta = drag ^. #currentAngle
           let n = floor $ (theta / 20) + 0.5
           let direction = if signum n > 0 then Clockwise else AntiClockwise
           let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
           modify $ applyMotionToStore motion
-    )
+          --}
 
+-- | angle of current ring being dragged
+dragAngle :: Store -> Maybe (Ring, Double)
+dragAngle = undefined
 
 -- dimensions
 -- math utils

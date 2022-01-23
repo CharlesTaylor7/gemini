@@ -44,8 +44,8 @@ initialStore env = Store
       , debug = False
       , isMobile = False
       }
-  , debugLog = ""
   , env = env
+  , ringCenter = mempty
   }
 
 
@@ -101,8 +101,7 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    ( Html.text ( "Log : " <> store ^. #debugLog)
-    : case store ^. #drag of
+    ( case store ^. #drag of
         Nothing -> []
         Just drag ->
           [ Html.text $ "Drag: " <> show drag ]
