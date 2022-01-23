@@ -56,7 +56,7 @@ data HoverState = HoverState
   deriving anyclass (NFData)
 
 data DragState = DragState
-  { location     :: !Location
+  { location     :: !(Choice Location)
   , initialPoint :: !Point
   , currentPoint :: !Point
   }
@@ -347,7 +347,11 @@ onRing l@(Location source _) target
 
 
 data Choice a = Obvious a | Ambiguous a a
+  deriving stock (Eq, Generic, Show, Functor)
+  deriving anyclass (NFData)
 
+instance Pretty a => Pretty (Choice a) where
+  pretty = Pretty.viaShow . fmap pretty
 
 dragRing :: Location -> Choice Location
 dragRing loc1 =

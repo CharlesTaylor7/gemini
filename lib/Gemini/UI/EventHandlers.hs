@@ -50,7 +50,7 @@ startDrag location _ event = do
   mouse <- mousePosition event
   pure $ Continuation.pur $
     (#drag ?~ DragState
-      { location
+      { location = dragRing location
       , initialPoint = mouse
       , currentPoint = mouse
       }
@@ -99,7 +99,7 @@ dragAngle store =
     Nothing -> Nothing
     Just drag -> do
       let location :: Location
-          location = case drag ^. #location % to dragRing of
+          location = case drag ^. #location of
             Obvious location -> location
             Ambiguous loc1 loc2 -> do
               let distanceTo :: Location -> Double
