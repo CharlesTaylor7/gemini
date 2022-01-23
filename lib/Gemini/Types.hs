@@ -58,8 +58,8 @@ data HoverState = HoverState
 
 data DragState = DragState
   { location     :: !Location
-  , initialAngle :: !Double
-  , currentAngle :: !Double
+  , initialPoint :: !Point
+  , currentPoint :: !Point
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
