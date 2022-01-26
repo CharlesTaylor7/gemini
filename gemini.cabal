@@ -68,6 +68,7 @@ library
       ViewPatterns
       PatternSynonyms
       FlexibleInstances
+      MultiWayIf
   ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
   build-depends:
       Shpadoinkle
@@ -127,6 +128,7 @@ executable server
       ViewPatterns
       PatternSynonyms
       FlexibleInstances
+      MultiWayIf
   ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       Shpadoinkle

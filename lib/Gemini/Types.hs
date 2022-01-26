@@ -471,25 +471,42 @@ areConsecutive ls =
     numberOfRings = length ls
 
 
+data CyclicOrdering
+  = Precedes
+  | Exceeds
+  | Equal
+  | Opposite
+
+compareCyclic :: forall n. KnownNat n => Cyclic n -> Cyclic n -> CyclicOrdering
+compareCyclic a b =
+  if | difference == 0                 -> Equal
+     | even k && difference == halfway -> Opposite
+     | difference <= halfway           -> Precedes
+     | otherwise                       -> Exceeds
+  where
+    k = knownInt @n
+    halfway = Cyclic $ k `div` 2
+    difference = b - a
+
+
 pairwiseConsecutive :: forall n. (KnownNat n, n ~ 18) => NonEmpty (Cyclic n) -> Bool
 pairwiseConsecutive (head :| rest) = go rest head head
   where
-    lt :: Cyclic n -> Cyclic n -> Bool
-    a `lt` b = b - a < 9
+    precedes :: Cyclic n -> Cyclic n -> Bool
+    a `precedes` b = b - a < 9
 
     go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
     go [] _   _   = True
     go (x:xs) min max =
-      if x `lt` min
+      if x `precedes` min
       then
-        if x `lt` max
+        if x `precedes` max
         then go xs x max
         else False
       else
-        if x `lt` max
+        if x `precedes` max
         then go xs min max
         else go xs min x
-
 
 
 toMove :: Seq Motion -> Move

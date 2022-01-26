@@ -1,5 +1,5 @@
 module Data.Cyclic
-  ( Cyclic (..), cyclic
+  ( Cyclic (..), cyclic, knownInt
   ) where
 
 import           Relude

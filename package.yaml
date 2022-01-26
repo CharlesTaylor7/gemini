@@ -75,6 +75,7 @@ default-extensions:
   - ViewPatterns
   - PatternSynonyms
   - FlexibleInstances
+  - MultiWayIf
 
 ghc-options:
   # general
