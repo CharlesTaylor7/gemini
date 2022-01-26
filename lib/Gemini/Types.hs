@@ -447,19 +447,19 @@ isSolved gemini =
     & Map.toList
     & map (over _1 indexToLocation)
     & sortBy (compare `on` view _2)
-    & List.groupBy ((==) `on` view _2)
-    & map (map (view _1))
+    & NE.groupBy ((==) `on` view _2)
+    & map (fmap (view _1))
     & all areConsecutive
 
 
-areConsecutive :: [Location] -> Bool
+areConsecutive :: NonEmpty Location -> Bool
 areConsecutive ls =
   if numberOfRings > 2
   then False
   else ls
-    & map (`onRing` mostCommonRing)
+    & fmap (`onRing` mostCommonRing)
     & sequenceA
-    & maybe False (pairwiseConsecutive . map (view (#position)))
+    & maybe False (pairwiseConsecutive . fmap (view #position))
   where
     mostCommonRing :: Ring
     mostCommonRing = ringGroups & List.maximumBy (compare `on` length) & head & view #ring
@@ -471,9 +471,24 @@ areConsecutive ls =
     numberOfRings = length ls
 
 
-pairwiseConsecutive :: KnownNat n => [Cyclic n] -> Bool
-pairwiseConsecutive (m:n:rest) = m - n == 1 && pairwiseConsecutive (n:rest)
-pairwiseConsecutive _          = True
+pairwiseConsecutive :: forall n. (KnownNat n, n ~ 18) => NonEmpty (Cyclic n) -> Bool
+pairwiseConsecutive (head :| rest) = go rest head head
+  where
+    lt :: Cyclic n -> Cyclic n -> Bool
+    a `lt` b = b - a < 9
+
+    go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
+    go [] _   _   = True
+    go (x:xs) min max =
+      if x `lt` min
+      then
+        if x `lt` max
+        then go xs x max
+        else False
+      else
+        if x `lt` max
+        then go xs min max
+        else go xs min x
 
 
 
