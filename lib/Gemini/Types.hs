@@ -471,24 +471,6 @@ areConsecutive ls =
     numberOfRings = length ls
 
 
-data CyclicOrdering
-  = Precedes
-  | Exceeds
-  | Equal
-  | Opposite
-
-compareCyclic :: forall n. KnownNat n => Cyclic n -> Cyclic n -> CyclicOrdering
-compareCyclic a b =
-  if | difference == 0                 -> Equal
-     | even k && difference == halfway -> Opposite
-     | difference <= halfway           -> Precedes
-     | otherwise                       -> Exceeds
-  where
-    k = knownInt @n
-    halfway = Cyclic $ k `div` 2
-    difference = b - a
-
-
 pairwiseConsecutive :: forall n. (KnownNat n, n ~ 18) => NonEmpty (Cyclic n) -> Bool
 pairwiseConsecutive (head :| rest) = go rest head head
   where
