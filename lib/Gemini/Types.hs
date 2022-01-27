@@ -475,7 +475,8 @@ pairwiseConsecutive :: forall n. (KnownNat n, n ~ 18) => NonEmpty (Cyclic n) -> 
 pairwiseConsecutive (head :| rest) = go rest head head
   where
     precedes :: Cyclic n -> Cyclic n -> Bool
-    a `precedes` b = b - a < 9
+    a `precedes` b = compared == Equal || compared == Precedes
+      where compared = compareCyclic a b
 
     go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
     go [] _   _   = True
