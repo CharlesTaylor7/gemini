@@ -440,26 +440,37 @@ initialGemini = geminiFromList
   , (Location RightRing 2, Disk White 9)
   ]
 
+diskCount :: Color -> Int
+diskCount White  = 9
+diskCount Yellow = 9
+diskCount _      = 8
 
 isSolved :: Gemini -> Bool
 isSolved gemini =
   gemini ^. #geminiDiskMap
     & Map.toList
-    & map (over _1 indexToLocation)
-    & sortBy (compare `on` view _2)
-    & NE.groupBy ((==) `on` view _2)
-    & map (fmap (view _1))
-    & all areConsecutive
+    & selectGroups (view $ _2 % #color)
+    & all (\(color, items) -> items <&> (view $ _1 % to indexToLocation) & isFinishedSequence color)
 
 
-areConsecutive :: NonEmpty Location -> Bool
-areConsecutive ls =
+selectGroups :: (Ord key) => (a -> key) -> [a] -> [(key, NonEmpty a)]
+selectGroups projection foldable =
+  foldable
+  & fmap (\x -> (projection x, x))
+  & List.sortBy (compare `on` fst)
+  & NE.groupBy ((==) `on` fst)
+  & fmap (\group -> let (key, _):|_ = group in (key, fmap snd group))
+
+
+
+isFinishedSequence :: Color -> NonEmpty Location -> Bool
+isFinishedSequence color ls =
   if numberOfRings > 2
   then False
   else ls
     & fmap (`onRing` mostCommonRing)
     & sequenceA
-    & maybe False (pairwiseConsecutive . fmap (view #position))
+    & maybe False (isFinished (diskCount color) . fmap (view #position))
   where
     mostCommonRing :: Ring
     mostCommonRing = ringGroups & List.maximumBy (compare `on` length) & head & view #ring
@@ -471,8 +482,8 @@ areConsecutive ls =
     numberOfRings = length ls
 
 
-pairwiseConsecutive :: forall n. (KnownNat n, n ~ 18) => NonEmpty (Cyclic n) -> Bool
-pairwiseConsecutive (head :| rest) = go rest head head
+isFinished :: forall n. (KnownNat n, n ~ 18) => Int -> NonEmpty (Cyclic n) -> Bool
+isFinished expectedCount (head :| rest) = go rest head head
   where
     precedes :: Cyclic n -> Cyclic n -> Bool
     a `precedes` b = compared == Equal || compared == Precedes
@@ -509,15 +520,18 @@ applyToHistory next all@(ms :|> prev) =
 toMotion :: Rotation -> Motion
 toMotion rotation = Motion { amount = 1, rotation }
 
+
 combine :: Motion -> Motion -> Motion
 combine x@(Motion m1 r1) (Motion m2 r2)
   | r1 == r2  = x & #amount %~ (+ m2)
   | otherwise = x & #amount %~ (subtract m2)
 
+-- | Get the opposite rotation direction
 opposite :: RotationDirection -> RotationDirection
 opposite = \case
   Clockwise     -> AntiClockwise
   AntiClockwise -> Clockwise
+
 
 normalize :: Motion -> Maybe Motion
 normalize Motion { amount = 0 } = Nothing
@@ -527,6 +541,6 @@ normalize motion = Just $ do
   if n <= 9
   then motion & #amount .~ n & directionL .~ Clockwise
   else motion & #amount .~ ((-n) `mod` 18) & directionL .~ AntiClockwise
-
-directionL :: Lens' Motion RotationDirection
-directionL = #rotation % #direction
+  where
+    directionL :: Lens' Motion RotationDirection
+    directionL = #rotation % #direction
