@@ -57,7 +57,7 @@ data CyclicOrdering
   | Exceeds
   | Equal
   | Opposite
-  deriving (Eq)
+  deriving stock (Eq)
 
 
 compareCyclic :: forall n. KnownNat n => Cyclic n -> Cyclic n -> CyclicOrdering
