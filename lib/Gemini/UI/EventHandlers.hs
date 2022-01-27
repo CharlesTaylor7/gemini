@@ -10,8 +10,10 @@ module Gemini.UI.EventHandlers
 
 import           Relude
 
+import           Data.Angle
 import           Data.Cyclic
 import           Data.Permutation
+import           Data.Point
 import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
                                               (!), (#))
 import           Optics                      hiding ((#))
@@ -90,8 +92,8 @@ endDrag _ event = do
             Just motion -> modify $ applyMotionToStore motion
 
 
-angleToPosition :: forall n. KnownNat n => Double -> Cyclic n
-angleToPosition theta = cyclic $ floor $ (k * theta) / 360 + 0.5
+angleToPosition :: forall n. KnownNat n => Angle -> Cyclic n
+angleToPosition (Turns turns) = cyclic $ floor $ (k * turns) + 0.5
   where k = fromIntegral $ knownInt @n
 
 
@@ -100,7 +102,7 @@ disambiguate = undefined
 
 
 -- | angle of current ring being dragged, (via location that disambiguates)
-dragAngle :: Store -> Maybe (Location, Double)
+dragAngle :: Store -> Maybe (Location, Angle)
 dragAngle store =
   case store ^. #drag of
     Nothing -> Nothing
@@ -118,27 +120,18 @@ dragAngle store =
                     abs (norm p - radius)
               if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
 
-      let angleWith :: Point -> Double
+      let angleWith :: Point -> Angle
           angleWith point = do
             let radius = store ^. #dom ^. #ringRadius
             let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
             let mouse = drag ^. #currentPoint
             let p = point ~~ origin
-            angle p
+            angleToOrigin p
 
       let DragState { initialPoint, currentPoint } = drag
-      let currentAngle = angleWith currentPoint - angleWith initialPoint
+      let currentAngle = angleWith currentPoint ~~ angleWith initialPoint
       Just $ (location, currentAngle)
 
-
-
--- dimensions
--- math utils
-toDegrees :: Double -> Double
-toDegrees th = (th * 180) / pi
-
-angle :: Point -> Double
-angle (Point x y) = atan2 y x & toDegrees
 
 
 jsCall :: (ToJSVal js, MakeArgs args) => js -> Text -> args -> JSM JSVal

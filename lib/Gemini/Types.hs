@@ -24,6 +24,7 @@ import qualified Data.IntMap            as Map
 import qualified Data.List              as List
 import qualified Data.List.NonEmpty     as NE
 import           Data.Permutation
+import           Data.Point
 import           Data.Sequence          (Seq ((:<|), (:|>)))
 import qualified Data.Sequence          as Seq
 import qualified Data.Text              as Text
@@ -123,34 +124,6 @@ instance Pretty Motion where
   pretty Motion { amount = Cyclic amount, rotation } =
     pretty amount <> pretty rotation
   prettyList = Pretty.sep . fmap pretty
-
-
-data Point = Point
-  { x :: !Double
-  , y :: !Double
-  }
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (NFData)
-
-norm :: Point -> Double
-norm Point { x, y } = sqrt $ x*x + y*y
-
-instance Pretty Point where
-  pretty (Point x y)
-    = "("
-    <> pretty x
-    <> ", "
-    <> pretty y
-    <> ")"
-
-instance Semigroup Point where
-  Point x1 y1 <> Point x2 y2 = Point (x1 + x2) (y1 + y2)
-
-instance Monoid Point where
-  mempty = Point 0 0
-
-instance Group Point where
-  invert (Point x y) = Point (-x) (-y)
 
 type GeminiPermutation = Permutation 54
 

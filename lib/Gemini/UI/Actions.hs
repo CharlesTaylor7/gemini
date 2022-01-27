@@ -2,6 +2,7 @@ module Gemini.UI.Actions where
 
 import           Relude
 
+import           Data.Angle
 import           Data.Finitary
 import           Data.Permutation
 import qualified Data.Sequence          as Seq

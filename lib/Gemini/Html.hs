@@ -4,6 +4,7 @@ module Gemini.Html
 
 import           Relude
 
+import           Data.Angle
 import           Data.Cyclic
 import           Data.Finitary
 import qualified Data.Map                    as Map
@@ -22,18 +23,6 @@ import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
 import           Utils
-
-
-sine = sin . toRadians
-cosine = cos . toRadians
-
-
-toRadians :: Double -> Double
-toRadians th = (th * pi) / 180.0
-
-
-toDegrees :: Double -> Double
-toDegrees th = (th * 180) / pi
 
 
 draggedOver :: Store -> Set Location
@@ -58,9 +47,6 @@ activeLocations store = activeRing store & concatMap (\ring -> map (Location rin
     activeRing = preview $ to dragAngle % _Just % _1 % #ring
 
 
-angle :: Point -> Double
-angle (Point x y) = atan2 y x & toDegrees
-
 
 jsCall :: (ToJSVal js, MakeArgs args) => js -> Text -> args -> JSM JSVal
 jsCall js method args = toJSVal js # method $ args
@@ -68,6 +54,8 @@ jsCall js method args = toJSVal js # method $ args
 jsConsoleLog :: JSVal -> JSM ()
 jsConsoleLog text = void $ jsg ("console" :: Text) # ("log" :: Text) $ text
 
+angleOnCircle :: forall n. KnownNat n => Cyclic n -> Angle
+angleOnCircle (Cyclic k) = Turns $ (fromIntegral k) / (fromIntegral $ knownInt @n)
 
 geminiView :: forall m. Applicative m => Store -> Html m Store
 geminiView store =
@@ -141,13 +129,14 @@ geminiView store =
             Just Disk { color, label } -> (Text.toLower $ show color, show label)
             Nothing                    -> ("unknown", "")
 
-        draggedAngle :: Double
-        draggedAngle = fromMaybe 0 $ do
+        draggedAngle :: Angle
+        draggedAngle = fromMaybe mempty $ do
            (draggedRing, angle) <- dragged
            guard $ ring == draggedRing ^. #ring
            pure angle
 
-        diskAngle = fromIntegral (unCyclic position) * 20.0 - 90.0 + draggedAngle
+        diskAngle = (angleOnCircle position ~~ (Degrees 90)) <> draggedAngle
+
         k = 43
         (x, y) =
           ( k * (1 + cosine diskAngle)
