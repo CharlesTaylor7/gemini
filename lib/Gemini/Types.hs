@@ -1,11 +1,11 @@
 module Gemini.Types
   ( -- core types and operations
-    Gemini, geminiFromList, geminiIx, ringIndex , initialGemini
+    Gemini, geminiFromList, geminiIx, ringIndex , initialGemini, isSolved
   , Location(..), location, isCanonical, isIntersection, sibling, Choice(..), dragRing
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
   , Point(..), norm
-  , toMove, toMotion
+  , toMove, toMotion, normalize
   , applyToGemini, applyToHistory
   , ToPermutation(..)
     -- ui types
@@ -82,6 +82,7 @@ data Options = Options
   , recording  :: !Bool
   , debug      :: !Bool
   , isMobile   :: !Bool
+  , confetti   :: !Bool
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
@@ -112,14 +113,14 @@ data Move = Move
   deriving anyclass (NFData)
 
 data Motion = Motion
-  { amount   :: !Int
+  { amount   :: !(Cyclic 18)
   , rotation :: !Rotation
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (NFData)
 
 instance Pretty Motion where
-  pretty Motion { amount, rotation } =
+  pretty Motion { amount = Cyclic amount, rotation } =
     pretty amount <> pretty rotation
   prettyList = Pretty.sep . fmap pretty
 
@@ -267,7 +268,7 @@ instance ToPermutation Rotation where
         AntiClockwise -> reverse inhabitants
 
 instance ToPermutation Motion where
-  toPerm Motion { amount, rotation } = (`pow` amount) $ toPerm rotation
+  toPerm Motion { amount = Cyclic amount, rotation } = (`pow` amount) $ toPerm rotation
 
 
 
@@ -549,10 +550,10 @@ normalize :: Motion -> Maybe Motion
 normalize Motion { amount = 0 } = Nothing
 normalize motion = Just $ do
   let sign = if motion ^. directionL == Clockwise then 1 else -1
-  let n = (sign * (motion ^. #amount)) `mod` 18
+  let n = sign * (motion ^. #amount)
   if n <= 9
   then motion & #amount .~ n & directionL .~ Clockwise
-  else motion & #amount .~ ((-n) `mod` 18) & directionL .~ AntiClockwise
+  else motion & #amount .~ (-n) & directionL .~ AntiClockwise
   where
     directionL :: Lens' Motion RotationDirection
     directionL = #rotation % #direction

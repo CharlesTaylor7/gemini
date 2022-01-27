@@ -7,6 +7,7 @@ import           Data.Permutation
 import qualified Data.Sequence          as Seq
 import           Data.Traversable       (for)
 import           Optics                 hiding ((#))
+import           Optics.State.Operators
 import           System.Random.Stateful (globalStdGen, uniformM)
 import           Utils
 
@@ -17,18 +18,19 @@ import qualified Shpadoinkle.Keyboard   as Key
 import           Gemini.Types
 
 
-
 -- | UI Operations
---
 applyMotionToStore :: Motion -> Store -> Store
-applyMotionToStore motion state = state
-  & #gemini %~ applyToGemini motion
-  & #history %~ updateHistory
-  where
-    updateHistory =
-      if state ^. #options % #recording
-      then applyToHistory motion
-      else const Seq.Empty
+applyMotionToStore motion = execState $ do
+  -- apply to puzzle
+  (#gemini %= applyToGemini motion)
+
+  -- if recording, apply to history
+  recording <- use $ #options % #recording
+  when recording $ #history %= applyToHistory motion
+
+  -- check if the puzzle is solved
+  gemini <- use #gemini
+  when (isSolved gemini) $ (#options % #confetti .= True)
 
 
 stopRecording :: Store -> Store

@@ -44,6 +44,7 @@ initialStore env = Store
       , recording = False
       , debug = False
       , isMobile = False
+      , confetti = False
       }
   , env = env
   , dom = DomInfo

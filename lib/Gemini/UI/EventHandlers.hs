@@ -10,6 +10,7 @@ module Gemini.UI.EventHandlers
 
 import           Relude
 
+import           Data.Cyclic
 import           Data.Permutation
 import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
                                               (!), (#))
@@ -82,10 +83,16 @@ endDrag _ event = do
         Just (location, theta) -> do
           (#drag .= Nothing)
           let ring = location ^. #ring
-          let n = floor $ (theta / 20) + 0.5
-          let direction = if signum n > 0 then Clockwise else AntiClockwise
-          let motion = Motion { amount = abs n, rotation = Rotation { ring, direction } }
-          modify $ applyMotionToStore motion
+          let n = angleToPosition theta
+          let motion = Motion { amount = abs n, rotation = Rotation { ring, direction = Clockwise } }
+          case normalize motion of
+            Nothing     -> pure ()
+            Just motion -> modify $ applyMotionToStore motion
+
+
+angleToPosition :: forall n. KnownNat n => Double -> Cyclic n
+angleToPosition theta = cyclic $ floor $ (k * theta) / 360 + 0.5
+  where k = fromIntegral $ knownInt @n
 
 
 disambiguate :: DragState -> Location
