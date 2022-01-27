@@ -13,8 +13,6 @@ module Gemini.Types
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   , isFinished
-  --  re exports
-  , Angle, Cyclic, Finitary, Permutation, Point
   ) where
 
 import           Relude                 hiding (cycle)

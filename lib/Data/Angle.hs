@@ -25,18 +25,24 @@ newtype Angle = Angle Double
 
 
 -- | Construct or match on the radians of an angle
+pattern Radians :: Double -> Angle
 pattern Radians theta   = Angle theta
+{-# COMPLETE Radians #-}
 
 -- | Construct or match on the degrees of an angle
+pattern Degrees :: Double -> Angle
 pattern Degrees degrees <- Angle (radiansToDegrees -> degrees) where
   Degrees degrees = Angle $ degreesToRadians degrees
+{-# COMPLETE Degrees #-}
 
 radiansToDegrees radians = radians * 180 / pi
 degreesToRadians degrees = degrees * pi / 180
 
 -- | Construct or match on the turns of an angle
+pattern Turns :: Double -> Angle
 pattern Turns turns <- Angle (radiansToTurns -> turns) where
   Turns turns = Angle $ turnsToRadians turns
+{-# COMPLETE Turns #-}
 
 radiansToTurns radians = radians / (2 * pi)
 turnsToRadians turns   =  turns * 2 * pi
@@ -52,5 +58,3 @@ cosine (Radians radians) = cos radians
 
 arctan :: Double -> Double -> Angle
 arctan y x = Radians $ atan2 y x
-
-

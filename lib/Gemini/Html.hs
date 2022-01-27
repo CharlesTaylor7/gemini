@@ -19,7 +19,6 @@ import qualified Shpadoinkle.Html         as Html
 
 import           Gemini.Jsaddle
 import           Gemini.Types
-import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
 import           Utils
 

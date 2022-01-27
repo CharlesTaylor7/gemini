@@ -10,7 +10,6 @@ module Gemini.UI
 import           Relude
 
 import           Data.Finitary
-import qualified Data.Map                as Map
 import           Data.Permutation
 import qualified Data.Sequence           as Seq
 import           Data.Traversable        (for)
