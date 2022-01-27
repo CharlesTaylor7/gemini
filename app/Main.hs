@@ -3,15 +3,13 @@ module Main where
 
 import           Relude
 
-import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
-                                              (!), (#), (<#))
-import           Optics                      ((%), (.~), (^.))
 import           Shpadoinkle                 (JSM)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
 import           Shpadoinkle.Html            (addStyle)
 import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
 
 import           Gemini.Env
+import           Gemini.Jsaddle
 import           Gemini.UI
 
 
@@ -36,10 +34,6 @@ app store = do
   setTitle "Gemini"
   addStyle "/public/styles/index.css"
   simple runParDiff store rootView stage
-
-
-setTitle :: Text -> JSM ()
-setTitle title = jsg ("document" :: Text) <# ("title" :: Text) $ title
 
 
 getEnv :: Deployment -> IO Env

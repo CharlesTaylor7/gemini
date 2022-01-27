@@ -7,18 +7,17 @@ import           Relude
 import           Data.Angle
 import           Data.Cyclic
 import           Data.Finitary
-import qualified Data.Map                    as Map
+import qualified Data.Map                 as Map
 import           Data.Permutation
 import           Data.Set.Optics
-import qualified Data.Text                   as Text
-import           Data.Traversable            (for)
-import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
-                                              (!), (#))
-import           Optics                      hiding ((#))
-import           Shpadoinkle                 hiding (text)
-import qualified Shpadoinkle.Continuation    as Continuation
-import qualified Shpadoinkle.Html            as Html
+import qualified Data.Text                as Text
+import           Data.Traversable         (for)
+import           Optics                   hiding ((#))
+import           Shpadoinkle              hiding (text)
+import qualified Shpadoinkle.Continuation as Continuation
+import qualified Shpadoinkle.Html         as Html
 
+import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
@@ -48,14 +47,15 @@ activeLocations store = activeRing store & concatMap (\ring -> map (Location rin
 
 
 
-jsCall :: (ToJSVal js, MakeArgs args) => js -> Text -> args -> JSM JSVal
-jsCall js method args = toJSVal js # method $ args
 
-jsConsoleLog :: JSVal -> JSM ()
-jsConsoleLog text = void $ jsg ("console" :: Text) # ("log" :: Text) $ text
 
 angleOnCircle :: forall n. KnownNat n => Cyclic n -> Angle
-angleOnCircle (Cyclic k) = Turns $ (fromIntegral k) / (fromIntegral $ knownInt @n)
+angleOnCircle (Cyclic k) = turns ~~ offset
+  where
+    turns = Turns $ (fromIntegral k) / (fromIntegral $ knownInt @n)
+    -- By arbitrary choice, the initial position is at the top of the circle
+    offset = Degrees 90
+
 
 geminiView :: forall m. Applicative m => Store -> Html m Store
 geminiView store =
@@ -135,7 +135,7 @@ geminiView store =
            guard $ ring == draggedRing ^. #ring
            pure angle
 
-        diskAngle = (angleOnCircle position ~~ (Degrees 90)) <> draggedAngle
+        diskAngle = angleOnCircle position <> draggedAngle
 
         k = 43
         (x, y) =

@@ -14,13 +14,13 @@ import           Data.Angle
 import           Data.Cyclic
 import           Data.Permutation
 import           Data.Point
-import           Language.Javascript.JSaddle (JSVal, MakeArgs, ToJSVal (..), fromJSValUnchecked, instanceOf, jsg, (!!),
-                                              (!), (#))
-import           Optics                      hiding ((#))
-import           Optics.State.Operators
-import           Shpadoinkle                 hiding (text)
-import qualified Shpadoinkle.Continuation    as Continuation
 
+import           Optics                   hiding ((#))
+import           Optics.State.Operators
+import           Shpadoinkle              hiding (text)
+import qualified Shpadoinkle.Continuation as Continuation
+
+import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 
@@ -131,11 +131,3 @@ dragAngle store =
       let DragState { initialPoint, currentPoint } = drag
       let currentAngle = angleWith currentPoint ~~ angleWith initialPoint
       Just $ (location, currentAngle)
-
-
-
-jsCall :: (ToJSVal js, MakeArgs args) => js -> Text -> args -> JSM JSVal
-jsCall js method args = toJSVal js # method $ args
-
-jsConsoleLog :: JSVal -> JSM ()
-jsConsoleLog text = void $ jsg ("console" :: Text) # ("log" :: Text) $ text

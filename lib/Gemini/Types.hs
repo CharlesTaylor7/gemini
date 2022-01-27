@@ -13,18 +13,22 @@ module Gemini.Types
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   , isFinished
+  --  re exports
+  , Angle, Cyclic, Finitary, Permutation, Point
   ) where
 
 import           Relude                 hiding (cycle)
 
-import           Data.Cyclic
-import           Data.Finitary
+import           Data.Angle             as Angle
+import           Data.Cyclic            as Cyclic
+import           Data.Finitary          as Finitary
+import           Data.Permutation       as Permutation
+import           Data.Point             as Point
+
 import           Data.Group             (Group (..))
 import qualified Data.IntMap            as Map
 import qualified Data.List              as List
 import qualified Data.List.NonEmpty     as NE
-import           Data.Permutation
-import           Data.Point
 import           Data.Sequence          (Seq ((:<|), (:|>)))
 import qualified Data.Sequence          as Seq
 import qualified Data.Text              as Text

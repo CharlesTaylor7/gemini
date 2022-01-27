@@ -24,10 +24,13 @@ source-repository head
 
 library
   exposed-modules:
+      Data.Angle
       Data.Cyclic
       Data.Permutation
+      Data.Point
       Gemini.Env
       Gemini.Html
+      Gemini.Jsaddle
       Gemini.Types
       Gemini.UI
       Gemini.UI.Actions
