@@ -12,6 +12,7 @@ module Gemini.Types
   , Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
+  , isFinished
   ) where
 
 import           Relude                 hiding (cycle)
@@ -475,32 +476,43 @@ isFinishedSequence color ls =
     mostCommonRing :: Ring
     mostCommonRing = ringGroups & List.maximumBy (compare `on` length) & head & view #ring
 
-    -- ringGroups :: [NonEmpty Location]
+    ringGroups :: [NonEmpty Location]
     ringGroups = ls & NE.groupBy ((==) `on` view #ring)
 
     numberOfRings :: Int
     numberOfRings = length ls
 
 
-isFinished :: forall n. (KnownNat n, n ~ 18) => Int -> NonEmpty (Cyclic n) -> Bool
+-- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
+isFinished :: forall n. (KnownNat n) => Int -> NonEmpty (Cyclic n) -> Bool
 isFinished expectedCount (head :| rest) = go rest head head
   where
     precedes :: Cyclic n -> Cyclic n -> Bool
-    a `precedes` b = compared == Equal || compared == Precedes
-      where compared = compareCyclic a b
+    a `precedes` b =
+      case compareCyclic a b of
+        Precedes -> True
+        Equal    -> True
+        _        -> False
+
+    exceeds :: Cyclic n -> Cyclic n -> Bool
+    a `exceeds` b =
+      case compareCyclic a b of
+        Exceeds -> True
+        Equal   -> True
+        _       -> False
+
 
     go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
     go [] _   _   = True
-    go (x:xs) min max =
-      if x `precedes` min
-      then
-        if x `precedes` max
-        then go xs x max
-        else False
-      else
-        if x `precedes` max
-        then go xs min max
-        else go xs min x
+    go (x:xs) min max
+      | x `precedes` min && (max - x < cyclic expectedCount) = go xs x max
+      -- ^ x is the new min
+      | x `exceeds` max && (x - min < cyclic expectedCount) = go xs min x
+      -- ^ x is the new max
+      | x `precedes` max && x `exceeds` min = go xs min max
+      -- ^ x is between the min & max
+      | otherwise = False
+      -- ^ x is outside the band of acceptability
 
 
 toMove :: Seq Motion -> Move
