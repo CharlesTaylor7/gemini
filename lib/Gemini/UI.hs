@@ -14,7 +14,7 @@ import qualified Data.Map                as Map
 import           Data.Permutation
 import qualified Data.Sequence           as Seq
 import           Data.Traversable        (for)
-import           Optics                  hiding ((#))
+import           Optics
 import           System.Random.Stateful  (globalStdGen, uniformM)
 import           Utils
 

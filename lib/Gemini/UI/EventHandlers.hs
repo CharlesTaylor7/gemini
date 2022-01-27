@@ -15,7 +15,7 @@ import           Data.Cyclic
 import           Data.Permutation
 import           Data.Point
 
-import           Optics                   hiding ((#))
+import           Optics
 import           Optics.State.Operators
 import           Shpadoinkle              hiding (text)
 import qualified Shpadoinkle.Continuation as Continuation

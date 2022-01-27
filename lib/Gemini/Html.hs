@@ -12,7 +12,7 @@ import           Data.Permutation
 import           Data.Set.Optics
 import qualified Data.Text                as Text
 import           Data.Traversable         (for)
-import           Optics                   hiding ((#))
+import           Optics
 import           Shpadoinkle              hiding (text)
 import qualified Shpadoinkle.Continuation as Continuation
 import qualified Shpadoinkle.Html         as Html
