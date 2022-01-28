@@ -23,17 +23,17 @@ spec = do
 
   describe "Num instance" $ do
     it "integer literals" $ do
-      unCyclic (3 :: Cyclic 10) `shouldBe` 3
-      unCyclic (11 :: Cyclic 10) `shouldBe` 1
+      unCyclic @10 3 `shouldBe` 3
+      unCyclic @10 11 `shouldBe` 1
 
     it "addition" $ do
-      unCyclic (4 + 9 :: Cyclic 10) `shouldBe` 3
+      unCyclic @10 (4 + 9) `shouldBe` 3
 
     it "subtraction" $ do
-      unCyclic (4 - 9 :: Cyclic 10) `shouldBe` 5
+      unCyclic @10 (4 - 9) `shouldBe` 5
 
     it "multiplication" $ do
-      unCyclic (3 * 7 :: Cyclic 10) `shouldBe` 1
+      unCyclic @10 (3 * 7) `shouldBe` 1
 
     it "signum" $ do
       -- | always 1
@@ -47,7 +47,7 @@ spec = do
       2 - 3 `shouldBe` (2 ~~ 3 :: Cyclic 17)
 
     it "can fold an empty list" $ do
-      unCyclic (fold [] :: Cyclic 3) `shouldBe` 0
+      unCyclic @3 (fold []) `shouldBe` 0
 
     it "can fold a nonempty list" $ do
       unCyclic @10 (fold [3, 5, 7]) `shouldBe` 5
