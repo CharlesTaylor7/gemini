@@ -107,7 +107,7 @@ confettiView store =
     [ Html.className "confetti"
     , Html.src "https://media.giphy.com/media/5T06ftQWtCMy0XFaaI/giphy.gif"
     , Html.onLoadM $ liftJSM $ do
-        liftIO $ threadDelay $ floor 10e6
+        liftIO $ threadDelay $ floor 3e6
         jsConsoleLog =<< toJSVal ("Hello, World" :: Text)
         pure $ #options % #confetti .~ False
     ]

@@ -12,7 +12,6 @@ module Gemini.Types
   , Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
-  , isFinished
   ) where
 
 import           Relude                 hiding (cycle)
@@ -422,6 +421,7 @@ diskCount White  = 9
 diskCount Yellow = 9
 diskCount _      = 8
 
+
 isSolved :: Gemini -> Bool
 isSolved gemini =
   gemini ^. #geminiDiskMap
@@ -437,7 +437,6 @@ selectGroups projection foldable =
   & List.sortBy (compare `on` fst)
   & NE.groupBy ((==) `on` fst)
   & fmap (\group -> let (key, _):|_ = group in (key, fmap snd group))
-
 
 
 isFinishedSequence :: Color -> NonEmpty Location -> Bool
@@ -456,7 +455,7 @@ isFinishedSequence color ls =
     ringGroups = ls & NE.groupBy ((==) `on` view #ring)
 
     numberOfRings :: Int
-    numberOfRings = length ls
+    numberOfRings = length ringGroups
 
 
 -- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
