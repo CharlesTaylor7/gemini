@@ -303,12 +303,12 @@ scrambleButton :: forall m. MonadIO m => Html m Store
 scrambleButton =
   actionButton
     [ Html.onClickM $ do
-        rotations <- for ([1..1000] :: [Int]) $ \_ -> (Endo . rotate) <$> uniformM globalStdGen
-        let Endo scramble = fold rotations
+        rotations <- for ([1..1000] :: [Int]) $ \_ -> (toPerm @Rotation) <$> uniformM globalStdGen
+        let scramble = fold rotations
         pure $
-          (set #history Seq.Empty) .
-          (set #recorded Seq.Empty) .
-          (over #gemini scramble) .
+          (#history .~ Seq.Empty) .
+          (#recorded .~ Seq.Empty) .
+          (#gemini %~ applyToGemini scramble) .
           (#scrambled .~ True)
     ]
     [ Html.text "Scramble" ]

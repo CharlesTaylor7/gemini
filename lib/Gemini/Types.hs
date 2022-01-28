@@ -8,7 +8,7 @@ module Gemini.Types
   , Point(..), norm
   , toMove, toMotion, normalize
   , applyToGemini, applyToHistory
-  , ToPermutation(..)
+  , ToPermutation(..), GeminiPermutation
     -- ui types
   , Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..)
     -- re export Seq constructors
@@ -248,7 +248,6 @@ instance ToPermutation Rotation where
 
 instance ToPermutation Motion where
   toPerm Motion { amount = Cyclic amount, rotation } = (`pow` amount) $ toPerm rotation
-
 
 
 locationCycles :: GeminiPermutation -> Cycles Location
