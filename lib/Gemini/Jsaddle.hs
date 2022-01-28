@@ -8,9 +8,10 @@ module Gemini.Jsaddle
 
 import           Relude
 
-import           Language.Javascript.JSaddle (FromJSVal (..), Function, JSM, JSVal, MakeArgs, ToJSVal (..),
-                                              asyncFunction, eval, function, instanceOf, jsg, jsgf, (!!), (!), (#),
-                                              (<#))
+import           Control.Concurrent          (threadDelay)
+import           Language.Javascript.JSaddle (FromJSVal (..), Function, JSM, JSVal, MakeArgs, MonadJSM (..),
+                                              ToJSVal (..), asyncFunction, eval, function, instanceOf, jsg, jsgf,
+                                              liftJSM, (!!), (!), (#), (<#))
 
 
 jsConsoleLog :: JSVal -> JSM ()
@@ -24,13 +25,8 @@ jsCall js method args = toJSVal js # method $ args
 setTitle :: Text -> JSM ()
 setTitle title = jsg ("document" :: Text) <# ("title" :: Text) $ title
 
-newtype Promise = Promise JSVal
 
-
-sleep :: Int -> JSM Promise
-sleep ms = Promise <$> eval ("new Promise(resolve => setTimeout(resolve, " <> show ms <> "))" :: Text)
-
-pThen :: Promise -> Function -> JSM Promise
-pThen (Promise jsVal) continuation = do
-  f <- toJSVal continuation
-  Promise <$> jsCall jsVal "then" f
+sleep :: forall m. MonadJSM m => Int -> m ()
+sleep seconds = liftIO $ threadDelay microseconds
+  where
+    microseconds = seconds * 1000000

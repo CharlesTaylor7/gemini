@@ -1,4 +1,4 @@
-module Gemini.Html
+module Gemini.Views.Puzzle
   ( geminiView
   ) where
 

@@ -1,4 +1,4 @@
-module Gemini.UI
+module Gemini.Views.App
   ( initialStore
   , rootView
   , Store(..)
@@ -9,7 +9,6 @@ module Gemini.UI
 
 import           Relude
 
-import           Control.Concurrent       (threadDelay)
 import           Data.Finitary
 import           Data.Permutation
 import qualified Data.Sequence            as Seq
@@ -23,10 +22,11 @@ import qualified Shpadoinkle.Continuation as Continuation
 import qualified Shpadoinkle.Html         as Html
 import qualified Shpadoinkle.Keyboard     as Key
 
-import           Gemini.Html              (geminiView)
+import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
+import           Gemini.Views.Puzzle      (geminiView)
 
 
 -- | Initial state of the app
@@ -107,8 +107,8 @@ confettiView store =
   Html.img'
     [ Html.className "confetti"
     , Html.src "https://media.giphy.com/media/5T06ftQWtCMy0XFaaI/giphy.gif"
-    , Html.onLoadM $ liftJSM $ do
-        liftIO $ threadDelay $ floor 3e6
+    , Html.onLoadM $ do
+        sleep 3
         pure $ #options % #confetti .~ False
     ]
 

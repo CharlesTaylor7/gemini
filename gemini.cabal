@@ -29,12 +29,12 @@ library
       Data.Permutation
       Data.Point
       Gemini.Env
-      Gemini.Html
       Gemini.Jsaddle
       Gemini.Types
-      Gemini.UI
       Gemini.UI.Actions
       Gemini.UI.EventHandlers
+      Gemini.Views.App
+      Gemini.Views.Puzzle
       Utils
   other-modules:
       Paths_gemini

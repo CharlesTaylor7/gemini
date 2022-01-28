@@ -9,7 +9,7 @@ import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simpl
 
 import           Gemini.Env
 import           Gemini.Jsaddle
-import           Gemini.UI
+import           Gemini.Views.App
 
 
 
