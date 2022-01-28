@@ -9,19 +9,22 @@ module Gemini.UI
 
 import           Relude
 
+import           Control.Concurrent       (threadDelay)
 import           Data.Finitary
 import           Data.Permutation
-import qualified Data.Sequence           as Seq
-import           Data.Traversable        (for)
+import qualified Data.Sequence            as Seq
+import           Data.Traversable         (for)
 import           Optics
-import           System.Random.Stateful  (globalStdGen, uniformM)
+import           System.Random.Stateful   (globalStdGen, uniformM)
 import           Utils
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Html        as Html
-import qualified Shpadoinkle.Keyboard    as Key
+import qualified Shpadoinkle.Continuation as Continuation
+import qualified Shpadoinkle.Html         as Html
+import qualified Shpadoinkle.Keyboard     as Key
 
-import           Gemini.Html             (geminiView)
+import           Gemini.Html              (geminiView)
+import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
@@ -88,11 +91,26 @@ rootView store =
     , ("touchend", listenerProp endDrag)
     , ("touchcancel", listenerProp endDrag)
     ]
-    [ header store
-    , Html.div [ Html.className "gemini-row" ] [ geminiView store ]
-    , footer store
-    ]
+    (
+      [ header store
+      , Html.div [ Html.className "gemini-row" ] [ geminiView store ]
+      , footer store
+      ]
+    <> (confettiView store & maybe [] pure)
+    )
 
+
+confettiView :: MonadJSM m => Store -> Maybe (Html m Store)
+confettiView store =
+  (store ^. #options % #confetti ) `orNothing`
+  Html.img'
+    [ Html.className "confetti"
+    , Html.src "https://media.giphy.com/media/5T06ftQWtCMy0XFaaI/giphy.gif"
+    , Html.onLoadM $ liftJSM $ do
+        liftIO $ threadDelay $ floor 10e6
+        jsConsoleLog =<< toJSVal ("Hello, World" :: Text)
+        pure $ #options % #confetti .~ False
+    ]
 
 debugView :: Store -> Maybe (Html m a)
 debugView store =
@@ -171,6 +189,7 @@ header store =
                   else
                     [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
                     , (checkBox "Prod" & zoomComponent isProdL store)
+                    , (checkBox "Confetti" & zoomComponent (#options % #confetti) store)
                     ]
                 )
             )

@@ -81,6 +81,7 @@ button {
 }
 
 .button-group.options {
+    z-index: 4;
     display: flex;
     flex-flow: column;
     align-items: flex-end;
@@ -155,6 +156,12 @@ button {
     padding-right: 5px;
 }
 
+.confetti {
+    z-index: 3;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
 
 
 /* saved moves panel */
