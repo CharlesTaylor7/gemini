@@ -30,13 +30,7 @@ cycleOver :: Store -> Set Location
 cycleOver store = setOf (#hover % #activeCycle % _Just % folded % to sibling % _Just) $ store
 
 hiddenLocations :: Store -> Set Location
-hiddenLocations = hidden
-  where
-    hidden = draggedOver <> cycleOver
-    noncanonical store =
-      case hidden store of
-        Empty -> inhabitants & filter (not . isCanonical) & fromList
-        set   -> set
+hiddenLocations = draggedOver <> cycleOver
 
 activeLocations :: Store -> [Location]
 activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
