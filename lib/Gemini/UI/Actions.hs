@@ -25,13 +25,19 @@ applyMotionToStore motion = execState $ do
   -- apply to puzzle
   (#gemini %= applyToGemini motion)
 
-  -- if recording, apply to history
+  -- if recording, apply to recorded move
   recording <- use $ #options % #recording
-  when recording $ #history %= applyToHistory motion
+  when recording $ #recorded %= applyToHistory motion
+
+  -- apply to history to tally move count
+  (#history %= applyToHistory motion)
 
   -- check if the puzzle is solved
   gemini <- use #gemini
-  when (isSolved gemini) $ (#options % #confetti .= True)
+  wasScrambled <- use $ #scrambled
+  when (isSolved gemini && wasScrambled) $ do
+    (#options % #confetti .= True)
+    (#scrambled .= False)
 
 
 stopRecording :: Store -> Store

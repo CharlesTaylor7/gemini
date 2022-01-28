@@ -24,7 +24,6 @@ import qualified Shpadoinkle.Html         as Html
 import qualified Shpadoinkle.Keyboard     as Key
 
 import           Gemini.Html              (geminiView)
-import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
@@ -35,7 +34,9 @@ initialStore :: Env -> Store
 initialStore env = Store
   { gemini = initialGemini
   , history = Seq.Empty
+  , recorded = Seq.Empty
   , moves = Seq.Empty
+  , scrambled = False
   , hover = HoverState
     { activeCycle = Nothing
     , overMove = False
@@ -108,7 +109,6 @@ confettiView store =
     , Html.src "https://media.giphy.com/media/5T06ftQWtCMy0XFaaI/giphy.gif"
     , Html.onLoadM $ liftJSM $ do
         liftIO $ threadDelay $ floor 3e6
-        jsConsoleLog =<< toJSVal ("Hello, World" :: Text)
         pure $ #options % #confetti .~ False
     ]
 
@@ -212,15 +212,13 @@ footer store =
     [ Html.className "footer" ]
     [ Html.div
       [ Html.className "links" ]
-      [
-         hyperlink
-            "public/icons/GitHub.png"
-            ( "https://github.com/CharlesTaylor7/gemini/tree/"
-            <> store ^. #env % #commit
-            <> "#readme"
-            )
-            "View Source"
-
+      [ hyperlink
+        "public/icons/GitHub.png"
+        ( "https://github.com/CharlesTaylor7/gemini/tree/"
+        <> store ^. #env % #commit
+        <> "#readme"
+        )
+        "View Source"
       ]
     ]
   where
@@ -294,7 +292,8 @@ resetButton =
   actionButton
     [ Html.onClick $
         (#history .~ Seq.Empty) .
-        (#options % #recording .~ False) .
+        (#recorded .~ Seq.Empty) .
+        (#scrambled .~ False) .
         (#gemini .~ initialGemini)
     ]
     [ Html.text "Reset" ]
@@ -306,7 +305,11 @@ scrambleButton =
     [ Html.onClickM $ do
         rotations <- for ([1..1000] :: [Int]) $ \_ -> (Endo . rotate) <$> uniformM globalStdGen
         let Endo scramble = fold rotations
-        pure $ (set #history Seq.Empty) . (over #gemini scramble)
+        pure $
+          (set #history Seq.Empty) .
+          (set #recorded Seq.Empty) .
+          (over #gemini scramble) .
+          (#scrambled .~ True)
     ]
     [ Html.text "Scramble" ]
 

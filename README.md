@@ -26,7 +26,6 @@ Run `./deploy.sh`
 - test performance of a ghcjs build
 - solve button: solve by algorithms
 - animate transitions
-- footer link to github
 
 ### Saved Moves sidebar
 - collapsible panel 
@@ -49,7 +48,6 @@ Run `./deploy.sh`
  around the starting location
 
 ### On Solve
-- pop confetti 
 - show number of moves to solve
 
 
