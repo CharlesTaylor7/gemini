@@ -132,9 +132,9 @@ dragAngle store =
                 Just R -> loc2
                 Nothing -> do
                   let distanceTo :: Location -> Double
-                      distanceTo loc = do
+                      distanceTo location = do
                         let radius = store ^. #dom ^. #ringRadius
-                        let Just origin = store ^? #dom % #ringCenters % ix (loc ^. #ring)
+                        let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
                         let mouse = drag ^. #currentPoint
                         let p = mouse ~~ origin
                         abs (norm p - radius)
@@ -142,7 +142,6 @@ dragAngle store =
 
       let angleWith :: Point -> Angle
           angleWith point = do
-            let radius = store ^. #dom ^. #ringRadius
             let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
             let mouse = drag ^. #currentPoint
             let p = point ~~ origin
