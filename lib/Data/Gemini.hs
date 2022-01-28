@@ -313,13 +313,15 @@ isSolved gemini =
     & selectGroups (view $ _2 % #color)
     & all (\(color, items) -> items <&> (view $ _1 % to indexToLocation) & isFinishedSequence color)
 
-
+-- | Sort & group items by key projection
 selectGroups :: (Ord key) => (a -> key) -> [a] -> [(key, NonEmpty a)]
 selectGroups projection foldable =
   foldable
+  -- | decorate with the key for comparison
   & fmap (\x -> (projection x, x))
   & List.sortBy (compare `on` fst)
   & NE.groupBy ((==) `on` fst)
+  -- | only list the key once per group
   & fmap (\group -> let (key, _):|_ = group in (key, fmap snd group))
 
 
