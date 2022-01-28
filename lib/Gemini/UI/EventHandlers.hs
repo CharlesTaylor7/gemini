@@ -88,11 +88,6 @@ updateDrag point = execState $ do
 
     _ -> pure ()
 
-  -- when  $ do
-
-
-
-
 
 endDrag :: MonadJSM m => RawEventHandler m Store
 endDrag _ event = do

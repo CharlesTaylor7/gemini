@@ -111,3 +111,17 @@ executables:
     dependencies:
     - gemini
     - Shpadoinkle-backend-pardiff
+
+tests:
+  gemini-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -threaded
+    dependencies:
+    - QuickCheck
+    - hspec
+    - gemini
+    verbatim: |
+      build-tool-depends:
+          hspec-discover:hspec-discover

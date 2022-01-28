@@ -1,5 +1,5 @@
 module Data.Cyclic
-  ( Cyclic (..), cyclic
+  ( Cyclic, pattern Cyclic, cyclic, unCyclic
   , compareCyclic, CyclicOrdering(..)
   -- Re export
   , knownInt
@@ -16,12 +16,16 @@ import           Utils         (knownInt)
 -- | Cyclic group of order n
 -- Note: Cyclic has an ord instance because its required to put the data into a map.
 -- For relative comparisons, consider  using compareCyclic instead of compare
-newtype Cyclic n = Cyclic { unCyclic :: Int }
+newtype Cyclic (n :: Nat) = MkCyclic { unCyclic :: Int }
   deriving stock (Eq, Show, Generic, Ord)
   deriving anyclass (NFData)
 
+-- | Pattern synonym for constructor
+pattern Cyclic :: forall n. KnownNat n => Int -> Cyclic n
+pattern Cyclic k <- MkCyclic k where
+  Cyclic k = cyclic k
 
--- | smart constructor
+
 cyclic :: forall n. KnownNat n => Int -> Cyclic n
 cyclic k = Cyclic $ k `mod` knownInt @n
 

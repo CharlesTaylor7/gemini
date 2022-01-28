@@ -155,3 +155,70 @@ executable server
     , text
     , vector
   default-language: Haskell2010
+
+test-suite gemini-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Data.CyclicSpec
+      Paths_gemini
+  hs-source-dirs:
+      test
+  default-extensions:
+      NoImplicitPrelude
+      DuplicateRecordFields
+      OverloadedLabels
+      DataKinds
+      FlexibleContexts
+      OverloadedStrings
+      ImportQualifiedPost
+      BlockArguments
+      NamedFieldPuns
+      PartialTypeSignatures
+      PatternSynonyms
+      DerivingStrategies
+      DerivingVia
+      DeriveGeneric
+      DeriveTraversable
+      DeriveAnyClass
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      GADTs
+      LambdaCase
+      PolyKinds
+      RankNTypes
+      ScopedTypeVariables
+      TypeApplications
+      TypeOperators
+      TypeFamilies
+      AllowAmbiguousTypes
+      ViewPatterns
+      PatternSynonyms
+      FlexibleInstances
+      MultiWayIf
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded
+  build-depends:
+      QuickCheck
+    , Shpadoinkle
+    , Shpadoinkle-html
+    , Shpadoinkle-lens
+    , base >=4.14 && <4.16
+    , containers
+    , finitary
+    , finite-typelits
+    , gemini
+    , groups
+    , hspec
+    , jsaddle
+    , jsaddle-dom
+    , jsaddle-warp
+    , mtl
+    , optics >=0.4
+    , prettyprinter
+    , random
+    , relude
+    , text
+    , vector
+  default-language: Haskell2010
+  build-tool-depends:
+      hspec-discover:hspec-discover
