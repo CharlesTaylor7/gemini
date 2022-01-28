@@ -11,22 +11,20 @@ import           Relude
 
 import           Data.Finitary
 import           Data.Permutation
-import qualified Data.Sequence            as Seq
-import           Data.Traversable         (for)
+import qualified Data.Sequence           as Seq
 import           Optics
-import           System.Random.Stateful   (globalStdGen, uniformM)
+import           System.Random.Stateful  (globalStdGen, uniformM)
 import           Utils
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Continuation as Continuation
-import qualified Shpadoinkle.Html         as Html
-import qualified Shpadoinkle.Keyboard     as Key
+import qualified Shpadoinkle.Html        as Html
+import qualified Shpadoinkle.Keyboard    as Key
 
 import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
-import           Gemini.Views.Puzzle      (geminiView)
+import           Gemini.Views.Puzzle     (geminiView)
 
 
 -- | Initial state of the app
@@ -303,7 +301,7 @@ scrambleButton :: forall m. MonadIO m => Html m Store
 scrambleButton =
   actionButton
     [ Html.onClickM $ do
-        rotations :: [Rotation] <- for ([1..1000] :: [Int]) $ \_ -> uniformM globalStdGen
+        rotations :: [Rotation] <- replicateM 1000 $ uniformM globalStdGen
         pure $
           (#history .~ Seq.Empty) .
           (#recorded .~ Seq.Empty) .
