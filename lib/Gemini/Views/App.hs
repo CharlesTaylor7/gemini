@@ -201,7 +201,7 @@ header store =
     ]
   where
     isProdL :: Lens' Store Bool
-    isProdL = #env % #deployment % iso (== Prod) (bool Prod Dev)
+    isProdL = #env % #deployment % iso (== Prod) (\bool -> if bool then Prod else Dev)
 
 
 footer :: Store -> Html m Store
@@ -289,10 +289,10 @@ resetButton :: Html m Store
 resetButton =
   actionButton
     [ Html.onClick $
-        (#history .~ Seq.Empty) .
-        (#recorded .~ Seq.Empty) .
+        (#history   .~ Seq.Empty) .
+        (#recorded  .~ Seq.Empty) .
         (#scrambled .~ False) .
-        (#gemini .~ initialGemini)
+        (#gemini    .~ initialGemini)
     ]
     [ Html.text "Reset" ]
 
@@ -304,9 +304,9 @@ scrambleButton =
         rotations :: [Rotation] <- replicateM 1000 $ uniformM globalStdGen
         let scramble gemini = foldl' (flip applyToGemini) gemini rotations
         pure $
-          (#history .~ Seq.Empty) .
-          (#recorded .~ Seq.Empty) .
-          (#gemini %~ scramble) .
+          (#history   .~ Seq.Empty) .
+          (#recorded  .~ Seq.Empty) .
+          (#gemini    %~ scramble) .
           (#scrambled .~ True)
     ]
     [ Html.text "Scramble" ]
