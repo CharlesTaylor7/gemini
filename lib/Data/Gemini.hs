@@ -5,7 +5,6 @@ module Data.Gemini
   , GeminiPermutation
   , ToPermutation(..)
   , Choice(..), dragRing, Chosen(..)
-
   )
   where
 
@@ -28,9 +27,6 @@ import           System.Random.Stateful (Uniform (..))
 
 
 -- | Core Definitions
-type GeminiPermutation = Permutation 54
-
-
 newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (NFData)
@@ -121,7 +117,9 @@ instance Pretty Color where
 
 
 --  Basic operations
---
+type GeminiPermutation = Permutation 54
+
+
 -- | Typeclass for things that describe permutations of the Gemini puzzle
 class ToPermutation a where
   toPerm :: a -> GeminiPermutation
@@ -185,27 +183,18 @@ inverseCanonical location                = location
 
 -- | The other name for this location, if it has one
 sibling :: Location -> Maybe Location
-sibling l = filter (/= l) [canonical l, inverseCanonical l] ^? ix 0
+sibling l = [canonical l, inverseCanonical l]
+  & filter (/= l)
+  & preview (ix 0)
 
--- | Get a location on a specific ring, if it has a name on that ring
+
+-- | Get a location on a specific ring, if it exists on that ring
 onRing :: Ring -> Location -> Maybe Location
-onRing = flip go
+onRing ring location = candidates
+  & filter (\loc -> loc ^. #ring == ring)
+  & preview (ix 0)
   where
-    go (Location CenterRing 16) LeftRing  = Just $ Location LeftRing 2
-    go (Location LeftRing 2) CenterRing   = Just $ Location CenterRing 16
-
-    go (Location CenterRing 11) LeftRing  = Just $ Location LeftRing 7
-    go (Location LeftRing 7) CenterRing   = Just $ Location CenterRing 11
-
-    go (Location RightRing 16) CenterRing = Just $ Location CenterRing 2
-    go (Location CenterRing 2) RightRing  = Just $ Location RightRing 16
-
-    go (Location RightRing 11) CenterRing = Just $ Location CenterRing 7
-    go (Location CenterRing 7) RightRing  = Just $ Location RightRing 11
-
-    go l@(Location source _) target
-      | source == target = Just l
-      | otherwise        = Nothing
+    candidates = location : toList (sibling location)
 
 
 data Choice a = Obvious a | Ambiguous a a
