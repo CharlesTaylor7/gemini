@@ -26,6 +26,7 @@ library
   exposed-modules:
       Data.Angle
       Data.Cyclic
+      Data.Gemini
       Data.Permutation
       Data.Point
       Gemini.Env
