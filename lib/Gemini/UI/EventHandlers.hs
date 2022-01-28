@@ -109,7 +109,7 @@ endDrag _ event = do
 
 
 angleToPosition :: forall n. KnownNat n => Angle -> Cyclic n
-angleToPosition (Turns turns) = cyclic $ floor $ (k * turns) + 0.5
+angleToPosition (Turns turns) = Cyclic $ floor $ (k * turns) + 0.5
   where k = fromIntegral $ knownInt @n
 
 

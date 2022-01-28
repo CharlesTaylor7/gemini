@@ -1,5 +1,5 @@
 module Data.Cyclic
-  ( Cyclic, pattern Cyclic, cyclic, unCyclic
+  ( Cyclic, pattern Cyclic, unCyclic
   , compareCyclic, CyclicOrdering(..)
   -- Re export
   , knownInt
@@ -23,37 +23,33 @@ newtype Cyclic (n :: Nat) = MkCyclic { unCyclic :: Int }
 -- | Pattern synonym for constructor
 pattern Cyclic :: forall n. KnownNat n => Int -> Cyclic n
 pattern Cyclic k <- MkCyclic k where
-  Cyclic k = cyclic k
-
-
-cyclic :: forall n. KnownNat n => Int -> Cyclic n
-cyclic k = Cyclic $ k `mod` knownInt @n
+  Cyclic k = MkCyclic $ k `mod` knownInt @n
 
 
 -- | Group instances
 instance KnownNat n => Semigroup (Cyclic n) where
-  Cyclic a <> Cyclic b = cyclic $ a + b
+  Cyclic a <> Cyclic b = Cyclic $ a + b
 
 instance KnownNat n => Monoid (Cyclic n) where
   mempty = Cyclic 0
 
 instance KnownNat n => Group (Cyclic n) where
-  invert (Cyclic k) = cyclic $ -k
+  invert (Cyclic k) = Cyclic $ -k
 
 -- | Num instance
 instance KnownNat n => Num (Cyclic n) where
-  (+) = (cyclic .) . ((+) `on` unCyclic)
-  (*) = (cyclic .) . ((*) `on` unCyclic)
+  (+) = (Cyclic .) . ((+) `on` unCyclic)
+  (*) = (Cyclic .) . ((*) `on` unCyclic)
   abs = identity
   signum _ = 1
-  fromInteger = cyclic . fromInteger
+  fromInteger = Cyclic . fromInteger
   negate = invert
 
 -- | Finitary instance
 instance KnownNat n => Finitary (Cyclic n) where
   type Cardinality (Cyclic n) = n
   toFinite = finite . fromIntegral . unCyclic
-  fromFinite = cyclic . fromInteger . getFinite
+  fromFinite = Cyclic . fromInteger . getFinite
 
 -- How do you order on a elements of a cyclic group?
 data CyclicOrdering
@@ -72,5 +68,5 @@ compareCyclic a b =
      | otherwise                       -> Exceeds
   where
     k = knownInt @n
-    halfway = Cyclic $ k `div` 2
+    halfway = MkCyclic $ k `div` 2
     difference = b - a

@@ -349,7 +349,7 @@ dragRing loc1 =
 
 -- | Invert a disk coordinate to its canonical location
 indexToLocation :: Int -> Location
-indexToLocation n = Location ring (cyclic p)
+indexToLocation n = Location ring (Cyclic p)
   where
     (r, p) = n `quotRem` 18
     ring = case r of
@@ -491,9 +491,9 @@ isFinished expectedCount (head :| rest) = go rest head head
     go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
     go [] _   _   = True
     go (x:xs) min max
-      | x `precedes` min && (max - x < cyclic expectedCount) = go xs x max
+      | x `precedes` min && (max - x < Cyclic expectedCount) = go xs x max
       -- ^ x is the new min
-      | x `exceeds` max && (x - min < cyclic expectedCount) = go xs min x
+      | x `exceeds` max && (x - min < Cyclic expectedCount) = go xs min x
       -- ^ x is the new max
       | x `precedes` max && x `exceeds` min = go xs min max
       -- ^ x is between the min & max

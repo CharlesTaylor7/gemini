@@ -46,8 +46,6 @@ activeLocations store = activeRing store & concatMap (\ring -> map (Location rin
 
 
 
-
-
 angleOnCircle :: forall n. KnownNat n => Cyclic n -> Angle
 angleOnCircle (Cyclic k) = turns ~~ offset
   where
