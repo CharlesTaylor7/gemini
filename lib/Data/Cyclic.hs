@@ -24,6 +24,8 @@ newtype Cyclic (n :: Nat) = MkCyclic { unCyclic :: Int }
 pattern Cyclic :: forall n. KnownNat n => Int -> Cyclic n
 pattern Cyclic k <- MkCyclic k where
   Cyclic k = MkCyclic $ k `mod` knownInt @n
+{-# COMPLETE Cyclic #-}
+{-# COMPLETE MkCyclic #-}
 
 
 -- | Group instances
@@ -57,7 +59,7 @@ data CyclicOrdering
   | Exceeds
   | Equal
   | Opposite
-  deriving stock (Eq)
+  deriving stock (Eq, Show)
 
 
 compareCyclic :: forall n. KnownNat n => Cyclic n -> Cyclic n -> CyclicOrdering

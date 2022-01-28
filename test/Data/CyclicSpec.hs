@@ -11,10 +11,15 @@ import           Data.Group  hiding (Cyclic)
 spec :: Spec
 spec = do
   describe "methods" $ do
-    it "smart constructor" $ do
-      unCylic @2 (cyclic 3) `shouldBe` 1
+    it "bidirectional pattern synonym" $ do
+      let Cyclic n = Cyclic 3 :: Cyclic 2
+      n `shouldBe` 1
+
     it "compareCyclic" $ do
       ((0 :: Cyclic 6) `compareCyclic` 3) `shouldBe` Opposite
+      ((0 :: Cyclic 6) `compareCyclic` 6) `shouldBe` Equal
+      ((1 :: Cyclic 7) `compareCyclic` 4) `shouldBe` Precedes
+      ((1 :: Cyclic 5) `compareCyclic` 4) `shouldBe` Exceeds
 
   describe "Num instance" $ do
     it "integer literals" $ do
@@ -44,5 +49,5 @@ spec = do
     it "can fold an empty list" $ do
       unCyclic (fold [] :: Cyclic 3) `shouldBe` 0
 
-    it "can fold a  nonempty list" $ do
-      fold ([3, 5, 7] :: [Cyclic 10]) `shouldBe` 5
+    it "can fold a nonempty list" $ do
+      unCyclic @10 (fold [3, 5, 7]) `shouldBe` 5
