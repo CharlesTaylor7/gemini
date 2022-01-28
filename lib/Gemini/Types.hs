@@ -1,7 +1,8 @@
 module Gemini.Types
   ( -- core types and operations
     Gemini, geminiFromList, geminiIx, ringIndex , initialGemini, isSolved
-  , Location(..), location, isCanonical, isIntersection, sibling, Choice(..), dragRing
+  , Location(..), location, isCanonical, isIntersection, sibling, dragRing
+  , Choice(..), Chosen(..)
   , Ring(..) , Disk(..) , Color(..), RotationDirection(..), Rotation(..)
   , Move(..), Motion(..), moveCycles
   , Point(..), norm
@@ -63,6 +64,7 @@ data HoverState = HoverState
 
 data DragState = DragState
   { location     :: !(Choice Location)
+  , chosen       :: !(Maybe Chosen)
   , initialPoint :: !Point
   , currentPoint :: !Point
   }
@@ -70,8 +72,8 @@ data DragState = DragState
   deriving anyclass (NFData)
 
 instance Pretty DragState where
-  pretty DragState { location, initialPoint, currentPoint }
-    = Pretty.sep [pretty location, pretty initialPoint, pretty currentPoint ]
+  pretty DragState { location, chosen, initialPoint, currentPoint }
+    = Pretty.sep [pretty location, Pretty.viaShow chosen, pretty initialPoint, pretty currentPoint ]
 
 
 data DomInfo = DomInfo
@@ -331,6 +333,12 @@ data Choice a = Obvious a | Ambiguous a a
 
 instance Pretty a => Pretty (Choice a) where
   pretty = Pretty.viaShow . fmap pretty
+
+data Chosen
+  = L
+  | R
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (NFData)
 
 dragRing :: Location -> Choice Location
 dragRing loc1 =

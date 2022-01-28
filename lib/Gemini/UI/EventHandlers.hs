@@ -54,6 +54,7 @@ startDrag location _ event = do
   pure $ Continuation.pur $
     (#drag ?~ DragState
       { location = dragRing location
+      , chosen = Nothing
       , initialPoint = mouse
       , currentPoint = mouse
       }
@@ -62,15 +63,35 @@ startDrag location _ event = do
 
 onDrag :: MonadJSM m => RawEventHandler m Store
 onDrag _ event = do
-  -- origin <- getRingCenter ring
   mouse <- mousePosition event
   pure $ Continuation.pur $ updateDrag mouse
 
 
-
-
 updateDrag :: Point -> Store -> Store
-updateDrag = set $ #drag % _Just % #currentPoint
+updateDrag point = execState $ do
+  (#drag % _Just % #currentPoint .= point)
+  dragged <- get <&> dragAngle
+  -- drag <- use #drag
+  chosen <- preuse $ #drag % _Just % #chosen
+  location <- preuse $ #drag % _Just % #location
+
+  case (dragged, chosen, location) of
+    (Just (loc, Turns turns), Nothing, Just (Ambiguous left right))
+      | abs (turns * 18) > 1 -> do
+
+        (#drag % _Just % #chosen ?= if loc == left then L else R)
+
+    (Just (loc, Turns turns), Just _, _)
+      | abs (turns * 18) < 1 -> do
+
+        (#drag % _Just % #chosen .= Nothing)
+
+    _ -> pure ()
+
+  -- when  $ do
+
+
+
 
 
 endDrag :: MonadJSM m => RawEventHandler m Store
@@ -111,14 +132,18 @@ dragAngle store =
           location = case drag ^. #location of
             Obvious location -> location
             Ambiguous loc1 loc2 -> do
-              let distanceTo :: Location -> Double
-                  distanceTo loc = do
-                    let radius = store ^. #dom ^. #ringRadius
-                    let Just origin = store ^? #dom % #ringCenters % ix (loc ^. #ring)
-                    let mouse = drag ^. #currentPoint
-                    let p = mouse ~~ origin
-                    abs (norm p - radius)
-              if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
+              case drag ^. #chosen of
+                Just L -> loc1
+                Just R -> loc2
+                Nothing -> do
+                  let distanceTo :: Location -> Double
+                      distanceTo loc = do
+                        let radius = store ^. #dom ^. #ringRadius
+                        let Just origin = store ^? #dom % #ringCenters % ix (loc ^. #ring)
+                        let mouse = drag ^. #currentPoint
+                        let p = mouse ~~ origin
+                        abs (norm p - radius)
+                  if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
 
       let angleWith :: Point -> Angle
           angleWith point = do

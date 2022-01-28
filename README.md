@@ -28,13 +28,12 @@ Run `./deploy.sh`
 - animate transitions
 
 ### Saved Moves sidebar
-- collapsible panel 
+- collapsible panel  on desktop
 
 ### Gemini Controls
 - need explanation in header
 - keyboard controls
-- click and drag based controls
-- touch controls on mobile / tablet
+- click / touch and drag based controls
 - arrow buttons above each ring?
 
 ### Drag controls
@@ -42,10 +41,12 @@ Run `./deploy.sh`
 - it feels jerky during the snap
 - user test on mobile
 
+
 #### Ambiguous case
 - handle it; during my user testing, I often wanted to drag an intersection disk.
 - lock the choice in early. Only allow changing the rotation ring if the mouse passes through a narrow band
  around the starting location
+
 
 ### On Solve
 - show number of moves to solve

@@ -206,7 +206,7 @@ header store =
     isProdL = #env % #deployment % iso (== Prod) (bool Prod Dev)
 
 
-footer :: forall m. MonadIO m => Store -> Html m Store
+footer :: Store -> Html m Store
 footer store =
   Html.div
     [ Html.className "footer" ]
