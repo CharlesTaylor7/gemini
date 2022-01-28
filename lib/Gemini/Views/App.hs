@@ -302,10 +302,11 @@ scrambleButton =
   actionButton
     [ Html.onClickM $ do
         rotations :: [Rotation] <- replicateM 1000 $ uniformM globalStdGen
+        let scramble gemini = foldl' (flip applyToGemini) gemini rotations
         pure $
           (#history .~ Seq.Empty) .
           (#recorded .~ Seq.Empty) .
-          (#gemini %~ \gemini -> foldl' (flip applyToGemini) gemini rotations) .
+          (#gemini %~ scramble) .
           (#scrambled .~ True)
     ]
     [ Html.text "Scramble" ]
