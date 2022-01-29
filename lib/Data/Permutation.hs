@@ -1,7 +1,7 @@
 {- | Manipulate permutations, show them in cycle notation
 -}
 module Data.Permutation
-  ( Permutation(..), permute, faithful, domain, natsUnder
+  ( Permutation(..), permute, domain, natsUnder
   , Cycle(..), cycle
   , Cycles(..), cycles, toCycles, fromCycles
   -- re exports
@@ -107,7 +107,7 @@ toCycles p = go seed
 
 
 fromCycles :: Cycles Int -> Permutation n
-fromCycles (Cycles cycles ) = Permutation $ fromList $ concatMap pairs $ cycles
+fromCycles (Cycles cycles) = Permutation $ fromList $ concatMap pairs $ cycles
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
 pairs :: Foldable f => f a -> [(a, a)]
@@ -119,11 +119,6 @@ pairs x =
           go [x]        = [(x, a)]
           go _          = []
       in go (a:as)
-
-
--- | Faithfully promote a permutation into a larger group
-faithful :: forall n m. (CmpNat m n ~ 'LT) => Permutation m -> Permutation n
-faithful = coerce
 
 
 natsUnder :: forall bound. KnownNat bound => [Int]
