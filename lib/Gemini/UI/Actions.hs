@@ -43,3 +43,35 @@ stopRecording state = state
       case state ^. #history of
         Seq.Empty -> identity
         motions   -> (toMove motions :<|)
+
+    toMove :: Seq Motion -> Move
+    toMove motions = Move { motions, moveCycles = locationCycles $ toPerm motions }
+
+    locationCycles :: GeminiPermutation -> Cycles Location
+    locationCycles = fmap indexToLocation . toCycles
+
+
+applyRotation :: Rotation -> Store -> Store
+applyRotation r = applyMotionToStore $ toMotion r
+  where
+    toMotion :: Rotation -> Motion
+    toMotion rotation = Motion { amount = 1, rotation }
+
+
+-- | Apply a new motion to an existing history of motions
+-- Collapses motions of the same ring into 1 larger motion.
+-- Allows undoing motions.
+-- Removes trivial motions that do nothing.
+applyToHistory :: Motion -> Seq Motion -> Seq Motion
+applyToHistory motion Seq.Empty           = fromList [ motion ]
+applyToHistory next all@(ms :|> prev) =
+  if next ^. #rotation % #ring /= prev ^. #rotation % #ring
+  then all :|> next
+  else case normalize (combine prev next) of
+    Just m -> ms :|> m
+    _      -> ms
+  where
+    combine :: Motion -> Motion -> Motion
+    combine x@(Motion m1 r1) (Motion m2 r2)
+      | r1 == r2  = x & #amount %~ (+ m2)
+      | otherwise = x & #amount %~ (subtract m2)

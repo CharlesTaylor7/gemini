@@ -55,9 +55,6 @@ initialStore env = Store
   }
 
 
-applyRotation :: Rotation -> Store -> Store
-applyRotation r = applyMotionToStore $ toMotion r
-
 keyboardMotions :: (Text, Prop m Store)
 keyboardMotions =
   Html.onKeydown $ \case
@@ -95,7 +92,7 @@ rootView store =
       , Html.div [ Html.className "gemini-row" ] [ geminiView store ]
       , footer store
       ]
-    <> (confettiView store & maybe [] pure)
+    <> (confettiView store & toList)
     )
 
 
@@ -310,5 +307,3 @@ scrambleButton =
           (#scrambled .~ True)
     ]
     [ Html.text "Scramble" ]
-
-    where rotate = applyToGemini @Rotation

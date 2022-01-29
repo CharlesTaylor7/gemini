@@ -1,7 +1,7 @@
 module Gemini.Types
   ( -- ui types
     Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..)
-  , Motion(..), Move(..), applyToHistory, toMove, normalize, toMotion
+  , Motion(..), Move(..), normalize
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   -- re export other modules
@@ -129,33 +129,6 @@ instance Pretty Motion where
     pretty amount <> pretty rotation
   prettyList = Pretty.sep . fmap pretty
 
-
-locationCycles :: GeminiPermutation -> Cycles Location
-locationCycles = fmap indexToLocation . toCycles
-
-
-toMove :: Seq Motion -> Move
-toMove motions = Move { motions, moveCycles = locationCycles $ toPerm motions }
-
-
-applyToHistory :: Motion -> Seq Motion -> Seq Motion
-applyToHistory motion Seq.Empty           = fromList [ motion ]
-applyToHistory next all@(ms :|> prev) =
-  if next ^. #rotation % #ring /= prev ^. #rotation % #ring
-  then all :|> next
-  else case normalize (combine prev next) of
-    Just m -> ms :|> m
-    _      -> ms
-
-
-toMotion :: Rotation -> Motion
-toMotion rotation = Motion { amount = 1, rotation }
-
-
-combine :: Motion -> Motion -> Motion
-combine x@(Motion m1 r1) (Motion m2 r2)
-  | r1 == r2  = x & #amount %~ (+ m2)
-  | otherwise = x & #amount %~ (subtract m2)
 
 
 normalize :: Motion -> Maybe Motion
