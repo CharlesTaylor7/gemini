@@ -13,8 +13,6 @@ extra-deps:
 
 # misc
 - random-1.2.1
-- finitary-2.1.1.0
-- finite-typelits-0.1.4.2
   
 # shpadoinkle
 - git: https://gitlab.com/charlestaylor95/shpadoinkle.git
@@ -28,6 +26,8 @@ extra-deps:
 - ghcjs-dom-0.9.4.0@sha256:c2b3d25145e24b66a8a5078c0d750305b577aeff05957cf282d74f6e8d2424dd,32082
 - ghcjs-dom-jsaddle-0.9.4.0@sha256:31ddfc5ebcbb4811b0c956fd5fcf106643012b46bb4e0bc2f15d09db1d116fbb,39525
 - http2-1.6.5@sha256:f1743ba4a267f525106c218894e4bd2acf28fa047a9ba660b4a317a97382a877,13999
+
+# jsaddle
 - git: https://github.com/CharlesTaylor7/jsaddle.git
   commit: 25f34c0a7060c92901b31c87e25e27a5bfca7245
   subdirs:

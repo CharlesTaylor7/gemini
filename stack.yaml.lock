@@ -46,20 +46,6 @@ packages:
       size: 1528
     hackage: random-1.2.1@sha256:8bee24dc0c985a90ee78d94c61f8aed21c49633686f0f1c14c5078d818ee43a2,6598
 - original:
-    hackage: finitary-2.1.1.0
-  completed:
-    pantry-tree:
-      sha256: 38e03206b355db7a6a2f3ad73039b18b15245141b6974080b7d9a99e82ddf76a
-      size: 438
-    hackage: finitary-2.1.1.0@sha256:f0f19aace424e5fdb5543fbcfb9446e50c8cb349fe7564642c5c25dbe3418076,2743
-- original:
-    hackage: finite-typelits-0.1.4.2
-  completed:
-    pantry-tree:
-      sha256: a893d5f2acc17ea0b1f51dbad3eb1d206bed9d041b66284551b3ee3166595a4f
-      size: 285
-    hackage: finite-typelits-0.1.4.2@sha256:d243523297c0526d32e9b7de98e04b79a4227577ddb25d3fecd7981439de243c,720
-- original:
     subdir: core
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
     commit: 4142a5211592122630523f30d906c7c067700932
