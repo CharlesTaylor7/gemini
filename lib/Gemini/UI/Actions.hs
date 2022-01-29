@@ -90,20 +90,23 @@ startDrag location mouse =
 
 
 updateDrag :: Point -> Store -> Store
-updateDrag point = execState $ do
-  (#drag % _Just % #currentPoint .= point)
-  dragged <- get <&> dragAngle
-  -- drag <- use #drag
-  chosen <- preuse $ #drag % _Just % #chosen
-  initialLocation <- preuse $ #drag % _Just % #location
+updateDrag mouse = execState $ do
+  -- update current point to where mouse is
+  (#drag % _Just % #currentPoint .= mouse)
 
-  case (dragged, initialLocation) of
-    (Just (loc, Turns turns), Just (Ambiguous left right)) ->
+  initialLocation <- preuse $ #drag % _Just % #location
+  dragged <- get <&> dragAngle
+  chosen <- preuse $ #drag % _Just % #chosen
+
+  case (initialLocation, dragged) of
+    (Just (Ambiguous left right), Just (loc, Turns turns)) ->
       case chosen of
-        Nothing | abs (turns * 18) > 1 -> do
+        -- lock choice
+        Nothing | abs (turns * 18) > 1 ->
           (#drag % _Just % #chosen ?= if loc == left then L else R)
 
-        Just _  | abs (turns * 18) < 1 -> do
+        -- unlock choice
+        Just _  | abs (turns * 18) < 1 ->
           (#drag % _Just % #chosen .= Nothing)
 
     _ -> pure ()
@@ -135,7 +138,7 @@ disambiguate :: Store -> DragState -> Location
 disambiguate store drag =
   case drag ^. #location of
     Obvious location -> location
-    Ambiguous loc1 loc2 -> do
+    Ambiguous loc1 loc2 ->
       case drag ^. #chosen of
         Just L -> loc1
         Just R -> loc2

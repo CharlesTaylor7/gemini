@@ -75,7 +75,7 @@ library
       PatternSynonyms
       FlexibleInstances
       MultiWayIf
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
   build-depends:
       Shpadoinkle
     , Shpadoinkle-html
@@ -133,7 +133,7 @@ executable server
       PatternSynonyms
       FlexibleInstances
       MultiWayIf
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -Wno-missing-export-lists
   build-depends:
       Shpadoinkle
     , Shpadoinkle-backend-pardiff
@@ -197,7 +197,7 @@ test-suite gemini-test
       PatternSynonyms
       FlexibleInstances
       MultiWayIf
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -Wno-orphans
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -Wno-orphans
   build-depends:
       QuickCheck
     , Shpadoinkle
