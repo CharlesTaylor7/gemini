@@ -1,6 +1,5 @@
 module Gemini.Types
   ( -- ui types
-
     Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..)
   , Motion(..), Move(..), applyToHistory, toMove, normalize, toMotion
     -- re export Seq constructors
