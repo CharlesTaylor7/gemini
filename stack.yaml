@@ -28,8 +28,8 @@ extra-deps:
 - http2-1.6.5@sha256:f1743ba4a267f525106c218894e4bd2acf28fa047a9ba660b4a317a97382a877,13999
 
 # jsaddle
-- git: https://github.com/CharlesTaylor7/jsaddle.git
-  commit: 25f34c0a7060c92901b31c87e25e27a5bfca7245
+- git: https://github.com/athanclark/jsaddle.git
+  commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
   subdirs:
   - jsaddle
   - jsaddle-warp
