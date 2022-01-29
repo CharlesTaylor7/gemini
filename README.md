@@ -7,7 +7,7 @@ Project goals:
 - Learn how to solve the puzzle
 
 ## Run Dev Server
-ghcid --command "stack ghci --main-is gemini" -W -T Main.dev
+`./scripts/run-dev.sh`
 
 ## Deploy
 Fresh builds of the docker image will take about 2 hours. Most of that time is spent compiling jsaddle-dom.
@@ -43,7 +43,6 @@ Run `./deploy.sh`
 
 
 #### Ambiguous case
-- handle it; during my user testing, I often wanted to drag an intersection disk.
 - lock the choice in early. Only allow changing the rotation ring if the mouse passes through a narrow band
  around the starting location
 
