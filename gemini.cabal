@@ -162,6 +162,8 @@ test-suite gemini-test
   main-is: Spec.hs
   other-modules:
       Data.CyclicSpec
+      Data.GeminiSpec
+      Data.PermutationSpec
       Paths_gemini
   hs-source-dirs:
       test
@@ -197,7 +199,7 @@ test-suite gemini-test
       PatternSynonyms
       FlexibleInstances
       MultiWayIf
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -Wno-orphans
   build-depends:
       QuickCheck
     , Shpadoinkle

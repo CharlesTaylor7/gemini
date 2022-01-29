@@ -1,5 +1,5 @@
 module Data.Gemini
-  ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini
+  ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, geminiFromList
   , Location(..), indexToLocation, sibling
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..)
   , GeminiPermutation
@@ -10,9 +10,9 @@ module Data.Gemini
 
 import           Relude                 hiding (cycle)
 
-import           Data.Cyclic            as Cyclic
-import           Data.Finitary          as Finitary
-import           Data.Permutation       as Permutation
+import           Data.Cyclic
+import           Data.Finitary
+import           Data.Permutation
 
 import qualified Data.IntMap            as Map
 import qualified Data.List              as List
@@ -25,8 +25,10 @@ import qualified Prettyprinter          as Pretty
 import           System.Random.Stateful (Uniform (..))
 
 
-
--- | Core Definitions
+-- | An opaque wrapper.
+-- Use `geminiFromList` or `initialGemini` to initialize.
+-- Use `applyToGemini` to rotate / permute the puzzle.
+-- Use `geminiIx` to read / write at specific locations
 newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (NFData)
@@ -158,10 +160,6 @@ permuteGemini p (Gemini disks) =
         Just disk -> at (permute p n) ?= disk
 
 
-geminiFromList :: [(Location, Disk)] -> Gemini
-geminiFromList items = Gemini $ fromList $
-  map (\(location, disk) -> (locationToIndex location, disk)) items
-
 
 -- | if the position exists on two different rings, then prefer the left one
 canonical :: Location -> Location
@@ -241,8 +239,14 @@ locationToIndex = index . canonical
       RightRing  -> 2
 
 
+-- | Index into the gemini map
 geminiIx :: Location -> AffineTraversal' Gemini Disk
 geminiIx location = #geminiDiskMap % ix (locationToIndex location)
+
+
+geminiFromList :: [(Location, Disk)] -> Gemini
+geminiFromList items = Gemini $ fromList $
+  map (\(location, disk) -> (locationToIndex location, disk)) items
 
 
 initialGemini :: Gemini
@@ -306,6 +310,8 @@ initialGemini = geminiFromList
   ]
 
 
+-- | Is the puzzle solved?
+-- That is, every disk is grouped with other disks of the same color in sequence.
 isSolved :: Gemini -> Bool
 isSolved gemini =
   gemini ^. #geminiDiskMap
@@ -325,6 +331,7 @@ selectGroups projection foldable =
   & fmap (\group -> let (key, _):|_ = group in (key, fmap snd group))
 
 
+-- | check if a set of disk locations is a finished sequence
 isFinishedSequence :: Color -> NonEmpty Location -> Bool
 isFinishedSequence color ls =
   if numberOfRings > 2
@@ -366,7 +373,6 @@ isFinished expectedCount (head :| rest) = go rest head head
         Exceeds -> True
         Equal   -> True
         _       -> False
-
 
     go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
     go [] _   _   = True

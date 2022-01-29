@@ -118,6 +118,7 @@ tests:
     source-dirs: test
     ghc-options:
     - -threaded
+    - -Wno-orphans
     dependencies:
     - QuickCheck
     - hspec
