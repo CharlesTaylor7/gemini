@@ -1,4 +1,6 @@
-module Gemini.Views.RecordedMovesPanel where
+module Gemini.Views.RecordedMovesPanel
+  ( recordedMovesPanel
+  ) where
 
 import           Relude
 

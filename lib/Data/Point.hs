@@ -1,4 +1,8 @@
-module Data.Point where
+module Data.Point
+  ( Point(..)
+  , norm, angleToOrigin
+  )
+  where
 
 import           Relude
 

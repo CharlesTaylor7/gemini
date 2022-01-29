@@ -1,4 +1,8 @@
-module Gemini.UI.Actions where
+module Gemini.UI.Actions
+  ( applyMotionToStore, stopRecording, applyRotation, applyToHistory
+  , dragAngle
+  , startDrag, updateDrag, endDrag
+  ) where
 
 import           Relude
 
@@ -71,7 +75,7 @@ applyToHistory next all@(ms :|> prev) =
     _      -> ms
   where
     combine :: Motion -> Motion -> Motion
-    combine x@(Motion m1 r1) (Motion m2 r2)
+    combine x@(Motion _ r1) (Motion m2 r2)
       | r1 == r2  = x & #amount %~ (+ m2)
       | otherwise = x & #amount %~ (subtract m2)
 
@@ -99,7 +103,7 @@ updateDrag mouse = execState $ do
   chosen <- preuse $ #drag % _Just % #chosen
 
   case (initialLocation, dragged) of
-    (Just (Ambiguous left right), Just (loc, Turns turns)) ->
+    (Just (Ambiguous left _), Just (loc, Turns turns)) ->
       case chosen of
         -- lock choice
         Nothing | abs (turns * 18) > 1 ->
@@ -109,8 +113,10 @@ updateDrag mouse = execState $ do
         Just _  | abs (turns * 18) < 1 ->
           (#drag % _Just % #chosen .= Nothing)
 
-    _ -> pure ()
+        -- do nothing
+        _ -> pure ()
 
+    _ -> pure ()
 
 
 endDrag :: Point -> Store -> Store
@@ -146,13 +152,18 @@ disambiguate store drag =
           let distanceTo :: Location -> Double
               distanceTo location = do
                 let radius = store ^. #dom ^. #ringRadius
-                let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
+                let origin = ringOrigin store (location ^. #ring)
                 let mouse = drag ^. #currentPoint
                 let p = mouse ~~ origin
                 abs (norm p - radius)
           if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
 
 
+ringOrigin :: Store -> Ring -> Point
+ringOrigin store ring =
+  case store ^? #dom % #ringCenters % ix ring of
+    Just origin -> origin
+    _           -> error "impossible"
 
 -- | angle of current ring being dragged, (via location that disambiguates)
 dragAngle :: Store -> Maybe (Location, Angle)
@@ -163,8 +174,7 @@ dragAngle store =
       let location = disambiguate store drag
       let angleWith :: Point -> Angle
           angleWith point = do
-            let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
-            let mouse = drag ^. #currentPoint
+            let origin = ringOrigin store (location ^. #ring)
             let p = point ~~ origin
             angleToOrigin p
 

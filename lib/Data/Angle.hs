@@ -33,6 +33,7 @@ newtype Angle = Angle Double
 -- | Construct or match on the radians of an angle
 pattern Radians :: Double -> Angle
 pattern Radians radians = Angle radians
+{-# COMPLETE Radians #-}
 
 -- | Construct or match on the degrees of an angle
 pattern Degrees :: Double -> Angle

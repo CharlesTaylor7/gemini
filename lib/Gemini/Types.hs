@@ -24,7 +24,6 @@ import           Data.Permutation as Permutation
 import           Data.Point       as Point
 
 import           Data.Sequence    (Seq ((:<|), (:|>)))
-import qualified Data.Sequence    as Seq
 import           Optics
 import           Prettyprinter    (Pretty (..))
 import qualified Prettyprinter    as Pretty
