@@ -6,6 +6,7 @@ module Utils
   , loop
   , break
   , knownInt
+  , natsUnder
   ) where
 
 import           Relude                    hiding (break)
@@ -15,8 +16,6 @@ import           Prettyprinter             (Pretty (..))
 import qualified Prettyprinter             as Pretty
 import qualified Prettyprinter.Render.Text as Pretty
 import           Shpadoinkle
-import qualified Shpadoinkle.Html          as Html
-import qualified Shpadoinkle.Keyboard      as Key
 import qualified Shpadoinkle.Lens
 
 
@@ -45,6 +44,9 @@ break :: Monad m => MaybeT m a
 break = MaybeT $ pure $ Nothing
 
 
--- | make KnownNat easier to use
+-- * make KnownNat easier to use
 knownInt :: forall n. KnownNat n => Int
 knownInt = fromIntegral $ natVal @n (Proxy :: Proxy n)
+
+natsUnder :: forall bound. KnownNat bound => [Int]
+natsUnder = [0..knownInt @bound - 1]

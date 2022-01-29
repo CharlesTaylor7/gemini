@@ -23,7 +23,7 @@ import           Optics
 import           Prettyprinter (Pretty (..))
 import qualified Prettyprinter as Pretty
 
-import           Utils         (knownInt)
+import           Utils         (knownInt, natsUnder)
 
 
 newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
@@ -120,9 +120,6 @@ pairs x =
           go _          = []
       in go (a:as)
 
-
-natsUnder :: forall bound. KnownNat bound => [Int]
-natsUnder = [0..knownInt @bound - 1]
 
 
 domain :: forall bound. KnownNat bound => Permutation bound -> [Int]

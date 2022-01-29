@@ -26,6 +26,7 @@ library
   exposed-modules:
       Data.Angle
       Data.Cyclic
+      Data.Finitary
       Data.Gemini
       Data.Permutation
       Data.Point
@@ -81,8 +82,6 @@ library
     , Shpadoinkle-lens
     , base >=4.14 && <4.16
     , containers
-    , finitary
-    , finite-typelits
     , groups
     , jsaddle
     , jsaddle-dom
@@ -142,8 +141,6 @@ executable server
     , Shpadoinkle-lens
     , base >=4.14 && <4.16
     , containers
-    , finitary
-    , finite-typelits
     , gemini
     , groups
     , jsaddle
@@ -208,8 +205,6 @@ test-suite gemini-test
     , Shpadoinkle-lens
     , base >=4.14 && <4.16
     , containers
-    , finitary
-    , finite-typelits
     , gemini
     , groups
     , hspec

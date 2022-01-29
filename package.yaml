@@ -35,8 +35,6 @@ dependencies:
 - Shpadoinkle-lens
 - random
 - groups
-- finitary
-- finite-typelits
 
 
 default-extensions:

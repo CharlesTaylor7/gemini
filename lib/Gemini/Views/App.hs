@@ -106,6 +106,7 @@ confettiView store =
         pure $ #options % #confetti .~ False
     ]
 
+
 debugView :: Store -> Maybe (Html m a)
 debugView store =
   (store ^. #options % #debug) `orNothing`

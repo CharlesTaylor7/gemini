@@ -8,9 +8,8 @@ module Data.Cyclic
 import           Relude
 
 import           Data.Finitary (Finitary (..))
-import           Data.Finite   (finite, getFinite)
 import           Data.Group    (Group (..))
-import           Utils         (knownInt)
+import           Utils         (knownInt, natsUnder)
 
 
 -- | Cyclic group of order n
@@ -47,11 +46,11 @@ instance KnownNat n => Num (Cyclic n) where
   fromInteger = Cyclic . fromInteger
   negate = invert
 
+
 -- | Finitary instance
 instance KnownNat n => Finitary (Cyclic n) where
-  type Cardinality (Cyclic n) = n
-  toFinite = finite . fromIntegral . unCyclic
-  fromFinite = Cyclic . fromInteger . getFinite
+  inhabitants = coerce $ natsUnder @n
+
 
 -- How do you order on a elements of a cyclic group?
 data CyclicOrdering
