@@ -44,7 +44,10 @@ data Location = Location
   -- ^ Positions start at the top of the ring, run clockwise from there
   }
   deriving stock (Eq, Show, Ord, Generic)
-  deriving anyclass (NFData, Finitary)
+  deriving anyclass (NFData)
+
+instance Finitary Location where
+  inhabitants = Location <$> inhabitants <*> inhabitants
 
 instance Pretty Location where
   pretty Location { ring, position = Cyclic n} =
@@ -62,7 +65,10 @@ data Rotation = Rotation
   , direction :: !RotationDirection
   }
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (NFData, Uniform, Finitary)
+  deriving anyclass (NFData, Uniform)
+
+instance Finitary Rotation where
+  inhabitants = Rotation <$> inhabitants <*> inhabitants
 
 instance Pretty Rotation where
   pretty Rotation { ring, direction } = pretty ring <> if direction == Clockwise then "" else "'"
@@ -70,7 +76,7 @@ instance Pretty Rotation where
 data RotationDirection
   = Clockwise
   | AntiClockwise
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic, Bounded, Enum)
   deriving anyclass (NFData, Uniform, Finitary)
 
 
@@ -78,7 +84,7 @@ data Ring
   = LeftRing
   | CenterRing
   | RightRing
-  deriving stock (Eq, Show, Generic, Ord)
+  deriving stock (Eq, Show, Generic, Ord, Bounded, Enum)
   deriving anyclass (NFData, Uniform, Finitary)
 
 instance Pretty Ring where

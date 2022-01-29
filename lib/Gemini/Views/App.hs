@@ -9,7 +9,6 @@ module Gemini.Views.App
 
 import           Relude
 
-import           Data.Finitary
 import qualified Data.Sequence           as Seq
 import           Optics
 import           System.Random.Stateful  (globalStdGen, uniformM)
