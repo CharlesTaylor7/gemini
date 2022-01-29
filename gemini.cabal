@@ -42,7 +42,7 @@ library
   other-modules:
       Paths_gemini
   hs-source-dirs:
-      lib
+      src/lib
   default-extensions:
       NoImplicitPrelude
       DuplicateRecordFields
@@ -100,7 +100,7 @@ executable server
   other-modules:
       Paths_gemini
   hs-source-dirs:
-      app
+      src/app
   default-extensions:
       NoImplicitPrelude
       DuplicateRecordFields
@@ -164,7 +164,7 @@ test-suite gemini-test
       Data.PermutationSpec
       Paths_gemini
   hs-source-dirs:
-      test
+      src/test
   default-extensions:
       NoImplicitPrelude
       DuplicateRecordFields

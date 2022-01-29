@@ -96,12 +96,12 @@ ghc-options:
 library:
   ghc-options:
     - -Wmissing-export-lists
-  source-dirs: lib
+  source-dirs: src/lib
 
 executables:
   server:
-    main:                Main.hs
-    source-dirs:         app
+    main: Main.hs
+    source-dirs: src/app
     ghc-options:
     - -threaded
     - -rtsopts
@@ -114,7 +114,7 @@ executables:
 tests:
   gemini-test:
     main: Spec.hs
-    source-dirs: test
+    source-dirs: src/test
     ghc-options:
     - -threaded
     - -Wno-orphans
