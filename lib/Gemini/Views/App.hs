@@ -194,19 +194,6 @@ buttonGroup :: Text -> [Html m a] -> Html m a
 buttonGroup className = Html.div [ Html.class' ["button-group", className] ]
 
 
-motionButtons :: Html m Store
-motionButtons =
-  buttonGroup "motions"
-    ( flip map inhabitants $ \rotation ->
-        Html.button
-          [ Html.className "motion-button"
-          , Html.onClick $ applyRotation rotation
-          ]
-          [ Html.text $ prettyCompactText rotation
-          ]
-    )
-
-
 checkBox :: Text -> Bool -> Html a Bool
 checkBox label checked =
   Html.label
