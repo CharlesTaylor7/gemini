@@ -37,7 +37,7 @@ moveView (i, move) =
           , Html.onMouseenter $ #hover % #overMove .~ True
           , Html.onMouseleave $ #hover % #overMove .~ False
           ]
-          ( move & moveCycles & uncycles & toList <&> \cycle ->
+          ( move & moveCycles & unCycles & toList <&> \cycle ->
               Html.div
                 [ Html.className "cycle"
                 , Html.onMouseenter $ #hover % #activeCycle ?~ cycle

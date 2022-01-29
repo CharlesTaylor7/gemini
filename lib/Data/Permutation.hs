@@ -26,7 +26,7 @@ import qualified Prettyprinter as Pretty
 import           Utils         (knownInt, natsUnder)
 
 
-newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
+newtype Cycles a = Cycles { unCycles :: (Seq (Cycle a)) }
   deriving stock (Eq, Generic, Show, Functor)
   deriving anyclass (NFData)
 
@@ -44,9 +44,9 @@ cycles :: Foldable f => f (Cycle a) -> Cycles a
 cycles = Cycles . fromList . toList
 
 
--- | Show permutations in cycle notation
--- instance Pretty a => Pretty (Cycles a) where
-    -- pretty = prettyList . toList . uncycles
+instance Pretty a => Pretty (Cycles a) where
+    pretty = prettyList . toList . unCycles
+
 
 instance Pretty a => Pretty (Cycle a) where
     pretty cycle
@@ -59,12 +59,24 @@ permute :: Permutation n -> Int -> Int
 permute (Permutation map) n = map ^? ix n & fromMaybe n
 
 
--- | Set patterns
+-- | Pattern for Set's min value with rest of set
 pattern SetMin :: Set.Key -> IntSet -> IntSet
 pattern SetMin min view <- (Set.minView -> Just (min, view))
+{-# COMPLETE SetMin, Empty #-}
 
-pattern SetEmpty :: IntSet
-pattern SetEmpty <- (Set.minView -> Nothing)
+
+-- | Pattern for a non empty Seq's head and tail value
+-- (which will be the same if the sequence only has 1 element)
+pattern NonEmptySeq :: a -> a -> Seq a
+pattern NonEmptySeq { head, tail } <- (headAndTail -> Just (head, tail))
+{-# COMPLETE NonEmptySeq, Empty #-}
+
+
+headAndTail :: Seq a -> Maybe (a, a)
+headAndTail seq =
+  case (seq, seq) of
+    (head :<| _, _ :|> tail) -> Just (head, tail)
+    _                        -> Nothing
 
 -- | Accumulator for toCycles implementation
 data S = S
@@ -92,12 +104,9 @@ toCycles p = go seed
         else #complete %~ (:|> Cycle current)
 
     go :: S -> Cycles Int
-    go s@S { toVisit = SetEmpty }                                = Cycles $ view #complete $ pushCycle s
-    go s@S { toVisit = SetMin min toVisit, current = Seq.Empty } = go s { toVisit, current = fromList [min] }
-    go s@S { current }                                           = do
-      -- these patterns are exhaustive when you take into account the previous two pattern guards
-      let head = case current of h :<| _ -> h
-      let tail = case current of _ :|> t -> t
+    go s@S { toVisit = Empty}                                = Cycles $ view #complete $ pushCycle s
+    go s@S { toVisit = SetMin min toVisit, current = Empty } = go s { toVisit, current = fromList [min] }
+    go s@S { current = NonEmptySeq { head, tail } }          = do
       let next = permute p tail
       if head == next
       then go $ pushCycle s
