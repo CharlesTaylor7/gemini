@@ -15,28 +15,21 @@ module Gemini.Types
   , module Point
   ) where
 
-import           Relude                 hiding (cycle)
+import           Relude           hiding (cycle)
 
-import           Data.Angle             as Angle
-import           Data.Cyclic            as Cyclic
-import           Data.Finitary          as Finitary
-import           Data.Gemini            as Gemini
-import           Data.Permutation       as Permutation
-import           Data.Point             as Point
+import           Data.Angle       as Angle
+import           Data.Cyclic      as Cyclic
+import           Data.Finitary    as Finitary
+import           Data.Gemini      as Gemini
+import           Data.Permutation as Permutation
+import           Data.Point       as Point
 
-import           Data.Group             (Group (..))
-import qualified Data.IntMap            as Map
-import qualified Data.List              as List
-import qualified Data.List.NonEmpty     as NE
-import           Data.Sequence          (Seq ((:<|), (:|>)))
-import qualified Data.Sequence          as Seq
-import qualified Data.Text              as Text
+import           Data.Sequence    (Seq ((:<|), (:|>)))
+import qualified Data.Sequence    as Seq
 import           Optics
-import           Optics.State.Operators
-import           Prettyprinter          (Pretty (..))
-import qualified Prettyprinter          as Pretty
+import           Prettyprinter    (Pretty (..))
+import qualified Prettyprinter    as Pretty
 
-import           System.Random.Stateful (Uniform (..))
 
 
 
@@ -164,12 +157,6 @@ combine :: Motion -> Motion -> Motion
 combine x@(Motion m1 r1) (Motion m2 r2)
   | r1 == r2  = x & #amount %~ (+ m2)
   | otherwise = x & #amount %~ (subtract m2)
-
--- | Get the opposite rotation direction
-opposite :: RotationDirection -> RotationDirection
-opposite = \case
-  Clockwise     -> AntiClockwise
-  AntiClockwise -> Clockwise
 
 
 normalize :: Motion -> Maybe Motion

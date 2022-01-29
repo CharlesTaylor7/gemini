@@ -6,15 +6,8 @@ import           Data.Angle
 import           Data.Finitary
 import           Data.Permutation
 import qualified Data.Sequence          as Seq
-import           Data.Traversable       (for)
 import           Optics
 import           Optics.State.Operators
-import           System.Random.Stateful (globalStdGen, uniformM)
-import           Utils
-
-import           Shpadoinkle
-import qualified Shpadoinkle.Html       as Html
-import qualified Shpadoinkle.Keyboard   as Key
 
 import           Gemini.Types
 
