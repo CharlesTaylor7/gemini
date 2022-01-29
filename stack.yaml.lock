@@ -141,30 +141,30 @@ packages:
     hackage: http2-1.6.5@sha256:f1743ba4a267f525106c218894e4bd2acf28fa047a9ba660b4a317a97382a877,13999
 - original:
     subdir: jsaddle
-    git: https://github.com/athanclark/jsaddle.git
-    commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
+    git: https://github.com/CharlesTaylor7/jsaddle.git
+    commit: 25f34c0a7060c92901b31c87e25e27a5bfca7245
   completed:
     pantry-tree:
-      sha256: 67013b51cc82a95279aa454959a72cf2a42774832096940584155c175caea79b
-      size: 4329
+      sha256: 0965b4e8193e983a18ff4530d334821cf45e0fe948380db4b0b46b5ab40837d8
+      size: 4399
     subdir: jsaddle
     version: 0.9.8.0
-    git: https://github.com/athanclark/jsaddle.git
+    git: https://github.com/CharlesTaylor7/jsaddle.git
     name: jsaddle
-    commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
+    commit: 25f34c0a7060c92901b31c87e25e27a5bfca7245
 - original:
     subdir: jsaddle-warp
-    git: https://github.com/athanclark/jsaddle.git
-    commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
+    git: https://github.com/CharlesTaylor7/jsaddle.git
+    commit: 25f34c0a7060c92901b31c87e25e27a5bfca7245
   completed:
     pantry-tree:
       sha256: 4f5eaead56649f3e74cbc6e1a9cc36fa1d058b0b6c9bee8280adb56c490404b8
       size: 555
     subdir: jsaddle-warp
     version: 0.9.8.0
-    git: https://github.com/athanclark/jsaddle.git
+    git: https://github.com/CharlesTaylor7/jsaddle.git
     name: jsaddle-warp
-    commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
+    commit: 25f34c0a7060c92901b31c87e25e27a5bfca7245
 - original:
     hackage: jsaddle-dom-0.9.4.0@sha256:e9557e5a6df02bf089acab3e053ee3d4b523acebfe9ede9b5091d12cee760780,75700
   completed:
