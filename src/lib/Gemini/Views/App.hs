@@ -74,6 +74,8 @@ rootView store =
       [ ("gemini-app", True)
       , ("dragging" :: Text, isn't (#drag % _Nothing) store)
       ]
+    -- autofocus so that keyboard events are active on page load
+    , Html.autofocus True
     , Html.tabIndex 0
     , keyboardMotions
     -- drag update

@@ -3,14 +3,13 @@ module Main where
 
 import           Relude
 
+import           Shpadoinkle                 (JSM)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
-import           Shpadoinkle.Html            (addStyle)
+import           Shpadoinkle.Html            (addStyle, setTitle)
 import           Shpadoinkle.Run             (liveWithStatic, runJSorWarp, simple)
 
 import           Gemini.Env
-import           Gemini.Jsaddle
 import           Gemini.Views.App
-
 
 
 main :: IO ()

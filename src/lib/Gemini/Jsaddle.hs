@@ -9,9 +9,8 @@ module Gemini.Jsaddle
 import           Relude
 
 import           Control.Concurrent          (threadDelay)
-import           Language.Javascript.JSaddle (FromJSVal (..), Function, JSM, JSVal, MakeArgs, MonadJSM (..),
-                                              ToJSVal (..), asyncFunction, eval, function, instanceOf, jsg, jsgf,
-                                              liftJSM, (!!), (!), (#), (<#))
+import           Language.Javascript.JSaddle (FromJSVal (..), JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..),
+                                              instanceOf, jsg, (!!), (!), (#), (<#))
 
 
 jsConsoleLog :: JSVal -> JSM ()
