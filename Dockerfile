@@ -17,7 +17,7 @@ RUN echo "allow-newer: true" >> /root/.stack/config.yaml
 RUN stack install jsaddle-dom
 
 # build other large deps
-RUN stack install relude finitary groups jsaddle-warp
+RUN stack install relude groups jsaddle-warp
 
 # build remaining dependencies
 COPY stack.yaml package.yaml gemini.cabal .

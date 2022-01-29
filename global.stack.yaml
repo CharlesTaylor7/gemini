@@ -12,8 +12,6 @@ extra-deps:
 
 # misc
 - random-1.2.1
-- finitary-2.1.1.0
-- finite-typelits-0.1.4.2
   
 # shpadoinkle
 - git: https://gitlab.com/charlestaylor95/shpadoinkle.git
