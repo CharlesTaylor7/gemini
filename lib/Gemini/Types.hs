@@ -30,8 +30,6 @@ import           Prettyprinter    (Pretty (..))
 import qualified Prettyprinter    as Pretty
 
 
-
-
 -- | UI Definitions
 data Store = Store
   { gemini    :: !Gemini
@@ -128,7 +126,6 @@ instance Pretty Motion where
   pretty Motion { amount = Cyclic amount, rotation } =
     pretty amount <> pretty rotation
   prettyList = Pretty.sep . fmap pretty
-
 
 
 normalize :: Motion -> Maybe Motion

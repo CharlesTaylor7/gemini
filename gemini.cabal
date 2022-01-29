@@ -36,6 +36,7 @@ library
       Gemini.UI.EventHandlers
       Gemini.Views.App
       Gemini.Views.Puzzle
+      Gemini.Views.RecordedMovesPanel
       Utils
   other-modules:
       Paths_gemini

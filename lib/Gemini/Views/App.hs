@@ -10,7 +10,6 @@ module Gemini.Views.App
 import           Relude
 
 import           Data.Finitary
-import           Data.Permutation
 import qualified Data.Sequence           as Seq
 import           Optics
 import           System.Random.Stateful  (globalStdGen, uniformM)
@@ -78,14 +77,14 @@ rootView store =
       ]
     , Html.tabIndex 0
     , keyboardMotions
-    -- on drag
-    , ("mousemove", listenerProp onDrag)
-    , ("touchmove", listenerProp onDrag)
-    -- end drag
-    , ("mouseup", listenerProp endDrag)
-    , ("mouseleave", listenerProp endDrag)
-    , ("touchend", listenerProp endDrag)
-    , ("touchcancel", listenerProp endDrag)
+    -- drag update
+    , ("mousemove", onDragUpdate)
+    , ("touchmove", onDragUpdate)
+    -- drag end
+    , ("mouseup", onDragEnd)
+    , ("mouseleave", onDragEnd)
+    , ("touchend", onDragEnd)
+    , ("touchcancel", onDragEnd)
     ]
     (
       [ header store
@@ -123,45 +122,6 @@ debugView store =
       ]
     )
   )
-
-
-savedMovesPanel :: Store -> Html m Store
-savedMovesPanel store =
-  Html.div
-    [ Html.className "saved-moves-panel" ]
-    (  (itoListOf (#moves % ifolded) store <&> moveView)
-    <> [ Html.div' [ Html.className "scrollbar-pad" ] ]
-    )
-  where
-    moveView :: (Int, Move) -> Html m Store
-    moveView (i, move) =
-      Html.div
-        [ Html.className "move" ]
-        [ Html.div
-          [ Html.className "move-description" ]
-          [ Html.div
-              [ Html.className "motions" ]
-              [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> ":" ]
-          , Html.div
-              [ Html.className "cycles"
-              , Html.onMouseenter $ #hover % #overMove .~ True
-              , Html.onMouseleave $ #hover % #overMove .~ False
-              ]
-              ( move & moveCycles & uncycles & toList <&> \cycle ->
-                  Html.div
-                    [ Html.className "cycle"
-                    , Html.onMouseenter $ #hover % #activeCycle ?~ cycle
-                    , Html.onMouseleave $ #hover % #activeCycle .~ Nothing
-                    ]
-                    [ Html.text $ prettyCompactText $ cycle ]
-              )
-          ]
-        , Html.button
-            [ Html.className "delete-move"
-            , Html.onClick $ #moves %~ Seq.deleteAt i
-            ]
-            [ Html.text $ "✕" ]
-        ]
 
 
 header :: forall m. MonadIO m => Store -> Html m Store
@@ -232,6 +192,7 @@ footer store =
 
 buttonGroup :: Text -> [Html m a] -> Html m a
 buttonGroup className = Html.div [ Html.class' ["button-group", className] ]
+
 
 motionButtons :: Html m Store
 motionButtons =

@@ -19,8 +19,16 @@ import qualified Shpadoinkle.Html         as Html
 
 import           Gemini.Jsaddle
 import           Gemini.Types
+import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
 import           Utils
+
+
+ringClass :: Ring -> Text
+ringClass = const "ring " <> \case
+  LeftRing   -> "left"
+  CenterRing -> "center"
+  RightRing  -> "right"
 
 
 draggedOver :: Store -> Set Location
@@ -144,8 +152,6 @@ geminiView store =
 
         isDraggedDisk :: Location -> Bool
         isDraggedDisk l = Just l == dragged ^? _Just % _1
-
-        onDragStart = listenerProp $ startDrag location
       in
           Html.div
             ( Html.class'
@@ -158,14 +164,16 @@ geminiView store =
               [ ("left", show x <> "%")
               , ("top", show y <> "%")
               ]
-            : [ ("mousedown" , onDragStart)
-              , ("touchstart" , onDragStart)
+            : [ ("mousedown", onDragStart location)
+              , ("touchstart", onDragStart location)
               ]
             )
             if isMobile
             then []
             else [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]
 
+
+type RawEventHandler m a = RawNode -> RawEvent -> JSM (Continuation m a)
 
 -- | A cheap trick. Shpadoinkle doesn't have an onmount event like react.
 -- So I'm embedding an invisible image with an onload event.

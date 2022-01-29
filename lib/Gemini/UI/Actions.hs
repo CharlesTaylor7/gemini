@@ -75,3 +75,99 @@ applyToHistory next all@(ms :|> prev) =
     combine x@(Motion m1 r1) (Motion m2 r2)
       | r1 == r2  = x & #amount %~ (+ m2)
       | otherwise = x & #amount %~ (subtract m2)
+
+
+-- * Drag actions
+--
+
+startDrag :: Location -> Point -> Store -> Store
+startDrag location mouse =
+  (#drag) ?~ DragState
+    { location = dragRing location
+    , chosen = Nothing
+    , initialPoint = mouse
+    , currentPoint = mouse
+    }
+
+
+updateDrag :: Point -> Store -> Store
+updateDrag point = execState $ do
+  (#drag % _Just % #currentPoint .= point)
+  dragged <- get <&> dragAngle
+  -- drag <- use #drag
+  chosen <- preuse $ #drag % _Just % #chosen
+  location <- preuse $ #drag % _Just % #location
+
+  case (dragged, chosen, location) of
+    (Just (loc, Turns turns), Nothing, Just (Ambiguous left right))
+      | abs (turns * 18) > 1 -> do
+
+        (#drag % _Just % #chosen ?= if loc == left then L else R)
+
+    (Just (loc, Turns turns), Just _, _)
+      | abs (turns * 18) < 1 -> do
+
+        (#drag % _Just % #chosen .= Nothing)
+
+    _ -> pure ()
+
+
+
+endDrag :: Point -> Store -> Store
+endDrag mouse = execState $ do
+  modify $ updateDrag mouse
+  drag <- dragAngle <$> get
+  case drag of
+    Nothing -> pure ()
+    Just (location, theta) -> do
+      (#drag .= Nothing)
+      let ring = location ^. #ring
+      let n = angleToPosition theta
+      let motion = Motion { amount = abs n, rotation = Rotation { ring, direction = Clockwise } }
+      case normalize motion of
+        Nothing     -> pure ()
+        Just motion -> modify $ applyMotionToStore motion
+
+
+angleToPosition :: forall n. KnownNat n => Angle -> Cyclic n
+angleToPosition (Turns turns) = Cyclic $ floor $ (k * turns) + 0.5
+  where k = fromIntegral $ knownInt @n
+
+
+disambiguate :: DragState -> Location
+disambiguate = undefined
+
+
+-- | angle of current ring being dragged, (via location that disambiguates)
+dragAngle :: Store -> Maybe (Location, Angle)
+dragAngle store =
+  case store ^. #drag of
+    Nothing -> Nothing
+    Just drag -> do
+      let location :: Location
+          location = case drag ^. #location of
+            Obvious location -> location
+            Ambiguous loc1 loc2 -> do
+              case drag ^. #chosen of
+                Just L -> loc1
+                Just R -> loc2
+                Nothing -> do
+                  let distanceTo :: Location -> Double
+                      distanceTo location = do
+                        let radius = store ^. #dom ^. #ringRadius
+                        let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
+                        let mouse = drag ^. #currentPoint
+                        let p = mouse ~~ origin
+                        abs (norm p - radius)
+                  if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
+
+      let angleWith :: Point -> Angle
+          angleWith point = do
+            let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
+            let mouse = drag ^. #currentPoint
+            let p = point ~~ origin
+            angleToOrigin p
+
+      let DragState { initialPoint, currentPoint } = drag
+      let currentAngle = angleWith currentPoint ~~ angleWith initialPoint
+      Just $ (location, currentAngle)
