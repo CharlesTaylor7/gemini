@@ -3,7 +3,6 @@ module Gemini.UI.Actions where
 import           Relude
 
 import           Data.Angle
-import           Data.Finitary
 import           Data.Permutation
 import qualified Data.Sequence          as Seq
 import           Optics
@@ -96,18 +95,16 @@ updateDrag point = execState $ do
   dragged <- get <&> dragAngle
   -- drag <- use #drag
   chosen <- preuse $ #drag % _Just % #chosen
-  location <- preuse $ #drag % _Just % #location
+  initialLocation <- preuse $ #drag % _Just % #location
 
-  case (dragged, chosen, location) of
-    (Just (loc, Turns turns), Nothing, Just (Ambiguous left right))
-      | abs (turns * 18) > 1 -> do
+  case (dragged, initialLocation) of
+    (Just (loc, Turns turns), Just (Ambiguous left right)) ->
+      case chosen of
+        Nothing | abs (turns * 18) > 1 -> do
+          (#drag % _Just % #chosen ?= if loc == left then L else R)
 
-        (#drag % _Just % #chosen ?= if loc == left then L else R)
-
-    (Just (loc, Turns turns), Just _, _)
-      | abs (turns * 18) < 1 -> do
-
-        (#drag % _Just % #chosen .= Nothing)
+        Just _  | abs (turns * 18) < 1 -> do
+          (#drag % _Just % #chosen .= Nothing)
 
     _ -> pure ()
 
@@ -134,8 +131,24 @@ angleToPosition (Turns turns) = Cyclic $ floor $ (k * turns) + 0.5
   where k = fromIntegral $ knownInt @n
 
 
-disambiguate :: DragState -> Location
-disambiguate = undefined
+disambiguate :: Store -> DragState -> Location
+disambiguate store drag =
+  case drag ^. #location of
+    Obvious location -> location
+    Ambiguous loc1 loc2 -> do
+      case drag ^. #chosen of
+        Just L -> loc1
+        Just R -> loc2
+        Nothing -> do
+          let distanceTo :: Location -> Double
+              distanceTo location = do
+                let radius = store ^. #dom ^. #ringRadius
+                let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
+                let mouse = drag ^. #currentPoint
+                let p = mouse ~~ origin
+                abs (norm p - radius)
+          if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
+
 
 
 -- | angle of current ring being dragged, (via location that disambiguates)
@@ -144,23 +157,7 @@ dragAngle store =
   case store ^. #drag of
     Nothing -> Nothing
     Just drag -> do
-      let location :: Location
-          location = case drag ^. #location of
-            Obvious location -> location
-            Ambiguous loc1 loc2 -> do
-              case drag ^. #chosen of
-                Just L -> loc1
-                Just R -> loc2
-                Nothing -> do
-                  let distanceTo :: Location -> Double
-                      distanceTo location = do
-                        let radius = store ^. #dom ^. #ringRadius
-                        let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
-                        let mouse = drag ^. #currentPoint
-                        let p = mouse ~~ origin
-                        abs (norm p - radius)
-                  if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
-
+      let location = disambiguate store drag
       let angleWith :: Point -> Angle
           angleWith point = do
             let Just origin = store ^? #dom % #ringCenters % ix (location ^. #ring)
