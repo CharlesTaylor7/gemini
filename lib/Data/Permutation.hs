@@ -11,22 +11,19 @@ module Data.Permutation
   , Group(..)
   ) where
 
-import           Relude                 hiding (break, cycle)
+import           Relude        hiding (break, cycle)
 
 import           Data.Group
 
-import qualified Data.IntMap            as Map
-import qualified Data.IntSet            as Set
-import qualified Data.List.NonEmpty     as NE
-import           Data.Sequence          (Seq ((:<|), (:|>)))
-import qualified Data.Sequence          as Seq
+import qualified Data.IntSet   as Set
+import           Data.Sequence (Seq ((:<|), (:|>)))
+import qualified Data.Sequence as Seq
 
 import           Optics
-import           Optics.State.Operators
-import           Prettyprinter          (Pretty (..))
-import qualified Prettyprinter          as Pretty
+import           Prettyprinter (Pretty (..))
+import qualified Prettyprinter as Pretty
 
-import           Utils                  (knownInt)
+import           Utils         (knownInt)
 
 
 newtype Cycles a = Cycles { uncycles :: (Seq (Cycle a)) }
@@ -140,8 +137,14 @@ domain _ = natsUnder @bound
 newtype Permutation (bound :: Nat) = Permutation
   { intMap :: IntMap Int
   }
-  deriving stock (Eq, Generic, Show)
+  deriving stock (Generic, Show)
   deriving newtype (NFData)
+
+
+-- Because the permutation representation is not normalized,
+-- we determine if permutations are equal if they map every element of the domain the same way
+instance KnownNat n => Eq (Permutation n) where
+  p == q = all (\k -> permute p k == permute q k) (natsUnder @n)
 
 
 instance KnownNat bound => Semigroup (Permutation bound) where
@@ -155,6 +158,7 @@ instance KnownNat bound => Semigroup (Permutation bound) where
 instance KnownNat n => Monoid (Permutation n) where
   mempty = identityPermutation
 
+identityPermutation :: Permutation n
 identityPermutation = Permutation mempty
 
 instance KnownNat bound => Group (Permutation bound) where
