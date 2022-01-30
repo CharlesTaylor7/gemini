@@ -26,6 +26,7 @@ Run `./deploy.sh`
 - test performance of a ghcjs build
 - solve button: solve by algorithms
 - animate transitions
+- present elapsed time to solve in confetti view
 
 ### Saved Moves sidebar
 - avaible on desktop
@@ -36,7 +37,6 @@ Run `./deploy.sh`
 - need explanation in header
 - keyboard controls
 - click / touch and drag based controls
-- arrow buttons above each ring?
 
 ### Drag controls
 - animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
@@ -47,10 +47,6 @@ Run `./deploy.sh`
 #### Ambiguous case
 - lock the choice in early. Only allow changing the rotation ring if the mouse passes through a narrow band
  around the starting location
-
-
-### On Solve
-- show number of moves to solve
 
 
 ### Bugs
