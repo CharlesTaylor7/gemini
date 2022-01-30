@@ -7,6 +7,9 @@ WORKDIR build/
 # copy stack.yaml into global dir
 COPY global.stack.yaml  /root/.stack/global-project/stack.yaml
 
+# install ghc
+RUN stack setup
+
 # build jsaddle-dom deps 
 RUN stack install lens aeson attoparsec base64-bytestring bytestring containers deepseq primitive process random jsaddle unordered-containers
 
