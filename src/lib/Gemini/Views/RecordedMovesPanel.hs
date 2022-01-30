@@ -19,11 +19,8 @@ recordedMovesPanel store =
   (store ^. #options % #isMobile % to not) `orNothing`
   Html.div
     [ Html.className "saved-moves-panel" ]
-    (  (itoListOf (#moves % ifolded) store <&> moveView)
-    <> [
-        -- Html.div' [ Html.className "scrollbar-pad" ]
-       ]
-    )
+    ( itoListOf (#moves % ifolded) store <&> moveView )
+
 
 
 moveView :: (Int, Move) -> Html m Store

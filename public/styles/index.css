@@ -61,12 +61,9 @@ button {
     width: 100%;
     display: flex;
     flex-flow: column nowrap;
-    justify-content: space-between;
+    gap: 48px;
 }
 
-.gemini-flex-wrapper {
-    display: contents;
-}
 
 /* header */
 .header {
@@ -79,7 +76,7 @@ button {
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-    padding: 20px;
+    margin-top: 24px;
 }
 
 .button-group.options {
@@ -87,7 +84,6 @@ button {
     display: flex;
     flex-flow: column;
     align-items: flex-end;
-    width: 65px;
 }
 
 .button-group.actions {
@@ -141,6 +137,8 @@ button {
 
 /* footer */
 .footer {
+    position: fixed;
+    bottom: 0;
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-end;
@@ -173,25 +171,28 @@ button {
     flex-direction: column;
     gap: 12px;
     overflow-y: scroll;
-    max-height: calc(100vh - 130px);
     z-index: 1;
-    padding: 12px 12px 0 0;
-    margin-right: 12px;
+    /* margin: 0 12px 0 0; */
+    max-height: 450px;
+    height: 200px;
+    width: 300px;
+    border: 1px solid var(--scrollbar-color);
+    border-radius: 12px;
 }
 
 * {
-    scrollbar-color: var(--background-color);
-    scrollbar-color-thumb: var(--scrollbar-color);
+    scrollbar-color: var(--scrollbar-color) var(--background-color);
 }
 
 *::-webkit-scrollbar {
     background-color: var(--background-color);
-    width: 8px;
+    width: 30px;
 }
 
 *::-webkit-scrollbar-thumb {
-    background: #a2dcd7;
-    border-radius: 10px;
+    border: 10px solid var(--background-color);
+    background: var(--scrollbar-color);
+    border-radius: 24px;
 }
 
 .move {
@@ -211,9 +212,6 @@ button {
     font-family: monospace;
 }
 
-.scrollbar-pad {
-    flex: 1 0 24px;
-}
 
 .motions {
     user-select: none;
@@ -259,18 +257,11 @@ button {
     height: 100px;
 }
 
-
 /* puzzle */
 .gemini-row {
     display: flex;
-    justify-content: space-between;
-}
-
-.mobile .gemini-row {
     justify-content: center;
 }
-
-
 
 .gemini {
     display: flex;
