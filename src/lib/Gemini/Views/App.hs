@@ -9,20 +9,21 @@ module Gemini.Views.App
 
 import           Relude
 
-import qualified Data.Sequence           as Seq
+import qualified Data.Sequence                   as Seq
 import           Optics
-import           System.Random.Stateful  (globalStdGen, uniformM)
+import           System.Random.Stateful          (globalStdGen, uniformM)
 import           Utils
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Html        as Html
-import qualified Shpadoinkle.Keyboard    as Key
+import qualified Shpadoinkle.Html                as Html
+import qualified Shpadoinkle.Keyboard            as Key
 
 import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
-import           Gemini.Views.Puzzle     (geminiView)
+import           Gemini.Views.Puzzle             (geminiView)
+import           Gemini.Views.RecordedMovesPanel (recordedMovesPanel)
 
 
 -- | Initial state of the app
@@ -89,12 +90,19 @@ rootView store =
     ]
     (
       [ header store
-      , Html.div [ Html.className "gemini-row" ] [ geminiView store ]
+      , centerRow store
       , footer store
       ]
     <> (confettiView store & toList)
     )
 
+centerRow :: Store -> Html m Store
+centerRow store =
+  Html.div
+    [ Html.className "gemini-row" ]
+    ( geminiView store
+    : (recordedMovesPanel store & toList)
+    )
 
 confettiView :: MonadJSM m => Store -> Maybe (Html m Store)
 confettiView store =

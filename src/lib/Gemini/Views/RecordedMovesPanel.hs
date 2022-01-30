@@ -11,15 +11,18 @@ import           Shpadoinkle
 import qualified Shpadoinkle.Html as Html
 
 import           Gemini.Types
-import           Utils            (prettyCompactText)
+import           Utils            (orNothing, prettyCompactText)
 
 
-recordedMovesPanel :: Store -> Html m Store
+recordedMovesPanel :: Store -> Maybe (Html m Store)
 recordedMovesPanel store =
+  (store ^. #options % #isMobile % to not) `orNothing`
   Html.div
     [ Html.className "saved-moves-panel" ]
     (  (itoListOf (#moves % ifolded) store <&> moveView)
-    <> [ Html.div' [ Html.className "scrollbar-pad" ] ]
+    <> [
+        -- Html.div' [ Html.className "scrollbar-pad" ]
+       ]
     )
 
 

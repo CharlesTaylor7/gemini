@@ -12,6 +12,8 @@
     --panel-border: #82a6e3;
     --button-background: #0069ed;
     --button-background-hover: #0053ba;
+    --background-color: #9aaecd;
+    --scrollbar-color: #a2dcd7;
 }
 
 * {
@@ -25,6 +27,7 @@ html {
 body {
     margin: 0;
     overflow: hidden;
+    background-color: var(--background-color);
 }
 
 /* button reset */
@@ -56,7 +59,6 @@ button {
     position: fixed;
     height: 100%;
     width: 100%;
-    background-color: #9aaecd;
     display: flex;
     flex-flow: column nowrap;
     justify-content: space-between;
@@ -172,8 +174,24 @@ button {
     gap: 12px;
     overflow-y: scroll;
     max-height: calc(100vh - 130px);
+    z-index: 1;
     padding: 12px 12px 0 0;
-    margin: 0 20px;
+    margin-right: 12px;
+}
+
+* {
+    scrollbar-color: var(--background-color);
+    scrollbar-color-thumb: var(--scrollbar-color);
+}
+
+*::-webkit-scrollbar {
+    background-color: var(--background-color);
+    width: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #a2dcd7;
+    border-radius: 10px;
 }
 
 .move {
@@ -245,8 +263,14 @@ button {
 /* puzzle */
 .gemini-row {
     display: flex;
+    justify-content: space-between;
+}
+
+.mobile .gemini-row {
     justify-content: center;
 }
+
+
 
 .gemini {
     display: flex;
@@ -256,6 +280,7 @@ button {
     height: var(--ring-diameter);
     width: calc(3 * var(--ring-diameter));
     flex-shrink: 0;
+    margin: 0 -135px;
 }
 
 .ring {

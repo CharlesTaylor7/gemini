@@ -56,7 +56,7 @@ angleOnCircle (Cyclic k) = turns ~~ offset
     offset = Degrees 90
 
 
-geminiView :: forall m. Applicative m => Store -> Html m Store
+geminiView :: forall m. Store -> Html m Store
 geminiView store =
   Html.div
     [ Html.class'
