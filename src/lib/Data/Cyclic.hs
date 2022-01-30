@@ -7,6 +7,7 @@ module Data.Cyclic
 
 import           Relude
 
+import           Data.Aeson    (FromJSON, ToJSON)
 import           Data.Finitary (Finitary (..))
 import           Data.Group    (Group (..))
 import           Utils         (knownInt, natsUnder)
@@ -17,6 +18,7 @@ import           Utils         (knownInt, natsUnder)
 -- For relative comparisons, consider  using compareCyclic instead of compare
 newtype Cyclic (n :: Nat) = MkCyclic { unCyclic :: Int }
   deriving stock (Eq, Show, Generic, Ord)
+  deriving newtype (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 -- | Pattern synonym for constructor

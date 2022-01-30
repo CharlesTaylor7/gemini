@@ -10,6 +10,7 @@ module Data.Gemini
 
 import           Relude                 hiding (cycle)
 
+import           Data.Aeson             (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
 import           Data.Cyclic
 import           Data.Finitary
 import           Data.Permutation
@@ -31,6 +32,7 @@ import           System.Random.Stateful (Uniform (..))
 -- Use `geminiIx` to read / write at specific locations
 newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
   deriving stock (Eq, Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 
@@ -44,6 +46,7 @@ data Location = Location
   -- ^ Positions start at the top of the ring, run clockwise from there
   }
   deriving stock (Eq, Show, Ord, Generic)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 instance Finitary Location where
@@ -65,6 +68,7 @@ data Rotation = Rotation
   , direction :: !RotationDirection
   }
   deriving stock (Eq, Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData, Uniform)
 
 instance Finitary Rotation where
@@ -77,6 +81,7 @@ data RotationDirection
   = Clockwise
   | AntiClockwise
   deriving stock (Eq, Show, Generic, Bounded, Enum)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData, Uniform, Finitary)
 
 
@@ -85,6 +90,7 @@ data Ring
   | CenterRing
   | RightRing
   deriving stock (Eq, Show, Generic, Ord, Bounded, Enum)
+  deriving anyclass (FromJSON, ToJSON, FromJSONKey, ToJSONKey)
   deriving anyclass (NFData, Uniform, Finitary)
 
 instance Pretty Ring where
@@ -98,6 +104,7 @@ data Disk = Disk
   , label :: !Int
   }
   deriving stock (Eq, Show, Generic, Ord)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 instance Pretty Disk where
@@ -113,6 +120,7 @@ data Color
   | Green
   | Blue
   deriving stock (Eq, Show, Generic, Ord)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 instance Pretty Color where
@@ -203,6 +211,7 @@ onRing ring location = candidates
 
 data Choice a = Obvious a | Ambiguous a a
   deriving stock (Eq, Generic, Show, Functor)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 instance Pretty a => Pretty (Choice a) where
@@ -212,6 +221,7 @@ data Chosen
   = L
   | R
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 dragRing :: Location -> Choice Location

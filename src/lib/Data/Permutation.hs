@@ -13,6 +13,7 @@ module Data.Permutation
 
 import           Relude        hiding (break, cycle)
 
+import           Data.Aeson    (FromJSON, ToJSON)
 import           Data.Group
 
 import qualified Data.IntSet   as Set
@@ -28,12 +29,14 @@ import           Utils         (knownInt, natsUnder)
 
 newtype Cycles a = Cycles { unCycles :: (Seq (Cycle a)) }
   deriving stock (Eq, Generic, Show, Functor)
+  deriving newtype (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 
 newtype Cycle a = Cycle (Seq a)
   deriving stock (Eq, Generic, Show)
   deriving newtype (Functor, Foldable, FoldableWithIndex Int)
+  deriving newtype (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 

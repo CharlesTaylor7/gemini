@@ -82,6 +82,7 @@ library
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , Shpadoinkle-lens
+    , aeson
     , base >=4.14 && <4.16
     , containers
     , groups
@@ -141,6 +142,7 @@ executable dev-server
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , Shpadoinkle-lens
+    , aeson
     , base >=4.14 && <4.16
     , containers
     , gemini
@@ -202,6 +204,7 @@ executable server
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , Shpadoinkle-lens
+    , aeson
     , base >=4.14 && <4.16
     , containers
     , gemini
@@ -267,6 +270,7 @@ test-suite gemini-test
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , Shpadoinkle-lens
+    , aeson
     , base >=4.14 && <4.16
     , containers
     , gemini

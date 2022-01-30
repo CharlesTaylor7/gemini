@@ -16,6 +16,7 @@ module Gemini.Types
 
 import           Relude           hiding (cycle)
 
+import           Data.Aeson       (FromJSON, ToJSON)
 import           Data.Angle       as Angle
 import           Data.Cyclic      as Cyclic
 import           Data.Finitary    as Finitary
@@ -44,6 +45,7 @@ data Store = Store
   , recorded  :: !(Seq Motion)
   }
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 
@@ -52,6 +54,7 @@ data HoverState = HoverState
   , overMove    :: !Bool
   }
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 data DragState = DragState
@@ -61,6 +64,7 @@ data DragState = DragState
   , currentPoint :: !Point
   }
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 instance Pretty DragState where
@@ -73,6 +77,7 @@ data DomInfo = DomInfo
   , ringRadius  :: !Double
   }
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 
@@ -84,6 +89,7 @@ data Options = Options
   , confetti   :: !Bool
   }
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 
@@ -93,6 +99,7 @@ data Env = Env
   , deployment :: !Deployment
   }
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 
@@ -100,6 +107,7 @@ data Deployment
   = Prod
   | Dev
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 
@@ -109,6 +117,7 @@ data Move = Move
   , moveCycles :: !(Cycles Location)
   }
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 data Motion = Motion
@@ -116,6 +125,7 @@ data Motion = Motion
   , rotation :: !Rotation
   }
   deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 instance ToPermutation Motion where

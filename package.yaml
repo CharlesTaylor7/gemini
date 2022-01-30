@@ -29,6 +29,7 @@ dependencies:
 - prettyprinter
 - random
 - groups
+- aeson
 - jsaddle
 - jsaddle-dom
 - jsaddle-warp

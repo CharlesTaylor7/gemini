@@ -6,6 +6,7 @@ module Data.Point
 
 import           Relude
 
+import           Data.Aeson    (FromJSON, ToJSON)
 import           Data.Angle
 import           Data.Group
 import           Prettyprinter (Pretty (..))
@@ -16,6 +17,7 @@ data Point = Point
   , y :: !Double
   }
   deriving stock (Eq, Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 
