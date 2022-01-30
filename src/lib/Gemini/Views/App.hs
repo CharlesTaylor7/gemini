@@ -108,8 +108,8 @@ confettiView store =
   Html.div
     [ Html.class'
       [ ("confetti" :: Text, True)
-      , ("fade-in",  confetti == FadeIn)
-      , ("fade-out", confetti == FadeOut)
+      , ("fade-in",  store ^. confetti == FadeIn)
+      , ("fade-out", store ^. confetti == FadeOut)
       ]
     ]
     [ Html.div
@@ -128,12 +128,12 @@ confettiView store =
         , Html.button
           [ Html.className "action-button"
           , Html.onClickC $
-            Continuation.pur (#options % #confetti .~ FadeOut)
+            Continuation.pur (confetti .~ FadeOut)
             `Continuation.before`
             Continuation.merge
               ( Continuation.kleisli $ const $ do
                 sleep 1
-                pure $ Continuation.pur $ #options % #confetti .~ Off
+                pure $ Continuation.pur $ confetti .~ Off
               )
           ]
           [ Html.text "Continue" ]
@@ -141,7 +141,8 @@ confettiView store =
       ]
     ]
   where
-      confetti = store ^. #options % #confetti
+    confetti :: Lens' Store Confetti
+    confetti = #options % #confetti
 
 
 debugView :: Store -> Maybe (Html m a)
