@@ -30,6 +30,7 @@ library
       Data.Gemini
       Data.Permutation
       Data.Point
+      Gemini.App
       Gemini.Env
       Gemini.Jsaddle
       Gemini.Types
@@ -78,6 +79,7 @@ library
   ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
   build-depends:
       Shpadoinkle
+    , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , Shpadoinkle-lens
     , base >=4.14 && <4.16
@@ -90,6 +92,67 @@ library
     , optics >=0.4
     , prettyprinter
     , random
+    , relude
+    , text
+    , vector
+  default-language: Haskell2010
+
+executable dev-server
+  main-is: Main.hs
+  other-modules:
+      Paths_gemini
+  hs-source-dirs:
+      src/dev
+  default-extensions:
+      NoImplicitPrelude
+      DuplicateRecordFields
+      OverloadedLabels
+      DataKinds
+      FlexibleContexts
+      OverloadedStrings
+      ImportQualifiedPost
+      BlockArguments
+      NamedFieldPuns
+      PartialTypeSignatures
+      PatternSynonyms
+      DerivingStrategies
+      DerivingVia
+      DeriveGeneric
+      DeriveTraversable
+      DeriveAnyClass
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+      GADTs
+      LambdaCase
+      PolyKinds
+      RankNTypes
+      ScopedTypeVariables
+      TypeApplications
+      TypeOperators
+      TypeFamilies
+      AllowAmbiguousTypes
+      ViewPatterns
+      PatternSynonyms
+      FlexibleInstances
+      MultiWayIf
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -Wno-missing-export-lists
+  build-depends:
+      Shpadoinkle
+    , Shpadoinkle-backend-pardiff
+    , Shpadoinkle-html
+    , Shpadoinkle-lens
+    , base >=4.14 && <4.16
+    , containers
+    , gemini
+    , groups
+    , jsaddle
+    , jsaddle-dom
+    , jsaddle-warp
+    , mtl
+    , optics >=0.4
+    , prettyprinter
+    , random
+    , rapid
     , relude
     , text
     , vector
@@ -201,6 +264,7 @@ test-suite gemini-test
   build-depends:
       QuickCheck
     , Shpadoinkle
+    , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , Shpadoinkle-lens
     , base >=4.14 && <4.16

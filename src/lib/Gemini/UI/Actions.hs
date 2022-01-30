@@ -46,7 +46,7 @@ stopRecording state = state
   & #recorded .~ Seq.Empty
   where
     updateMoves =
-      case state ^. #history of
+      case state ^. #recorded of
         Seq.Empty -> identity
         motions   -> (toMove motions :<|)
 
@@ -84,7 +84,6 @@ applyToHistory next all@(ms :|> prev) =
 
 
 -- * Drag actions
---
 
 startDrag :: Location -> Point -> Store -> Store
 startDrag location mouse =

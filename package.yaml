@@ -27,14 +27,15 @@ dependencies:
 - mtl
 - optics >= 0.4
 - prettyprinter
+- random
+- groups
 - jsaddle
 - jsaddle-dom
 - jsaddle-warp
 - Shpadoinkle
 - Shpadoinkle-html
 - Shpadoinkle-lens
-- random
-- groups
+- Shpadoinkle-backend-pardiff
 
 
 default-extensions:
@@ -109,7 +110,18 @@ executables:
     - -Wno-missing-export-lists
     dependencies:
     - gemini
-    - Shpadoinkle-backend-pardiff
+  dev-server:
+    main: Main.hs
+    source-dirs: src/dev
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wno-missing-export-lists
+    dependencies:
+    - gemini
+    - rapid
+
 
 tests:
   gemini-test:
