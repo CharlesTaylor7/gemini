@@ -24,7 +24,7 @@ import           Optics
 import           Prettyprinter (Pretty (..))
 import qualified Prettyprinter as Pretty
 
-import           Utils         (knownInt, natsUnder)
+import           Gemini.Utils  (knownInt, natsUnder)
 
 
 newtype Cycles a = Cycles { unCycles :: (Seq (Cycle a)) }

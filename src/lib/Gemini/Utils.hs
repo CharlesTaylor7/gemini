@@ -1,4 +1,4 @@
-module Utils
+module Gemini.Utils
   ( prettyCompactText
   , zoomComponent
   , generalize
@@ -28,7 +28,7 @@ prettyCompactText = Pretty.renderStrict . Pretty.layoutCompact . pretty
 zoomComponent :: Functor m => Lens' s a -> s -> (a -> Html m a) -> Html m s
 zoomComponent optic props component = component (props ^. optic) & generalize optic
 
-generalize :: (Functor m, Continuous f) => Lens' s a -> (f m a -> f m s)
+generalize :: (Functor m, Continuous f, Is k A_Lens) => Optic' k ix s a -> (f m a -> f m s)
 generalize optic = Shpadoinkle.Lens.generalize $ toLensVL optic
 
 

@@ -21,7 +21,7 @@ import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
-import           Utils
+import           Gemini.Utils
 
 
 ringClass :: Ring -> Text

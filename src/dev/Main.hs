@@ -3,39 +3,54 @@ module Main where
 
 import           Relude
 
+import           Data.Aeson                  hiding (json)
+import qualified Data.ByteString.Lazy        as Lazy
+import           Optics
+
 import           Shpadoinkle                 (JSM, shpadoinkle)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
 import           Shpadoinkle.Html
-import           Shpadoinkle.Run             hiding (Dev)
+import           Shpadoinkle.Run             hiding (Dev, Env)
 
 import           Rapid
 
 import           Gemini.App                  hiding (app)
+import           Gemini.Utils                (generalize)
 import           Gemini.Views.App
 
 
 main :: IO ()
 main =
   rapid 0 $ \r -> do
-    serializedStore :: TVar Text <- createRef r "store" $ newEmptyTVarIO
-    restart r "webserver" $ startServer serializedStore
+    env <- createRef r ("env" :: Text) $ getEnv Dev
+    let initialState = encode $ initialStore env
+
+    storeTvar <- createRef r ("store" :: Text) $ newTVarIO initialState
+    restart r "webserver" $ startServer env storeTvar
 
 
-startServer :: TMVar Text -> IO ()
-startServer tvar = do
-  env@Env { port }  <- getEnv Dev
-
+startServer :: Env -> TVar Lazy.ByteString -> IO ()
+startServer env storeTvar = do
   let spa :: JSM ()
       spa = do
         setTitle "Gemini"
         addStyle "/public/styles/index.css"
-        shpadoinkle identity runParDiff tvar _ _
 
-  -- runParDiff store rootView stage
+        shpadoinkle identity runParDiff storeTvar (zoomComponent json rootView) stage
+
 
   let staticFolder = "./"
-  liveWithStatic port spa staticFolder
+  liveWithStatic (env ^. #port) spa staticFolder
+
+json :: Iso' Lazy.ByteString Store
+json = iso fromBytes toBytes
+  where
+    toBytes :: Store -> Lazy.ByteString
+    toBytes = encode
+
+    fromBytes :: Lazy.ByteString -> Store
+    fromBytes = (either (error . toText) identity . eitherDecode')
 
 
-
-
+zoomComponent :: (Functor m, Is k A_Lens, Is k A_Getter) => Optic' k ix s a -> (a -> Html m a) -> (s -> Html m s)
+zoomComponent optic component props = component (view optic props) & generalize optic

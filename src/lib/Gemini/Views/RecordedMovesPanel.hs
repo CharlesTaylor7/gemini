@@ -12,7 +12,7 @@ import qualified Shpadoinkle.Html  as Html
 
 import           Gemini.Types
 import           Gemini.UI.Actions
-import           Utils             (orNothing, prettyCompactText)
+import           Gemini.Utils      (orNothing, prettyCompactText)
 
 
 recordedMovesPanel :: Store -> Maybe (Html m Store)

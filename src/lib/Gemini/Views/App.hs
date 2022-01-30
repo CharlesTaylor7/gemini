@@ -12,7 +12,6 @@ import           Relude
 import qualified Data.Sequence                   as Seq
 import           Optics
 import           System.Random.Stateful          (globalStdGen, uniformM)
-import           Utils
 
 import           Shpadoinkle
 import qualified Shpadoinkle.Html                as Html
@@ -22,6 +21,7 @@ import           Gemini.Jsaddle
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
+import           Gemini.Utils
 import           Gemini.Views.Puzzle             (geminiView)
 import           Gemini.Views.RecordedMovesPanel (recordedMovesPanel)
 

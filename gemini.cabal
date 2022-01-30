@@ -36,10 +36,10 @@ library
       Gemini.Types
       Gemini.UI.Actions
       Gemini.UI.EventHandlers
+      Gemini.Utils
       Gemini.Views.App
       Gemini.Views.Puzzle
       Gemini.Views.RecordedMovesPanel
-      Utils
   other-modules:
       Paths_gemini
   hs-source-dirs:
@@ -84,6 +84,7 @@ library
     , Shpadoinkle-lens
     , aeson
     , base >=4.14 && <4.16
+    , bytestring
     , containers
     , groups
     , jsaddle
@@ -144,6 +145,7 @@ executable dev-server
     , Shpadoinkle-lens
     , aeson
     , base >=4.14 && <4.16
+    , bytestring
     , containers
     , gemini
     , groups
@@ -206,6 +208,7 @@ executable server
     , Shpadoinkle-lens
     , aeson
     , base >=4.14 && <4.16
+    , bytestring
     , containers
     , gemini
     , groups
@@ -272,6 +275,7 @@ test-suite gemini-test
     , Shpadoinkle-lens
     , aeson
     , base >=4.14 && <4.16
+    , bytestring
     , containers
     , gemini
     , groups

@@ -10,7 +10,7 @@ import           Relude
 import           Data.Aeson    (FromJSON, ToJSON)
 import           Data.Finitary (Finitary (..))
 import           Data.Group    (Group (..))
-import           Utils         (knownInt, natsUnder)
+import           Gemini.Utils  (knownInt, natsUnder)
 
 
 -- | Cyclic group of order n
