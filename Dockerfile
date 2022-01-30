@@ -24,7 +24,7 @@ COPY stack.yaml package.yaml gemini.cabal .
 RUN stack install --dependencies-only
 
 # build app code
-COPY . .
+COPY src/ src/
 RUN stack install gemini:server
 
 
