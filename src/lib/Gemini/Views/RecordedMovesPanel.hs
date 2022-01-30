@@ -19,8 +19,16 @@ recordedMovesPanel store =
   (store ^. #options % #isMobile % to not) `orNothing`
   Html.div
     [ Html.className "saved-moves-panel" ]
-    ( itoListOf (#moves % ifolded) store <&> moveView )
+    ( (bufferView store & toList)
+    <> (itoListOf (#moves % ifolded) store <&> moveView )
+    )
 
+bufferView :: Store -> Maybe (Html m Store)
+bufferView store =
+  (store ^. #options % #recording) `orNothing`
+  Html.div
+    [ Html.className "recorded-buffer" ]
+    [ Html.text $ prettyCompactText $ store ^.. #recorded % folded ]
 
 
 moveView :: (Int, Move) -> Html m Store

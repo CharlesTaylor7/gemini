@@ -28,7 +28,9 @@ Run `./deploy.sh`
 - animate transitions
 
 ### Saved Moves sidebar
-- collapsible panel  on desktop
+- avaible on desktop
+- clicking on a move applies to the gemini and to recorded moves
+- buffer of recorded moves is show at top of panel
 
 ### Gemini Controls
 - need explanation in header

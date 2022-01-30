@@ -185,9 +185,9 @@ button {
     flex-direction: column;
     gap: 12px;
     overflow-y: scroll;
-    max-height: 30vh;
+    max-height: calc(100vh-24px);
     padding-right: 12px;
-    margin-right: 12px;
+    margin: 12px;
 }
 
 * {
