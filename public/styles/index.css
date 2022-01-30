@@ -60,8 +60,18 @@ button {
     height: 100%;
     width: 100%;
     display: flex;
+    justify-content: space-between;
+}
+
+.gemini-app.mobile {
+    justify-content: center;
+}
+
+.main-panel {
+    display: flex;
     flex-flow: column nowrap;
     gap: 48px;
+    align-items: center;
 }
 
 
@@ -138,6 +148,7 @@ button {
 /* footer */
 .footer {
     position: fixed;
+    left: 0;
     bottom: 0;
     display: flex;
     flex-flow: row nowrap;
@@ -164,7 +175,6 @@ button {
 }
 
 
-/* saved moves panel */
 .saved-moves-panel {
     flex: 0 1 auto;
     display: flex;
@@ -172,12 +182,7 @@ button {
     gap: 12px;
     overflow-y: scroll;
     z-index: 1;
-    /* margin: 0 12px 0 0; */
-    max-height: 450px;
-    height: 200px;
-    width: 300px;
-    border: 1px solid var(--scrollbar-color);
-    border-radius: 12px;
+    max-height: 100vh;
 }
 
 * {
@@ -271,7 +276,7 @@ button {
     height: var(--ring-diameter);
     width: calc(3 * var(--ring-diameter));
     flex-shrink: 0;
-    margin: 0 -135px;
+    margin: 0 -157px;
 }
 
 .ring {

@@ -72,8 +72,9 @@ rootView :: MonadJSM m => Store -> Html m Store
 rootView store =
   Html.div
     [ Html.class'
-      [ ("gemini-app", True)
-      , ("dragging" :: Text, isn't (#drag % _Nothing) store)
+      [ ("gemini-app" :: Text, True)
+      , ("mobile", store ^. #options % #isMobile)
+      , ("dragging", isn't (#drag % _Nothing) store)
       ]
     -- autofocus so that keyboard events are active on page load
     , Html.autofocus True
@@ -88,21 +89,20 @@ rootView store =
     , ("touchend", onDragEnd)
     , ("touchcancel", onDragEnd)
     ]
-    (
-      [ header store
-      , centerRow store
-      , footer store
+    ((confettiView store & toList)
+    <>
+      [ Html.div
+        [ Html.className "main-panel"]
+        [ header store
+        , geminiView store
+        , footer store
+        ]
+      , Html.div
+        [ Html.className "right-panel"]
+        ( recordedMovesPanel store & toList )
       ]
-    <> (confettiView store & toList)
     )
 
-centerRow :: Store -> Html m Store
-centerRow store =
-  Html.div
-    [ Html.className "gemini-row" ]
-    ( geminiView store
-    : (recordedMovesPanel store & toList)
-    )
 
 confettiView :: MonadJSM m => Store -> Maybe (Html m Store)
 confettiView store =
