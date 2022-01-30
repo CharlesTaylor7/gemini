@@ -61,6 +61,7 @@ button {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    gap: 12px;
 }
 
 .gemini-app.mobile {
@@ -174,14 +175,15 @@ button {
     height: 100%;
 }
 
-
+.right-panel {
+    z-index: 2;
+}
 .saved-moves-panel {
     flex: 0 1 auto;
     display: flex;
     flex-direction: column;
     gap: 12px;
     overflow-y: scroll;
-    z-index: 1;
     max-height: 100vh;
 }
 
@@ -191,11 +193,11 @@ button {
 
 *::-webkit-scrollbar {
     background-color: var(--background-color);
-    width: 30px;
+    width: 32px;
 }
 
 *::-webkit-scrollbar-thumb {
-    border: 10px solid var(--background-color);
+    border: 12px solid var(--background-color);
     background: var(--scrollbar-color);
     border-radius: 24px;
 }
