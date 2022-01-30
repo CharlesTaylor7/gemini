@@ -21,22 +21,24 @@ applyMove move store = foldl' (flip applyMotionToStore) store (move ^. #motions)
 
 applyMotionToStore :: Motion -> Store -> Store
 applyMotionToStore motion = execState $ do
-  -- apply to puzzle
-  (#gemini %= applyToGemini motion)
+  unlocked <- use $ #options % #confetti % to (== Off)
+  when unlocked $ do
+    -- apply to puzzle
+    (#gemini %= applyToGemini motion)
 
-  -- if recording, apply to recorded move
-  recording <- use $ #options % #recording
-  when recording $ #recorded %= applyToHistory motion
+    -- if recording, apply to recorded move
+    recording <- use $ #options % #recording
+    when recording $ #recorded %= applyToHistory motion
 
-  -- apply to history to tally move count
-  (#history %= applyToHistory motion)
+    -- apply to history to tally move count
+    (#history %= applyToHistory motion)
 
-  -- check if the puzzle is solved
-  gemini <- use #gemini
-  wasScrambled <- use $ #scrambled
-  when (isSolved gemini && wasScrambled) $ do
-    (#options % #confetti .= True)
-    (#scrambled .= False)
+    -- check if the puzzle is solved
+    gemini <- use #gemini
+    wasScrambled <- use $ #scrambled
+    when (isSolved gemini && wasScrambled) $ do
+      (#options % #confetti .= FadeIn)
+      (#scrambled .= False)
 
 
 stopRecording :: Store -> Store

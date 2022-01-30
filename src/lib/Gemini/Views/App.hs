@@ -14,10 +14,11 @@ import           Optics
 import           System.Random.Stateful          (globalStdGen, uniformM)
 
 import           Shpadoinkle
+import qualified Shpadoinkle.Continuation        as Continuation
 import qualified Shpadoinkle.Html                as Html
 import qualified Shpadoinkle.Keyboard            as Key
 
-import           Gemini.Jsaddle
+import           Gemini.Jsaddle                  (sleep)
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
@@ -44,7 +45,7 @@ initialStore env = Store
       , recording = False
       , debug = False
       , isMobile = False
-      , confetti = False
+      , confetti = Off
       }
   , env = env
   , dom = DomInfo
@@ -89,31 +90,58 @@ rootView store =
     , ("touchend", onDragEnd)
     , ("touchcancel", onDragEnd)
     ]
-    ((confettiView store & toList)
-    <>
-      [ Html.div
+    [ confettiView store
+    , Html.div
         [ Html.className "main-panel"]
         [ header store
         , geminiView store
         , footer store
         ]
-      , Html.div
-        [ Html.className "right-panel"]
-        ( recordedMovesPanel store & toList )
-      ]
-    )
-
-
-confettiView :: MonadJSM m => Store -> Maybe (Html m Store)
-confettiView store =
-  (store ^. #options % #confetti ) `orNothing`
-  Html.img'
-    [ Html.className "confetti"
-    , Html.src "https://media.giphy.com/media/5T06ftQWtCMy0XFaaI/giphy.gif"
-    , Html.onLoadM $ do
-        sleep 3
-        pure $ #options % #confetti .~ False
+    , Html.div
+      [ Html.className "right-panel"]
+      ( recordedMovesPanel store & toList )
     ]
+
+
+confettiView :: MonadJSM m => Store -> Html m Store
+confettiView store =
+  Html.div
+    [ Html.class'
+      [ ("confetti" :: Text, True)
+      , ("fade-in",  confetti == FadeIn)
+      , ("fade-out", confetti == FadeOut)
+      ]
+    ]
+    [ Html.div
+      [ Html.className "stats-box" ]
+      [ Html.div
+        [ Html.className "stats-header" ]
+        [ Html.text "🎉 Solved!!! 🎉" ]
+      , Html.div
+        [ Html.className "stats" ]
+        [ Html.p_
+          [ Html.text $
+              "Solved in "
+            <> (store ^. #history % to length % to show)
+            <> " motions"
+          ]
+        , Html.button
+          [ Html.className "action-button"
+          , Html.onClickC $
+            Continuation.pur (#options % #confetti .~ FadeOut)
+            `Continuation.before`
+            Continuation.merge
+              ( Continuation.kleisli $ const $ do
+                sleep 1
+                pure $ Continuation.pur $ #options % #confetti .~ Off
+              )
+          ]
+          [ Html.text "Continue" ]
+        ]
+      ]
+    ]
+  where
+      confetti = store ^. #options % #confetti
 
 
 debugView :: Store -> Maybe (Html m a)
@@ -134,7 +162,7 @@ debugView store =
   )
 
 
-header :: forall m. MonadIO m => Store -> Html m Store
+header :: forall m. MonadJSM m => Store -> Html m Store
 header store =
   Html.div
     [ Html.className "header" ]
@@ -154,7 +182,7 @@ header store =
                   else
                     [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
                     , (checkBox "Prod" & zoomComponent isProdL store)
-                    , (checkBox "Confetti" & zoomComponent (#options % #confetti) store)
+                    , (confettiButton & zoomComponent (#options % #confetti) store)
                     ]
                 )
             )
@@ -204,7 +232,7 @@ buttonGroup :: Text -> [Html m a] -> Html m a
 buttonGroup className = Html.div [ Html.class' ["button-group", className] ]
 
 
-checkBox :: Text -> Bool -> Html a Bool
+checkBox :: Text -> Bool -> Html m Bool
 checkBox label checked =
   Html.label
     [ Html.className "checkbox" ]
@@ -218,6 +246,20 @@ checkBox label checked =
         ]
     ]
 
+
+confettiButton :: MonadJSM m => Confetti -> Html m Confetti
+confettiButton confetti =
+  Html.label
+    [ Html.className "checkbox" ]
+    [ Html.span
+        [ Html.className "checkbox-label" ]
+        [ Html.text "Confetti" ]
+    , Html.input'
+        [ Html.type' "checkbox"
+        , Html.checked $ confetti /= Off
+        , Html.onCheck $ \checked -> const $ if checked then FadeIn else Off
+        ]
+    ]
 
 actionButton :: [(Text, Prop m a)] -> [Html m a] -> Html m a
 actionButton props = Html.button $ Html.className "action-button" : props

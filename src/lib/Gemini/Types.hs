@@ -1,6 +1,7 @@
 module Gemini.Types
   ( -- ui types
     Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..)
+  , Confetti(..)
   , Motion(..), Move(..), normalize
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
@@ -86,8 +87,14 @@ data Options = Options
   , recording  :: !Bool
   , debug      :: !Bool
   , isMobile   :: !Bool
-  , confetti   :: !Bool
+  , confetti   :: !Confetti
   }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (NFData)
+
+
+data Confetti = Off | FadeIn | FadeOut
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)

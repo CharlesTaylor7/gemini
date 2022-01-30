@@ -14,6 +14,7 @@
     --button-background-hover: #0053ba;
     --background-color: #9aaecd;
     --scrollbar-color: #a2dcd7;
+    --stats-background: gray;
 }
 
 * {
@@ -91,7 +92,6 @@ button {
 }
 
 .button-group.options {
-    z-index: 4;
     display: flex;
     flex-flow: column;
     align-items: flex-end;
@@ -173,6 +173,55 @@ button {
     position: fixed;
     width: 100%;
     height: 100%;
+    opacity: 0;
+    background: url("https://media.giphy.com/media/5T06ftQWtCMy0XFaaI/giphy.gif");
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+}
+
+.confetti.fade-in {
+    visibility: visible;
+    opacity: 1;
+    animation: 1s fade-in;
+}
+
+.confetti.fade-out {
+    visibility: visible;
+    opacity: 0;
+    animation: 1s fade-out;
+}
+
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+.stats-box {
+    background: #ddfaff;
+    border: 1px solid var(--stats-background);
+}
+
+.stats-header {
+    border-bottom: 1px solid var(--stats-background);
+    text-align: center;
+    font-size: 30px;
+    padding: 12px;
+} 
+
+.stats {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 120px;
 }
 
 .right-panel {
