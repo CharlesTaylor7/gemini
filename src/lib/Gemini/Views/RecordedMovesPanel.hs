@@ -4,14 +4,15 @@ module Gemini.Views.RecordedMovesPanel
 
 import           Relude
 
-import qualified Data.Sequence    as Seq
+import qualified Data.Sequence     as Seq
 import           Optics
 
 import           Shpadoinkle
-import qualified Shpadoinkle.Html as Html
+import qualified Shpadoinkle.Html  as Html
 
 import           Gemini.Types
-import           Utils            (orNothing, prettyCompactText)
+import           Gemini.UI.Actions
+import           Utils             (orNothing, prettyCompactText)
 
 
 recordedMovesPanel :: Store -> Maybe (Html m Store)
@@ -36,7 +37,9 @@ moveView (i, move) =
   Html.div
     [ Html.className "move" ]
     [ Html.div
-      [ Html.className "move-description" ]
+      [ Html.className "move-description"
+      , Html.onClick $ applyMove move
+      ]
       [ Html.div
           [ Html.className "motions" ]
           [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> ":" ]

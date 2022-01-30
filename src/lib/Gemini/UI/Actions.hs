@@ -1,5 +1,5 @@
 module Gemini.UI.Actions
-  ( applyMotionToStore, stopRecording, applyRotation, applyToHistory
+  ( applyMotionToStore, stopRecording, applyRotation, applyToHistory, applyMove
   , dragAngle
   , startDrag, updateDrag, endDrag
   ) where
@@ -15,7 +15,10 @@ import           Optics.State.Operators
 import           Gemini.Types
 
 
--- | UI Operations
+applyMove :: Move -> Store -> Store
+applyMove move store = foldl' (flip applyMotionToStore) store (move ^. #motions)
+
+
 applyMotionToStore :: Motion -> Store -> Store
 applyMotionToStore motion = execState $ do
   -- apply to puzzle
@@ -40,7 +43,7 @@ stopRecording :: Store -> Store
 stopRecording state = state
   & #options % #recording .~ False
   & #moves %~ updateMoves
-  & #history .~ Seq.Empty
+  & #recorded .~ Seq.Empty
   where
     updateMoves =
       case state ^. #history of
