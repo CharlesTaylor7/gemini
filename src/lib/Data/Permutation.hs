@@ -27,6 +27,7 @@ import qualified Prettyprinter as Pretty
 import           Gemini.Utils  (knownInt, natsUnder)
 
 
+-- * Cycles definition and instances
 newtype Cycles a = Cycles { unCycles :: (Seq (Cycle a)) }
   deriving stock (Eq, Generic, Show, Functor)
   deriving newtype (FromJSON, ToJSON)
@@ -56,6 +57,64 @@ instance Pretty a => Pretty (Cycle a) where
       =  "("
       <> (Pretty.sep $ map pretty $ toList cycle)
       <> ")"
+
+data Parity = Even | Odd
+  deriving stock (Eq, Show)
+
+
+instance Semigroup Parity where
+  Even <> a  = a
+  a <> Even  = a
+  Odd <> Odd = Even
+
+instance Monoid Parity where
+  mempty = Even
+
+instance Group Parity where
+  invert = identity
+
+
+data Complexity a = Complexity
+  { parity       :: !Parity
+  , largestCycle :: !(Cycle a)
+  , numCycles    :: !Int
+  }
+  deriving stock (Show)
+
+
+-- * Permutation definition and instances
+newtype Permutation (bound :: Nat) = Permutation
+  { intMap :: IntMap Int
+  }
+  deriving stock (Generic, Show)
+  deriving newtype (NFData)
+
+
+-- Because the permutation representation is not normalized,
+-- we determine if permutations are equal if they map every element of the domain the same way
+instance KnownNat n => Eq (Permutation n) where
+  p == q = all (\k -> permute p k == permute q k) (natsUnder @n)
+
+
+instance KnownNat bound => Semigroup (Permutation bound) where
+  p <> q = natsUnder @bound
+    & map (\n -> (n, composed n))
+    & fromList
+    & Permutation
+    where
+      composed = permute q . permute p
+
+instance KnownNat n => Monoid (Permutation n) where
+  mempty = identityPermutation
+
+identityPermutation :: Permutation n
+identityPermutation = Permutation mempty
+
+instance KnownNat bound => Group (Permutation bound) where
+  invert p = natsUnder @bound
+    & map (\n -> (permute p n, n))
+    & fromList
+    & Permutation
 
 
 permute :: Permutation n -> Int -> Int
@@ -136,37 +195,3 @@ pairs x =
 
 domain :: forall bound. KnownNat bound => Permutation bound -> [Int]
 domain _ = natsUnder @bound
-
--- Permutation definition and instances
-newtype Permutation (bound :: Nat) = Permutation
-  { intMap :: IntMap Int
-  }
-  deriving stock (Generic, Show)
-  deriving newtype (NFData)
-
-
--- Because the permutation representation is not normalized,
--- we determine if permutations are equal if they map every element of the domain the same way
-instance KnownNat n => Eq (Permutation n) where
-  p == q = all (\k -> permute p k == permute q k) (natsUnder @n)
-
-
-instance KnownNat bound => Semigroup (Permutation bound) where
-  p <> q = natsUnder @bound
-    & map (\n -> (n, composed n))
-    & fromList
-    & Permutation
-    where
-      composed = permute q . permute p
-
-instance KnownNat n => Monoid (Permutation n) where
-  mempty = identityPermutation
-
-identityPermutation :: Permutation n
-identityPermutation = Permutation mempty
-
-instance KnownNat bound => Group (Permutation bound) where
-  invert p = natsUnder @bound
-    & map (\n -> (permute p n, n))
-    & fromList
-    & Permutation
