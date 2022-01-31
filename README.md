@@ -48,7 +48,6 @@ Only allow changing the rotation ring if the mouse passes through a narrow band
 - labels do not rescale to fit disk size
 
 ### Future Work
-
 - Implement a search program for efficient algorithms. 
     - Right now I'm shooting in the dark. Knowing efficient algorithms for transpositions or 3 cycles, would allow me to solve on my physical puzzle.
     - The puzzle the puzzle has odd parity since the generators are 18-cycles. 
