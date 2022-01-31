@@ -23,33 +23,33 @@ main :: IO ()
 main =
   rapid 0 $ \r -> do
     env <- createRef r ("env" :: Text) $ getEnv Dev
-    let initialState = encode $ initialStore env
+    let store = initialStore env
+    storeTVar <- createRef r ("store" :: Text) $ newTVarIO (store ^. re json)
+    recordedMoves <- createRef r ("recorded" :: Text) $ Lazy.readFile "./recorded-moves.txt"
 
-    storeTvar <- createRef r ("store" :: Text) $ newTVarIO initialState
-    restart r "webserver" $ startServer env storeTvar
+    restart r "webserver" $ do
+      readTVarIO storeTVar
+      let spa :: JSM ()
+          spa = do
+            setup
+            shpadoinkle identity runParDiff storeTVar (zoomComponent (json `withDefault` store) rootView) stage
+
+      let staticFolder = "./"
+      liveWithStatic (env ^. #port) spa staticFolder
 
 
-startServer :: Env -> TVar Lazy.ByteString -> IO ()
-startServer env storeTvar = do
-  let spa :: JSM ()
-      spa = do
-        setTitle "Gemini"
-        addStyle "/public/styles/index.css"
-
-        shpadoinkle identity runParDiff storeTvar (zoomComponent json rootView) stage
+setup :: JSM ()
+setup = do
+  setTitle "Gemini"
+  addStyle "/public/styles/index.css"
 
 
-  let staticFolder = "./"
-  liveWithStatic (env ^. #port) spa staticFolder
+json :: forall a. (FromJSON a, ToJSON a) => Prism' Lazy.ByteString a
+json = prism' encode decode'
 
-json :: Iso' Lazy.ByteString Store
-json = iso fromBytes toBytes
-  where
-    toBytes :: Store -> Lazy.ByteString
-    toBytes = encode
-
-    fromBytes :: Lazy.ByteString -> Store
-    fromBytes = (either (error . toText) identity . eitherDecode')
+-- lawless, but for the same reasons as `non`. Should be harmless
+withDefault :: Prism' s a -> a -> Iso' s a
+withDefault prism def = iso (fromMaybe def . preview prism ) (review prism)
 
 
 zoomComponent :: (Functor m, Is k A_Lens, Is k A_Getter) => Optic' k ix s a -> (a -> Html m a) -> (s -> Html m s)
