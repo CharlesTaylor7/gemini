@@ -29,19 +29,16 @@ main =
 
     restart r "webserver" $ do
       readTVarIO storeTVar
-      let spa :: JSM ()
-          spa = do
-            setup
-            shpadoinkle identity runParDiff storeTVar (zoomComponent (json `withDefault` store) rootView) stage
-
       let staticFolder = "./"
-      liveWithStatic (env ^. #port) spa staticFolder
+      liveWithStatic (env ^. #port) (spa storeTVar) staticFolder
 
 
-setup :: JSM ()
-setup = do
+spa :: TVar Lazy.ByteString -> JSM ()
+spa = do
   setTitle "Gemini"
   addStyle "/public/styles/index.css"
+  let view = zoomComponent (json `withDefault` store) rootView
+  shpadoinkle identity runParDiff storeTVar view stage
 
 
 json :: forall a. (FromJSON a, ToJSON a) => Prism' Lazy.ByteString a
