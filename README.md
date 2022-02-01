@@ -43,8 +43,6 @@ Only allow changing the rotation ring if the mouse passes through a narrow band
 - it feels jerky during the snap
 
 #### Bugs
-- on starting a drag, the intersection disks visibly sink down into ring. 
-    - this is because they are normally  2 disks on top of each other, and one hides during a drag
 - labels do not rescale to fit disk size
 
 ### Future Work
