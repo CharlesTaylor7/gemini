@@ -15,6 +15,7 @@ import           Shpadoinkle.Run             hiding (Dev, Env)
 import           Rapid
 
 import           Gemini.App                  hiding (app)
+import           Gemini.Types
 import           Gemini.Utils                (generalize)
 import           Gemini.Views.App
 
@@ -22,22 +23,29 @@ import           Gemini.Views.App
 main :: IO ()
 main =
   rapid 0 $ \r -> do
-    env <- createRef r ("env" :: Text) $ getEnv Dev
-    let store = initialStore env
-    storeTVar <- createRef r ("store" :: Text) $ newTVarIO (store ^. re json)
-    recordedMoves <- createRef r ("recorded" :: Text) $ Lazy.readFile "./recorded-moves.txt"
+
+    store <- createRef r ("initialStore" :: Text) $ do
+      env <- getEnv Dev
+      moves <- Lazy.readFile "./recorded-moves.txt" <&> view (json `withDefault` mempty)
+      pure $ (initialStore env) { moves }
+
+    storeTVar <- createRef r ("storeTVar" :: Text) $ newTVarIO (store ^. re json)
 
     restart r "webserver" $ do
-      readTVarIO storeTVar
+      let jsonIso = json `withDefault` store
+
+      moves <- readTVarIO storeTVar <&> view (jsonIso % #moves % re json)
+      Lazy.writeFile "./recorded-moves.txt" moves
+
       let staticFolder = "./"
-      liveWithStatic (env ^. #port) (spa storeTVar) staticFolder
+      liveWithStatic (store ^. #env % #port) (spa jsonIso storeTVar) staticFolder
 
 
-spa :: TVar Lazy.ByteString -> JSM ()
-spa = do
+spa :: (Is k A_Lens, Is k A_Getter) => Optic' k ix Lazy.ByteString Store -> TVar Lazy.ByteString -> JSM ()
+spa lens storeTVar = do
   setTitle "Gemini"
   addStyle "/public/styles/index.css"
-  let view = zoomComponent (json `withDefault` store) rootView
+  let view = zoomComponent lens rootView
   shpadoinkle identity runParDiff storeTVar view stage
 
 
