@@ -375,6 +375,10 @@ button {
     cursor: not-allowed;
 }
 
+.disk.higlight {
+    border: 2px solid yellow;
+}
+
 .dragging div.disk {
     cursor: grabbing;
 }

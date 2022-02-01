@@ -58,29 +58,6 @@ instance Pretty a => Pretty (Cycle a) where
       <> (Pretty.sep $ map pretty $ toList cycle)
       <> ")"
 
-data Parity = Even | Odd
-  deriving stock (Eq, Show)
-
-
-instance Semigroup Parity where
-  Even <> a  = a
-  a <> Even  = a
-  Odd <> Odd = Even
-
-instance Monoid Parity where
-  mempty = Even
-
-instance Group Parity where
-  invert = identity
-
-
-data Complexity a = Complexity
-  { parity       :: !Parity
-  , largestCycle :: !(Cycle a)
-  , numCycles    :: !Int
-  }
-  deriving stock (Show)
-
 
 -- * Permutation definition and instances
 newtype Permutation (bound :: Nat) = Permutation

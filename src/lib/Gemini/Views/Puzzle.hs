@@ -18,6 +18,7 @@ import qualified Shpadoinkle.Continuation as Continuation
 import qualified Shpadoinkle.Html         as Html
 
 import           Gemini.Jsaddle
+import           Gemini.Solve
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
@@ -103,6 +104,8 @@ geminiView store =
     isMobile = options ^. #isMobile
     dragged = dragAngle store
 
+    highlighted = setOf (to highlightPairs % folded % each) gemini
+
     activeCycleMap :: Map Location Int
     activeCycleMap = store
       & itoListOf (#hover % #activeCycle % non (Cycle Empty) % ifolded)
@@ -158,6 +161,7 @@ geminiView store =
               [ ("disk", True)
               , (color, True)
               , ("dragging", isDraggedDisk location)
+              , ("highlight", highlighted ^. contains location)
               , ("hidden", hiddenLocations store ^. contains location)
               ]
             : Html.styleProp

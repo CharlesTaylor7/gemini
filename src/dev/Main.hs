@@ -33,10 +33,9 @@ main =
 
     restart r "webserver" $ do
       let jsonIso = json `withDefault` store
-
       moves <- readTVarIO storeTVar <&> view (jsonIso % #moves % re json)
       Lazy.writeFile "./recorded-moves.txt" moves
-
+      print moves
       let staticFolder = "./"
       liveWithStatic (store ^. #env % #port) (spa jsonIso storeTVar) staticFolder
 

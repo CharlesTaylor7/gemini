@@ -33,6 +33,7 @@ library
       Gemini.App
       Gemini.Env
       Gemini.Jsaddle
+      Gemini.Solve
       Gemini.Types
       Gemini.UI.Actions
       Gemini.UI.EventHandlers
@@ -76,6 +77,7 @@ library
       PatternSynonyms
       FlexibleInstances
       MultiWayIf
+      MultiParamTypeClasses
   ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
   build-depends:
       Shpadoinkle
@@ -137,6 +139,7 @@ executable dev-server
       PatternSynonyms
       FlexibleInstances
       MultiWayIf
+      MultiParamTypeClasses
   ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -Wno-missing-export-lists
   build-depends:
       Shpadoinkle
@@ -200,6 +203,7 @@ executable server
       PatternSynonyms
       FlexibleInstances
       MultiWayIf
+      MultiParamTypeClasses
   ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -Wno-missing-export-lists
   build-depends:
       Shpadoinkle
@@ -266,6 +270,7 @@ test-suite gemini-test
       PatternSynonyms
       FlexibleInstances
       MultiWayIf
+      MultiParamTypeClasses
   ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Werror -Wno-name-shadowing -Wno-partial-type-signatures -threaded -Wno-orphans
   build-depends:
       QuickCheck

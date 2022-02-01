@@ -1,7 +1,7 @@
 module Data.Gemini
-  ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, geminiFromList
+  ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, geminiFromList, solvedColors
   , Location(..), indexToLocation, sibling
-  , Ring(..), Rotation(..), RotationDirection(..), Disk(..)
+  , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   , GeminiPermutation
   , ToPermutation(..)
   , Choice(..), dragRing, Chosen(..)
@@ -34,6 +34,9 @@ newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
+
+instance Each Location Gemini Gemini Disk Disk where
+  each = reindexed indexToLocation $ #geminiDiskMap % each
 
 
 -- | Location on the gemini puzzle, where a disk can slide
@@ -119,9 +122,9 @@ data Color
   | Red
   | Green
   | Blue
-  deriving stock (Eq, Show, Generic, Ord)
+  deriving stock (Eq, Show, Generic, Ord, Bounded, Enum)
   deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData)
+  deriving anyclass (NFData, Finitary)
 
 instance Pretty Color where
   pretty White  = "W"
@@ -334,6 +337,17 @@ isSolved gemini =
     & Map.toList
     & selectGroups (view $ _2 % #color)
     & all (\(color, items) -> items <&> (view $ _1 % to indexToLocation) & isFinishedSequence color)
+
+
+solvedColors :: Gemini -> [Color]
+solvedColors gemini =
+  gemini ^. #geminiDiskMap
+    & Map.toList
+    & selectGroups (view $ _2 % #color)
+    & filter (\(color, items) -> items <&> (view $ _1 % to indexToLocation) & isFinishedSequence color)
+    & map fst
+
+
 
 -- | Sort & group items by key projection
 selectGroups :: (Ord key) => (a -> key) -> [a] -> [(key, NonEmpty a)]
