@@ -20,30 +20,26 @@ A puzzle with 3 overlapping rings and 50 disks in 6 colors. The goal is to line 
 - recording:
     - start/stop record button
     - display recorded motions as cycle notation
+
 ### Saved Moves sidebar
 - available on desktop
 - clicking on a move applies to the gemini and to recorded moves
 - buffer of recorded moves is show at top of panel
 
 ## To Do
-### I would be embarrassed not to do
+- It's unacceptably slow in production. I need to deploy and test performance of a ghcjs build
 - Attach image of puzzle to readme
-- test performance of a ghcjs build
-
-### Gemini Controls
-- need explanation in header
-- keyboard controls
-- click / touch and drag based controls
-
-#### Drag case
+- Explain what "solving means" and explain controls.
 - For the ambiguous case, lock the choice in early. 
-Only allow changing the rotation ring if the mouse passes through a narrow band
- around the starting location
-- animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
-- it feels jerky during the snap
+Only allow changing the rotation ring if the mouse passes through a narrow band around the starting location
+- The saved moves need to be more obviously buttons
+- Hovering over a move should describe all cycles simulataneously
+- Highlight how a cycle impacts a pair of disks 5 apart?
 
 #### Bugs
 - labels do not rescale to fit disk size
+- animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
+- it feels jerky during the snap
 
 ### Future Work
 - Implement a search program for efficient algorithms. 
