@@ -1,6 +1,6 @@
 module Data.Gemini
   ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, geminiFromList, solvedColors
-  , Location(..), indexToLocation, sibling
+  , Location(..), indexToLocation, sibling, ambiguousLocations
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   , GeminiPermutation
   , ToPermutation(..)
@@ -176,7 +176,13 @@ permuteGemini p (Gemini disks) =
         Nothing   -> pure ()
         Just disk -> at (permute p n) ?= disk
 
-
+ambiguousLocations :: [(Location, Location)]
+ambiguousLocations =
+  [ (Location LeftRing 2  , Location CenterRing 16)
+  , (Location LeftRing 7  , Location CenterRing 11)
+  , (Location CenterRing 2, Location RightRing  16)
+  , (Location CenterRing 7, Location RightRing  11)
+  ]
 
 -- | if the position exists on two different rings, then prefer the left one
 canonical :: Location -> Location

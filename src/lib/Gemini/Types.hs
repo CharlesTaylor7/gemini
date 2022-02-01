@@ -1,7 +1,7 @@
 module Gemini.Types
   ( -- ui types
-    Store(..), HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..)
-  , Confetti(..)
+    Store(..), initialStore
+  , HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..) , Confetti(..)
   , Motion(..), Move(..), normalize
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
@@ -24,8 +24,8 @@ import           Data.Finitary    as Finitary
 import           Data.Gemini      as Gemini
 import           Data.Permutation as Permutation
 import           Data.Point       as Point
-
 import           Data.Sequence    (Seq ((:<|), (:|>)))
+import qualified Data.Sequence    as Seq
 import           Optics
 import           Prettyprinter    (Pretty (..))
 import qualified Prettyprinter    as Pretty
@@ -41,9 +41,9 @@ data Store = Store
   , options   :: !Options
   , env       :: !Env
   , dom       :: !DomInfo
-  -- | record moves
   , moves     :: !(Seq Move)
   , recorded  :: !(Seq Motion)
+  , numPairs  :: !Int
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -155,3 +155,34 @@ normalize motion = Just $ do
   where
     directionL :: Lens' Motion RotationDirection
     directionL = #rotation % #direction
+
+
+-- | Initial state of the app
+initialStore :: Env -> Store
+initialStore env = Store
+  { gemini = initialGemini
+  , history = Seq.Empty
+  , recorded = Seq.Empty
+  , moves = Seq.Empty
+  , scrambled = False
+  , hover = HoverState
+    { activeCycle = Nothing
+    , overMove = False
+    }
+  , drag = Nothing
+  , options = Options
+      { showLabels = False
+      , recording = False
+      , debug = False
+      , isMobile = False
+      , confetti = Off
+      }
+  , env = env
+  , dom = DomInfo
+    { ringCenters = mempty
+    , ringRadius = 0
+    }
+  , numPairs = 50
+  }
+
+

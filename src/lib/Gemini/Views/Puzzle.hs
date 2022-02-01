@@ -25,28 +25,20 @@ import           Gemini.UI.EventHandlers
 import           Gemini.Utils
 
 
-ringClass :: Ring -> Text
-ringClass = const "ring " <> \case
-  LeftRing   -> "left"
-  CenterRing -> "center"
-  RightRing  -> "right"
-
-
-draggedOver :: Store -> Set Location
-draggedOver store = setOf (folded % to sibling % _Just) $ activeLocations store
-
-cycleOver :: Store -> Set Location
-cycleOver store = setOf (#hover % #activeCycle % _Just % folded % to sibling % _Just) $ store
-
 hiddenLocations :: Store -> Set Location
-hiddenLocations = draggedOver <> cycleOver
-
-activeLocations :: Store -> [Location]
-activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
+hiddenLocations store =
+  ambiguousLocations
+  & map (\(left, right) -> if store ^. to draggedOver % contains right then right else left)
+  & fromList
   where
+    draggedOver :: Store -> Set Location
+    draggedOver store = setOf (folded % to sibling % _Just) $ activeLocations store
+
+    activeLocations :: Store -> [Location]
+    activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
+
     activeRing :: Store -> Maybe Ring
     activeRing = preview $ to dragAngle % _Just % _1 % #ring
-
 
 
 angleOnCircle :: forall n. KnownNat n => Cyclic n -> Angle
@@ -55,6 +47,14 @@ angleOnCircle (Cyclic k) = turns ~~ offset
     turns = Turns $ (fromIntegral k) / (fromIntegral $ knownInt @n)
     -- By arbitrary choice, the initial position is at the top of the circle
     offset = Degrees 90
+
+
+ringClass :: Ring -> Text
+ringClass = const "ring " <> \case
+  LeftRing   -> "left"
+  CenterRing -> "center"
+  RightRing  -> "right"
+
 
 
 geminiView :: forall m. Store -> Html m Store
@@ -104,7 +104,7 @@ geminiView store =
     isMobile = options ^. #isMobile
     dragged = dragAngle store
 
-    highlighted = setOf (to highlightPairs % folded % each) gemini
+    highlighted = setOf (to highlightPairs % folded % _1) gemini
 
     activeCycleMap :: Map Location Int
     activeCycleMap = store

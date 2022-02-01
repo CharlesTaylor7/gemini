@@ -27,34 +27,6 @@ import           Gemini.Views.Puzzle             (geminiView)
 import           Gemini.Views.RecordedMovesPanel (recordedMovesPanel)
 
 
--- | Initial state of the app
-initialStore :: Env -> Store
-initialStore env = Store
-  { gemini = initialGemini
-  , history = Seq.Empty
-  , recorded = Seq.Empty
-  , moves = Seq.Empty
-  , scrambled = False
-  , hover = HoverState
-    { activeCycle = Nothing
-    , overMove = False
-    }
-  , drag = Nothing
-  , options = Options
-      { showLabels = False
-      , recording = False
-      , debug = False
-      , isMobile = False
-      , confetti = Off
-      }
-  , env = env
-  , dom = DomInfo
-    { ringCenters = mempty
-    , ringRadius = 0
-    }
-  }
-
-
 keyboardMotions :: (Text, Prop m Store)
 keyboardMotions =
   Html.onKeydown $ \case
@@ -77,7 +49,11 @@ rootView store =
       , ("dragging", isn't (#drag % _Nothing) store)
       ]
     , Html.styleProp
-      [ ("justify-content", if isn't (#moves % _Empty) store then "space-between" else "center")
+      [ ("justify-content"
+        , if store ^. #options % #recording || isn't (#moves % _Empty) store
+          then "space-between"
+          else "center"
+        )
       ]
     -- autofocus so that keyboard events are active on page load
     , Html.autofocus True
@@ -157,10 +133,12 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    ( catMaybes $
-      [ flip fmap (store ^. #drag) $
+    ( ( toList $
+        flip fmap (store ^. #drag) $
           \drag -> Html.text $ prettyCompactText $ drag
-      ]
+      )
+    <> [ Html.text $ store ^. #numPairs % to prettyCompactText
+       ]
     )
   )
 

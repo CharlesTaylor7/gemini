@@ -12,6 +12,7 @@ import qualified Data.Sequence          as Seq
 import           Optics
 import           Optics.State.Operators
 
+import           Gemini.Solve           (highlightPairs)
 import           Gemini.Types
 
 
@@ -39,6 +40,8 @@ applyMotionToStore motion = execState $ do
     when (isSolved gemini && wasScrambled) $ do
       (#options % #confetti .= FadeIn)
       (#scrambled .= False)
+
+    (#numPairs) .= gemini ^. to highlightPairs % to length
 
 
 stopRecording :: Store -> Store
