@@ -28,15 +28,9 @@ import           Gemini.Utils
 hiddenLocations :: Store -> Set Location
 hiddenLocations store =
   ambiguousLocations
-  & map (\(left, right) -> if store ^. to dragged % contains right then left else right)
+  & map (\(left, right) -> if Just (right ^. #ring) == activeRing store then left else right)
   & fromList
   where
-    dragged :: Store -> Set Location
-    dragged store = setOf (to activeLocations % folded) $ store
-
-    activeLocations :: Store -> [Location]
-    activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
-
     activeRing :: Store -> Maybe Ring
     activeRing = preview $ to dragAngle % _Just % _1 % #ring
 
