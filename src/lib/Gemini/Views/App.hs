@@ -74,8 +74,10 @@ rootView store =
   Html.div
     [ Html.class'
       [ ("gemini-app" :: Text, True)
-      , ("mobile", store ^. #options % #isMobile)
       , ("dragging", isn't (#drag % _Nothing) store)
+      ]
+    , Html.styleProp
+      [ ("justify-content", if isn't (#moves % _Empty) store then "space-between" else "center")
       ]
     -- autofocus so that keyboard events are active on page load
     , Html.autofocus True

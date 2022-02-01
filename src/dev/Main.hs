@@ -26,16 +26,12 @@ main =
 
     store <- createRef r ("initialStore" :: Text) $ do
       env <- getEnv Dev
-      moves <- Lazy.readFile "./recorded-moves.txt" <&> view (json `withDefault` mempty)
-      pure $ (initialStore env) { moves }
+      pure $ initialStore env
 
     storeTVar <- createRef r ("storeTVar" :: Text) $ newTVarIO (store ^. re json)
 
     restart r "webserver" $ do
       let jsonIso = json `withDefault` store
-      moves <- readTVarIO storeTVar <&> view (jsonIso % #moves % re json)
-      Lazy.writeFile "./recorded-moves.txt" moves
-      print moves
       let staticFolder = "./"
       liveWithStatic (store ^. #env % #port) (spa jsonIso storeTVar) staticFolder
 

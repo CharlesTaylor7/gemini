@@ -61,12 +61,8 @@ button {
     height: 100%;
     width: 100%;
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.gemini-app.mobile {
     justify-content: center;
+    gap: 12px;
 }
 
 .main-panel {
@@ -366,7 +362,6 @@ button {
     border: 2px solid magenta;
 }
 
-
 .disk.hidden {
     display: none;
 }
@@ -375,9 +370,10 @@ button {
     cursor: not-allowed;
 }
 
-.disk.higlight {
-    border: 2px solid yellow;
+.disk.highlight {
+    border: 3px solid #ff9800;
 }
+
 
 .dragging div.disk {
     cursor: grabbing;
