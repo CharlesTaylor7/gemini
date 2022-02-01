@@ -12,25 +12,23 @@ import           Optics
 type Pair a = (a, a)
 
 
-pair :: Ord a => a -> a -> Pair a
-pair x y = if x <= y then (x, y) else (y, x)
+pair :: a -> a -> Pair a
+pair x y = (x, y)
 
 
-highlightPairs :: Gemini -> Set (Pair Location)
+highlightPairs :: Gemini -> [Pair Location]
 highlightPairs gemini =
   gemini
   & itoListOf each
   & filter (\(_, Disk { color }) -> color `notElem` solved)
   & concatMap toPairs
-  & fromList
   where
     solved = solvedColors gemini
 
     toPairs :: (Location, Disk) -> [Pair Location]
     toPairs (location, disk) = pair location <$> do
-      offset <- [-5, 5]
       locations <- location : (sibling location & toList)
-      let candidate = location & #position %~ (+ offset)
-      let check color = color `notElem` solved && color /= disk ^. #color
+      let candidate = location & #position %~ (+ 5)
+      let check color = color `notElem` (disk ^. #color : solved)
       guard $ maybe False check $ gemini ^? geminiIx candidate % #color
       pure $ candidate
