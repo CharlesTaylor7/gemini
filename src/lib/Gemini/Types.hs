@@ -43,7 +43,6 @@ data Store = Store
   , dom       :: !DomInfo
   , moves     :: !(Seq Move)
   , recorded  :: !(Seq Motion)
-  , numPairs  :: !Int
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -83,11 +82,12 @@ data DomInfo = DomInfo
 
 
 data Options = Options
-  { showLabels :: !Bool
-  , recording  :: !Bool
-  , debug      :: !Bool
-  , isMobile   :: !Bool
-  , confetti   :: !Confetti
+  { showLabels     :: !Bool
+  , recording      :: !Bool
+  , debug          :: !Bool
+  , isMobile       :: !Bool
+  , confetti       :: !Confetti
+  , highlightPairs :: !Bool
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -176,13 +176,13 @@ initialStore env = Store
       , debug = False
       , isMobile = False
       , confetti = Off
+      , highlightPairs = False
       }
   , env = env
   , dom = DomInfo
     { ringCenters = mempty
     , ringRadius = 0
     }
-  , numPairs = 50
   }
 
 

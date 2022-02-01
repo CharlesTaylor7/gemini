@@ -28,11 +28,11 @@ import           Gemini.Utils
 hiddenLocations :: Store -> Set Location
 hiddenLocations store =
   ambiguousLocations
-  & map (\(left, right) -> if store ^. to draggedOver % contains right then right else left)
+  & map (\(left, right) -> if store ^. to dragged % contains right then left else right)
   & fromList
   where
-    draggedOver :: Store -> Set Location
-    draggedOver store = setOf (folded % to sibling % _Just) $ activeLocations store
+    dragged :: Store -> Set Location
+    dragged store = setOf (to activeLocations % folded) $ store
 
     activeLocations :: Store -> [Location]
     activeLocations store = activeRing store & concatMap (\ring -> map (Location ring) inhabitants)
@@ -104,7 +104,10 @@ geminiView store =
     isMobile = options ^. #isMobile
     dragged = dragAngle store
 
-    highlighted = setOf (to highlightPairs % folded % _1) gemini
+    highlighted =
+      if options ^. #highlightPairs
+      then setOf (to solutionPairs % folded % each) gemini
+      else mempty
 
     activeCycleMap :: Map Location Int
     activeCycleMap = store

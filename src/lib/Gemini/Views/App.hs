@@ -19,6 +19,7 @@ import qualified Shpadoinkle.Html                as Html
 import qualified Shpadoinkle.Keyboard            as Key
 
 import           Gemini.Jsaddle                  (sleep)
+import           Gemini.Solve
 import           Gemini.Types
 import           Gemini.UI.Actions
 import           Gemini.UI.EventHandlers
@@ -133,13 +134,8 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    ( ( toList $
-        flip fmap (store ^. #drag) $
-          \drag -> Html.text $ prettyCompactText $ drag
-      )
-    <> [ Html.text $ store ^. #numPairs % to prettyCompactText
-       ]
-    )
+    [ Html.text $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
+    ]
   )
 
 
@@ -161,9 +157,10 @@ header store =
                   if store ^. isProdL
                   then []
                   else
-                    [ (checkBox "Debug" & zoomComponent (#options % #debug) store)
+                    [ checkBox "Debug" & zoomComponent (#options % #debug) store
                     , (checkBox "Prod" & zoomComponent isProdL store)
-                    , (confettiButton & zoomComponent (#options % #confetti) store)
+                    , confettiButton & zoomComponent (#options % #confetti) store
+                    , checkBox "Highlight" & zoomComponent (#options % #highlightPairs) store
                     ]
                 )
             )

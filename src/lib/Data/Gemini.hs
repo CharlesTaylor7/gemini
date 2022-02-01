@@ -1,6 +1,6 @@
 module Data.Gemini
   ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, geminiFromList, solvedColors
-  , Location(..), indexToLocation, sibling, ambiguousLocations
+  , Location(..), indexToLocation, sibling, ambiguousLocations, canonical
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   , GeminiPermutation
   , ToPermutation(..)
