@@ -109,12 +109,14 @@ confettiView store =
         , Html.button
           [ Html.className "action-button"
           , Html.onClickC $
-            Continuation.pur ((confetti .~ FadeOut) . (#stats .~ Nothing))
+            Continuation.pur (confetti .~ FadeOut)
             `Continuation.before`
             Continuation.merge
               ( Continuation.kleisli $ const $ do
                 sleep 1
-                pure $ Continuation.pur $ confetti .~ Off
+                pure $ Continuation.pur $
+                  (confetti .~ Off) .
+                  (#stats .~ Nothing)
               )
           ]
           [ Html.text "Continue" ]
