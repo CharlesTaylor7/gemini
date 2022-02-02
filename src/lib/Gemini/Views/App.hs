@@ -124,7 +124,7 @@ confettiView store =
     confetti = #options % #confetti
 
 
-debugView :: Store -> Maybe (Html m a)
+debugView :: forall m a. Store -> Maybe (Html m a)
 debugView store =
   (store ^. #options % #debug) `orNothing`
   ( Html.div
@@ -134,9 +134,13 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    [ Html.text $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
+    [ paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
+    , paragraph $ prettyCompactText $ store ^.. #hover
     ]
   )
+  where
+    paragraph :: forall m a. Text -> Html m a
+    paragraph = Html.p_ . pure . Html.text
 
 
 header :: forall m. MonadJSM m => Store -> Html m Store

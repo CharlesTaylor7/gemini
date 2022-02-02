@@ -374,11 +374,13 @@ button {
     border: 4px solid #f100ff;
 }
 
+.disk.active-cycle {
+    border: 4px solid blue;
+}
 
 .dragging div.disk {
     cursor: grabbing;
 }
-
 
 .disk-label {
     position: relative;
@@ -387,9 +389,6 @@ button {
     font-size: 1em;
 }
 
-.disk.black > .disk-label {
-    color: white;
-}
 
 /* colors */
 .disk.unknown {
@@ -401,6 +400,7 @@ button {
 }
 
 .disk.black {
+    color: white;
     background-color: var(--disk-black);
 }
 

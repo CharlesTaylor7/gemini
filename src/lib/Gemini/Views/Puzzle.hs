@@ -50,6 +50,9 @@ ringClass = const "ring " <> \case
   RightRing  -> "right"
 
 
+toLetter :: Int -> Char
+toLetter i = toEnum $ i + 97
+
 
 geminiView :: forall m. Store -> Html m Store
 geminiView store =
@@ -98,15 +101,22 @@ geminiView store =
     isMobile = options ^. #isMobile
     dragged = dragAngle store
 
+    highlighted :: Set Location
     highlighted =
       if options ^. #highlightPairs
       then setOf (to solutionPairs % folded % each) gemini
       else mempty
 
-    activeCycleMap :: Map Location Int
-    activeCycleMap = store
-      & itoListOf (#hover % #activeCycle % non (Cycle Empty) % ifolded)
-      & map (\(i, x) -> (x, i + 1))
+    activeCycle :: Set Location
+    activeCycle = setOf (#hover % _Just % #cycle % _Just % folded) store
+
+    hidden :: Set Location
+    hidden = hiddenLocations store
+
+    activeMoveLabels :: Map Location Text
+    activeMoveLabels = store
+      & itoListOf (#hover % _Just % #move % #moveCycles % each <%> ifolded)
+      & map (\((i, j), x) -> (x, show (i + 1) <> Text.singleton (toLetter j)))
       & fromList
 
     ringView :: Ring -> Html m Store
@@ -143,10 +153,10 @@ geminiView store =
           )
 
         defaultLabel :: Maybe Text
-        defaultLabel = (options ^. #showLabels && store ^. #hover % #overMove % to not) `orNothing` diskLabel
+        defaultLabel = (options ^. #showLabels && isn't (#hover % _Just) store) `orNothing` diskLabel
 
         cycleLabel :: Maybe Text
-        cycleLabel = activeCycleMap ^? ix location <&> show
+        cycleLabel = activeMoveLabels ^? ix location
 
         toLabelSpan label = Html.div [ ("className", "disk-label") ] [ Html.text label ]
 
@@ -159,7 +169,8 @@ geminiView store =
               , (color, True)
               , ("dragging", isDraggedDisk location)
               , ("highlight", highlighted ^. contains location)
-              , ("hidden", hiddenLocations store ^. contains location)
+              , ("active-cycle", activeCycle ^. contains location)
+              , ("hidden", hidden ^. contains location)
               ]
             : Html.styleProp
               [ ("left", show x <> "%")

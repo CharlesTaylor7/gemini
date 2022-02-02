@@ -39,20 +39,19 @@ moveView (i, move) =
     [ Html.div
       [ Html.className "move-description"
       , Html.onClick $ applyMove move
+      , Html.onMouseenter $ #hover ?~ HoverState { move, cycle = Nothing }
+      , Html.onMouseleave $ #hover .~ Nothing
       ]
       [ Html.div
           [ Html.className "motions" ]
           [ Html.text $ (prettyCompactText $ move ^.. #motions % folded ) <> ":" ]
       , Html.div
-          [ Html.className "cycles"
-          , Html.onMouseenter $ #hover % #overMove .~ True
-          , Html.onMouseleave $ #hover % #overMove .~ False
-          ]
+          [ Html.className "cycles" ]
           ( move & moveCycles & unCycles & toList <&> \cycle ->
               Html.div
                 [ Html.className "cycle"
-                , Html.onMouseenter $ #hover % #activeCycle ?~ cycle
-                , Html.onMouseleave $ #hover % #activeCycle .~ Nothing
+                , Html.onMouseenter $ #hover % _Just % #cycle ?~ cycle
+                , Html.onMouseleave $ #hover % _Just % #cycle .~ Nothing
                 ]
                 [ Html.text $ prettyCompactText $ cycle ]
           )

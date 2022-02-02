@@ -27,7 +27,7 @@ import           Data.Point       as Point
 import           Data.Sequence    (Seq ((:<|), (:|>)))
 import qualified Data.Sequence    as Seq
 import           Optics
-import           Prettyprinter    (Pretty (..))
+import           Prettyprinter    (Pretty (..), (<+>))
 import qualified Prettyprinter    as Pretty
 
 
@@ -36,7 +36,7 @@ data Store = Store
   { gemini    :: !Gemini
   , history   :: !(Seq Motion)
   , scrambled :: !Bool
-  , hover     :: !HoverState
+  , hover     :: !(Maybe HoverState)
   , drag      :: !(Maybe DragState)
   , options   :: !Options
   , env       :: !Env
@@ -50,12 +50,16 @@ data Store = Store
 
 
 data HoverState = HoverState
-  { activeCycle :: !(Maybe (Cycle Location))
-  , overMove    :: !Bool
+  { move  :: !Move
+  , cycle :: !(Maybe (Cycle Location))
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
+
+instance Pretty HoverState where
+  pretty HoverState { move, cycle } = pretty move <+> pretty cycle
+
 
 data DragState = DragState
   { location     :: !(Choice Location)
@@ -127,6 +131,10 @@ data Move = Move
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
+instance Pretty Move where
+  pretty = prettyList . toList . view #motions
+
+
 data Motion = Motion
   { amount   :: !(Cyclic 18)
   , rotation :: !Rotation
@@ -165,10 +173,7 @@ initialStore env = Store
   , recorded = Seq.Empty
   , moves = Seq.Empty
   , scrambled = False
-  , hover = HoverState
-    { activeCycle = Nothing
-    , overMove = False
-    }
+  , hover = Nothing
   , drag = Nothing
   , options = Options
       { showLabels = False
@@ -184,5 +189,3 @@ initialStore env = Store
     , ringRadius = 0
     }
   }
-
-

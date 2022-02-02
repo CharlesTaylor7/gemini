@@ -33,6 +33,8 @@ newtype Cycles a = Cycles { unCycles :: (Seq (Cycle a)) }
   deriving newtype (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
+instance Each Int (Cycles a) (Cycles a) (Cycle a) (Cycle a) where
+  each = #unCycles % each
 
 newtype Cycle a = Cycle (Seq a)
   deriving stock (Eq, Generic, Show)
