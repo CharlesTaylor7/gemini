@@ -32,8 +32,8 @@ generalize :: (Functor m, Continuous f, Is k A_Lens) => Optic' k ix s a -> (f m 
 generalize optic = Shpadoinkle.Lens.generalize $ toLensVL optic
 
 
-orNothing :: Bool -> a -> Maybe a
-bool `orNothing` a = if bool then Just a else Nothing
+orNothing :: Alternative m => Bool -> a -> m a
+bool `orNothing` a = if bool then pure a else empty
 
 
 -- looping utilities

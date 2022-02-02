@@ -1,5 +1,6 @@
 module Gemini.Solve
   ( solutionPairs
+  , Orientation(..)
   ) where
 
 import           Relude
