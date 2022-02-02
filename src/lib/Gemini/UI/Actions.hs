@@ -26,7 +26,9 @@ toContinuation = Continuation.kleisli . fmap fmap fmap constUpdate . execStateT
 
 
 applyMove :: MonadJSM m => Move -> Action m
-applyMove move = traverse_ applyMotionUnchecked $ move ^. #motions
+applyMove move = do
+  traverse_ applyMotionUnchecked $ move ^. #motions
+  checkWin
 
 
 -- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
