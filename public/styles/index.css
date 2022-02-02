@@ -384,7 +384,6 @@ button {
 
 .disk-label {
     position: relative;
-    color: black;
     user-select: none;
     font-size: 1em;
 }

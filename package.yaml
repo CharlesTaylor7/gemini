@@ -78,6 +78,7 @@ default-extensions:
   - FlexibleInstances
   - MultiWayIf
   - MultiParamTypeClasses
+  - ConstraintKinds
 
 ghc-options:
   # general

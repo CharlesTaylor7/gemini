@@ -1,5 +1,5 @@
 module Gemini.Jsaddle
-  ( jsCall, jsConsoleLog, setTitle, sleep
+  ( jsCall, jsConsoleLog, setTitle, sleep, dateNow
   -- reexports
   , JSM, JSVal, ToJSVal(..), FromJSVal(..), MakeArgs
   , jsg, instanceOf
@@ -9,9 +9,12 @@ module Gemini.Jsaddle
 import           Relude
 
 import           Control.Concurrent          (threadDelay)
-import           Language.Javascript.JSaddle (FromJSVal (..), JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..),
-                                              instanceOf, jsg, (!!), (!), (#), (<#))
+import           Gemini.Types                (Timestamp (..))
+import           Language.Javascript.JSaddle (FromJSVal (..), JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..), eval,
+                                              instanceOf, jsg, liftJSM, (!!), (!), (#), (<#))
 
+dateNow :: MonadJSM m => m Timestamp
+dateNow = liftJSM $ Timestamp <$> (eval ("Date.now()" :: Text) >>= fromJSValUnchecked)
 
 jsConsoleLog :: JSVal -> JSM ()
 jsConsoleLog text = void $ jsg ("console" :: Text) # ("log" :: Text) $ text

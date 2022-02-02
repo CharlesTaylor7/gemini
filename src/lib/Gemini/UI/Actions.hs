@@ -1,5 +1,5 @@
 module Gemini.UI.Actions
-  ( applyMotionToStore, stopRecording, applyRotation, applyToHistory, applyMove
+  ( applyMotionToStore, stopRecording, applyRotation, applyToHistory, applyMove, toContinuation
   , dragAngle
   , startDrag, updateDrag, endDrag
   ) where
@@ -8,21 +8,30 @@ import           Relude
 
 import           Data.Angle
 import           Data.Permutation
-import qualified Data.Sequence          as Seq
+import qualified Data.Sequence            as Seq
 import           Optics
 import           Optics.State.Operators
+import           Shpadoinkle
+import qualified Shpadoinkle.Continuation as Continuation
 
+import           Gemini.Jsaddle
 import           Gemini.Types
 
 
-applyMove :: Move -> Store -> Store
-applyMove move store = foldl' (flip applyMotionToStore) store (move ^. #motions)
+type Action m = StateT Store m ()
 
 
-applyMotionToStore :: Motion -> Store -> Store
-applyMotionToStore motion = execState $ do
-  unlocked <- use $ #options % #confetti % to (== Off)
-  when unlocked $ do
+toContinuation :: MonadJSM m => Action m -> Continuation m Store
+toContinuation = Continuation.kleisli . fmap fmap fmap constUpdate . execStateT
+
+
+applyMove :: MonadJSM m => Move -> Action m
+applyMove move = traverse_ applyMotionUnchecked $ move ^. #motions
+
+
+-- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
+applyMotionUnchecked :: Monad m => Motion -> Action m
+applyMotionUnchecked motion = do
     -- apply to puzzle
     (#gemini %= applyToGemini motion)
 
@@ -33,12 +42,26 @@ applyMotionToStore motion = execState $ do
     -- apply to history to tally move count
     (#history %= applyToHistory motion)
 
-    -- check if the puzzle is solved
-    gemini <- use #gemini
-    wasScrambled <- use $ #scrambled
-    when (isSolved gemini && wasScrambled) $ do
-      (#options % #confetti .= FadeIn)
-      (#scrambled .= False)
+
+applyMotionToStore :: MonadJSM m => Motion -> Action m
+applyMotionToStore motion = do
+  unlocked <- use $ #options % #confetti % to (== Off)
+  when unlocked $ do
+    -- apply to history & gemini
+    applyMotionUnchecked motion
+    -- check for win
+    checkWin
+
+
+checkWin :: MonadJSM m => Action m
+checkWin = do
+  -- check if the puzzle is solved
+  gemini <- use #gemini
+  wasScrambled <- get <&> isn't (#stats % _Nothing)
+  when (isSolved gemini && wasScrambled) $ do
+    solvedAt <- dateNow
+    (#stats % _Just % #solvedAt ?= solvedAt)
+    (#options % #confetti .= FadeIn)
 
 
 stopRecording :: Store -> Store
@@ -59,7 +82,7 @@ stopRecording state = state
     locationCycles = fmap indexToLocation . toCycles
 
 
-applyRotation :: Rotation -> Store -> Store
+applyRotation :: MonadJSM m => Rotation -> StateT Store m ()
 applyRotation r = applyMotionToStore $ toMotion r
   where
     toMotion :: Rotation -> Motion
@@ -123,8 +146,8 @@ updateDrag mouse = execState $ do
     _ -> pure ()
 
 
-endDrag :: Point -> Store -> Store
-endDrag mouse = execState $ do
+endDrag :: Point -> StateT Store JSM ()
+endDrag mouse = do
   modify $ updateDrag mouse
   drag <- dragAngle <$> get
   case drag of
@@ -136,7 +159,7 @@ endDrag mouse = execState $ do
       let motion = Motion { amount = abs n, rotation = Rotation { ring, direction = Clockwise } }
       case normalize motion of
         Nothing     -> pure ()
-        Just motion -> modify $ applyMotionToStore motion
+        Just motion -> applyMotionToStore motion
 
 
 angleToPosition :: forall n. KnownNat n => Angle -> Cyclic n

@@ -15,13 +15,13 @@ import           Gemini.UI.Actions
 import           Gemini.Utils      (orNothing, prettyCompactText)
 
 
-recordedMovesPanel :: Store -> Maybe (Html m Store)
+recordedMovesPanel :: MonadJSM m => Store -> Maybe (Html m Store)
 recordedMovesPanel store =
-  (store ^. #options % #isMobile % to not) `orNothing`
+  (store ^. #options % #recording || isn't (#moves % _Empty) store) `orNothing`
   Html.div
     [ Html.className "saved-moves-panel" ]
     ( (bufferView store & toList)
-    <> (itoListOf (#moves % ifolded) store <&> moveView )
+    <> (itoListOf (#moves % ifolded) store <&> moveView)
     )
 
 bufferView :: Store -> Maybe (Html m Store)
@@ -32,13 +32,13 @@ bufferView store =
     [ Html.text $ prettyCompactText $ store ^.. #recorded % folded ]
 
 
-moveView :: (Int, Move) -> Html m Store
+moveView :: MonadJSM m => (Int, Move) -> Html m Store
 moveView (i, move) =
   Html.div
     [ Html.className "move" ]
     [ Html.div
       [ Html.className "move-description"
-      , Html.onClick $ applyMove move
+      , Html.onClickC $ toContinuation $ applyMove move
       , Html.onMouseenter $ #hover ?~ HoverState { move, cycle = Nothing }
       , Html.onMouseleave $ #hover .~ Nothing
       ]

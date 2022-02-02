@@ -46,4 +46,5 @@ onDragUpdate = listenerProp $ \_ event -> do
 onDragEnd :: MonadJSM m => Prop m Store
 onDragEnd = listenerProp $ \_ event -> do
   mouse <- mousePosition event
-  pure $ Continuation.pur $ endDrag mouse
+  pure $ Continuation.kleisli $
+    endDrag mouse & execStateT & fmap (\ma -> liftJSM ma <&> constUpdate)

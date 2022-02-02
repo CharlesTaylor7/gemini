@@ -98,7 +98,7 @@ geminiView store =
   where
     gemini = store ^. #gemini
     options = store ^. #options
-    isMobile = options ^. #isMobile
+    mobile = options ^. #mobile
     dragged = dragAngle store
 
     highlighted :: Set Location
@@ -180,7 +180,7 @@ geminiView store =
               , ("touchstart", onDragStart location)
               ]
             )
-            if isMobile
+            if mobile
             then []
             else [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]
 

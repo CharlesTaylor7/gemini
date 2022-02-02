@@ -2,7 +2,9 @@ module Gemini.Types
   ( -- ui types
     Store(..), initialStore
   , HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..) , Confetti(..)
+  , Stats(..)
   , Motion(..), Move(..), normalize
+  , Timestamp(..)
     -- re export Seq constructors
   , pattern (:<|), pattern (:|>)
   -- re export other modules
@@ -33,17 +35,33 @@ import qualified Prettyprinter    as Pretty
 
 -- | UI Definitions
 data Store = Store
-  { gemini    :: !Gemini
-  , history   :: !(Seq Motion)
-  , scrambled :: !Bool
-  , hover     :: !(Maybe HoverState)
-  , drag      :: !(Maybe DragState)
-  , options   :: !Options
-  , env       :: !Env
-  , dom       :: !DomInfo
-  , moves     :: !(Seq Move)
-  , recorded  :: !(Seq Motion)
+  { gemini   :: !Gemini
+  , history  :: !(Seq Motion)
+  , hover    :: !(Maybe HoverState)
+  , drag     :: !(Maybe DragState)
+  , options  :: !Options
+  , env      :: !Env
+  , dom      :: !DomInfo
+  , moves    :: !(Seq Move)
+  , recorded :: !(Seq Motion)
+  , stats    :: !(Maybe Stats)
   }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (NFData)
+
+
+data Stats = Stats
+  { scrambledAt :: !Timestamp
+  , solvedAt    :: !(Maybe Timestamp)
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (NFData)
+
+
+-- | timestamp in milliseconds
+newtype Timestamp = Timestamp Double
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
@@ -89,9 +107,9 @@ data Options = Options
   { showLabels     :: !Bool
   , recording      :: !Bool
   , debug          :: !Bool
-  , isMobile       :: !Bool
   , confetti       :: !Confetti
   , highlightPairs :: !Bool
+  , mobile         :: !Bool
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -172,14 +190,13 @@ initialStore env = Store
   , history = Seq.Empty
   , recorded = Seq.Empty
   , moves = Seq.Empty
-  , scrambled = False
   , hover = Nothing
   , drag = Nothing
   , options = Options
       { showLabels = False
       , recording = False
       , debug = False
-      , isMobile = False
+      , mobile = False
       , confetti = Off
       , highlightPairs = False
       }
@@ -188,4 +205,5 @@ initialStore env = Store
     { ringCenters = mempty
     , ringRadius = 0
     }
+  , stats = Nothing
   }

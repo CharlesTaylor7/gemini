@@ -18,7 +18,7 @@ import qualified Shpadoinkle.Continuation        as Continuation
 import qualified Shpadoinkle.Html                as Html
 import qualified Shpadoinkle.Keyboard            as Key
 
-import           Gemini.Jsaddle                  (sleep)
+import           Gemini.Jsaddle                  (dateNow, sleep)
 import           Gemini.Solve
 import           Gemini.Types
 import           Gemini.UI.Actions
@@ -28,17 +28,19 @@ import           Gemini.Views.Puzzle             (geminiView)
 import           Gemini.Views.RecordedMovesPanel (recordedMovesPanel)
 
 
-keyboardMotions :: (Text, Prop m Store)
+keyboardMotions :: forall m. MonadJSM m => (Text, Prop m Store)
 keyboardMotions =
-  Html.onKeydown $ \case
+  Html.onKeydownC $ \case
     -- the keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
-    Key.Q -> applyRotation $ Rotation LeftRing AntiClockwise
-    Key.W -> applyRotation $ Rotation LeftRing Clockwise
-    Key.T -> applyRotation $ Rotation CenterRing AntiClockwise
-    Key.Y -> applyRotation $ Rotation CenterRing Clockwise
-    Key.O -> applyRotation $ Rotation RightRing AntiClockwise
-    Key.P -> applyRotation $ Rotation RightRing Clockwise
-    _     -> identity
+    Key.Q -> apply $ Rotation LeftRing AntiClockwise
+    Key.W -> apply $ Rotation LeftRing Clockwise
+    Key.T -> apply $ Rotation CenterRing AntiClockwise
+    Key.Y -> apply $ Rotation CenterRing Clockwise
+    Key.O -> apply $ Rotation RightRing AntiClockwise
+    Key.P -> apply $ Rotation RightRing Clockwise
+    _     -> Continuation.pur identity
+    where
+      apply = toContinuation . applyRotation
 
 
 -- | Components
@@ -151,27 +153,23 @@ header store =
       [ Html.className "control-panel" ]
       ( catMaybes $
         [ debugView store
-        , (store ^. #options % #isMobile % to not) `orNothing`
+        , (store ^. #options % #mobile % to not) `orNothing`
             (
               buttonGroup "options" $
-                ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store)
-                  , (checkBox "Mobile" & zoomComponent (#options % #isMobile) store)
-                  ]
+                ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
                 <>
                   if store ^. isProdL
                   then []
                   else
-                    [ checkBox "Debug" & zoomComponent (#options % #debug) store
-                    , (checkBox "Prod" & zoomComponent isProdL store)
-                    , confettiButton & zoomComponent (#options % #confetti) store
+                    [ confettiButton & zoomComponent (#options % #confetti) store
+                    , checkBox "Debug" & zoomComponent (#options % #debug) store
                     , checkBox "Highlight" & zoomComponent (#options % #highlightPairs) store
                     ]
                 )
             )
         , Just $ buttonGroup "actions" $ catMaybes
             [ Just scrambleButton
-            , Just resetButton
-            , (store ^. #options % #isMobile % to not) `orNothing` recordButton store
+            , (store ^. #options % #mobile % to not) `orNothing` recordButton store
             ]
         ]
       )
@@ -264,28 +262,17 @@ recordButton store = if store ^. #options % #recording then stopRecordingButton 
         [ Html.text $ "Stop Recording" ]
 
 
-resetButton :: Html m Store
-resetButton =
-  actionButton
-    [ Html.onClick $
-        (#history   .~ Seq.Empty) .
-        (#recorded  .~ Seq.Empty) .
-        (#scrambled .~ False) .
-        (#gemini    .~ initialGemini)
-    ]
-    [ Html.text "Reset" ]
-
-
-scrambleButton :: forall m. MonadIO m => Html m Store
+scrambleButton :: forall m. MonadJSM m => Html m Store
 scrambleButton =
   actionButton
     [ Html.onClickM $ do
         rotations :: [Rotation] <- replicateM 1000 $ uniformM globalStdGen
         let scramble gemini = foldl' (flip applyToGemini) gemini rotations
+        scrambledAt <- dateNow
         pure $
-          (#history   .~ Seq.Empty) .
-          (#recorded  .~ Seq.Empty) .
-          (#gemini    %~ scramble) .
-          (#scrambled .~ True)
+          (#history  .~ Seq.Empty) .
+          (#recorded .~ Seq.Empty) .
+          (#gemini   %~ scramble) .
+          (#stats    ?~ Stats { scrambledAt, solvedAt = Nothing })
     ]
     [ Html.text "Scramble" ]
