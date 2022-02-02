@@ -103,6 +103,8 @@ confettiView store =
         [ Html.p_
           [ Html.text $
               "Solved in "
+            <> elapsed
+            <> " with "
             <> (store ^. #history % to length % to show)
             <> " motions"
           ]
@@ -126,6 +128,13 @@ confettiView store =
   where
     confetti :: Lens' Store Confetti
     confetti = #options % #confetti
+
+    elapsed :: Text
+    elapsed = fromMaybe "cheater" do
+      stats <- store ^. #stats
+      let Timestamp scrambledAt = stats ^. #scrambledAt
+      Timestamp solvedAt <- stats ^. #solvedAt
+      pure $ show $ solvedAt - scrambledAt
 
 
 debugView :: forall m a. Store -> Maybe (Html m a)
