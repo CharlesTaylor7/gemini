@@ -43,6 +43,7 @@ Only allow changing the rotation ring if the mouse passes through a narrow band 
 
 #### Bugs
 - labels do not rescale to fit disk size
+- intersection disks flicker if you click and stop a drag quickly.
 - animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
 - it feels jerky during the snap
 

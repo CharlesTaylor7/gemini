@@ -158,7 +158,7 @@ geminiView store =
         cycleLabel :: Maybe Text
         cycleLabel = activeMoveLabels ^? ix location
 
-        toLabelSpan label = Html.div [ ("className", "disk-label") ] [ Html.text label ]
+        toLabelSpan label = Html.span [ ("className", "disk-label") ] [ Html.text label ]
 
         isDraggedDisk :: Location -> Bool
         isDraggedDisk l = Just l == dragged ^? _Just % _1
