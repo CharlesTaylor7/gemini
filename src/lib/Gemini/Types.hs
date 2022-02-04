@@ -31,6 +31,7 @@ import qualified Data.Sequence    as Seq
 import           Optics
 import           Prettyprinter    (Pretty (..), (<+>))
 import qualified Prettyprinter    as Pretty
+import           Text.Printf
 
 
 -- | UI Definitions
@@ -61,10 +62,21 @@ data Stats = Stats
 
 
 -- | timestamp in milliseconds
-newtype Timestamp = Timestamp Double
+newtype Timestamp = Timestamp Int
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
+
+instance Pretty Timestamp where
+  pretty (Timestamp milliseconds) = do
+    let (seconds, ms) = milliseconds `divMod` 1000
+        (minutes, s) = seconds `divMod` 60
+        (hours, min) = minutes `divMod` 60
+
+    zip [hours, min, s, ms] ["hours", "minutes", "seconds", "ms"]
+    & filter ((>0) . fst)
+    & map (\(x, unit) -> show x <> " " <> unit)
+    & Pretty.sep
 
 
 data HoverState = HoverState

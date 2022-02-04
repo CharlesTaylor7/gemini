@@ -134,7 +134,7 @@ confettiView store =
       stats <- store ^. #stats
       let Timestamp scrambledAt = stats ^. #scrambledAt
       Timestamp solvedAt <- stats ^. #solvedAt
-      pure $ show $ solvedAt - scrambledAt
+      pure $ prettyCompactText $ Timestamp (solvedAt - scrambledAt)
 
 
 debugView :: forall m a. Store -> Maybe (Html m a)

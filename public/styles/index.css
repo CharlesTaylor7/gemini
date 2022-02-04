@@ -216,8 +216,9 @@ button {
     display: flex;
     flex-flow: column;
     align-items: center;
-    justify-content: space-around;
-    height: 120px;
+    justify-content: space-between;
+    height: 100px;
+    padding: 24px 12px;
 }
 
 .right-panel {
