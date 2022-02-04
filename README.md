@@ -1,5 +1,9 @@
 ## What is Gemini?
 A puzzle with 3 overlapping rings and 50 disks in 6 colors. The goal is to line up disks into unbroken sequences of common color.
+Here's my solved in real life copy.
+
+![IMG_20220131_144622954 (1)](https://user-images.githubusercontent.com/16541866/152467339-90726a2f-5fbd-4585-b9ef-040bf5b22a51.jpg)
+
 
 ## Project Goals
 - Interactive visual emulation of the puzzle
@@ -27,6 +31,7 @@ A puzzle with 3 overlapping rings and 50 disks in 6 colors. The goal is to line 
 - buffer of recorded moves is show at top of panel
 
 ## To Do
+
 - It's unacceptably slow in production. I need to deploy and test performance of a ghcjs build
 - Attach image of puzzle to readme
 - Explain what "solving means" and explain controls.
