@@ -11,7 +11,7 @@ Here's my solved in real life copy.
 - Learn how to solve the puzzle
 
 ## Scripts Dev Server
-- TODO: explain installion of deps
+- TODO: explain installation of deps
 
 - Run a dev server with hot reloads: `./scripts/run-dev.sh`
 - Run the tests in watch mode: `./scripts/watch-dev.sh`
