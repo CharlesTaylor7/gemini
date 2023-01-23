@@ -14,7 +14,7 @@ Here's my solved in real life copy.
 - TODO: explain installation of deps
 
 - Run a dev server with hot reloads: `./scripts/run-dev.sh`
-- Run the tests in watch mode: `./scripts/watch-dev.sh`
+- Run the tests in watch mode: `./scripts/watch-tests.sh`
 - Build the docker image and deploy to fly.io: `./scripts/deploy.sh`
     - Fresh builds of the docker image will take about 2 hours. Most of that time is spent compiling jsaddle-dom.
 
