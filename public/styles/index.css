@@ -203,6 +203,7 @@ button {
 .stats-box {
     background: #ddfaff;
     border: 1px solid var(--stats-background);
+    border-radius: 10px;
 }
 
 .stats-header {
@@ -334,8 +335,6 @@ button {
     width: 100%;
     position: relative;
     border-radius: 100%;
-    --background-color: transparent;
-    --var(--ring-background);
 }
 
 .ring.left {
@@ -357,7 +356,7 @@ button {
     box-sizing: border-box;
     cursor: grab;
     z-index: 2;
-    box-shadow: 1px 1px 3px rgb(28 25 23 / 50%);
+    box-shadow: 3px 3px 1px rgba(28, 25, 23, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;

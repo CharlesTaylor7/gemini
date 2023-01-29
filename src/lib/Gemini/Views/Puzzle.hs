@@ -53,8 +53,8 @@ ringClass = const "ring " <> \case
 toLetter :: Int -> Char
 toLetter i = toEnum $ i + 97
 
-loadDomInfo :: a -> b -> JSM (Continuation m Store)
-loadDomInfo _ _ = do
+loadDomInfo :: JSM (Continuation m Store)
+loadDomInfo = do
   ringInfo :: [(Ring, Point)] <- for inhabitants $ \ring -> do
     let selector = ringClass ring & Text.words & Text.intercalate "." & ("." <>)
     elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
@@ -92,12 +92,14 @@ geminiView store =
       [ ("gemini" :: Text, True)
       , ("dragging", isn't (#drag % _Nothing) store)
       ]
-    ]
-    (  map ringView inhabitants
-    -- On load, we capture dom info about the radius of each ring, and their centers.
-    -- TODO: listen to window resize to update this info
-    <> [ invisibleOnLoadView $ loadDomInfo ]
-    )
+    ] $
+    concat
+      [ [Html.div' [Html.className "background"]]
+      , map ringView inhabitants
+      -- On load, we capture dom info about the radius of each ring, and their centers.
+      -- TODO: listen to window resize to update this info
+      , [ invisibleOnLoadView $ \_ _ -> loadDomInfo ]
+      ]
   where
     gemini = store ^. #gemini
     options = store ^. #options
