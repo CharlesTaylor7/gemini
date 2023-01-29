@@ -76,7 +76,7 @@ loadDomInfo _ _ = do
     disk <- getDiameter ".disk"
     pure $ (ring - disk) / 2
 
-  pure 
+  pure
     $ Continuation.pur 
     $ #dom .~ DomInfo
         { ringRadius
