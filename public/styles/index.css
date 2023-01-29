@@ -334,7 +334,7 @@ button {
     width: 100%;
     position: relative;
     border-radius: 100%;
-    background-color: transparent;
+    --background-color: transparent;
     --var(--ring-background);
 }
 

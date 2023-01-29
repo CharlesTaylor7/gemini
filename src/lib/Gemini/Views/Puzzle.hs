@@ -53,6 +53,37 @@ ringClass = const "ring " <> \case
 toLetter :: Int -> Char
 toLetter i = toEnum $ i + 97
 
+loadDomInfo :: a -> b -> JSM (Continuation m Store)
+loadDomInfo _ _ = do
+  ringInfo :: [(Ring, Point)] <- for inhabitants $ \ring -> do
+    let selector = ringClass ring & Text.words & Text.intercalate "." & ("." <>)
+    elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
+    rect <- jsCall elem "getBoundingClientRect" ()
+    width <- rect ! ("width" :: Text) >>= fromJSValUnchecked
+    left <- rect ! ("left" :: Text) >>= fromJSValUnchecked
+    top <- rect ! ("top" :: Text) >>= fromJSValUnchecked
+    let radius = width / 2;
+    pure $ (ring, Point (left + radius) (top + radius))
+
+  let getDiameter :: Text -> JSM Double
+      getDiameter selector = do
+        elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
+        rect <- jsCall elem "getBoundingClientRect" ()
+        rect ! ("width" :: Text) >>= fromJSValUnchecked
+
+  ringRadius <- do
+    ring <- getDiameter ".ring"
+    disk <- getDiameter ".disk"
+    pure $ (ring - disk) / 2
+
+  pure 
+    $ Continuation.pur 
+    $ #dom .~ DomInfo
+        { ringRadius
+        , ringCenters = ringInfo & Map.fromList
+        }
+       
+
 
 geminiView :: forall m. Store -> Html m Store
 geminiView store =
@@ -65,35 +96,7 @@ geminiView store =
     (  map ringView inhabitants
     -- On load, we capture dom info about the radius of each ring, and their centers.
     -- TODO: listen to window resize to update this info
-    <> [ invisibleOnLoadView $ \_ _ -> do
-          ringInfo :: [(Ring, Point)] <- for inhabitants $ \ring -> do
-            let selector = ringClass ring & Text.words & Text.intercalate "." & ("." <>)
-            elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
-            rect <- jsCall elem "getBoundingClientRect" ()
-            width <- rect ! ("width" :: Text) >>= fromJSValUnchecked
-            left <- rect ! ("left" :: Text) >>= fromJSValUnchecked
-            top <- rect ! ("top" :: Text) >>= fromJSValUnchecked
-            let radius = width / 2;
-            pure $ (ring, Point (left + radius) (top + radius))
-
-          let getDiameter :: Text -> JSM Double
-              getDiameter selector = do
-                elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
-                rect <- jsCall elem "getBoundingClientRect" ()
-                rect ! ("width" :: Text) >>= fromJSValUnchecked
-
-          ringRadius <- do
-            ring <- getDiameter ".ring"
-            disk <- getDiameter ".disk"
-            pure $ (ring - disk) / 2
-
-          let domInfo = DomInfo
-                { ringRadius
-                , ringCenters = ringInfo & Map.fromList
-                }
-
-          pure $ Continuation.pur $ #dom .~ domInfo
-       ]
+    <> [ invisibleOnLoadView $ loadDomInfo ]
     )
   where
     gemini = store ^. #gemini
