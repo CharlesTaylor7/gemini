@@ -30,6 +30,7 @@ library
       Data.Gemini
       Data.Permutation
       Data.Point
+      Data.Timestamp
       Gemini.App
       Gemini.Env
       Gemini.Jsaddle

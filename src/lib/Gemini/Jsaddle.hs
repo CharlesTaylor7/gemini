@@ -1,5 +1,6 @@
 module Gemini.Jsaddle
-  ( jsCall, jsConsoleLog, setTitle, sleep, dateNow
+  ( -- jsCall
+  onResize, jsConsoleLog, setTitle, sleep, dateNow, jsCall, jsGlobal
   -- reexports
   , JSM, JSVal, ToJSVal(..), FromJSVal(..), MakeArgs
   , jsg, instanceOf
@@ -9,27 +10,39 @@ module Gemini.Jsaddle
 import           Relude
 
 import           Control.Concurrent          (threadDelay)
-import           Gemini.Types                (Timestamp (..))
-import           Language.Javascript.JSaddle (FromJSVal (..), JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..), eval,
-                                              instanceOf, jsg, liftJSM, (!!), (!), (#), (<#))
+import           Data.Timestamp              (Timestamp (..))
+import           Language.Javascript.JSaddle (FromJSVal (..), jsg, JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..), eval, function,
+                                              instanceOf, liftJSM, (!!), (!), (#), (<#))
 
 
-dateNow :: MonadJSM m => m Timestamp
-dateNow = liftJSM $ Timestamp <$> (eval ("Date.now()" :: Text) >>= fromJSValUnchecked)
-
-jsConsoleLog :: JSVal -> JSM ()
-jsConsoleLog text = void $ jsg ("console" :: Text) # ("log" :: Text) $ text
-
+jsGlobal :: Text -> JSM JSVal
+jsGlobal = jsg
 
 jsCall :: (ToJSVal js, MakeArgs args) => js -> Text -> args -> JSM JSVal
 jsCall js method args = toJSVal js # method $ args
 
 
+dateNow :: MonadJSM m => m Timestamp
+dateNow = liftJSM $ Timestamp <$> (eval ("Date.now()" :: Text) >>= fromJSValUnchecked)
+
+
+jsConsoleLog :: JSVal -> JSM ()
+jsConsoleLog text = void $ jsGlobal "console" `jsCall` "log" $ text
+
+
 setTitle :: Text -> JSM ()
-setTitle title = jsg ("document" :: Text) <# ("title" :: Text) $ title
+setTitle title = jsGlobal "document" <# ("title" :: Text) $ title
 
 
 sleep :: forall m. MonadJSM m => Int -> m ()
 sleep seconds = liftIO $ threadDelay microseconds
   where
     microseconds = seconds * 1000000
+
+onResize :: MonadJSM m => JSM () -> m ()
+onResize callback = void $ liftJSM $ resize
+  where
+    resize :: JSM JSVal
+    resize = jsGlobal "window" `jsCall` "addEventListener" $ ("resize" :: Text, fn)
+    fn = function \_ _ _ -> callback
+
