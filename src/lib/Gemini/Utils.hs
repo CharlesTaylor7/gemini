@@ -38,7 +38,7 @@ orNothing :: Bool -> a -> Maybe a
 bool `orNothing` a = if bool then pure a else Nothing
 
 orEmpty :: Bool -> Html m a -> Html m a
-bool `orEmpty` a = if bool then a else Html.div [] []
+bool `orEmpty` a = if bool then a else Html.div'_
 
 
 -- looping utilities

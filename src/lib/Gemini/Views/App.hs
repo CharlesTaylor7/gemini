@@ -92,13 +92,10 @@ confettiView store =
       , ("fade-out", store ^. confetti == FadeOut)
       ]
     ]
-    [ Html.div
-      [ Html.className "stats-box" ]
-      [ Html.div
-        [ Html.className "stats-header" ]
+    [ Html.div [ Html.className "stats-box" ]
+      [ Html.div [ Html.className "stats-header" ]
         [ Html.text "🎉 Solved!!! 🎉" ]
-      , Html.div
-        [ Html.className "stats" ]
+      , Html.div [ Html.className "stats" ]
         [ Html.p_
           [ Html.text $
               "Solved in "
