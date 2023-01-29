@@ -12,23 +12,21 @@ import qualified Shpadoinkle.Html  as Html
 
 import           Gemini.Types
 import           Gemini.UI.Actions
-import           Gemini.Utils      (orNothing, prettyCompactText)
+import           Gemini.Utils      (orEmpty, prettyCompactText)
 
 
-recordedMovesPanel :: MonadJSM m => Store -> Maybe (Html m Store)
+recordedMovesPanel :: MonadJSM m => Store -> Html m Store
 recordedMovesPanel store =
-  (store ^. #options % #recording || isn't (#moves % _Empty) store) `orNothing`
-  Html.div
-    [ Html.className "saved-moves-panel" ]
-    ( (bufferView store & toList)
-    <> (itoListOf (#moves % ifolded) store <&> moveView)
+  (store ^. #options % #recording || isn't (#moves % _Empty) store) `orEmpty`
+  Html.div [ Html.className "saved-moves-panel" ]
+    ( bufferView store 
+    : (itoListOf (#moves % ifolded) store <&> moveView)
     )
 
-bufferView :: Store -> Maybe (Html m Store)
+bufferView :: Store -> Html m Store
 bufferView store =
-  (store ^. #options % #recording) `orNothing`
-  Html.div
-    [ Html.className "recorded-buffer" ]
+  (store ^. #options % #recording) `orEmpty`
+  Html.div [ Html.className "recorded-buffer" ]
     [ Html.text $ prettyCompactText $ store ^.. #recorded % folded ]
 
 

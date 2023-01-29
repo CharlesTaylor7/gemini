@@ -3,6 +3,7 @@ module Gemini.Utils
   , zoomComponent
   , generalize
   , orNothing
+  , orEmpty
   , loop
   , break
   , knownInt
@@ -17,6 +18,7 @@ import qualified Prettyprinter             as Pretty
 import qualified Prettyprinter.Render.Text as Pretty
 import           Shpadoinkle
 import qualified Shpadoinkle.Lens
+import qualified Shpadoinkle.Html                as Html
 
 
 -- | Utilities
@@ -32,8 +34,11 @@ generalize :: (Functor m, Continuous f, Is k A_Lens) => Optic' k ix s a -> (f m 
 generalize optic = Shpadoinkle.Lens.generalize $ toLensVL optic
 
 
-orNothing :: Alternative m => Bool -> a -> m a
-bool `orNothing` a = if bool then pure a else empty
+orNothing :: Bool -> a -> Maybe a
+bool `orNothing` a = if bool then pure a else Nothing
+
+orEmpty :: Bool -> Html m a -> Html m a
+bool `orEmpty` a = if bool then a else Html.div [] []
 
 
 -- looping utilities

@@ -78,9 +78,8 @@ rootView store =
         , geminiView store
         , footer store
         ]
-    , Html.div
-      [ Html.className "right-panel"]
-      ( recordedMovesPanel store & toList )
+    , Html.div [ Html.className "right-panel"]
+      [ recordedMovesPanel store ]
     ]
 
 
@@ -137,9 +136,9 @@ confettiView store =
       pure $ prettyCompactText $ Timestamp (solvedAt - scrambledAt)
 
 
-debugView :: forall m a. Store -> Maybe (Html m a)
+debugView :: forall m a. Store -> Html m a
 debugView store =
-  (store ^. #options % #debug) `orNothing`
+  (store ^. #options % #debug) `orEmpty`
   ( Html.div
     [ Html.styleProp
         [ ("padding", "12px")
@@ -158,33 +157,29 @@ debugView store =
 
 header :: forall m. MonadJSM m => Store -> Html m Store
 header store =
-  Html.div
-    [ Html.className "header" ]
-    [ Html.div
-      [ Html.className "control-panel" ]
-      ( catMaybes $
-        [ debugView store
-        , (store ^. #options % #mobile % to not) `orNothing`
-            (
-              buttonGroup "options" $
-                ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
-                <>
-                  if store ^. isProdL
-                  then []
-                  else
-                    [ confettiButton & zoomComponent (#options % #confetti) store
-                    , checkBox "Debug" & zoomComponent (#options % #debug) store
-                    , checkBox "Highlight" & zoomComponent (#options % #highlightPairs) store
-                    ]
-                )
-            )
-        , Just $ buttonGroup "actions" $ catMaybes
-            [ Just scrambleButton
-            , (store ^. #options % #mobile % to not) `orNothing` recordButton store
-            ]
-        ]
-      )
+  Html.div [ Html.className "header" ]
+  [ Html.div [ Html.className "control-panel" ]
+    [ debugView store
+    , (store ^. #options % #mobile % to not) `orEmpty`
+    (
+     buttonGroup "options" $
+     ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
+       <>
+       if store ^. isProdL
+       then []
+       else
+       [ confettiButton & zoomComponent (#options % #confetti) store
+       , checkBox "Debug" & zoomComponent (#options % #debug) store
+       , checkBox "Highlight" & zoomComponent (#options % #highlightPairs) store
+       ]
+     )
+    )
+    , buttonGroup "actions" 
+    [ scrambleButton
+    , (store ^. #options % #mobile % to not) `orEmpty` recordButton store
     ]
+    ]
+  ]
   where
     isProdL :: Lens' Store Bool
     isProdL = #env % #deployment % iso (== Prod) (\bool -> if bool then Prod else Dev)
