@@ -124,13 +124,8 @@ geminiView store =
 
     ringView :: Ring -> Html m Store
     ringView ring =
-      Html.div
-        [ Html.class'
-          [ (ringClass ring, True)
-          ]
-        ]
-        ( disks ring
-        )
+      Html.div [ Html.className $ ringClass ring] $
+        disks ring
 
     disks :: Ring -> [Html m Store]
     disks ring = flip map inhabitants $ \position ->
