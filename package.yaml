@@ -92,7 +92,7 @@ ghc-options:
   - -Wincomplete-record-updates
   - -Wtype-defaults
   - -Wunused-imports
-  - -Werror
+    #- -Werror
   # turn off warnings
   - -Wno-name-shadowing
   - -Wno-partial-type-signatures

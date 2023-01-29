@@ -4,3 +4,4 @@
 /.env
 /.hie/
 recorded-moves.txt
+**/.DS_STORE
