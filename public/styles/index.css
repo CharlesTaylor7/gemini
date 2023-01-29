@@ -327,13 +327,15 @@ button {
     width: calc(3 * var(--ring-diameter));
     flex-shrink: 0;
     margin: 0 -157px;
+    background: url(/public/textures/wood.jpg)
 }
 
 .ring {
     width: 100%;
     position: relative;
     border-radius: 100%;
-    background-color: var(--ring-background);
+    background-color: transparent;
+    --var(--ring-background);
 }
 
 .ring.left {

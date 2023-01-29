@@ -13,6 +13,7 @@ import           Gemini.Types                (Timestamp (..))
 import           Language.Javascript.JSaddle (FromJSVal (..), JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..), eval,
                                               instanceOf, jsg, liftJSM, (!!), (!), (#), (<#))
 
+
 dateNow :: MonadJSM m => m Timestamp
 dateNow = liftJSM $ Timestamp <$> (eval ("Date.now()" :: Text) >>= fromJSValUnchecked)
 
