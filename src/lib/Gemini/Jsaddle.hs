@@ -45,4 +45,3 @@ onResize callback = void $ liftJSM $ resize
     resize :: JSM JSVal
     resize = jsGlobal "window" `jsCall` "addEventListener" $ ("resize" :: Text, fn)
     fn = function \_ _ _ -> callback
-

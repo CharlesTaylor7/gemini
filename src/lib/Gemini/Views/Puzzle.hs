@@ -98,7 +98,7 @@ geminiView store =
       , map ringView inhabitants
       -- On load, we capture dom info about the radius of each ring, and their centers.
       -- TODO: listen to window resize to update this info
-      , [ invisibleOnLoadView $ \_ _ -> loadDomInfo ]
+      , [ invisibleOnLoadView $ \_ _ -> onResize loadDomInfo ]
       ]
   where
     gemini = store ^. #gemini
@@ -187,7 +187,7 @@ geminiView store =
 
 type RawEventHandler m a = RawNode -> RawEvent -> JSM (Continuation m a)
 
--- | A cheap trick. Shpadoinkle doesn't have an onmount event like react.
+-- | A Hack. Shpadoinkle doesn't have an onMount event like react.
 -- So I'm embedding an invisible image with an onload event.
 -- The image is already used elsewhere on the page so this should incur minimal overhead.
 invisibleOnLoadView :: RawEventHandler m a -> Html m a
