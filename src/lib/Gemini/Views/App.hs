@@ -76,6 +76,7 @@ rootView store =
         [ Html.className "main-panel"]
         [ header store
         , geminiView store
+        , debugView store
         , footer store
         ]
     , Html.div [ Html.className "right-panel"]
@@ -156,21 +157,18 @@ header :: forall m. MonadJSM m => Store -> Html m Store
 header store =
   Html.div [ Html.className "header" ]
   [ Html.div [ Html.className "control-panel" ]
-    [ debugView store
-    , (store ^. #options % #mobile % to not) `orEmpty`
-    (
-     buttonGroup "options" $
-     ( [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) ]
-       <>
-       if store ^. isProdL
-       then []
-       else
-       [ confettiButton & zoomComponent (#options % #confetti) store
-       , checkBox "Debug" & zoomComponent (#options % #debug) store
-       , checkBox "Highlight" & zoomComponent (#options % #highlightPairs) store
-       ]
-     )
-    )
+    [ htmlWhen (store ^. #options % #mobile % to not) $
+      buttonGroup "options" $
+      [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) 
+      ]
+      <>
+      if store ^. isProdL
+      then []
+      else
+        [ confettiButton & zoomComponent (#options % #confetti) store
+        , checkBox "Debug" & zoomComponent (#options % #debug) store
+        , checkBox "Highlight" & zoomComponent (#options % #highlightPairs) store
+        ]
     , buttonGroup "actions" 
     [ scrambleButton
     , (store ^. #options % #mobile % to not) `orEmpty` recordButton store
@@ -184,19 +182,17 @@ header store =
 
 footer :: Store -> Html m Store
 footer store =
-  Html.div
-    [ Html.className "footer" ]
-    [ Html.div
-      [ Html.className "links" ]
-      [ hyperlink
-        "public/icons/GitHub.png"
-        ( "https://github.com/CharlesTaylor7/gemini/tree/"
-        <> store ^. #env % #commit
-        <> "#readme"
-        )
-        "View Source"
-      ]
+  Html.div [ Html.className "footer" ]
+  [ Html.div [ Html.className "links" ]
+    [ hyperlink
+      "public/icons/GitHub.png"
+      ( "https://github.com/CharlesTaylor7/gemini/tree/"
+      <> store ^. #env % #commit
+      <> "#readme"
+      )
+      "View Source"
     ]
+  ]
   where
     hyperlink :: Text -> Text -> Text -> Html m a
     hyperlink iconSrc linkUrl display =

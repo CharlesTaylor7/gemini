@@ -4,6 +4,7 @@ module Gemini.Utils
   , generalize
   , orNothing
   , orEmpty
+  , htmlWhen
   , loop
   , break
   , knownInt
@@ -39,6 +40,9 @@ bool `orNothing` a = if bool then pure a else Nothing
 
 orEmpty :: Bool -> Html m a -> Html m a
 bool `orEmpty` a = if bool then a else Html.div'_
+
+htmlWhen :: forall m a. Bool -> Html m a -> Html m a
+htmlWhen = orEmpty
 
 
 -- looping utilities
