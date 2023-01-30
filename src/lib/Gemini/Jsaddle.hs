@@ -1,6 +1,6 @@
 module Gemini.Jsaddle
   ( -- jsCall
-  onResize, jsConsoleLog, setTitle, sleep, dateNow, jsCall, jsGlobal
+  onResize, setTitle, sleep, dateNow, jsCall, jsGlobal
   -- reexports
   , JSM, JSVal, ToJSVal(..), FromJSVal(..), MakeArgs
   , jsg, instanceOf
@@ -24,11 +24,6 @@ jsCall js method args = toJSVal js # method $ args
 
 dateNow :: MonadJSM m => m Timestamp
 dateNow = liftJSM $ Timestamp <$> (eval ("Date.now()" :: Text) >>= fromJSValUnchecked)
-
-
-jsConsoleLog :: ToJSVal a => a -> JSM ()
-jsConsoleLog obj = void $
-  toJSVal obj >>= jsGlobal "console" `jsCall` "log"
 
 
 setTitle :: Text -> JSM ()

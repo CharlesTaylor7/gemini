@@ -25,7 +25,6 @@ app store = do
 
   onResize $ do
     domInfo <- loadDomInfo
-    jsConsoleLog $ toJSVal ("resize" :: Text)
     atomically $ modifyTVar' territory $ #dom .~ domInfo
   shpadoinkle id Backend.runParDiff territory rootView Backend.stage
 

@@ -82,7 +82,7 @@ loadDomInfo = do
       { ringRadius
       , ringCenters = ringInfo & Map.fromList
       }
-       
+
 
 
 geminiView :: forall m. Store -> Html m Store
@@ -98,7 +98,11 @@ geminiView store =
       , map ringView inhabitants
       -- On load, we capture dom info about the radius of each ring, and their centers.
       -- TODO: listen to window resize to update this info
-      --, [ invisibleOnLoadView $ \_ _ -> loadDomInfo ]
+      , [ invisibleOnLoadView $
+            \_ _ -> do
+              domInfo <- loadDomInfo
+              pure $ Continuation.pur $ #dom .~ domInfo
+        ]
       ]
   where
     gemini = store ^. #gemini
