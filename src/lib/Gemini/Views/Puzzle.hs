@@ -1,5 +1,6 @@
 module Gemini.Views.Puzzle
   ( geminiView
+  , loadDomInfo
   ) where
 
 import           Relude
@@ -53,7 +54,7 @@ ringClass = const "ring " <> \case
 toLetter :: Int -> Char
 toLetter i = toEnum $ i + 97
 
-loadDomInfo :: JSM (Continuation m Store)
+loadDomInfo :: JSM DomInfo
 loadDomInfo = do
   ringInfo :: [(Ring, Point)] <- for inhabitants $ \ring -> do
     let selector = ringClass ring & Text.words & Text.intercalate "." & ("." <>)
@@ -76,12 +77,11 @@ loadDomInfo = do
     disk <- getDiameter ".disk"
     pure $ (ring - disk) / 2
 
-  pure
-    $ Continuation.pur 
-    $ #dom .~ DomInfo
-        { ringRadius
-        , ringCenters = ringInfo & Map.fromList
-        }
+  pure $
+    DomInfo
+      { ringRadius
+      , ringCenters = ringInfo & Map.fromList
+      }
        
 
 
@@ -98,7 +98,7 @@ geminiView store =
       , map ringView inhabitants
       -- On load, we capture dom info about the radius of each ring, and their centers.
       -- TODO: listen to window resize to update this info
-      , [ invisibleOnLoadView $ \_ _ -> loadDomInfo ]
+      --, [ invisibleOnLoadView $ \_ _ -> loadDomInfo ]
       ]
   where
     gemini = store ^. #gemini

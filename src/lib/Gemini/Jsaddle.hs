@@ -26,8 +26,9 @@ dateNow :: MonadJSM m => m Timestamp
 dateNow = liftJSM $ Timestamp <$> (eval ("Date.now()" :: Text) >>= fromJSValUnchecked)
 
 
-jsConsoleLog :: JSVal -> JSM ()
-jsConsoleLog text = void $ jsGlobal "console" `jsCall` "log" $ text
+jsConsoleLog :: ToJSVal a => a -> JSM ()
+jsConsoleLog obj = void $
+  toJSVal obj >>= jsGlobal "console" `jsCall` "log"
 
 
 setTitle :: Text -> JSM ()

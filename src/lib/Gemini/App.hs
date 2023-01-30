@@ -5,12 +5,16 @@ module Gemini.App
 
 import           Relude
 
-import           Shpadoinkle                 (JSM, shpadoinkle)
+import           Shpadoinkle                 (shpadoinkle)
 import qualified Shpadoinkle.Backend.ParDiff as Backend
 import qualified Shpadoinkle.Html            as Html (addStyle, setTitle)
 
+import           Optics
+
 import           Gemini.Env
 import           Gemini.Views.App
+import           Gemini.Views.Puzzle
+import           Gemini.Jsaddle
 
 
 app :: Store -> JSM ()
@@ -18,6 +22,11 @@ app store = do
   Html.setTitle "Gemini"
   Html.addStyle "/public/styles/index.css"
   territory <- newTVarIO store
+
+  onResize $ do
+    domInfo <- loadDomInfo
+    jsConsoleLog $ toJSVal ("resize" :: Text)
+    atomically $ modifyTVar' territory $ #dom .~ domInfo
   shpadoinkle id Backend.runParDiff territory rootView Backend.stage
 
 
