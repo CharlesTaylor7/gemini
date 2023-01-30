@@ -14,15 +14,16 @@ extra-deps:
 # misc
 - random-1.2.1
 - rapid-0.1.4@sha256:570dbbaf2d57d5de8ed239cae8aad3fcef59737e31246ea7e6999d46d41ae3da,1768
-  
+
 # shpadoinkle
 - git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-  commit: 4142a5211592122630523f30d906c7c067700932
+  commit: a82f900beba34d378e611b301bc64e4983ab3d74
   subdirs:
   - core
   - html
   - lens
   - backends/pardiff
+
 - compactable-0.1.2.3@sha256:1dccae8bcf6aa4cfd01e2fd0ec36c98d6efdd3247b6ab1a49a7cfdede4d27d95,1707
 - ghcjs-dom-0.9.4.0@sha256:c2b3d25145e24b66a8a5078c0d750305b577aeff05957cf282d74f6e8d2424dd,32082
 - ghcjs-dom-jsaddle-0.9.4.0@sha256:31ddfc5ebcbb4811b0c956fd5fcf106643012b46bb4e0bc2f15d09db1d116fbb,39525

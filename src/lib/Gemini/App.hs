@@ -5,10 +5,9 @@ module Gemini.App
 
 import           Relude
 
-import           Shpadoinkle                 (JSM)
-import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
-import           Shpadoinkle.Html            (addStyle, setTitle)
-import           Shpadoinkle.Run             (simple)
+import           Shpadoinkle                 (JSM, shpadoinkle)
+import qualified Shpadoinkle.Backend.ParDiff as Backend
+import qualified Shpadoinkle.Html            as Html (addStyle, setTitle)
 
 import           Gemini.Env
 import           Gemini.Views.App
@@ -16,9 +15,10 @@ import           Gemini.Views.App
 
 app :: Store -> JSM ()
 app store = do
-  setTitle "Gemini"
-  addStyle "/public/styles/index.css"
-  simple runParDiff store rootView stage
+  Html.setTitle "Gemini"
+  Html.addStyle "/public/styles/index.css"
+  territory <- newTVarIO store
+  shpadoinkle id Backend.runParDiff territory rootView Backend.stage
 
 
 getEnv :: Deployment -> IO Env

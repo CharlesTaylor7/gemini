@@ -98,7 +98,7 @@ geminiView store =
       , map ringView inhabitants
       -- On load, we capture dom info about the radius of each ring, and their centers.
       -- TODO: listen to window resize to update this info
-      , [ invisibleOnLoadView $ \_ _ -> onResize loadDomInfo ]
+      , [ invisibleOnLoadView $ \_ _ -> loadDomInfo ]
       ]
   where
     gemini = store ^. #gemini

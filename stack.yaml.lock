@@ -3,179 +3,179 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-snapshots:
-- original: lts-18.14
-  completed:
-    sha256: 87842ecbaa8ca9cee59a7e6be52369dbed82ed075cb4e0d152614a627e8fd488
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/14.yaml
-    size: 586069
 packages:
-- original:
-    hackage: optics-0.4
-  completed:
+- completed:
+    hackage: optics-0.4@sha256:9fb69bf0195b8d8f1f8cd0098000946868b8a3c3ffb51e5b64f79fc600c3eb4c,6568
     pantry-tree:
       sha256: 63595a3678ec3937ceba1eb43a44c13434610ad370705d0a8bcff723660e1508
       size: 1157
-    hackage: optics-0.4@sha256:9fb69bf0195b8d8f1f8cd0098000946868b8a3c3ffb51e5b64f79fc600c3eb4c,6568
-- original:
-    hackage: optics-core-0.4
-  completed:
+  original:
+    hackage: optics-0.4
+- completed:
+    hackage: optics-core-0.4@sha256:59e04aebca536bd011ae50c781937f45af4c1456af1eb9fb578f9a69eee293cd,4995
     pantry-tree:
       sha256: 0b8b5824efec35faede5a4c5d7c6f47c6b4708885942f7a7f73c892a5c3c5738
       size: 5315
-    hackage: optics-core-0.4@sha256:59e04aebca536bd011ae50c781937f45af4c1456af1eb9fb578f9a69eee293cd,4995
-- original:
-    hackage: optics-extra-0.4
-  completed:
+  original:
+    hackage: optics-core-0.4
+- completed:
+    hackage: optics-extra-0.4@sha256:b9914f38aa7d5c92f231060d9168447f9f5a367c07df9bf47a003e3e786d5e05,3432
     pantry-tree:
       sha256: 6427b6a63e3a6fbb20987dffc1ce6fabfbf7da108b6e38ef9c6343db3c858706
       size: 1809
-    hackage: optics-extra-0.4@sha256:b9914f38aa7d5c92f231060d9168447f9f5a367c07df9bf47a003e3e786d5e05,3432
-- original:
-    hackage: optics-th-0.4
-  completed:
+  original:
+    hackage: optics-extra-0.4
+- completed:
+    hackage: optics-th-0.4@sha256:7c838b5b1d6998133bf8f0641c36197ed6cb468dc69515e1952f33f0bbe8e11d,2009
     pantry-tree:
       sha256: 41e77d095f528791a181589af631373d2a2fa63ab43564462cd2ce2a185ec3a8
       size: 741
-    hackage: optics-th-0.4@sha256:7c838b5b1d6998133bf8f0641c36197ed6cb468dc69515e1952f33f0bbe8e11d,2009
-- original:
-    hackage: random-1.2.1
-  completed:
+  original:
+    hackage: optics-th-0.4
+- completed:
+    hackage: random-1.2.1@sha256:8bee24dc0c985a90ee78d94c61f8aed21c49633686f0f1c14c5078d818ee43a2,6598
     pantry-tree:
       sha256: 8bdc994ce41f43624ab42302a881fe5a0f81d965f5d238841e24943664681a06
       size: 1528
-    hackage: random-1.2.1@sha256:8bee24dc0c985a90ee78d94c61f8aed21c49633686f0f1c14c5078d818ee43a2,6598
-- original:
+  original:
+    hackage: random-1.2.1
+- completed:
     hackage: rapid-0.1.4@sha256:570dbbaf2d57d5de8ed239cae8aad3fcef59737e31246ea7e6999d46d41ae3da,1768
-  completed:
     pantry-tree:
       sha256: 06f697deba38c6a1e689e19b82df975f5575ff3db9f58cf91d21972fb621c576
       size: 299
+  original:
     hackage: rapid-0.1.4@sha256:570dbbaf2d57d5de8ed239cae8aad3fcef59737e31246ea7e6999d46d41ae3da,1768
-- original:
-    subdir: core
+- completed:
+    commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    commit: 4142a5211592122630523f30d906c7c067700932
-  completed:
+    name: Shpadoinkle
     pantry-tree:
       sha256: afff097843660962fc6da8c093a559ca1e2c85ab0bb30ccbacdd01bcc6621ed2
       size: 558
     subdir: core
     version: 0.3.2.0
+  original:
+    commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    name: Shpadoinkle
-    commit: 4142a5211592122630523f30d906c7c067700932
-- original:
-    subdir: html
+    subdir: core
+- completed:
+    commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    commit: 4142a5211592122630523f30d906c7c067700932
-  completed:
+    name: Shpadoinkle-html
     pantry-tree:
       sha256: b129805d4b63817b09d7bcf86a5c35da1e26dd2d7ced9d7159215a9df7c50720
       size: 1355
     subdir: html
     version: 0.3.0.2
+  original:
+    commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    name: Shpadoinkle-html
-    commit: 4142a5211592122630523f30d906c7c067700932
-- original:
-    subdir: lens
+    subdir: html
+- completed:
+    commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    commit: 4142a5211592122630523f30d906c7c067700932
-  completed:
+    name: Shpadoinkle-lens
     pantry-tree:
       sha256: 392e5eff6de4f4da6829b7e687e65877b89bcb8a8c2e2e624a7a603192c050b0
       size: 317
     subdir: lens
     version: 0.0.0.4
+  original:
+    commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    name: Shpadoinkle-lens
-    commit: 4142a5211592122630523f30d906c7c067700932
-- original:
-    subdir: backends/pardiff
+    subdir: lens
+- completed:
+    commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    commit: 4142a5211592122630523f30d906c7c067700932
-  completed:
+    name: Shpadoinkle-backend-pardiff
     pantry-tree:
       sha256: abf8f6cd616f5b51670af9ea97d381837bdba0905081b28ba2ea05fbf8b4a5ee
       size: 348
     subdir: backends/pardiff
     version: 0.3.0.1
+  original:
+    commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    name: Shpadoinkle-backend-pardiff
-    commit: 4142a5211592122630523f30d906c7c067700932
-- original:
+    subdir: backends/pardiff
+- completed:
     hackage: compactable-0.1.2.3@sha256:1dccae8bcf6aa4cfd01e2fd0ec36c98d6efdd3247b6ab1a49a7cfdede4d27d95,1707
-  completed:
     pantry-tree:
       sha256: ffbb73c57e16e3cf2d943a47bed42dd949648fca934715bcd1a3fb93b715edcf
       size: 275
+  original:
     hackage: compactable-0.1.2.3@sha256:1dccae8bcf6aa4cfd01e2fd0ec36c98d6efdd3247b6ab1a49a7cfdede4d27d95,1707
-- original:
+- completed:
     hackage: ghcjs-dom-0.9.4.0@sha256:c2b3d25145e24b66a8a5078c0d750305b577aeff05957cf282d74f6e8d2424dd,32082
-  completed:
     pantry-tree:
       sha256: de76dd6924d6ad9124e836a0fa66a0338f585acbcbfbffd90e8357d1b6b8fbb4
       size: 357
+  original:
     hackage: ghcjs-dom-0.9.4.0@sha256:c2b3d25145e24b66a8a5078c0d750305b577aeff05957cf282d74f6e8d2424dd,32082
-- original:
+- completed:
     hackage: ghcjs-dom-jsaddle-0.9.4.0@sha256:31ddfc5ebcbb4811b0c956fd5fcf106643012b46bb4e0bc2f15d09db1d116fbb,39525
-  completed:
     pantry-tree:
       sha256: 3f665a5e70fab961bf236e5c672f497901632785d403024d7bab1785444a0816
       size: 164
+  original:
     hackage: ghcjs-dom-jsaddle-0.9.4.0@sha256:31ddfc5ebcbb4811b0c956fd5fcf106643012b46bb4e0bc2f15d09db1d116fbb,39525
-- original:
+- completed:
     hackage: http2-1.6.5@sha256:f1743ba4a267f525106c218894e4bd2acf28fa047a9ba660b4a317a97382a877,13999
-  completed:
     pantry-tree:
       sha256: 7c5c74e748187ae08baafab4af661147dcc128f1464305de68a06c3f0949cb91
       size: 43676
+  original:
     hackage: http2-1.6.5@sha256:f1743ba4a267f525106c218894e4bd2acf28fa047a9ba660b4a317a97382a877,13999
-- original:
-    subdir: jsaddle
-    git: https://github.com/athanclark/jsaddle.git
+- completed:
     commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
-  completed:
+    git: https://github.com/athanclark/jsaddle.git
+    name: jsaddle
     pantry-tree:
       sha256: 67013b51cc82a95279aa454959a72cf2a42774832096940584155c175caea79b
       size: 4329
     subdir: jsaddle
     version: 0.9.8.0
-    git: https://github.com/athanclark/jsaddle.git
-    name: jsaddle
+  original:
     commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
-- original:
-    subdir: jsaddle-warp
     git: https://github.com/athanclark/jsaddle.git
+    subdir: jsaddle
+- completed:
     commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
-  completed:
+    git: https://github.com/athanclark/jsaddle.git
+    name: jsaddle-warp
     pantry-tree:
       sha256: 4f5eaead56649f3e74cbc6e1a9cc36fa1d058b0b6c9bee8280adb56c490404b8
       size: 555
     subdir: jsaddle-warp
     version: 0.9.8.0
-    git: https://github.com/athanclark/jsaddle.git
-    name: jsaddle-warp
+  original:
     commit: ebd898c6b4a7c5181a22d42be28e42677a6828b9
-- original:
+    git: https://github.com/athanclark/jsaddle.git
+    subdir: jsaddle-warp
+- completed:
     hackage: jsaddle-dom-0.9.4.0@sha256:e9557e5a6df02bf089acab3e053ee3d4b523acebfe9ede9b5091d12cee760780,75700
-  completed:
     pantry-tree:
       sha256: 82000a394aa858fa99bafa3bc8ff0646e3b1c6c62c3d7d49d46bf68311d0afb0
       size: 48295
+  original:
     hackage: jsaddle-dom-0.9.4.0@sha256:e9557e5a6df02bf089acab3e053ee3d4b523acebfe9ede9b5091d12cee760780,75700
-- original:
+- completed:
     hackage: ref-tf-0.4.0.2@sha256:69de3550250e0cd69f45d080359cb314a9487c915024349c75b78732bbee9332,1134
-  completed:
     pantry-tree:
       sha256: fc5a4a35b4c782a33f452c1dc66ffa8ddbf321e2db369bd8823c796f0d4d8c7f
       size: 211
+  original:
     hackage: ref-tf-0.4.0.2@sha256:69de3550250e0cd69f45d080359cb314a9487c915024349c75b78732bbee9332,1134
-- original:
+- completed:
     hackage: warp-3.2.28@sha256:b32fb8fed7ace4bd206fd897c388c00cdb915ec7e34ee61dc6397d518d9e651c,11186
-  completed:
     pantry-tree:
       sha256: a08eab2f15d6be431d00cd31a8b87a7e5ce87f203aad06916f9af0c673ec8a7d
       size: 4227
+  original:
     hackage: warp-3.2.28@sha256:b32fb8fed7ace4bd206fd897c388c00cdb915ec7e34ee61dc6397d518d9e651c,11186
+snapshots:
+- completed:
+    sha256: 87842ecbaa8ca9cee59a7e6be52369dbed82ed075cb4e0d152614a627e8fd488
+    size: 586069
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/14.yaml
+  original: lts-18.14
