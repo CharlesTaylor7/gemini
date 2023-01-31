@@ -85,7 +85,6 @@ library
       Shpadoinkle
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
-    , Shpadoinkle-lens
     , aeson
     , base >=4.14 && <4.16
     , bytestring
@@ -95,7 +94,7 @@ library
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics >=0.4
+    , optics-core
     , prettyprinter
     , random
     , relude
@@ -148,7 +147,6 @@ executable dev-server
       Shpadoinkle
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
-    , Shpadoinkle-lens
     , aeson
     , base >=4.14 && <4.16
     , bytestring
@@ -159,7 +157,7 @@ executable dev-server
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics >=0.4
+    , optics-core
     , prettyprinter
     , random
     , rapid
@@ -213,7 +211,6 @@ executable server
       Shpadoinkle
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
-    , Shpadoinkle-lens
     , aeson
     , base >=4.14 && <4.16
     , bytestring
@@ -224,7 +221,7 @@ executable server
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics >=0.4
+    , optics-core
     , prettyprinter
     , random
     , relude
@@ -282,7 +279,6 @@ test-suite gemini-test
     , Shpadoinkle
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
-    , Shpadoinkle-lens
     , aeson
     , base >=4.14 && <4.16
     , bytestring
@@ -294,7 +290,7 @@ test-suite gemini-test
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics >=0.4
+    , optics-core
     , prettyprinter
     , random
     , relude

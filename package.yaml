@@ -26,7 +26,7 @@ dependencies:
 - containers
 - vector
 - mtl
-- optics >= 0.4
+- optics-core
 - prettyprinter
 - random
 - groups
@@ -36,7 +36,6 @@ dependencies:
 - jsaddle-warp
 - Shpadoinkle
 - Shpadoinkle-html
-- Shpadoinkle-lens
 - Shpadoinkle-backend-pardiff
 
 

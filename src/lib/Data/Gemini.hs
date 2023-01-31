@@ -236,7 +236,7 @@ data Chosen
 dragRing :: Location -> Choice Location
 dragRing loc1 =
   case sibling loc1 of
-    Nothing   -> Obvious $ loc1
+    Nothing   -> Obvious loc1
     Just loc2 -> Ambiguous loc1 loc2
 
 

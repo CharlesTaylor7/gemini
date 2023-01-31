@@ -18,7 +18,7 @@ import           Prettyprinter             (Pretty (..))
 import qualified Prettyprinter             as Pretty
 import qualified Prettyprinter.Render.Text as Pretty
 import           Shpadoinkle
-import qualified Shpadoinkle.Lens
+import qualified Shpadoinkle.Continuation
 import qualified Shpadoinkle.Html                as Html
 
 
@@ -32,7 +32,7 @@ zoomComponent :: Functor m => Lens' s a -> s -> (a -> Html m a) -> Html m s
 zoomComponent optic props component = component (props ^. optic) & generalize optic
 
 generalize :: (Functor m, Continuous f, Is k A_Lens) => Optic' k ix s a -> (f m a -> f m s)
-generalize optic = Shpadoinkle.Lens.generalize $ toLensVL optic
+generalize optic = Shpadoinkle.Continuation.liftC (set optic) (view optic)
 
 
 orNothing :: Bool -> a -> Maybe a

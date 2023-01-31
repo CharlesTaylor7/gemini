@@ -84,7 +84,6 @@ loadDomInfo = do
       }
 
 
-
 geminiView :: forall m. Store -> Html m Store
 geminiView store =
   Html.div

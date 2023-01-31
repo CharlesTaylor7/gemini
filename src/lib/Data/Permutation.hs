@@ -1,11 +1,11 @@
 {- | Manipulate permutations, show them in cycle notation
 -}
 module Data.Permutation
-  ( Permutation(..), permute, domain, natsUnder
+  ( Permutation(..), permute, domain
   , Cycle(..), cycle
   , Cycles(..), cycles, toCycles, fromCycles
   -- re exports
-  , knownInt
+  , knownInt, natsUnder
   , Semigroup(..)
   , Monoid(..)
   , Group(..)

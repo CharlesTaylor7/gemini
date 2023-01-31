@@ -6,10 +6,7 @@ packages:
 - .
 extra-deps:
 # optics
-- optics-0.4
-- optics-core-0.4
-- optics-extra-0.4
-- optics-th-0.4
+- optics-core-0.4.1
 
 # misc
 - random-1.2.1
