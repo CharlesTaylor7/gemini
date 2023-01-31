@@ -5,33 +5,33 @@
 
 packages:
 - completed:
-    hackage: optics-0.4@sha256:9fb69bf0195b8d8f1f8cd0098000946868b8a3c3ffb51e5b64f79fc600c3eb4c,6568
+    hackage: optics-0.4.2@sha256:864b8a1370dfe8e23137901ef665ac871120b5092d15803697efda7de6362c47,7560
     pantry-tree:
-      sha256: 63595a3678ec3937ceba1eb43a44c13434610ad370705d0a8bcff723660e1508
+      sha256: 2c9f27af3099874592e506a10b1c154f2f00e618ca47b0da11ddbb800cacca4e
       size: 1157
   original:
-    hackage: optics-0.4
+    hackage: optics-0.4.2
 - completed:
-    hackage: optics-core-0.4@sha256:59e04aebca536bd011ae50c781937f45af4c1456af1eb9fb578f9a69eee293cd,4995
+    hackage: optics-core-0.4.1@sha256:b163d1a8f392536c645cbd728c3e29d9f35864b25b1e3cef3a29806ee8a21c6b,5545
     pantry-tree:
-      sha256: 0b8b5824efec35faede5a4c5d7c6f47c6b4708885942f7a7f73c892a5c3c5738
-      size: 5315
+      sha256: dc4cabaa2626c20a70a3e8781e994110bbd9f2c55f35a1c658e1c2b0d2db87c1
+      size: 5380
   original:
-    hackage: optics-core-0.4
+    hackage: optics-core-0.4.1
 - completed:
-    hackage: optics-extra-0.4@sha256:b9914f38aa7d5c92f231060d9168447f9f5a367c07df9bf47a003e3e786d5e05,3432
+    hackage: optics-th-0.4.1@sha256:7fb1fcdc77634f78af654fd16113db5802d920b4aa6a710d51e8017df00982ba,3089
     pantry-tree:
-      sha256: 6427b6a63e3a6fbb20987dffc1ce6fabfbf7da108b6e38ef9c6343db3c858706
-      size: 1809
-  original:
-    hackage: optics-extra-0.4
-- completed:
-    hackage: optics-th-0.4@sha256:7c838b5b1d6998133bf8f0641c36197ed6cb468dc69515e1952f33f0bbe8e11d,2009
-    pantry-tree:
-      sha256: 41e77d095f528791a181589af631373d2a2fa63ab43564462cd2ce2a185ec3a8
+      sha256: 3262bbc374999243435894621490d22557dc264ff345ba7b27458011c1389034
       size: 741
   original:
-    hackage: optics-th-0.4
+    hackage: optics-th-0.4.1
+- completed:
+    hackage: optics-extra-0.4.2@sha256:fd6ea028c2616259363635612977b7a93f1cd45d81b42e974206642ae8da9181,4156
+    pantry-tree:
+      sha256: 00f994cff7e38b93d0e2c6a1e2243598224bd731b1a7bd060f7e1c9b670181b9
+      size: 1810
+  original:
+    hackage: optics-extra-0.4.2
 - completed:
     hackage: random-1.2.1@sha256:8bee24dc0c985a90ee78d94c61f8aed21c49633686f0f1c14c5078d818ee43a2,6598
     pantry-tree:
@@ -72,19 +72,6 @@ packages:
     commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git
     subdir: html
-- completed:
-    commit: a82f900beba34d378e611b301bc64e4983ab3d74
-    git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    name: Shpadoinkle-lens
-    pantry-tree:
-      sha256: 392e5eff6de4f4da6829b7e687e65877b89bcb8a8c2e2e624a7a603192c050b0
-      size: 317
-    subdir: lens
-    version: 0.0.0.4
-  original:
-    commit: a82f900beba34d378e611b301bc64e4983ab3d74
-    git: https://gitlab.com/charlestaylor95/shpadoinkle.git
-    subdir: lens
 - completed:
     commit: a82f900beba34d378e611b301bc64e4983ab3d74
     git: https://gitlab.com/charlestaylor95/shpadoinkle.git

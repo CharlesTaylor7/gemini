@@ -6,7 +6,10 @@ packages:
 - .
 extra-deps:
 # optics
+- optics-0.4.2
+- optics-extra-0.4.2
 - optics-core-0.4.1
+- optics-th-0.4.1
 
 # misc
 - random-1.2.1
@@ -18,7 +21,6 @@ extra-deps:
   subdirs:
   - core
   - html
-  - lens
   - backends/pardiff
 
 - compactable-0.1.2.3@sha256:1dccae8bcf6aa4cfd01e2fd0ec36c98d6efdd3247b6ab1a49a7cfdede4d27d95,1707

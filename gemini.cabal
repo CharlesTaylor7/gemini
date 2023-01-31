@@ -94,7 +94,7 @@ library
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics-core
+    , optics
     , prettyprinter
     , random
     , relude
@@ -157,7 +157,7 @@ executable dev-server
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics-core
+    , optics
     , prettyprinter
     , random
     , rapid
@@ -221,7 +221,7 @@ executable server
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics-core
+    , optics
     , prettyprinter
     , random
     , relude
@@ -290,7 +290,7 @@ test-suite gemini-test
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics-core
+    , optics
     , prettyprinter
     , random
     , relude
