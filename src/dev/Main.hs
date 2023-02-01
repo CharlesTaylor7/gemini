@@ -14,11 +14,12 @@ import qualified Shpadoinkle.Run            as Run
 
 import           Rapid
 
-import           Gemini.App                  (getEnv)
 import           Gemini.Utils                (IsLens, zoomComponent)
 import           Gemini.Views.App           (Store(..), Env(..), rootView, initialStore, Deployment(..))
 import           Gemini.Views.Puzzle (loadDomInfo)
 import           Gemini.FFI (onResize)
+import           Gemini.Env (envOptional)
+import           Gemini.Views.App (Deployment(..), Env(..))
 
 
 main :: IO ()
@@ -64,3 +65,10 @@ json = prism' encode decode'
 -- lawless, but for the same reasons as `non`. Should be harmless
 withDefault :: Prism' s a -> a -> Iso' s a
 withDefault prism def = iso (fromMaybe def . preview prism ) (review prism)
+
+
+getEnv :: Deployment -> IO Env
+getEnv deployment = do
+  port <- envOptional "PORT" 8000
+  commit <- envOptional "COMMIT" "master"
+  pure $ Env { deployment, port, commit }

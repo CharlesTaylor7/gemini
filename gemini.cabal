@@ -31,7 +31,6 @@ library
       Data.Permutation
       Data.Point
       Data.Timestamp
-      Gemini.App
       Gemini.Env
       Gemini.FFI
       Gemini.Solve
