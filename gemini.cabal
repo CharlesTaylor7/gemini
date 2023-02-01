@@ -80,7 +80,7 @@ library
       MultiWayIf
       MultiParamTypeClasses
       ConstraintKinds
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -Wmissing-export-lists
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wmissing-export-lists -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures
   build-depends:
       Shpadoinkle
     , Shpadoinkle-backend-pardiff
@@ -142,7 +142,7 @@ executable dev-server
       MultiWayIf
       MultiParamTypeClasses
       ConstraintKinds
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -Wno-missing-export-lists
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wmissing-export-lists -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -Wno-missing-export-lists
   build-depends:
       Shpadoinkle
     , Shpadoinkle-backend-pardiff
@@ -206,7 +206,7 @@ executable server
       MultiWayIf
       MultiParamTypeClasses
       ConstraintKinds
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -Wno-missing-export-lists
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wmissing-export-lists -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -Wno-missing-export-lists
   build-depends:
       Shpadoinkle
     , Shpadoinkle-backend-pardiff
@@ -273,7 +273,7 @@ test-suite gemini-test
       MultiWayIf
       MultiParamTypeClasses
       ConstraintKinds
-  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -Wno-orphans
+  ghc-options: -ferror-spans -freverse-errors -Wall -Wmissing-deriving-strategies -Wmissing-signatures -Wmissing-export-lists -Wincomplete-uni-patterns -Wincomplete-record-updates -Wtype-defaults -Wunused-imports -Wno-name-shadowing -Wno-partial-type-signatures -threaded -Wno-orphans
   build-depends:
       QuickCheck
     , Shpadoinkle

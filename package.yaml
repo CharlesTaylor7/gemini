@@ -87,19 +87,17 @@ ghc-options:
   - -Wall
   - -Wmissing-deriving-strategies
   - -Wmissing-signatures
+  - -Wmissing-export-lists
   - -Wincomplete-uni-patterns
   - -Wincomplete-record-updates
   - -Wtype-defaults
   - -Wunused-imports
-    #- -Werror
   # turn off warnings
   - -Wno-name-shadowing
   - -Wno-partial-type-signatures
 
 
 library:
-  ghc-options:
-    - -Wmissing-export-lists
   source-dirs: src/lib
 
 executables:

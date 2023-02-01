@@ -9,6 +9,7 @@ module Gemini.Utils
   , break
   , knownInt
   , natsUnder
+  , IsLens
   ) where
 
 import           Relude                    hiding (break)
@@ -26,13 +27,23 @@ import qualified Shpadoinkle.Html                as Html
 prettyCompactText :: forall a. Pretty a => a -> Text
 prettyCompactText = Pretty.renderStrict . Pretty.layoutCompact . pretty
 
-
+type IsLens k = (Is k A_Getter, Is k A_Setter)
 -- |
-zoomComponent :: Functor m => Lens' s a -> s -> (a -> Html m a) -> Html m s
+zoomComponent
+  :: Functor m
+  => (IsLens k)
+  => Optic' k ix s a
+  -> s -> (a -> Html m a) -> Html m s
 zoomComponent optic props component = component (props ^. optic) & generalize optic
 
-generalize :: (Functor m, Continuous f, Is k A_Lens) => Optic' k ix s a -> (f m a -> f m s)
+generalize
+  :: forall m f k ix s a
+  . (Functor m, Continuous f, IsLens k)
+  => Optic' k ix s a
+  -> (f m a -> f m s)
 generalize optic = Shpadoinkle.Continuation.liftC (set optic) (view optic)
+  where
+--flip set optic) (view optic)
 
 
 orNothing :: Bool -> a -> Maybe a

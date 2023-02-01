@@ -7,17 +7,16 @@ import           Data.Aeson                  hiding (json)
 import qualified Data.ByteString.Lazy        as Lazy
 import           Optics
 
-import           Shpadoinkle                 (JSM, shpadoinkle)
-import           Shpadoinkle.Backend.ParDiff (runParDiff, stage)
+import           Shpadoinkle                 (JSM, shpadoinkle, MonadJSM)
+import           Shpadoinkle.Backend.ParDiff (runParDiff, stage, ParDiffT)
 import           Shpadoinkle.Html
-import           Shpadoinkle.Run             hiding (Dev, Env)
+import qualified Shpadoinkle.Run            as Run
 
 import           Rapid
 
-import           Gemini.App                  hiding (app)
-import           Gemini.Types
-import           Gemini.Utils                (generalize)
-import           Gemini.Views.App
+import           Gemini.App                  (getEnv)
+import           Gemini.Utils                (IsLens, zoomComponent)
+import           Gemini.Views.App           (Store(..), Env(..), rootView, initialStore, Deployment(..))
 
 
 main :: IO ()
@@ -33,14 +32,24 @@ main =
     restart r "webserver" $ do
       let jsonIso = json `withDefault` store
       let staticFolder = "./"
-      liveWithStatic (store ^. #env % #port) (spa jsonIso storeTVar) staticFolder
+      Run.liveWithStatic (store ^. #env % #port) (spa jsonIso storeTVar rootView) staticFolder
 
 
-spa :: (Is k A_Lens, Is k A_Getter) => Optic' k ix Lazy.ByteString Store -> TVar Lazy.ByteString -> JSM ()
-spa lens storeTVar = do
+spa :: forall k ix m
+    . IsLens k
+    => MonadJSM m
+    => m ~ (Shpadoinkle.Backend.ParDiff.ParDiffT Lazy.ByteString JSM)
+    => Optic' k ix Lazy.ByteString Store
+    -> TVar Lazy.ByteString
+    -> (Store -> Html m Store)
+    -> JSM ()
+spa lens storeTVar rootView = do
   setTitle "Gemini"
   addStyle "/public/styles/index.css"
-  let view = zoomComponent lens rootView
+  let view props = zoomComponent lens props rootView
+
+  -- let modify f = atomically $ modifyTVar' storeTVar $ over lens f
+
   shpadoinkle identity runParDiff storeTVar view stage
 
 
@@ -50,7 +59,3 @@ json = prism' encode decode'
 -- lawless, but for the same reasons as `non`. Should be harmless
 withDefault :: Prism' s a -> a -> Iso' s a
 withDefault prism def = iso (fromMaybe def . preview prism ) (review prism)
-
-
-zoomComponent :: (Functor m, Is k A_Lens, Is k A_Getter) => Optic' k ix s a -> (a -> Html m a) -> (s -> Html m s)
-zoomComponent optic component props = component (view optic props) & generalize optic
