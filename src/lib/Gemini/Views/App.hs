@@ -18,7 +18,7 @@ import qualified Shpadoinkle.Continuation        as Continuation
 import qualified Shpadoinkle.Html                as Html
 import qualified Shpadoinkle.Keyboard            as Key
 
-import           Gemini.Jsaddle                  (dateNow, sleep)
+import           Gemini.FFI                  (dateNow, sleep)
 import           Gemini.Solve
 import           Gemini.Types
 import           Gemini.UI.Actions

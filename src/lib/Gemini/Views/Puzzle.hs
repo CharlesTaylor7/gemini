@@ -18,7 +18,7 @@ import           Shpadoinkle              hiding (text)
 import qualified Shpadoinkle.Continuation as Continuation
 import qualified Shpadoinkle.Html         as Html
 
-import           Gemini.Jsaddle
+import           Gemini.FFI
 import           Gemini.Solve
 import           Gemini.Types
 import           Gemini.UI.Actions

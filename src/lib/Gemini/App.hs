@@ -14,7 +14,7 @@ import           Optics
 import           Gemini.Env
 import           Gemini.Views.App
 import           Gemini.Views.Puzzle
-import           Gemini.Jsaddle
+import           Gemini.FFI
 
 
 app :: Store -> JSM ()

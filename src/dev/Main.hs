@@ -7,7 +7,8 @@ import           Data.Aeson                  hiding (json)
 import qualified Data.ByteString.Lazy        as Lazy
 import           Optics
 
-import           Shpadoinkle                 (JSM, shpadoinkle, MonadJSM)
+import           Shpadoinkle                 (JSM, shpadoinkle, MonadJSM, Html)
+import qualified Shpadoinkle.Html  as Html
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage, ParDiffT)
 import qualified Shpadoinkle.Run            as Run
 
@@ -17,7 +18,7 @@ import           Gemini.App                  (getEnv)
 import           Gemini.Utils                (IsLens, zoomComponent)
 import           Gemini.Views.App           (Store(..), Env(..), rootView, initialStore, Deployment(..))
 import           Gemini.Views.Puzzle (loadDomInfo)
-import           Gemini.JSaddle (onResize)
+import           Gemini.FFI (onResize)
 
 
 main :: IO ()
@@ -45,8 +46,8 @@ spa :: forall k ix m
     -> (Store -> Html m Store)
     -> JSM ()
 spa lens storeTVar rootView = do
-  setTitle "Gemini"
-  addStyle "/public/styles/index.css"
+  Html.setTitle "Gemini"
+  Html.addStyle "/public/styles/index.css"
 
   let modify = atomically . modifyTVar' storeTVar . over lens
   onResize $ do

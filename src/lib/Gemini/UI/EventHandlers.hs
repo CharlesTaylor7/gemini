@@ -12,7 +12,7 @@ import           Data.Point
 import           Shpadoinkle              hiding (text)
 import qualified Shpadoinkle.Continuation as Continuation
 
-import           Gemini.Jsaddle
+import           Gemini.FFI (instanceOf,jsg, toJSVal, (!), (!!), fromJSValUnchecked)
 import           Gemini.Types
 import           Gemini.UI.Actions
 
