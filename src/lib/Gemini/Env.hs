@@ -8,7 +8,6 @@ import           Relude
 import           System.Environment (lookupEnv)
 
 
-
 data EnvVarException = Unset String | InvalidFormat String
   deriving stock (Eq, Show)
   deriving anyclass (Exception)
@@ -32,5 +31,5 @@ envRequired :: Read a => String -> IO a
 envRequired var = do
   maybeVar <- lookupEnv var
   either throwIO pure $ do
-      var <- maybeVar & note (Unset var)
-      readMaybe var & note (InvalidFormat var)
+    var <- maybeVar & note (Unset var)
+    readMaybe var & note (InvalidFormat var)

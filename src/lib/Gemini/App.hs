@@ -17,18 +17,6 @@ import           Gemini.Views.Puzzle
 import           Gemini.FFI
 
 
-app :: Store -> JSM ()
-app store = do
-  Html.setTitle "Gemini"
-  Html.addStyle "/public/styles/index.css"
-  territory <- newTVarIO store
-
-  onResize $ do
-    domInfo <- loadDomInfo
-    atomically $ modifyTVar' territory $ #dom .~ domInfo
-  shpadoinkle id Backend.runParDiff territory rootView Backend.stage
-
-
 getEnv :: Deployment -> IO Env
 getEnv deployment = do
   port <- envOptional "PORT" 8000
