@@ -27,7 +27,6 @@ import           Gemini.Utils
 import           Gemini.Views.Puzzle             (geminiView)
 import           Gemini.Views.RecordedMovesPanel (recordedMovesPanel)
 
-
 keyboardMotions :: forall m. MonadJSM m => (Text, Prop m Store)
 keyboardMotions =
   Html.onKeydownC $ \case
@@ -163,7 +162,7 @@ header store =
       , (checkBox "Controls" & option #showControls)
       ]
       <>
-      if store ^. isProdL
+      if store ^. #env % #deployment % to (== Prod)
       then []
       else
         [ confettiButton & option #confetti
@@ -179,9 +178,6 @@ header store =
   where
     option :: Optic' A_Lens ix Options s -> (s -> Html m s) -> Html m Store
     option optic = zoomComponent (#options % optic) store
-
-    isProdL :: Lens' Store Bool
-    isProdL = #env % #deployment % iso (== Prod) (\bool -> if bool then Prod else Dev)
 
 
 footer :: Store -> Html m Store
