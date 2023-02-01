@@ -2,11 +2,11 @@ module Data.Timestamp
   ( Timestamp(..)
   ) where
 
-import Relude
+import           Relude
 
-import           Data.Aeson       (FromJSON, ToJSON)
-import           Prettyprinter    (Pretty (..), (<+>))
-import qualified Prettyprinter    as Pretty
+import           Data.Aeson    (FromJSON, ToJSON)
+import           Prettyprinter (Pretty (..))
+import qualified Prettyprinter as Pretty
 
 -- | timestamp in milliseconds
 newtype Timestamp = Timestamp { milliseconds :: Int }

@@ -21,8 +21,7 @@ import           Gemini.Utils                (IsLens, zoomComponent)
 import           Gemini.Views.App            (Deployment (..), Env (..), Store (..), initialStore, rootView)
 import           Gemini.Views.Puzzle         (loadDomInfo)
 
-
-main :: IO ()
+main:: IO ()
 main =
   Rapid.rapid 0 $ \r -> do
 

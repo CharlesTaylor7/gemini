@@ -55,6 +55,12 @@ Only allow changing the rotation ring if the mouse passes through a narrow band 
 - animate smoothly between drag states. If you drag through the center, it does an awkward immediate 180 rotation
 - it feels jerky during the snap
 
+- Hot reload doesn't work if I try to run another stack build process for typechecking. This interferes somehow with ghcid's loop. I'd rather not pick between hot reloading and typechecker feedback. (Otherwise I have to guess why it didn't reload)
+
+Maybe hls in my editor can help with this. Or maybe ghcid flags can help with this?
+
+ghcid should be reporting typechecker issues to me but it isn't 
+
 ### Future Work
 - Implement a search program for efficient algorithms. 
     - Right now I'm shooting in the dark. Knowing efficient algorithms for transpositions or 3 cycles, would allow me to solve on my physical puzzle.
