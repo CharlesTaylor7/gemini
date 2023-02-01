@@ -9,7 +9,6 @@ import           Optics
 
 import           Shpadoinkle                 (JSM, shpadoinkle, MonadJSM)
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage, ParDiffT)
-import           Shpadoinkle.Html
 import qualified Shpadoinkle.Run            as Run
 
 import           Rapid
@@ -17,6 +16,8 @@ import           Rapid
 import           Gemini.App                  (getEnv)
 import           Gemini.Utils                (IsLens, zoomComponent)
 import           Gemini.Views.App           (Store(..), Env(..), rootView, initialStore, Deployment(..))
+import           Gemini.Views.Puzzle (loadDomInfo)
+import           Gemini.JSaddle (onResize)
 
 
 main :: IO ()
@@ -46,10 +47,13 @@ spa :: forall k ix m
 spa lens storeTVar rootView = do
   setTitle "Gemini"
   addStyle "/public/styles/index.css"
+
+  let modify = atomically . modifyTVar' storeTVar . over lens
+  onResize $ do
+    domInfo <- loadDomInfo
+    modify $ #dom .~ domInfo
+
   let view props = zoomComponent lens props rootView
-
-  -- let modify f = atomically $ modifyTVar' storeTVar $ over lens f
-
   shpadoinkle identity runParDiff storeTVar view stage
 
 

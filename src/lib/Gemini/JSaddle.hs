@@ -1,4 +1,4 @@
-module Gemini.Jsaddle
+module Gemini.JSaddle
   ( -- jsCall
   onResize, setTitle, sleep, dateNow, jsCall, jsGlobal
   -- reexports

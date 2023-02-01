@@ -14,7 +14,7 @@ import           Optics.State.Operators
 import           Shpadoinkle
 import qualified Shpadoinkle.Continuation as Continuation
 
-import           Gemini.Jsaddle
+import           Gemini.JSaddle
 import           Gemini.Types
 
 
