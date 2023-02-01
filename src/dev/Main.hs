@@ -1,24 +1,25 @@
 {-# OPTIONS_GHC -Wwarn #-}
 module Main where
 
-import           Relude
 import           Optics
-import        qualified   Rapid
+import           Relude
 
 import           Data.Aeson                  hiding (json)
 import qualified Data.ByteString.Lazy        as Lazy
 
-import           Shpadoinkle                 (JSM, shpadoinkle, MonadJSM, Html)
-import qualified Shpadoinkle.Html  as Html
-import           Shpadoinkle.Backend.ParDiff (runParDiff, stage, ParDiffT)
-import qualified Shpadoinkle.Run            as Run
+import qualified Rapid
+
+import           Shpadoinkle                 (Html, JSM, MonadJSM, shpadoinkle)
+import           Shpadoinkle.Backend.ParDiff (ParDiffT, runParDiff, stage)
+import qualified Shpadoinkle.Html            as Html
+import qualified Shpadoinkle.Run             as Run
 
 
+import           Gemini.Env                  (envOptional)
+import           Gemini.FFI                  (onResize)
 import           Gemini.Utils                (IsLens, zoomComponent)
-import           Gemini.Views.App           (Store(..), Env(..), rootView, initialStore, Deployment(..))
-import           Gemini.Views.Puzzle (loadDomInfo)
-import           Gemini.FFI (onResize)
-import           Gemini.Env (envOptional)
+import           Gemini.Views.App            (Deployment (..), Env (..), Store (..), initialStore, rootView)
+import           Gemini.Views.Puzzle         (loadDomInfo)
 
 
 main :: IO ()
