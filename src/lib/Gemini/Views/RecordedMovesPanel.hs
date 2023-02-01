@@ -19,7 +19,7 @@ recordedMovesPanel :: MonadJSM m => Store -> Html m Store
 recordedMovesPanel store =
   (store ^. #options % #recording || isn't (#moves % _Empty) store) `orEmpty`
   Html.div [ Html.className "saved-moves-panel" ]
-    ( bufferView store 
+    ( bufferView store
     : (itoListOf (#moves % ifolded) store <&> moveView)
     )
 

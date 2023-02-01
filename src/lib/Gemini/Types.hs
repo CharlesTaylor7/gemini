@@ -101,6 +101,7 @@ data DomInfo = DomInfo
 
 data Options = Options
   { showLabels     :: !Bool
+  , showControls   :: !Bool
   , recording      :: !Bool
   , debug          :: !Bool
   , confetti       :: !Confetti
@@ -195,6 +196,7 @@ initialStore env = Store
       , mobile = False
       , confetti = Off
       , highlightPairs = False
+      , showControls = False
       }
   , env = env
   , dom = DomInfo

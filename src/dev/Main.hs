@@ -24,17 +24,16 @@ import           Gemini.Views.Puzzle         (loadDomInfo)
 main:: IO ()
 main =
   Rapid.rapid 0 $ \r -> do
-
-    store <- Rapid.createRef r ("initialStore" :: Text) $ do
+    storeTVar <- Rapid.createRef r ("storeTVar" :: Text) $ do
       env <- getEnv Dev
-      pure $ initialStore env
-
-    storeTVar <- Rapid.createRef r ("storeTVar" :: Text) $ newTVarIO (store ^. re json)
+      let store = initialStore env
+      newTVarIO (store ^. re json)
 
     Rapid.restart r "webserver" $ do
-      let jsonIso = json `withDefault` store
+      env <- getEnv Dev
+      let jsonIso = json `withDefault` (initialStore env)
       let staticFolder = "./"
-      Run.liveWithStatic (store ^. #env % #port) (spa jsonIso storeTVar rootView) staticFolder
+      Run.liveWithStatic 3000 (spa jsonIso storeTVar rootView) staticFolder
 
 
 spa :: forall k ix m

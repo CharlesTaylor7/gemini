@@ -69,3 +69,5 @@ ghcid should be reporting typechecker issues to me but it isn't
 - animate transitions
 - present elapsed time to solve in confetti view
 - solve button: watch the computer solve the puzzle via algorithms
+- explain controls in footer
+

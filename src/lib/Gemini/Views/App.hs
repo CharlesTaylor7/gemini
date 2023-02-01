@@ -18,7 +18,7 @@ import qualified Shpadoinkle.Continuation        as Continuation
 import qualified Shpadoinkle.Html                as Html
 import qualified Shpadoinkle.Keyboard            as Key
 
-import           Gemini.FFI                  (dateNow, sleep)
+import           Gemini.FFI                      (dateNow, sleep)
 import           Gemini.Solve
 import           Gemini.Types
 import           Gemini.UI.Actions
@@ -159,23 +159,27 @@ header store =
   [ Html.div [ Html.className "control-panel" ]
     [ htmlWhen (store ^. #options % #mobile % to not) $
       buttonGroup "options" $
-      [ (checkBox "Labels" & zoomComponent (#options % #showLabels) store) 
+      [ (checkBox "Labels" & option #showLabels)
+      , (checkBox "Controls" & option #showControls)
       ]
       <>
       if store ^. isProdL
       then []
       else
-        [ confettiButton & zoomComponent (#options % #confetti) store
-        , checkBox "Debug" & zoomComponent (#options % #debug) store
-        , checkBox "Highlight" & zoomComponent (#options % #highlightPairs) store
+        [ confettiButton & option #confetti
+        , checkBox "Debug" & option #debug
+        , checkBox "Highlight" & option #highlightPairs
         ]
-    , buttonGroup "actions" 
-    [ scrambleButton
-    , (store ^. #options % #mobile % to not) `orEmpty` recordButton store
-    ]
+    , buttonGroup "actions"
+      [ scrambleButton
+      , (store ^. #options % #mobile % to not) `orEmpty` recordButton store
+      ]
     ]
   ]
   where
+    option :: Optic' A_Lens ix Options s -> (s -> Html m s) -> Html m Store
+    option optic = zoomComponent (#options % optic) store
+
     isProdL :: Lens' Store Bool
     isProdL = #env % #deployment % iso (== Prod) (\bool -> if bool then Prod else Dev)
 
@@ -192,6 +196,15 @@ footer store =
       )
       "View Source"
     ]
+  , htmlWhen (store ^. #options % #showControls) $
+      Html.div [ Html.className "explain-controls" ]
+      [ Html.div_ $ pure $ Html.text "Q: Rotate left disk counter clockwise"
+      , Html.div_ $ pure $ Html.text "W: Rotate left disk clockwise"
+      , Html.div_ $ pure $ Html.text "T: Rotate center disk counter clockwise"
+      , Html.div_ $ pure $ Html.text "Y: Rotate center disk clockwise"
+      , Html.div_ $ pure $ Html.text "O: Rotate right disk counter clockwise"
+      , Html.div_ $ pure $ Html.text "P: Rotate right disk clockwise"
+      ]
   ]
   where
     hyperlink :: Text -> Text -> Text -> Html m a
