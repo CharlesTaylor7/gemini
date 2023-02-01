@@ -2,37 +2,36 @@
 module Main where
 
 import           Relude
+import           Optics
+import        qualified   Rapid
 
 import           Data.Aeson                  hiding (json)
 import qualified Data.ByteString.Lazy        as Lazy
-import           Optics
 
 import           Shpadoinkle                 (JSM, shpadoinkle, MonadJSM, Html)
 import qualified Shpadoinkle.Html  as Html
 import           Shpadoinkle.Backend.ParDiff (runParDiff, stage, ParDiffT)
 import qualified Shpadoinkle.Run            as Run
 
-import           Rapid
 
 import           Gemini.Utils                (IsLens, zoomComponent)
 import           Gemini.Views.App           (Store(..), Env(..), rootView, initialStore, Deployment(..))
 import           Gemini.Views.Puzzle (loadDomInfo)
 import           Gemini.FFI (onResize)
 import           Gemini.Env (envOptional)
-import           Gemini.Views.App (Deployment(..), Env(..))
 
 
 main :: IO ()
 main =
-  rapid 0 $ \r -> do
+  Rapid.rapid 0 $ \r -> do
 
-    store <- createRef r ("initialStore" :: Text) $ do
+    store <- Rapid.createRef r ("initialStore" :: Text) $ do
       env <- getEnv Dev
       pure $ initialStore env
 
-    storeTVar <- createRef r ("storeTVar" :: Text) $ newTVarIO (store ^. re json)
+    storeTVar <- Rapid.createRef r ("storeTVar" :: Text) $ newTVarIO (store ^. re json)
 
-    restart r "webserver" $ do
+    Rapid.restart r "webserver" $ do
       let jsonIso = json `withDefault` store
       let staticFolder = "./"
       Run.liveWithStatic (store ^. #env % #port) (spa jsonIso storeTVar rootView) staticFolder
