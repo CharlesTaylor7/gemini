@@ -33,6 +33,7 @@ library
       Data.Timestamp
       Gemini.App
       Gemini.Env
+      Gemini.JSaddle
       Gemini.Solve
       Gemini.Types
       Gemini.UI.Actions
