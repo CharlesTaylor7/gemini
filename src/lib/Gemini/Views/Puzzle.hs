@@ -169,7 +169,6 @@ geminiView store =
           Html.div
             ( Html.class'
               [ ("disk", True)
-              , ("green", True)
               , (color, True)
               , ("dragging", isDraggedDisk location)
               , ("highlight", highlighted ^. contains location)
