@@ -12,13 +12,12 @@ import           Data.Gemini
 import           Gemini.Solve.Types
 import           Gemini.Types
 
-nextMove :: BotSolveState -> Gemini-> BotMove
-nextMove =
+nextMove :: Gemini -> BotSolveState -> BotMove
+nextMove g =
   \case
     BotSolveState { stage = StageRed StageRedState { redCount } } ->
-      disksOf CenterRing
-      LeftRing 7
-      undefined
+      undefined $ g ^.. disksOf CenterRing
+      -- LeftRing 7
 
 
 

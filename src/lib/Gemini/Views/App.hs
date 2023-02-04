@@ -277,7 +277,7 @@ nextBotMoveButton store =
   actionButton
     [ Html.onClickC $ do
         Actions.run $ do
-          let move = Solve.nextMove (store ^. #botSolveState) (store ^. #gemini)
+          let move = Solve.nextMove (store ^. #gemini) (store ^. #botSolveState)
           Actions.applyBotMove move
     ]
     [ Html.text "Next" ]
