@@ -1,7 +1,9 @@
 module Gemini.UI.Actions
   ( applyMotionToStore, stopRecording, applyRotation, applyToHistory, applyMove, toContinuation
+  , applyBotMove
   , dragAngle
   , startDrag, updateDrag, endDrag
+  , run
   ) where
 
 import           Relude
@@ -15,13 +17,17 @@ import           Shpadoinkle
 import qualified Shpadoinkle.Continuation as Continuation
 
 import           Gemini.FFI               (dateNow)
+import           Gemini.Solve             (BotMove (..))
 import           Gemini.Types
 
 
 type Action m = StateT Store m ()
 
 
-toContinuation :: MonadJSM m => Action m -> Continuation m Store
+run :: Monad m => Action m -> Continuation m Store
+run = toContinuation
+
+toContinuation :: Monad m => Action m -> Continuation m Store
 toContinuation = Continuation.kleisli . fmap fmap fmap constUpdate . execStateT
 
 
@@ -29,6 +35,9 @@ applyMove :: MonadJSM m => Move -> Action m
 applyMove move = do
   traverse_ applyMotionUnchecked $ move ^. #motions
   checkWin
+
+applyBotMove :: BotMove -> Action m
+applyBotMove (BotMove moves state) = undefined
 
 
 -- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
@@ -84,7 +93,7 @@ stopRecording state = state
     locationCycles = fmap indexToLocation . toCycles
 
 
-applyRotation :: MonadJSM m => Rotation -> StateT Store m ()
+applyRotation :: MonadJSM m => Rotation -> Action m
 applyRotation r = applyMotionToStore $ toMotion r
   where
     toMotion :: Rotation -> Motion

@@ -18,35 +18,40 @@ module Gemini.Types
   , module Timestamp
   ) where
 
-import           Relude           hiding (cycle)
-
-import           Data.Aeson       (FromJSON, ToJSON)
-import           Data.Angle       as Angle
-import           Data.Cyclic      as Cyclic
-import           Data.Finitary    as Finitary
-import           Data.Gemini      as Gemini
-import           Data.Permutation as Permutation
-import           Data.Point       as Point
-import           Data.Sequence    (Seq ((:<|), (:|>)))
-import qualified Data.Sequence    as Seq
-import           Data.Timestamp   as Timestamp
 import           Optics
-import           Prettyprinter    (Pretty (..), (<+>))
-import qualified Prettyprinter    as Pretty
+import           Relude             hiding (cycle)
+
+import           Data.Angle         as Angle
+import           Data.Cyclic        as Cyclic
+import           Data.Finitary      as Finitary
+import           Data.Gemini        as Gemini
+import           Data.Permutation   as Permutation
+import           Data.Point         as Point
+import           Data.Timestamp     as Timestamp
+
+import qualified Data.Sequence      as Seq
+import qualified Prettyprinter      as Pretty
+
+import           Data.Aeson         (FromJSON, ToJSON)
+import           Data.Sequence      (Seq ((:<|), (:|>)))
+import           Prettyprinter      (Pretty (..), (<+>))
+
+import           Gemini.Solve.Types (BotSolveState (..), initialSolveState)
 
 
 -- | UI Definitions
 data Store = Store
-  { gemini   :: !Gemini
-  , history  :: !(Seq Motion)
-  , hover    :: !(Maybe HoverState)
-  , drag     :: !(Maybe DragState)
-  , options  :: !Options
-  , env      :: !Env
-  , dom      :: !DomInfo
-  , moves    :: !(Seq Move)
-  , recorded :: !(Seq Motion)
-  , stats    :: !(Maybe Stats)
+  { gemini        :: !Gemini
+  , history       :: !(Seq Motion)
+  , hover         :: !(Maybe HoverState)
+  , drag          :: !(Maybe DragState)
+  , options       :: !Options
+  , env           :: !Env
+  , dom           :: !DomInfo
+  , moves         :: !(Seq Move)
+  , recorded      :: !(Seq Motion)
+  , stats         :: !(Maybe Stats)
+  , botSolveState :: !BotSolveState
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -100,13 +105,14 @@ data DomInfo = DomInfo
 
 
 data Options = Options
-  { showLabels     :: !Bool
-  , showControls   :: !Bool
-  , recording      :: !Bool
-  , debug          :: !Bool
-  , confetti       :: !Confetti
-  , highlightPairs :: !Bool
-  , mobile         :: !Bool
+  { showLabels            :: !Bool
+  , showKeyboardShortcuts :: !Bool
+  , showBotControls       :: !Bool
+  , recording             :: !Bool
+  , debug                 :: !Bool
+  , confetti              :: !Confetti
+  , highlightPairs        :: !Bool
+  , mobile                :: !Bool
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -196,7 +202,8 @@ initialStore env = Store
       , mobile = False
       , confetti = Off
       , highlightPairs = False
-      , showControls = False
+      , showKeyboardShortcuts = False
+      , showBotControls = True
       }
   , env = env
   , dom = DomInfo
@@ -204,4 +211,6 @@ initialStore env = Store
     , ringRadius = 0
     }
   , stats = Nothing
+  , botSolveState = initialSolveState
   }
+

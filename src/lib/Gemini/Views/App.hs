@@ -19,9 +19,9 @@ import qualified Shpadoinkle.Html                as Html
 import qualified Shpadoinkle.Keyboard            as Key
 
 import           Gemini.FFI                      (dateNow, sleep)
-import           Gemini.Solve
+import           Gemini.Solve                    as Solve
 import           Gemini.Types
-import           Gemini.UI.Actions
+import           Gemini.UI.Actions               as Actions
 import           Gemini.UI.EventHandlers
 import           Gemini.Utils
 import           Gemini.Views.Puzzle             (geminiView)
@@ -39,7 +39,7 @@ keyboardMotions =
     Key.P -> apply $ Rotation RightRing Clockwise
     _     -> Continuation.pur identity
     where
-      apply = toContinuation . applyRotation
+      apply = Actions.toContinuation . applyRotation
 
 
 -- | Components
@@ -158,8 +158,9 @@ header store =
   [ Html.div [ Html.className "control-panel" ]
     [ htmlWhen (store ^. #options % #mobile % to not) $
       buttonGroup "options" $
-      [ (checkBox "Labels" & option #showLabels)
-      , (checkBox "Controls" & option #showControls)
+      [ checkBox "Labels" & option #showLabels
+      , checkBox "Keyboard controls?" & option #showKeyboardShortcuts
+      , checkBox "Bot controls?" & option #showBotControls
       ]
       <>
       if store ^. #env % #deployment % to (== Prod)
@@ -172,6 +173,7 @@ header store =
     , buttonGroup "actions"
       [ scrambleButton
       , (store ^. #options % #mobile % to not) `orEmpty` recordButton store
+      , nextBotMoveButton store
       ]
     ]
   ]
@@ -192,7 +194,7 @@ footer store =
       )
       "View Source"
     ]
-  , htmlWhen (store ^. #options % #showControls) $
+  , htmlWhen (store ^. #options % #showKeyboardShortcuts) $
       Html.div [ Html.className "explain-controls" ]
       [ Html.div_ $ pure $ Html.text "Q: Rotate left disk counter clockwise"
       , Html.div_ $ pure $ Html.text "W: Rotate left disk clockwise"
@@ -269,6 +271,16 @@ recordButton store = if store ^. #options % #recording then stopRecordingButton 
         [ Html.onClick $ stopRecording ]
         [ Html.text $ "Stop Recording" ]
 
+
+nextBotMoveButton :: Monad m => Store -> Html m Store
+nextBotMoveButton store =
+  actionButton
+    [ Html.onClickC $ do
+        Actions.run $ do
+          let move = Solve.nextMove (store ^. #botSolveState) (store ^. #gemini)
+          Actions.applyBotMove move
+    ]
+    [ Html.text "Next" ]
 
 scrambleButton :: forall m. MonadJSM m => Html m Store
 scrambleButton =

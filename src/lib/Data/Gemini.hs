@@ -1,5 +1,6 @@
 module Data.Gemini
   ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, geminiFromList, solvedColors
+  , disksOf
   , Location(..), indexToLocation, sibling, ambiguousLocations, canonical
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   , GeminiPermutation
@@ -41,8 +42,7 @@ instance Each Location Gemini Gemini Disk Disk where
 
 -- | Location on the gemini puzzle, where a disk can slide
 -- the 4 locations where a pair of rings intersect each has two possible representations as a Location type
--- We'll have to normalize somehow.
--- Prefer the leftmost ring?
+-- We normalize by prefering the leftmost ring. See `canonical`.
 data Location = Location
   { ring     :: !Ring
   , position :: !(Cyclic 18)
@@ -265,8 +265,18 @@ locationToIndex = index . canonical
 
 
 -- | Index into the gemini map
-geminiIx :: Location -> AffineTraversal' Gemini Disk
-geminiIx location = #geminiDiskMap % ix (locationToIndex location)
+geminiIx :: Location -> Lens' Gemini Disk
+geminiIx location = #geminiDiskMap % trustMe (ix (locationToIndex location))
+  where
+    trustMe :: forall s a. AffineTraversal' s a -> Lens' s a
+    trustMe t = lens (fromMaybe . preview t) (flip $ set t)
+
+    fromMaybe (Just a) = a
+
+type DiskIndex = Cyclic 18
+
+disksOf :: Ring -> IxFold DiskIndex Gemini Disk
+disksOf ring = undefined --inhabitants <&> \cyclic -> g ^. geminiIx (Location ring cyclic)
 
 
 geminiFromList :: [(Location, Disk)] -> Gemini

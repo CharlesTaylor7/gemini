@@ -1,12 +1,29 @@
 module Gemini.Solve
   ( solutionPairs
+  , nextMove
   , Orientation(..)
+  , BotMove(..)
   ) where
 
+import           Optics
 import           Relude
 
 import           Data.Gemini
-import           Optics
+import           Gemini.Solve.Types
+import           Gemini.Types
+
+nextMove :: BotSolveState -> Gemini-> BotMove
+nextMove =
+  \case
+    BotSolveState { stage = StageRed StageRedState { redCount } } ->
+      disksOf CenterRing
+      LeftRing 7
+      undefined
+
+
+
+data BotMove = BotMove [Motion] BotSolveState
+
 
 
 type Pair a = (a, a)
@@ -36,3 +53,5 @@ solutionPairs gemini =
       let check color = color `notElem` (disk ^. #color : solved)
       guard $ maybe False check $ gemini ^? geminiIx candidate % #color
       pure $ candidate
+
+
