@@ -1,6 +1,7 @@
 module Data.Gemini
   ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, geminiFromList, solvedColors
   , disksOf
+  , pattern L, pattern C, pattern R
   , Location(..), indexToLocation, sibling, ambiguousLocations, canonical
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   , GeminiPermutation
@@ -62,6 +63,13 @@ instance Finitary Location where
 instance Pretty Location where
   pretty Location { ring, position = Cyclic n} =
     pretty ring <> Pretty.viaShow n
+
+
+{-# COMPLETE L, C, R #-}
+pattern L, C, R :: DiskIndex -> Location
+pattern L n = Location LeftRing n
+pattern C n = Location CenterRing n
+pattern R n = Location RightRing n
 
 
 -- | Gemini transformations
@@ -231,8 +239,8 @@ instance Pretty a => Pretty (Choice a) where
   pretty = Pretty.viaShow . fmap pretty
 
 data Chosen
-  = L
-  | R
+  = ChoseLeft
+  | ChoseRight
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)

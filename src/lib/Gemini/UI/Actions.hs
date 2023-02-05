@@ -184,8 +184,8 @@ disambiguate store drag =
     Obvious location -> location
     Ambiguous loc1 loc2 ->
       case drag ^. #chosen of
-        Just L -> loc1
-        Just R -> loc2
+        Just ChoseLeft -> loc1
+        Just ChoseRight -> loc2
         Nothing -> do
           let distanceTo :: Location -> Double
               distanceTo location = do
