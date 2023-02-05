@@ -11,7 +11,9 @@ module Data.Gemini
 
 import           Relude                 hiding (cycle)
 
-import           Data.Aeson             (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
+import           Optics
+import           Optics.State.Operators
+
 import           Data.Cyclic
 import           Data.Finitary
 import           Data.Permutation
@@ -20,10 +22,10 @@ import qualified Data.IntMap            as Map
 import qualified Data.List              as List
 import qualified Data.List.NonEmpty     as NE
 import qualified Data.Sequence          as Seq
-import           Optics
-import           Optics.State.Operators
-import           Prettyprinter          (Pretty (..))
 import qualified Prettyprinter          as Pretty
+
+import           Data.Aeson             (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
+import           Prettyprinter          (Pretty (..))
 import           System.Random.Stateful (Uniform (..))
 
 
@@ -40,12 +42,14 @@ instance Each Location Gemini Gemini Disk Disk where
   each = reindexed indexToLocation $ #geminiDiskMap % each
 
 
+type DiskIndex = Cyclic 18
+
 -- | Location on the gemini puzzle, where a disk can slide
 -- the 4 locations where a pair of rings intersect each has two possible representations as a Location type
 -- We normalize by prefering the leftmost ring. See `canonical`.
 data Location = Location
   { ring     :: !Ring
-  , position :: !(Cyclic 18)
+  , position :: !DiskIndex
   -- ^ Positions start at the top of the ring, run clockwise from there
   }
   deriving stock (Eq, Show, Ord, Generic)
@@ -273,7 +277,6 @@ geminiIx location = #geminiDiskMap % trustMe (ix (locationToIndex location))
 
     fromMaybe (Just a) = a
 
-type DiskIndex = Cyclic 18
 
 disksOf :: Ring -> IxFold DiskIndex Gemini Disk
 disksOf ring = undefined --inhabitants <&> \cyclic -> g ^. geminiIx (Location ring cyclic)

@@ -8,7 +8,7 @@ module Gemini.Solve
 import           Optics
 import           Relude
 
-import           Data.Gemini
+import           Data.Gemini        as Gemini
 import           Gemini.Solve.Types
 import           Gemini.Types
 
