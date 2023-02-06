@@ -144,8 +144,9 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    [ paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
-    , paragraph $ prettyCompactText $ store ^.. #hover
+    [ paragraph $ prettyCompactText $ store ^. #errors
+
+    -- paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
     ]
   )
   where

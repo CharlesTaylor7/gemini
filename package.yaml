@@ -22,11 +22,12 @@ dependencies:
 - base >= 4.14 && < 4.16
 - relude
 - text
+- async
 - bytestring
 - containers
 - vector
 - mtl
-- optics
+- optics >= 0.4
 - prettyprinter
 - random
 - groups

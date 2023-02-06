@@ -86,6 +86,7 @@ library
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , aeson
+    , async
     , base >=4.14 && <4.16
     , bytestring
     , containers
@@ -94,7 +95,7 @@ library
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics
+    , optics >=0.4
     , prettyprinter
     , random
     , relude
@@ -148,6 +149,7 @@ executable dev-server
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , aeson
+    , async
     , base >=4.14 && <4.16
     , bytestring
     , containers
@@ -157,7 +159,7 @@ executable dev-server
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics
+    , optics >=0.4
     , prettyprinter
     , random
     , rapid
@@ -217,6 +219,7 @@ test-suite gemini-test
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , aeson
+    , async
     , base >=4.14 && <4.16
     , bytestring
     , containers
@@ -227,7 +230,7 @@ test-suite gemini-test
     , jsaddle-dom
     , jsaddle-warp
     , mtl
-    , optics
+    , optics >=0.4
     , prettyprinter
     , random
     , relude

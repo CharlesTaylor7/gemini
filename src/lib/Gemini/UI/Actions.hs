@@ -6,15 +6,13 @@ module Gemini.UI.Actions
   , run
   ) where
 
-import           Relude
-
-import           Control.Exception        (try)
 import           Data.Angle
 import           Data.Gemini              as Gemini
 import           Data.Permutation
 import qualified Data.Sequence            as Seq
 import           Optics
 import           Optics.State.Operators
+import           Relude
 import           Shpadoinkle
 import qualified Shpadoinkle.Continuation as Continuation
 
@@ -23,7 +21,12 @@ import           Gemini.Solve             (BotMove (..))
 import           Gemini.Types
 
 
-type Action m = StateT Store m ()
+
+
+
+type Action m = ExceptT Text (StateT Store m) ()
+
+
 
 
 run :: MonadIO m => Action m -> Continuation m Store
@@ -32,20 +35,6 @@ run = toContinuation
 toContinuation :: forall m. MonadIO m => Action m -> Continuation m Store
 toContinuation = fromState . handleErrors . execStateT
   where
-    handle :: forall a. NFData a => a -> m (Either Text a)
-    handle = liftIO . fmap (over #_Left toText) . try . evaluateNF
-
-    toText :: SomeException -> Text
-    toText = show
-
-    handleErrors :: (Store -> m Store) -> (Store -> m Store)
-    handleErrors f s = do
-      bound <- f s
-      me <- handle bound
-      pure $ case me of
-        Left e   -> s & #errors %~ (e :)
-        Right s' -> s'
-
     fromState :: forall a. (a -> m a) -> Continuation m a
     fromState = Continuation.kleisli . fmap fmap fmap Continuation.constUpdate
 
