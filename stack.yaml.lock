@@ -5,13 +5,6 @@
 
 packages:
 - completed:
-    hackage: enclosed-exceptions-1.0.3@sha256:6d4e9b5156721ccfa62d3cdcbf13d8571773031050ec714cb55b841f0c183f6a,1911
-    pantry-tree:
-      sha256: 368b7dc151ff8bc024462f47609cdf1656eabab28e177e70d8dcb03ceca4bcbf
-      size: 391
-  original:
-    hackage: enclosed-exceptions-1.0.3
-- completed:
     hackage: optics-0.4.2@sha256:864b8a1370dfe8e23137901ef665ac871120b5092d15803697efda7de6362c47,7560
     pantry-tree:
       sha256: 2c9f27af3099874592e506a10b1c154f2f00e618ca47b0da11ddbb800cacca4e

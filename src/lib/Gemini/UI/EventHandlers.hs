@@ -12,9 +12,9 @@ import           Data.Point
 import           Shpadoinkle              hiding (text)
 import qualified Shpadoinkle.Continuation as Continuation
 
-import           Gemini.FFI (instanceOf,jsg, toJSVal, (!), (!!), fromJSValUnchecked)
+import           Gemini.FFI               (fromJSValUnchecked, instanceOf, jsg, toJSVal, (!!), (!))
 import           Gemini.Types
-import           Gemini.UI.Actions
+import           Gemini.UI.Actions        as Actions
 
 
 mousePosition :: RawEvent -> JSM Point
@@ -46,5 +46,4 @@ onDragUpdate = listenerProp $ \_ event -> do
 onDragEnd :: MonadJSM m => Prop m Store
 onDragEnd = listenerProp $ \_ event -> do
   mouse <- mousePosition event
-  pure $ Continuation.kleisli $
-    endDrag mouse & execStateT & fmap (\ma -> liftJSM ma <&> constUpdate)
+  pure $ Actions.run $ Actions.endDrag mouse

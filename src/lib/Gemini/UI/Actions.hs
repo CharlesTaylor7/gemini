@@ -33,7 +33,7 @@ run :: MonadIO m => Action m -> Continuation m Store
 run = toContinuation
 
 toContinuation :: forall m. MonadIO m => Action m -> Continuation m Store
-toContinuation = fromState . handleErrors . execStateT
+toContinuation = fromState . execStateT . runExceptT
   where
     fromState :: forall a. (a -> m a) -> Continuation m a
     fromState = Continuation.kleisli . fmap fmap fmap Continuation.constUpdate
@@ -49,7 +49,7 @@ applyBotMove (BotMove moves state) = undefined
 
 
 -- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
-applyMotionUnchecked :: Monad m => Motion -> Action m
+applyMotionUnchecked :: MonadJSM m => Motion -> Action m
 applyMotionUnchecked motion = do
     -- apply to puzzle
     (#gemini %= applyToGemini motion)
@@ -165,7 +165,7 @@ updateDrag mouse = execState $ do
     _ -> pure ()
 
 
-endDrag :: Point -> StateT Store JSM ()
+endDrag :: MonadJSM m => Point -> Action m
 endDrag mouse = do
   modify $ updateDrag mouse
   drag <- dragAngle <$> get
