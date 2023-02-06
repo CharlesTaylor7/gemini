@@ -1,6 +1,7 @@
 module Gemini.Types
   ( -- ui types
     Store(..), initialStore
+  , Action
   , HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..) , Confetti(..)
   , Stats(..)
   , Motion(..), Move(..), normalize
@@ -42,6 +43,8 @@ import           Gemini.Solve.Types (BotSolveState (..), initialSolveState)
 
 
 -- | UI Definitions
+type Action m = ExceptT Text (StateT Store m)
+
 data Store = Store
   { gemini        :: !Gemini
   , history       :: !(Seq Motion)

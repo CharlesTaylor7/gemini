@@ -23,16 +23,10 @@ import           Gemini.Types
 
 
 
-
-type Action m = ExceptT Text (StateT Store m) ()
-
-
-
-
-run :: MonadIO m => Action m -> Continuation m Store
+run :: MonadIO m => Action m () -> Continuation m Store
 run = toContinuation
 
-toContinuation :: forall m. MonadIO m => Action m -> Continuation m Store
+toContinuation :: forall m. MonadIO m => Action m () -> Continuation m Store
 toContinuation = fromState . execStateT . fmap appendError . runExceptT
   where
     fromState :: forall a. (a -> m a) -> Continuation m a
@@ -43,17 +37,17 @@ toContinuation = fromState . execStateT . fmap appendError . runExceptT
     appendError (Right _) = pure ()
 
 
-applyMove :: MonadJSM m => Move -> Action m
+applyMove :: MonadJSM m => Move -> Action m ()
 applyMove move = do
   traverse_ applyMotionUnchecked $ move ^. #motions
   checkWin
 
-applyBotMove :: BotMove -> Action m
+applyBotMove :: BotMove -> Action m ()
 applyBotMove (BotMove moves state) = undefined
 
 
 -- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
-applyMotionUnchecked :: MonadJSM m => Motion -> Action m
+applyMotionUnchecked :: MonadJSM m => Motion -> Action m ()
 applyMotionUnchecked motion = do
     -- apply to puzzle
     (#gemini %= applyToGemini motion)
@@ -66,7 +60,7 @@ applyMotionUnchecked motion = do
     (#history %= applyToHistory motion)
 
 
-applyMotionToStore :: MonadJSM m => Motion -> Action m
+applyMotionToStore :: MonadJSM m => Motion -> Action m ()
 applyMotionToStore motion = do
   unlocked <- use $ #options % #confetti % to (== Off)
   when unlocked $ do
@@ -77,7 +71,7 @@ applyMotionToStore motion = do
 
 
 -- check if the puzzle is solved
-checkWin :: MonadJSM m => Action m
+checkWin :: MonadJSM m => Action m ()
 checkWin = do
   wasScrambled <- get <&> isn't (#stats % _Nothing)
   isSolved <- use $ #gemini % to isSolved
@@ -105,7 +99,7 @@ stopRecording state = state
     locationCycles = fmap indexToLocation . toCycles
 
 
-applyRotation :: MonadJSM m => Rotation -> Action m
+applyRotation :: MonadJSM m => Rotation -> Action m ()
 applyRotation r = applyMotionToStore $ toMotion r
   where
     toMotion :: Rotation -> Motion
@@ -169,7 +163,7 @@ updateDrag mouse = execState $ do
     _ -> pure ()
 
 
-endDrag :: MonadJSM m => Point -> Action m
+endDrag :: MonadJSM m => Point -> Action m ()
 endDrag mouse = do
   modify $ updateDrag mouse
   drag <- dragAngle <$> get
