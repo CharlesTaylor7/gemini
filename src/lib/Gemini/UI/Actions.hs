@@ -33,10 +33,14 @@ run :: MonadIO m => Action m -> Continuation m Store
 run = toContinuation
 
 toContinuation :: forall m. MonadIO m => Action m -> Continuation m Store
-toContinuation = fromState . execStateT . runExceptT
+toContinuation = fromState . execStateT . fmap appendError . runExceptT
   where
     fromState :: forall a. (a -> m a) -> Continuation m a
     fromState = Continuation.kleisli . fmap fmap fmap Continuation.constUpdate
+
+    appendError :: Either Text () -> StateT Store m ()
+    appendError (Left e)  = #errors %= (e:)
+    appendError (Right _) = pure ()
 
 
 applyMove :: MonadJSM m => Move -> Action m
