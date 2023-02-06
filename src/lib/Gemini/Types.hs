@@ -9,10 +9,12 @@ module Gemini.Types
   , pattern (:<|), pattern (:|>)
   -- re export other modules
   , Group(..)
+  , Rotation(..)
+  , GeminiPermutation
+  , Location(..)
   , module Angle
   , module Cyclic
   , module Finitary
-  , module Gemini
   , module Permutation
   , module Point
   , module Timestamp
@@ -52,6 +54,7 @@ data Store = Store
   , recorded      :: !(Seq Motion)
   , stats         :: !(Maybe Stats)
   , botSolveState :: !BotSolveState
+  , errors        :: ![Text]
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -156,36 +159,6 @@ instance Pretty Move where
   pretty = prettyList . toList . view #motions
 
 
-data Motion = Motion
-  { amount   :: !(Cyclic 18)
-  , rotation :: !Rotation
-  }
-  deriving stock (Eq, Generic, Show)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData)
-
-instance ToPermutation Motion where
-  toPerm Motion { amount = Cyclic amount, rotation } = (`pow` amount) $ toPerm rotation
-
-instance Pretty Motion where
-  pretty Motion { amount = Cyclic amount, rotation } =
-    pretty amount <> pretty rotation
-  prettyList = Pretty.sep . fmap pretty
-
-
-normalize :: Motion -> Maybe Motion
-normalize Motion { amount = 0 } = Nothing
-normalize motion = Just $ do
-  let sign = if motion ^. directionL == Clockwise then 1 else -1
-  let n = sign * (motion ^. #amount)
-  if n <= 9
-  then motion & #amount .~ n & directionL .~ Clockwise
-  else motion & #amount .~ (-n) & directionL .~ AntiClockwise
-  where
-    directionL :: Lens' Motion RotationDirection
-    directionL = #rotation % #direction
-
-
 -- | Initial state of the app
 initialStore :: Env -> Store
 initialStore env = Store
@@ -212,5 +185,6 @@ initialStore env = Store
     }
   , stats = Nothing
   , botSolveState = initialSolveState
+  , errors = []
   }
 

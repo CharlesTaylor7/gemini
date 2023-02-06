@@ -9,6 +9,7 @@ module Gemini.Views.App
 
 import           Relude
 
+import           Data.Gemini                     as Gemini
 import qualified Data.Sequence                   as Seq
 import           Optics
 import           System.Random.Stateful          (globalStdGen, uniformM)
@@ -168,7 +169,7 @@ header store =
       else
         [ confettiButton & option #confetti
         , checkBox "Debug" & option #debug
-        , checkBox "Highlight" & option #highlightPairs
+        , checkBox "Highlight pairs" & option #highlightPairs
         ]
     , buttonGroup "actions"
       [ scrambleButton
@@ -272,7 +273,7 @@ recordButton store = if store ^. #options % #recording then stopRecordingButton 
         [ Html.text $ "Stop Recording" ]
 
 
-nextBotMoveButton :: Monad m => Store -> Html m Store
+nextBotMoveButton :: MonadIO m => Store -> Html m Store
 nextBotMoveButton store =
   actionButton
     [ Html.onClickC $ do

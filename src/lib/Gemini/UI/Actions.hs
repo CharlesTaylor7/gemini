@@ -8,7 +8,9 @@ module Gemini.UI.Actions
 
 import           Relude
 
+import           Control.Exception        (try)
 import           Data.Angle
+import           Data.Gemini              as Gemini
 import           Data.Permutation
 import qualified Data.Sequence            as Seq
 import           Optics
@@ -24,11 +26,28 @@ import           Gemini.Types
 type Action m = StateT Store m ()
 
 
-run :: Monad m => Action m -> Continuation m Store
+run :: MonadIO m => Action m -> Continuation m Store
 run = toContinuation
 
-toContinuation :: Monad m => Action m -> Continuation m Store
-toContinuation = Continuation.kleisli . fmap fmap fmap constUpdate . execStateT
+toContinuation :: forall m. MonadIO m => Action m -> Continuation m Store
+toContinuation = fromState . handleErrors . execStateT
+  where
+    handle :: forall a. NFData a => a -> m (Either Text a)
+    handle = liftIO . fmap (over #_Left toText) . try . evaluateNF
+
+    toText :: SomeException -> Text
+    toText = show
+
+    handleErrors :: (Store -> m Store) -> (Store -> m Store)
+    handleErrors f s = do
+      bound <- f s
+      me <- handle bound
+      pure $ case me of
+        Left e   -> s & #errors %~ (e :)
+        Right s' -> s'
+
+    fromState :: forall a. (a -> m a) -> Continuation m a
+    fromState = Continuation.kleisli . fmap fmap fmap Continuation.constUpdate
 
 
 applyMove :: MonadJSM m => Move -> Action m
@@ -145,7 +164,7 @@ updateDrag mouse = execState $ do
       case chosen of
         -- lock choice
         Nothing | abs (turns * 18) > 1 ->
-          (#drag % _Just % #chosen ?= if loc == left then L else R)
+          (#drag % _Just % #chosen ?= if loc == left then ChoseLeft else ChoseRight)
 
         -- unlock choice
         Just _  | abs (turns * 18) < 1 ->

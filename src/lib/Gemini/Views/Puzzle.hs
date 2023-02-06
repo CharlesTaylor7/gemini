@@ -8,6 +8,7 @@ import           Relude
 import           Data.Angle
 import           Data.Cyclic
 import           Data.Finitary
+import           Data.Gemini              as Gemini
 import qualified Data.Map                 as Map
 import           Data.Permutation
 import           Data.Set.Optics

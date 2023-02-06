@@ -1,16 +1,21 @@
 module Data.Gemini
-  ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, geminiFromList, solvedColors
+  ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, solvedColors
   , disksOf
+  , look
+  -- | Positions
   , pattern L, pattern C, pattern R
+  -- | Rotations
+  , l, c, r
   , Location(..), indexToLocation, sibling, ambiguousLocations, canonical
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
+  , Motion(..), normalize
   , GeminiPermutation
   , ToPermutation(..)
   , Choice(..), dragRing, Chosen(..)
   )
   where
 
-import           Relude                 hiding (cycle)
+import           Relude                 hiding (cycle, get)
 
 import           Optics
 import           Optics.State.Operators
@@ -65,6 +70,7 @@ instance Pretty Location where
     pretty ring <> Pretty.viaShow n
 
 
+-- | Positions
 {-# COMPLETE L, C, R #-}
 pattern L, C, R :: DiskIndex -> Location
 pattern L n = Location LeftRing n
@@ -174,6 +180,45 @@ instance ToPermutation Rotation where
         AntiClockwise -> reverse inhabitants
 
 
+data Motion = Motion
+  { amount   :: !(Cyclic 18)
+  , rotation :: !Rotation
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (NFData)
+
+instance ToPermutation Motion where
+  toPerm Motion { amount = Cyclic amount, rotation } = (`pow` amount) $ toPerm rotation
+
+instance Pretty Motion where
+  pretty Motion { amount = Cyclic amount, rotation } =
+    pretty amount <> pretty rotation
+  prettyList = Pretty.sep . fmap pretty
+
+
+normalize :: Motion -> Maybe Motion
+normalize Motion { amount = 0 } = Nothing
+normalize motion = Just $ do
+  let sign = if motion ^. directionL == Clockwise then 1 else -1
+  let n = sign * (motion ^. #amount)
+  if n <= 9
+  then motion & #amount .~ n & directionL .~ Clockwise
+  else motion & #amount .~ (-n) & directionL .~ AntiClockwise
+  where
+    directionL :: Lens' Motion RotationDirection
+    directionL = #rotation % #direction
+
+
+-- | Motions
+l, c, r :: Cyclic 18 -> Motion
+l n = Motion { amount = n, rotation = Rotation { direction = Clockwise, ring = LeftRing }}
+c n = Motion { amount = n, rotation = Rotation { direction = Clockwise, ring = CenterRing }}
+r n = Motion { amount = n, rotation = Rotation { direction = Clockwise, ring = RightRing }}
+
+
+
+
 applyToGemini :: ToPermutation a => a -> Gemini -> Gemini
 applyToGemini = permuteGemini . toPerm
 
@@ -281,13 +326,19 @@ geminiIx :: Location -> Lens' Gemini Disk
 geminiIx location = #geminiDiskMap % trustMe (ix (locationToIndex location))
   where
     trustMe :: forall s a. AffineTraversal' s a -> Lens' s a
-    trustMe t = lens (fromMaybe . preview t) (flip $ set t)
+    trustMe t = lens (fromMaybe (error "trustMe") . preview t) (flip $ set t)
 
-    fromMaybe (Just a) = a
+
+look :: Location -> Gemini -> Disk
+look location g = fromMaybe (error "invalid gemini") $
+  g ^? #geminiDiskMap % ix (locationToIndex location)
 
 
 disksOf :: Ring -> IxFold DiskIndex Gemini Disk
-disksOf ring = undefined --inhabitants <&> \cyclic -> g ^. geminiIx (Location ring cyclic)
+disksOf ring =
+  reindexed Cyclic $
+  ifolding $ \g ->
+  inhabitants <&> \cyclic -> g ^. geminiIx (Location ring cyclic)
 
 
 geminiFromList :: [(Location, Disk)] -> Gemini

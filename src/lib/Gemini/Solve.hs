@@ -12,16 +12,25 @@ import           Data.Gemini        as Gemini
 import           Gemini.Solve.Types
 import           Gemini.Types
 
+
+data BotMove = BotMove [Motion] BotSolveState
+
 nextMove :: Gemini -> BotSolveState -> BotMove
 nextMove g =
   \case
-    BotSolveState { stage = StageRed StageRedState { redCount } } ->
-      undefined $ g ^.. disksOf CenterRing
-      -- LeftRing 7
+    solve@BotSolveState { stage = StageRed StageRedState { redCount } } ->
+      let
+        Just (n, _) =
+          g & (
+            iheadOf $
+            ifiltered (\loc disk -> disk ^. #color == Red) $
+            Gemini.disksOf CenterRing
+          )
 
 
 
-data BotMove = BotMove [Motion] BotSolveState
+      in
+        BotMove [c (11 - n), l 1] solve
 
 
 

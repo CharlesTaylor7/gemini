@@ -21,13 +21,13 @@ newtype Cyclic (n :: Nat) = MkCyclic { unCyclic :: Int }
   deriving newtype (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
+
 -- | Pattern synonym for constructor
 pattern Cyclic :: forall n. KnownNat n => Int -> Cyclic n
 pattern Cyclic k <- MkCyclic k where
   Cyclic k = MkCyclic $ k `mod` knownInt @n
 {-# COMPLETE Cyclic #-}
 {-# COMPLETE MkCyclic #-}
-
 
 -- | Group instances
 instance KnownNat n => Semigroup (Cyclic n) where
