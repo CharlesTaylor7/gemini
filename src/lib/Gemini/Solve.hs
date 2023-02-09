@@ -10,28 +10,30 @@ import           Relude
 
 import           Data.Gemini        as Gemini
 import           Gemini.Solve.Types
-import           Gemini.Types
+import           Gemini.Types       ()
 
 
 data BotMove = BotMove [Motion] BotSolveState
 
 nextMove :: Gemini -> BotSolveState -> BotMove
-nextMove g =
-  \case
-    solve@BotSolveState { stage = StageRed StageRedState { redCount } } ->
+nextMove g b =
+  case b of
+    solve@BotSolveState { stage = StageRed StageRedState { redCount = _redCount } } ->
       let
-        Just (n, _) =
+        redDiskInCenterRing =
           g & (
             iheadOf $
-            ifiltered (\loc disk -> disk ^. #color == Red) $
+            ifiltered (\_ disk -> disk ^. #color == Red) $
             Gemini.disksOf CenterRing
           )
-
-
-
       in
-        BotMove [c (11 - n), l 1] solve
+        case redDiskInCenterRing of
+          Just (n, _) -> BotMove [c (11 - n), l 1] solve
+          _           -> noMove
+    _ -> noMove
 
+  where
+    noMove = BotMove [] b
 
 
 type Pair a = (a, a)
@@ -61,5 +63,3 @@ solutionPairs gemini =
       let check color = color `notElem` (disk ^. #color : solved)
       guard $ maybe False check $ gemini ^? geminiIx candidate % #color
       pure $ candidate
-
-

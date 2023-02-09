@@ -12,6 +12,7 @@ import           Relude
 import           Data.Gemini                     as Gemini
 import qualified Data.Sequence                   as Seq
 import           Optics
+import           Optics.State.Operators
 import           System.Random.Stateful          (globalStdGen, uniformM)
 
 import           Shpadoinkle
@@ -145,6 +146,7 @@ debugView store =
         ]
     ]
     [ paragraph $ prettyCompactText $ store ^. #errors
+    , paragraph $ prettyCompactText $ store ^.. #history % each
 
     -- paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
     ]
@@ -176,6 +178,7 @@ header store =
       [ scrambleButton
       , (store ^. #options % #mobile % to not) `orEmpty` recordButton store
       , nextBotMoveButton store
+      , undoButton store
       ]
     ]
   ]
@@ -272,6 +275,23 @@ recordButton store = if store ^. #options % #recording then stopRecordingButton 
       actionButton
         [ Html.onClick $ stopRecording ]
         [ Html.text $ "Stop Recording" ]
+
+
+
+undoButton :: Monad m => Store -> Html m Store
+undoButton _store =
+  actionButton
+    [ Html.onClickC $ do
+        Actions.run $ do
+          history <- use #history
+          case history of
+            Seq.Empty -> pure ()
+            h :<| rest -> do
+              (#history .= rest)
+              (#gemini %= applyToGemini (h & #amount %~ invert))
+    ]
+    [ Html.text "Undo" ]
+
 
 
 nextBotMoveButton :: MonadIO m => Store -> Html m Store

@@ -21,12 +21,10 @@ import           Gemini.Solve             (BotMove (..))
 import           Gemini.Types
 
 
-
-
-run :: MonadIO m => Action m () -> Continuation m Store
+run :: Monad m => Action m () -> Continuation m Store
 run = toContinuation
 
-toContinuation :: forall m. MonadIO m => Action m () -> Continuation m Store
+toContinuation :: forall m. Monad m => Action m () -> Continuation m Store
 toContinuation = fromState . execStateT . fmap appendError . runExceptT
   where
     fromState :: forall a. (a -> m a) -> Continuation m a
