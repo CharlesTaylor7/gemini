@@ -217,8 +217,6 @@ c n = Motion { amount = n, rotation = Rotation { direction = Clockwise, ring = C
 r n = Motion { amount = n, rotation = Rotation { direction = Clockwise, ring = RightRing }}
 
 
-
-
 applyToGemini :: ToPermutation a => a -> Gemini -> Gemini
 applyToGemini = permuteGemini . toPerm
 

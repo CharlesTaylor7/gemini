@@ -42,8 +42,10 @@ applyMove move = do
   traverse_ applyMotionUnchecked $ move ^. #motions
   checkWin
 
-applyBotMove :: BotMove -> Action m ()
-applyBotMove (BotMove moves state) = undefined
+applyBotMove :: Monad m => BotMove -> Action m ()
+applyBotMove (BotMove moves state) = do
+  (#botSolveState .= state)
+  (#gemini %= applyToGemini moves)
 
 
 -- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
