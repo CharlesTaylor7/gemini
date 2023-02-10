@@ -1,6 +1,7 @@
 module Gemini.FFI
   ( -- jsCall
-  onResize, setTitle, sleep, dateNow, jsCall, jsGlobal
+  onResize, setTitle, sleep, dateNow, jsCall, jsGlobal,
+  onInterval
   -- reexports
   , JSM, JSVal, ToJSVal(..), FromJSVal(..), MakeArgs
   , jsg, instanceOf
@@ -11,8 +12,8 @@ import           Relude
 
 import           Control.Concurrent          (threadDelay)
 import           Data.Timestamp              (Timestamp (..))
-import           Language.Javascript.JSaddle (FromJSVal (..), jsg, JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..), eval, function,
-                                              instanceOf, liftJSM, (!!), (!), (#), (<#))
+import           Language.Javascript.JSaddle (FromJSVal (..), JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..), eval,
+                                              function, instanceOf, jsg, liftJSM, (!!), (!), (#), (<#))
 
 
 jsGlobal :: Text -> JSM JSVal
@@ -40,4 +41,11 @@ onResize callback = void $ liftJSM $ resize
   where
     resize :: JSM JSVal
     resize = jsGlobal "window" `jsCall` "addEventListener" $ ("resize" :: Text, fn)
+    fn = function \_ _ _ -> callback
+
+onInterval :: MonadJSM m => Int -> JSM () -> m ()
+onInterval ms callback = void $ liftJSM $ tick
+  where
+    tick :: JSM JSVal
+    tick = jsGlobal "window" `jsCall` "setInterval" $ (fn, ms)
     fn = function \_ _ _ -> callback

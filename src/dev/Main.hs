@@ -16,9 +16,11 @@ import qualified Shpadoinkle.Run             as Run
 
 
 import           Gemini.Env                  (envOptional)
-import           Gemini.FFI                  (onResize)
+import           Gemini.FFI                  (onInterval, onResize)
+import           Gemini.UI.Actions           (animate)
 import           Gemini.Utils                (IsLens, zoomComponent)
 import           Gemini.Views.App            (Deployment (..), Env (..), Store (..), initialStore, rootView)
+
 import           Gemini.Views.Puzzle         (loadDomInfo)
 
 main:: IO ()
@@ -52,6 +54,8 @@ spa lens storeTVar rootView = do
   onResize $ do
     domInfo <- loadDomInfo
     modify $ #dom .~ domInfo
+
+  onInterval 400 $ modify animate
 
   let view props = zoomComponent lens props rootView
   shpadoinkle identity runParDiff storeTVar view stage

@@ -1,6 +1,7 @@
 module Gemini.UI.Actions
   ( applyMotionToStore, stopRecording, applyRotation, applyToHistory, applyMove, toContinuation
   , applyBotMove
+  , animate
   , dragAngle
   , startDrag, updateDrag, endDrag
   , run
@@ -105,6 +106,8 @@ applyRotation r = applyMotionToStore $ toMotion r
     toMotion :: Rotation -> Motion
     toMotion rotation = Motion { amount = 1, rotation }
 
+animate :: Store -> Store
+animate s = s
 
 -- | Apply a new motion to an existing history of motions
 -- Collapses motions of the same ring into 1 larger motion.
