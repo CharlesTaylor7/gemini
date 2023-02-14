@@ -106,21 +106,24 @@ applyRotation r = applyMotionToStore $ toMotion r
     toMotion :: Rotation -> Motion
     toMotion rotation = Motion { amount = 1, rotation }
 
+
 animate :: Store -> Store
 animate s =
   case s ^. #animation of
     Nothing ->
       s & #animation .~ Nothing
 
-    Just (AnimationFrame { tick = 9, historyIndex })
-      | s ^. #history % to length == historyIndex + 1 ->
-        s & #animation .~ Nothing
+    Just f ->
+      case s ^? #history % ix (f ^. #historyIndex) of
+        Nothing ->
+          s & #animation .~ Nothing
 
-    Just (AnimationFrame { tick = 9} ) ->
-      s & #animation % #_Just %~ (#tick .~ 0) . (#historyIndex %~ (+1))
+        Just m | f ^. #tick == 2 * m ^. #amount % #unCyclic ->
+          s & #animation % #_Just %~ (#tick .~ 0) . (#historyIndex %~ (+1))
 
-    _ ->
-      s & #animation % #_Just % #tick %~ (+1)
+        Just _ ->
+          s & #animation % #_Just %~ #tick %~ (+1)
+
 
 -- | Apply a new motion to an existing history of motions
 -- Collapses motions of the same ring into 1 larger motion.
