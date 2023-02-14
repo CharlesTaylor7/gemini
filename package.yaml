@@ -28,6 +28,7 @@ dependencies:
 - vector
 - mtl
 - optics >= 0.4
+- optics-core >= 0.4
 - prettyprinter
 - random
 - groups

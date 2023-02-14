@@ -3,6 +3,7 @@ module Gemini.Types
     Store(..), initialStore
   , Action
   , HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..) , Confetti(..)
+  , AnimationFrame(..)
   , Stats(..)
   , Motion(..), Move(..), normalize
   , Timestamp(..)
@@ -45,24 +46,13 @@ import           Gemini.Solve.Types (BotSolveState (..), initialSolveState)
 -- | UI Definitions
 type Action m = ExceptT Text (StateT Store m)
 
-data Store = Store
-  { gemini        :: !Gemini
-  , history       :: !(Seq Motion)
-  , hover         :: !(Maybe HoverState)
-  , drag          :: !(Maybe DragState)
-  , options       :: !Options
-  , env           :: !Env
-  , dom           :: !DomInfo
-  , moves         :: !(Seq Move)
-  , recorded      :: !(Seq Motion)
-  , stats         :: !(Maybe Stats)
-  , botSolveState :: !BotSolveState
-  , errors        :: ![Text]
+data AnimationFrame = AnimationFrame
+  { historyIndex :: Int
+  , tick         :: Int
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
-
 
 data Stats = Stats
   { scrambledAt :: !Timestamp
@@ -162,11 +152,33 @@ instance Pretty Move where
   pretty = prettyList . toList . view #motions
 
 
+data Store = Store
+  { gemini        :: !Gemini
+  , history       :: !(Seq Motion)
+  , animation     :: !(Maybe AnimationFrame)
+  , hover         :: !(Maybe HoverState)
+  , drag          :: !(Maybe DragState)
+  , options       :: !Options
+  , env           :: !Env
+  , dom           :: !DomInfo
+  , moves         :: !(Seq Move)
+  , recorded      :: !(Seq Motion)
+  , stats         :: !(Maybe Stats)
+  , botSolveState :: !BotSolveState
+  , errors        :: ![Text]
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (NFData)
+
+
+
 -- | Initial state of the app
 initialStore :: Env -> Store
 initialStore env = Store
   { gemini = initialGemini
   , history = Seq.Empty
+  , animation = Nothing
   , recorded = Seq.Empty
   , moves = Seq.Empty
   , hover = Nothing
@@ -190,4 +202,3 @@ initialStore env = Store
   , botSolveState = initialSolveState
   , errors = []
   }
-
