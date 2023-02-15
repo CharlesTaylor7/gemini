@@ -5,6 +5,7 @@ module Gemini.UI.Actions
   , dragAngle
   , startDrag, updateDrag, endDrag
   , run
+  , runPure
   ) where
 
 import           Data.Angle
@@ -26,14 +27,26 @@ run :: Monad m => Action m () -> Continuation m Store
 run = toContinuation
 
 toContinuation :: forall m. Monad m => Action m () -> Continuation m Store
-toContinuation = fromState . execStateT . fmap appendError . runExceptT
+toContinuation =
+  fromState .
+  execStateT .
+  fmap (appendError @m) .
+  runExceptT
   where
     fromState :: forall a. (a -> m a) -> Continuation m a
     fromState = Continuation.kleisli . fmap fmap fmap Continuation.constUpdate
 
-    appendError :: Either Text () -> StateT Store m ()
-    appendError (Left e)  = #errors %= (e:)
-    appendError (Right _) = pure ()
+appendError :: forall m. Monad m => Either Text () -> StateT Store m ()
+appendError (Left e)  = #errors %= (e:)
+appendError (Right _) = pure ()
+
+
+runPure :: Action Identity () -> Store -> Store
+runPure =
+  fmap runIdentity .
+  execStateT .
+  fmap (appendError @Identity) .
+  runExceptT
 
 
 applyMove :: MonadJSM m => Move -> Action m ()
@@ -48,7 +61,7 @@ applyBotMove (BotMove moves state) = do
 
 
 -- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
-applyMotionUnchecked :: MonadJSM m => Motion -> Action m ()
+applyMotionUnchecked :: Monad m => Motion -> Action m ()
 applyMotionUnchecked motion = do
     -- apply to puzzle
     (#gemini %= applyToGemini motion)
@@ -113,16 +126,21 @@ animate s =
     Nothing ->
       s & #animation .~ Nothing
 
-    Just f ->
-      case s ^? #history % ix (f ^. #historyIndex) of
+    Just f | f ^. #tick == 2 * f ^. #motion % #amount % #unCyclic ->
+      s & #animation % #_Just %~ (#tick .~ 0)
+
+    {-
+      case s ^? #buffered % ix 0 of
         Nothing ->
           s & #animation .~ Nothing
 
         Just m | f ^. #tick == 2 * m ^. #amount % #unCyclic ->
-          s & #animation % #_Just %~ (#tick .~ 0) . (#historyIndex %~ (+1))
+          s & #animation % #_Just %~ (#tick .~ 0)
+          -- . (#historyIndex %~ (+1))
 
         Just _ ->
           s & #animation % #_Just %~ #tick %~ (+1)
+          -}
 
 
 -- | Apply a new motion to an existing history of motions

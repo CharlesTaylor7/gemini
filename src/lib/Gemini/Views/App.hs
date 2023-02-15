@@ -170,8 +170,8 @@ header store =
       if store ^. #env % #deployment % to (== Prod)
       then []
       else
-        [ confettiButton & option #confetti
-        , checkBox "Debug" & option #debug
+        [ --confettiButton & option #confetti
+          checkBox "Debug" & option #debug
         , checkBox "Highlight pairs" & option #highlightPairs
         ]
     , buttonGroup "actions"
@@ -242,26 +242,15 @@ checkBox label checked =
     ]
 
 
-confettiButton :: MonadJSM m => Confetti -> Html m Confetti
-confettiButton confetti =
-  Html.label
-    [ Html.className "checkbox" ]
-    [ Html.span
-        [ Html.className "checkbox-label" ]
-        [ Html.text "Confetti" ]
-    , Html.input'
-        [ Html.type' "checkbox"
-        , Html.checked $ confetti /= Off
-        , Html.onCheck $ \checked -> const $ if checked then FadeIn else Off
-        ]
-    ]
-
 actionButton :: [(Text, Prop m a)] -> [Html m a] -> Html m a
 actionButton props = Html.button $ Html.className "action-button" : props
 
 
 recordButton :: Store -> Html m Store
-recordButton store = if store ^. #options % #recording then stopRecordingButton else startRecordingButton
+recordButton store =
+  if store ^. #options % #recording
+  then stopRecordingButton
+  else startRecordingButton
   where
     startRecordingButton :: Html m Store
     startRecordingButton =

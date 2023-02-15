@@ -47,8 +47,8 @@ import           Gemini.Solve.Types (BotSolveState (..), initialSolveState)
 type Action m = ExceptT Text (StateT Store m)
 
 data AnimationFrame = AnimationFrame
-  { historyIndex :: Int
-  , tick         :: Int
+  { tick   :: !Int
+  , motion :: !Motion
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -155,6 +155,7 @@ instance Pretty Move where
 data Store = Store
   { gemini        :: !Gemini
   , history       :: !(Seq Motion)
+  , buffered      :: !(Seq Motion)
   , animation     :: !(Maybe AnimationFrame)
   , hover         :: !(Maybe HoverState)
   , drag          :: !(Maybe DragState)
@@ -178,6 +179,7 @@ initialStore :: Env -> Store
 initialStore env = Store
   { gemini = initialGemini
   , history = Seq.Empty
+  , buffered = Seq.Empty
   , animation = Nothing
   , recorded = Seq.Empty
   , moves = Seq.Empty
