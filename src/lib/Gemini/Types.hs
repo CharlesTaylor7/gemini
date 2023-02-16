@@ -49,7 +49,6 @@ type Action m = ExceptT Text (StateT Store m)
 
 data Animation = Animation
   { frame            :: !(Maybe AnimationFrame)
-  , refreshRateMs    :: !Int
   , ticksPerRotation :: !Int
   }
   deriving stock (Eq, Generic, Show)
@@ -57,10 +56,9 @@ data Animation = Animation
   deriving anyclass (NFData)
 
 instance Pretty Animation where
-  pretty Animation { frame, refreshRateMs, ticksPerRotation } =
+  pretty Animation { frame, ticksPerRotation } =
     Pretty.vsep
-      [ pretty refreshRateMs
-      , pretty ticksPerRotation
+      [ pretty ticksPerRotation
       , pretty frame
       ]
 
@@ -205,7 +203,6 @@ initialStore env = Store
   , buffered = Seq.Empty
   , animation = Animation
     { frame = Nothing
-    , refreshRateMs = 400
     , ticksPerRotation = 2
     }
   , recorded = Seq.Empty
