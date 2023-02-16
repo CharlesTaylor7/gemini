@@ -11,6 +11,7 @@ module Gemini.Utils
   , knownInt
   , natsUnder
   , IsLens
+  , is
   ) where
 
 import           Relude                    hiding (break)
@@ -74,3 +75,9 @@ knownInt = fromIntegral $ natVal @n (Proxy :: Proxy n)
 
 natsUnder :: forall bound. KnownNat bound => [Int]
 natsUnder = [0..knownInt @bound - 1]
+
+is :: Is k An_AffineFold => Optic' k ix s a -> s -> Bool
+is o s =
+  case s ^? o of
+    Just _  -> True
+    Nothing -> False

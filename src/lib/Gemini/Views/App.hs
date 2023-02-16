@@ -277,12 +277,14 @@ undoButton _store =
   actionButton
     [ Html.onClickC $ do
         Actions.run $ do
-          history <- use #history
-          case history of
-            Seq.Empty -> pure ()
-            h :<| rest -> do
-              (#history .= rest)
-              (#gemini %= applyToGemini (h & #amount %~ invert))
+          frame <- use $ #animation % #frame
+          when (is #_Nothing frame) $ do
+            history <- use #history
+            case history of
+              Seq.Empty -> pure ()
+              h :<| rest -> do
+                (#history .= rest)
+                (#gemini %= applyToGemini (h & #amount %~ invert))
     ]
     [ Html.text "Undo" ]
 
