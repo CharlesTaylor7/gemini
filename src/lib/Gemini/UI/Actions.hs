@@ -123,24 +123,30 @@ applyRotation r = applyMotionToStore $ toMotion r
 animate :: Store -> Store
 animate s =
   case s ^. #animation of
+    -- There is no animation
     Nothing ->
-      s & #animation .~ Nothing
+      s
 
+    -- We have completed the animation
     Just f | f ^. #tick == 2 * f ^. #motion % #amount % #unCyclic ->
-      s & #animation % #_Just %~ (#tick .~ 0)
 
-    {-
-      case s ^? #buffered % ix 0 of
-        Nothing ->
-          s & #animation .~ Nothing
+      -- | apply the motion
+      s & runPure (applyMotionUnchecked (f ^. #motion)) &
 
-        Just m | f ^. #tick == 2 * m ^. #amount % #unCyclic ->
-          s & #animation % #_Just %~ (#tick .~ 0)
-          -- . (#historyIndex %~ (+1))
+      case s ^. #buffered of
 
-        Just _ ->
-          s & #animation % #_Just %~ #tick %~ (+1)
-          -}
+        -- | More buffered moves
+        motion :<| buffered ->
+          (#animation % #_Just .~ AnimationFrame { tick = 0, motion }) .
+          (#buffered .~ buffered)
+
+        -- | No buffered moves left
+        Seq.Empty ->
+          (#animation .~ Nothing)
+
+    -- Tick
+    Just _ ->
+      s & #animation % #_Just % #tick %~ (+1)
 
 
 -- | Apply a new motion to an existing history of motions
