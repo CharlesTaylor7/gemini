@@ -3,6 +3,7 @@ module Gemini.Types
     Store(..), initialStore
   , Action
   , HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..) , Confetti(..)
+  , Animation(..)
   , AnimationFrame(..)
   , Stats(..)
   , Motion(..), Move(..), normalize
@@ -45,6 +46,23 @@ import           Gemini.Solve.Types (BotSolveState (..), initialSolveState)
 
 -- | UI Definitions
 type Action m = ExceptT Text (StateT Store m)
+
+data Animation = Animation
+  { frame            :: !(Maybe AnimationFrame)
+  , refreshRateMs    :: !Int
+  , ticksPerRotation :: !Int
+  }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (NFData)
+
+instance Pretty Animation where
+  pretty Animation { frame, refreshRateMs, ticksPerRotation } =
+    Pretty.vsep
+      [ pretty refreshRateMs
+      , pretty ticksPerRotation
+      , pretty frame
+      ]
 
 data AnimationFrame = AnimationFrame
   { tick   :: !Int
@@ -161,7 +179,7 @@ data Store = Store
   { gemini        :: !Gemini
   , history       :: !(Seq Motion)
   , buffered      :: !(Seq Motion)
-  , animation     :: !(Maybe AnimationFrame)
+  , animation     :: !Animation
   , hover         :: !(Maybe HoverState)
   , drag          :: !(Maybe DragState)
   , options       :: !Options
@@ -185,7 +203,11 @@ initialStore env = Store
   { gemini = initialGemini
   , history = Seq.Empty
   , buffered = Seq.Empty
-  , animation = Nothing
+  , animation = Animation
+    { frame = Nothing
+    , refreshRateMs = 400
+    , ticksPerRotation = 2
+    }
   , recorded = Seq.Empty
   , moves = Seq.Empty
   , hover = Nothing

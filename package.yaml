@@ -96,6 +96,7 @@ ghc-options:
   - -Wunused-imports
   - -Werror
   # turn off warnings
+  - -Wno-unused-top-binds
   - -Wno-name-shadowing
   - -Wno-partial-type-signatures
 

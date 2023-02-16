@@ -150,11 +150,16 @@ geminiView store =
 
         animatedAngle :: Angle
         animatedAngle = fromMaybe mempty $ do
-          frame <- store ^. #animation
+          frame <- store ^. #animation % #frame
           let rotation = frame ^. #motion ^. #rotation
           let sign = if rotation ^. #direction == Clockwise then 1 else -1
           guard $ ring == rotation ^. #ring
-          pure $ Turns (sign * fromIntegral (frame ^. #tick) / 36)
+          pure $ Turns $
+            let
+              n = sign * fromIntegral (frame ^. #tick)
+              d = store ^. #animation % #ticksPerRotation % to (*18) % to fromIntegral
+            in
+              n / d
 
         diskAngle = angleOnCircle position <> draggedAngle <> animatedAngle
 

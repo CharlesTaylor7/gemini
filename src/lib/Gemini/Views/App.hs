@@ -11,6 +11,7 @@ import           Relude
 
 import           Data.Gemini                     as Gemini
 import qualified Data.Sequence                   as Seq
+import           Data.Text.Read                  as Read
 import           Optics
 import           Optics.State.Operators
 import           System.Random.Stateful          (globalStdGen, uniformM)
@@ -145,9 +146,9 @@ debugView store =
         , ("flex-direction", "column")
         ]
     ]
-    [ paragraph $ prettyCompactText $ store ^. #errors
-    , paragraph $ prettyCompactText $ store ^. #animation
-    , paragraph $ prettyCompactText $ store ^.. #buffered % each
+    [ paragraph $ prettyText $ store ^. #errors
+    , paragraph $ prettyText $ store ^. #animation
+    , paragraph $ prettyText $ store ^.. #buffered % each
     -- paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
     ]
   )
@@ -176,9 +177,10 @@ header store =
         ]
     , buttonGroup "actions"
       [ scrambleButton
-      , (store ^. #options % #mobile % to not) `orEmpty` recordButton store
+      --, (store ^. #options % #mobile % to not) `orEmpty` recordButton store
       , nextBotMoveButton store
       , undoButton store
+      , numberInput & zoomComponent (#animation % #ticksPerRotation) store
       ]
     ]
   ]
@@ -281,6 +283,19 @@ undoButton _store =
     ]
     [ Html.text "Undo" ]
 
+
+
+numberInput :: Int -> Html m Int
+numberInput initial =
+  Html.input'
+    [ Html.className "number-input"
+    , Html.type' "number"
+    , Html.onInput \text old ->
+        case Read.decimal text of
+          Right (new, _) -> new :: Int
+          Left _         -> old
+    , Html.value (show initial)
+    ]
 
 
 nextBotMoveButton :: MonadIO m => Store -> Html m Store

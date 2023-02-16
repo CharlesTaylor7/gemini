@@ -60,14 +60,13 @@ applyBotMove (BotMove moves state) = do
   (#botSolveState .= state)
   (#buffered %= \b -> b <> fromList moves)
   b <- use #buffered
-  f <- use #animation
+  f <- use $ #animation % #frame
   case (b, f) of
     (h :<| rest, Nothing) -> do
       (#buffered .= rest)
-      (#animation ?= AnimationFrame { tick = 0, motion = h })
+      (#animation % #frame ?= AnimationFrame { tick = 0, motion = h })
     _                     ->
       pure ()
-
 
 -- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
 applyMotionUnchecked :: Monad m => Motion -> Action m ()
@@ -131,13 +130,13 @@ applyRotation r = applyMotionToStore $ toMotion r
 
 animate :: Store -> Store
 animate s =
-  case s ^. #animation of
-    -- There is no animation
+  case s ^. #animation % #frame of
+    -- There is no animation frame
     Nothing ->
       s
 
     -- We have completed the animation
-    Just f | f ^. #tick == 2 * f ^. #motion % #amount % #unCyclic ->
+    Just f | f ^. #tick >= k * f ^. #motion % #amount % #unCyclic ->
 
       -- | apply the motion
       s & runPure (applyMotionUnchecked (f ^. #motion)) &
@@ -146,16 +145,18 @@ animate s =
 
         -- | More buffered moves
         motion :<| buffered ->
-          (#animation % #_Just .~ AnimationFrame { tick = 0, motion }) .
+          (#animation % #frame ?~ AnimationFrame { tick = 0, motion }) .
           (#buffered .~ buffered)
 
         -- | No buffered moves left
         Seq.Empty ->
-          (#animation .~ Nothing)
+          (#animation % #frame .~ Nothing)
 
     -- Tick
     Just _ ->
-      s & #animation % #_Just % #tick %~ (+1)
+      s & #animation % #frame % #_Just % #tick %~ (+1)
+  where
+    k = s ^. #animation % #ticksPerRotation
 
 
 -- | Apply a new motion to an existing history of motions

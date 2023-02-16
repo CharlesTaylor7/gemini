@@ -55,7 +55,7 @@ spa lens storeTVar rootView = do
     domInfo <- loadDomInfo
     modify $ #dom .~ domInfo
 
-  onInterval 400 $ modify animate
+  onInterval 30 $ modify animate
 
   let view props = zoomComponent lens props rootView
   shpadoinkle identity runParDiff storeTVar view stage

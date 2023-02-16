@@ -1,5 +1,6 @@
 module Gemini.Utils
   ( prettyCompactText
+  , prettyText
   , zoomComponent
   , generalize
   , orNothing
@@ -20,12 +21,15 @@ import qualified Prettyprinter             as Pretty
 import qualified Prettyprinter.Render.Text as Pretty
 import           Shpadoinkle
 import qualified Shpadoinkle.Continuation
-import qualified Shpadoinkle.Html                as Html
+import qualified Shpadoinkle.Html          as Html
 
 
 -- | Utilities
 prettyCompactText :: forall a. Pretty a => a -> Text
 prettyCompactText = Pretty.renderStrict . Pretty.layoutCompact . pretty
+
+prettyText :: forall a. Pretty a => a -> Text
+prettyText = Pretty.renderStrict . Pretty.layoutPretty Pretty.defaultLayoutOptions . pretty
 
 type IsLens k = (Is k A_Getter, Is k A_Setter)
 -- |
