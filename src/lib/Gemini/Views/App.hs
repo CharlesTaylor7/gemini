@@ -180,9 +180,9 @@ header store =
       --, (store ^. #options % #mobile % to not) `orEmpty` recordButton store
       , nextBotMoveButton store
       , undoButton store
-      , Html.text "ticksPer"
+      , Html.text "ticks per"
       , numberInput & zoomComponent (#animation % #ticksPerRotation) store
-      , Html.text "refreshRate"
+      , Html.text "refresh rate"
       , refreshRateInput $ store ^. #animation % #refreshRate
       ]
     ]

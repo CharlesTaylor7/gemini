@@ -34,7 +34,9 @@ hiddenLocations store =
   & fromList
   where
     activeRing :: Store -> Maybe Ring
-    activeRing = preview $ to dragAngle % _Just % _1 % #ring
+    activeRing s =
+      s ^? to dragAngle % #_Just % _1 % #ring <|>
+      s ^? #animation % #frame % #_Just % #motion % #rotation % #ring
 
 
 angleOnCircle :: forall n. KnownNat n => Cyclic n -> Angle

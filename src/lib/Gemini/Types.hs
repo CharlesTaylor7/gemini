@@ -206,7 +206,7 @@ initialStore env = Store
   , buffered = Seq.Empty
   , animation = Animation
     { frame = Nothing
-    , ticksPerRotation = 2
+    , ticksPerRotation = 10
     , refreshRate = 30
     , intervalId = Nothing
     }
