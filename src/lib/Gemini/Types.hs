@@ -41,6 +41,7 @@ import           Data.Aeson         (FromJSON, ToJSON)
 import           Data.Sequence      (Seq ((:<|), (:|>)))
 import           Prettyprinter      (Pretty (..), (<+>))
 
+import           Gemini.FFI         (IntervalId)
 import           Gemini.Solve.Types (BotSolveState (..), initialSolveState)
 
 
@@ -50,6 +51,8 @@ type Action m = ExceptT Text (StateT Store m)
 data Animation = Animation
   { frame            :: !(Maybe AnimationFrame)
   , ticksPerRotation :: !Int
+  , refreshRate      :: !Int
+  , intervalId       :: !(Maybe IntervalId)
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
@@ -204,6 +207,8 @@ initialStore env = Store
   , animation = Animation
     { frame = Nothing
     , ticksPerRotation = 2
+    , refreshRate = 30
+    , intervalId = Nothing
     }
   , recorded = Seq.Empty
   , moves = Seq.Empty

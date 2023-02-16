@@ -1,5 +1,6 @@
 module Gemini.UI.Actions
   ( applyMotionToStore, stopRecording, applyRotation, applyToHistory, applyMove, toContinuation
+  , updateRefreshRate
   , applyBotMove
   , animate
   , dragAngle
@@ -18,7 +19,8 @@ import           Relude
 import           Shpadoinkle
 import qualified Shpadoinkle.Continuation as Continuation
 
-import           Gemini.FFI               (dateNow)
+import           Gemini.FFI               (clearInterval, dateNow, setInterval)
+import           Gemini.Ref               as Ref
 import           Gemini.Solve             (BotMove (..))
 import           Gemini.Types
 
@@ -127,6 +129,13 @@ applyRotation r = applyMotionToStore $ toMotion r
     toMotion :: Rotation -> Motion
     toMotion rotation = Motion { amount = 1, rotation }
 
+updateRefreshRate :: MonadJSM m => Int -> Action m ()
+updateRefreshRate rate = do
+  (#animation % #refreshRate .= rate)
+  oldId <- use $ #animation % #intervalId
+  for_ oldId clearInterval
+  newId <- setInterval rate $ Ref.updateStore animate
+  (#animation % #intervalId ?= newId)
 
 animate :: Store -> Store
 animate s =
@@ -179,7 +188,6 @@ applyToHistory next all@(ms :|> prev) =
 
 
 -- * Drag actions
-
 startDrag :: Location -> Point -> Store -> Store
 startDrag location mouse =
   (#drag) ?~ DragState

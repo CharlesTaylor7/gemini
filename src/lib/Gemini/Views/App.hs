@@ -180,7 +180,10 @@ header store =
       --, (store ^. #options % #mobile % to not) `orEmpty` recordButton store
       , nextBotMoveButton store
       , undoButton store
+      , Html.text "ticksPer"
       , numberInput & zoomComponent (#animation % #ticksPerRotation) store
+      , Html.text "refreshRate"
+      , refreshRateInput $ store ^. #animation % #refreshRate
       ]
     ]
   ]
@@ -292,10 +295,27 @@ numberInput initial =
     , Html.type' "number"
     , Html.onInput \text old ->
         case Read.decimal text of
-          Right (new, _) -> new :: Int
+          Right (new, _) -> new
           Left _         -> old
     , Html.value (show initial)
     ]
+
+
+refreshRateInput :: MonadJSM m => Int -> Html m Store
+refreshRateInput initial =
+  Html.input'
+    [ Html.className "number-input"
+    , Html.type' "number"
+    , Html.value (show initial)
+    , Html.onInputC \text ->
+        Actions.run $
+          case Read.decimal text of
+            Right (num, _) -> Actions.updateRefreshRate num
+            Left _         -> pure ()
+    ]
+
+
+
 
 
 nextBotMoveButton :: MonadIO m => Store -> Html m Store

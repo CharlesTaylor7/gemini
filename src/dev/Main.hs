@@ -16,7 +16,8 @@ import qualified Shpadoinkle.Run             as Run
 
 
 import           Gemini.Env                  (envOptional)
-import           Gemini.FFI                  (onInterval, onResize)
+import           Gemini.FFI                  (onResize)
+import           Gemini.Ref                  (initGlobalRef)
 import           Gemini.UI.Actions           (animate)
 import           Gemini.Utils                (IsLens, zoomComponent)
 import           Gemini.Views.App            (Deployment (..), Env (..), Store (..), initialStore, rootView)
@@ -50,12 +51,14 @@ spa lens storeTVar rootView = do
   Html.setTitle "Gemini"
   Html.addStyle "/public/styles/index.css"
 
+  -- | Make it possible to manipulate the store from within the program
   let modify = atomically . modifyTVar' storeTVar . over lens
+  initGlobalRef modify
+
   onResize $ do
     domInfo <- loadDomInfo
     modify $ #dom .~ domInfo
 
-  onInterval 30 $ modify animate
 
   let view props = zoomComponent lens props rootView
   shpadoinkle identity runParDiff storeTVar view stage

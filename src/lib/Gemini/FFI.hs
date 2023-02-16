@@ -1,7 +1,10 @@
 module Gemini.FFI
   ( -- jsCall
-  onResize, setTitle, sleep, dateNow, jsCall, jsGlobal,
-  onInterval
+  onResize, setTitle, sleep, dateNow, jsCall, jsGlobal
+  , setInterval
+  , clearInterval
+  , IntervalId
+
   -- reexports
   , JSM, JSVal, ToJSVal(..), FromJSVal(..), MakeArgs
   , jsg, instanceOf
@@ -11,6 +14,7 @@ module Gemini.FFI
 import           Relude
 
 import           Control.Concurrent          (threadDelay)
+import           Data.Aeson                  (FromJSON, ToJSON)
 import           Data.Timestamp              (Timestamp (..))
 import           Language.Javascript.JSaddle (FromJSVal (..), JSM, JSVal, MakeArgs, MonadJSM (..), ToJSVal (..), eval,
                                               function, instanceOf, jsg, liftJSM, (!!), (!), (#), (<#))
@@ -43,9 +47,19 @@ onResize callback = void $ liftJSM $ resize
     resize = jsGlobal "window" `jsCall` "addEventListener" $ ("resize" :: Text, fn)
     fn = function \_ _ _ -> callback
 
-onInterval :: MonadJSM m => Int -> JSM () -> m ()
-onInterval ms callback = void $ liftJSM $ tick
+
+newtype IntervalId = IntervalId Int
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (NFData)
+
+setInterval :: MonadJSM m => Int -> JSM () -> m IntervalId
+setInterval ms callback = liftJSM $ do
+  jsVal <- jsGlobal "window" `jsCall` "setInterval" $ (fn, ms)
+  IntervalId <$> fromJSValUnchecked jsVal
   where
-    tick :: JSM JSVal
-    tick = jsGlobal "window" `jsCall` "setInterval" $ (fn, ms)
     fn = function \_ _ _ -> callback
+
+clearInterval :: MonadJSM m => IntervalId -> m ()
+clearInterval (IntervalId id) = void $ liftJSM $
+  (jsGlobal "window" `jsCall` "clearInterval" $ toJSVal id)

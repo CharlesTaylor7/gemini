@@ -33,6 +33,7 @@ library
       Data.Timestamp
       Gemini.Env
       Gemini.FFI
+      Gemini.Ref
       Gemini.Solve
       Gemini.Solve.Types
       Gemini.Types
