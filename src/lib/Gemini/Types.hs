@@ -54,6 +54,10 @@ data AnimationFrame = AnimationFrame
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
+instance Pretty AnimationFrame where
+  pretty AnimationFrame { tick, motion } =
+    pretty tick <+> pretty motion
+
 data Stats = Stats
   { scrambledAt :: !Timestamp
   , solvedAt    :: !(Maybe Timestamp)
@@ -73,7 +77,8 @@ data HoverState = HoverState
   deriving anyclass (NFData)
 
 instance Pretty HoverState where
-  pretty HoverState { move, cycle } = pretty move <+> pretty cycle
+  pretty HoverState { move, cycle } =
+    pretty move <+> pretty cycle
 
 
 data DragState = DragState

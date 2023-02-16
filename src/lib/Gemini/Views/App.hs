@@ -146,8 +146,8 @@ debugView store =
         ]
     ]
     [ paragraph $ prettyCompactText $ store ^. #errors
-    , paragraph $ prettyCompactText $ store ^.. #history % each
-
+    , paragraph $ prettyCompactText $ store ^. #animation
+    , paragraph $ prettyCompactText $ store ^.. #buffered % each
     -- paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
     ]
   )
