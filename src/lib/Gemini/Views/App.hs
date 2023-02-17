@@ -147,7 +147,7 @@ debugView store =
         ]
     ]
     [ paragraph $ prettyText $ store ^. #errors
-    , paragraph $ prettyText $ store ^. #animation
+    , paragraph $ show $ store ^. #gemini % to toSolveStage
     , paragraph $ prettyText $ store ^.. #buffered % each
     -- paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
     ]
@@ -317,15 +317,13 @@ refreshRateInput initial =
     ]
 
 
-
-
-
-nextBotMoveButton :: MonadIO m => Store -> Html m Store
+nextBotMoveButton :: MonadJSM m => Store -> Html m Store
 nextBotMoveButton store =
   actionButton
     [ Html.onClickC $ do
         Actions.run $ do
-          let move = Solve.nextMove (store ^. #gemini) (store ^. #botSolveState)
+          Actions.updateRefreshRate $ store ^. #animation % #refreshRate
+          let move = Solve.nextMove $ store ^. #gemini
           Actions.applyBotMove move
     ]
     [ Html.text "Next" ]

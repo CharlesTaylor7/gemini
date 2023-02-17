@@ -58,9 +58,8 @@ applyMove move = do
 
 
 applyBotMove :: Monad m => BotMove -> Action m ()
-applyBotMove (BotMove moves state) = do
-  (#botSolveState .= state)
-  (#buffered %= \b -> b <> fromList moves)
+applyBotMove (BotMove motions) = do
+  (#buffered %= \b -> b <> fromList (motions ^.. each % to normalize % #_Just))
   b <- use #buffered
   f <- use $ #animation % #frame
   case (b, f) of

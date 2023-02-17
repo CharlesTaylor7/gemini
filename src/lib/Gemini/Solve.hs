@@ -1,6 +1,7 @@
 module Gemini.Solve
   ( solutionPairs
   , nextMove
+  , toSolveStage
   , Orientation(..)
   , BotMove(..)
   ) where
@@ -8,32 +9,44 @@ module Gemini.Solve
 import           Optics
 import           Relude
 
+import           Data.Cyclic        as Cyclic
 import           Data.Gemini        as Gemini
 import           Gemini.Solve.Types
 import           Gemini.Types       ()
 
 
-data BotMove = BotMove [Motion] BotSolveState
+newtype BotMove = BotMove [Motion]
 
-nextMove :: Gemini -> BotSolveState -> BotMove
-nextMove g b =
-  case b of
-    solve@BotSolveState { stage = StageRed StageRedState { redCount = _redCount } } ->
-      let
-        redDiskInCenterRing =
-          g & (
-            iheadOf $
-            ifiltered (\_ disk -> disk ^. #color == Red) $
-            Gemini.disksOf CenterRing
-          )
-      in
-        case redDiskInCenterRing of
-          Just (n, _) -> BotMove [c (11 - n), l 1] solve
-          _           -> noMove
+
+closestDisk :: Gemini -> Color -> Ring -> DiskIndex -> Maybe DiskIndex
+closestDisk g color ring pivot =
+  closest g pivot $
+  ifiltered (\_ disk -> disk ^. #color == color) $
+  Gemini.disksOf ring
+
+
+closest :: Is k A_Fold => Gemini -> DiskIndex -> Optic' k '[DiskIndex] Gemini a -> Maybe DiskIndex
+closest g pivot optic = ifoldlOf' optic closer Nothing g
+  where
+    closer i Nothing _  = Just i
+    closer i (Just j) _ = Just $
+      if Cyclic.distance pivot i < Cyclic.distance pivot j then i else j
+
+
+nextMove :: Gemini -> BotMove
+nextMove g =
+  case toSolveStage g of
+    StageRed ->
+        case closestDisk g Red CenterRing 11 of
+          Just n -> BotMove [c (11 - n), l 1]
+          _           ->
+            case closestDisk g Red RightRing 11 of
+              Just n -> BotMove [ r (11 - n), c 4, l 1]
+              _      -> noMove
     _ -> noMove
 
   where
-    noMove = BotMove [] b
+    noMove = BotMove []
 
 
 type Pair a = (a, a)
@@ -43,6 +56,18 @@ data Orientation = Oriented | Inverted
 
 pair :: Location -> Location -> Pair Location
 pair (canonical -> x) (canonical -> y) = if x <= y then (x, y) else (y, x)
+
+toSolveStage :: Gemini -> BotSolveState
+toSolveStage g = do
+  let redLocations = fromList $ Location LeftRing . Cyclic <$> [7..15] :: Set Location
+  let firstRed =
+        iheadOf $
+        ifiltered (\loc disk -> disk ^. #color == Red && redLocations ^. contains loc % to not) $
+        each
+
+  case firstRed g of
+    Just _ -> StageRed
+    _      -> StageYellow
 
 
 solutionPairs :: Gemini -> Set (Pair Location)

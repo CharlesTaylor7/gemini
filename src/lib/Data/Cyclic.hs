@@ -1,6 +1,7 @@
 module Data.Cyclic
   ( Cyclic, pattern Cyclic, unCyclic
   , compareCyclic, CyclicOrdering(..)
+  , distance
   -- Re export
   , knownInt
   ) where
@@ -54,7 +55,7 @@ instance KnownNat n => Finitary (Cyclic n) where
   inhabitants = coerce $ natsUnder @n
 
 
--- How do you order on a elements of a cyclic group?
+-- How do you impose order on the elements of a cyclic group?
 data CyclicOrdering
   = Precedes
   | Exceeds
@@ -73,3 +74,9 @@ compareCyclic a b =
     k = knownInt @n
     halfway = MkCyclic $ k `div` 2
     difference = b - a
+
+distance :: forall n. KnownNat n => Cyclic n -> Cyclic n -> Int
+distance a b = do
+  let Cyclic diff1 = a - b
+  let Cyclic diff2 = b - a
+  if diff1 < diff2 then diff1 else diff2

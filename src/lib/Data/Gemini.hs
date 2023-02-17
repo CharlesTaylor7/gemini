@@ -6,6 +6,7 @@ module Data.Gemini
   , pattern L, pattern C, pattern R
   -- | Rotations
   , l, c, r
+  , DiskIndex
   , Location(..), indexToLocation, sibling, ambiguousLocations, canonical
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   , Motion(..), normalize
@@ -230,6 +231,7 @@ permuteGemini p (Gemini disks) =
       case disk of
         Nothing   -> pure ()
         Just disk -> at (permute p n) ?= disk
+
 
 ambiguousLocations :: [(Location, Location)]
 ambiguousLocations =
