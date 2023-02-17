@@ -239,7 +239,7 @@ endDrag mouse = do
         Just motion -> applyMotionToStore motion
 
 
-angleToPosition :: forall n. KnownNat n => Angle -> Cyclic n
+angleToPosition :: forall n. NonZero n => Angle -> Cyclic n
 angleToPosition (Turns turns) = Cyclic $ floor $ (k * turns) + 0.5
   where k = fromIntegral $ knownInt @n
 

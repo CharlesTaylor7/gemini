@@ -39,7 +39,7 @@ hiddenLocations store =
       s ^? #animation % #frame % #_Just % #motion % #rotation % #ring
 
 
-angleOnCircle :: forall n. KnownNat n => Cyclic n -> Angle
+angleOnCircle :: forall n. NonZero n => Cyclic n -> Angle
 angleOnCircle (Cyclic k) = turns ~~ offset
   where
     turns = Turns $ (fromIntegral k) / (fromIntegral $ knownInt @n)

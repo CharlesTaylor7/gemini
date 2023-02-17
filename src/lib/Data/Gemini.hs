@@ -465,7 +465,7 @@ isFinishedSequence color ls =
 
 
 -- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
-isFinished :: forall n. (KnownNat n) => Int -> NonEmpty (Cyclic n) -> Bool
+isFinished :: forall n. NonZero n => Int -> NonEmpty (Cyclic n) -> Bool
 isFinished expectedCount (head :| rest) = go rest head head
   where
     precedes :: Cyclic n -> Cyclic n -> Bool

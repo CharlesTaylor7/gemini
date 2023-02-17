@@ -46,8 +46,8 @@ nextMove g =
               Just n -> BotMove [ r (11 - n), c 4, l 1]
               _      ->
                 case closest g 7 (disks Red LeftRing `excluding` redLocations) of
-                  Just n -> BotMove []
-                  _      -> noMove
+                  Just _n -> BotMove []
+                  _       -> noMove
     _ -> noMove
 
   where
