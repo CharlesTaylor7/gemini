@@ -64,20 +64,30 @@ instance forall n. NonZero n => Enum (Cyclic n) where
   succ n = n + 1
   pred n = n - 1
 
-  enumFromThenTo first next final = ((first :) <$> go next) & fromMaybe []
+  enumFrom first = first : go (first + 1)
+    where go n = if first == n then [] else n : go (n + 1)
+
+  enumFromThen first next = first : go next
     where
+      go current = if current == first then [] else current : go (current + step)
       step = next - first
 
+  enumFromTo first final = first : go (first + 1)
+    where
+      go current
+        | current == first = []
+        | current == final = [final]
+        | otherwise = current : go (current + 1)
+
+  enumFromThenTo first next final = ((first :) <$> go next) & fromMaybe []
+    where
       go :: Cyclic n -> Maybe [Cyclic n]
       go current
         | current == final = Just []
         | current == first = Nothing
         | otherwise = (current :) <$> go (current + step)
 
-  enumFrom first = [first]
-
-
-
+      step = next - first
 
 -- How do you impose order on the elements of a cyclic group?
 data CyclicOrdering
