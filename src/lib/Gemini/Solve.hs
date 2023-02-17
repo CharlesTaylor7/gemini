@@ -18,11 +18,13 @@ import           Gemini.Types       ()
 newtype BotMove = BotMove [Motion]
 
 
-closestDisk :: Gemini -> Color -> Ring -> DiskIndex -> Maybe DiskIndex
-closestDisk g color ring pivot =
-  closest g pivot $
+disks :: Color -> Ring -> IxFold DiskIndex Gemini Disk
+disks color ring =
   ifiltered (\_ disk -> disk ^. #color == color) $
   Gemini.disksOf ring
+
+excluding :: Ord i => IxFold i g a -> Set i -> IxFold i g a
+excluding f s = ifiltered (\i _ -> s ^. contains i % to not) f
 
 
 closest :: Is k A_Fold => Gemini -> DiskIndex -> Optic' k '[DiskIndex] Gemini a -> Maybe DiskIndex
@@ -37,15 +39,19 @@ nextMove :: Gemini -> BotMove
 nextMove g =
   case toSolveStage g of
     StageRed ->
-        case closestDisk g Red CenterRing 11 of
+        case closest g 11 (disks Red CenterRing) of
           Just n -> BotMove [c (11 - n), l 1]
           _           ->
-            case closestDisk g Red RightRing 11 of
+            case closest g 11 (disks Red RightRing) of
               Just n -> BotMove [ r (11 - n), c 4, l 1]
-              _      -> noMove
+              _      ->
+                case closest g 7 (disks Red LeftRing `excluding` redLocations) of
+                  Just n -> BotMove []
+                  _      -> noMove
     _ -> noMove
 
   where
+    redLocations = fromList $ Cyclic <$> [7..15] :: Set DiskIndex
     noMove = BotMove []
 
 
