@@ -36,7 +36,7 @@ hiddenLocations store =
     activeRing :: Store -> Maybe Ring
     activeRing s =
       s ^? to dragAngle % #_Just % _1 % #ring <|>
-      s ^? #animation % #frame % #_Just % #step % #motion % #rotation % #ring
+      s ^? #animation % #frame % #_Just % #motion % #rotation % #ring
 
 
 angleOnCircle :: forall n. NonZero n => Cyclic n -> Angle
@@ -107,7 +107,7 @@ geminiView store =
         ]
       ]
   where
-    gemini = store & currentGemini
+    gemini = store ^. #gemini
     options = store ^. #options
     mobile = options ^. #mobile
     dragged = dragAngle store
@@ -153,7 +153,7 @@ geminiView store =
         animatedAngle :: Angle
         animatedAngle = fromMaybe mempty $ do
           frame <- store ^. #animation % #frame
-          let rotation = frame ^. #step % #motion % #rotation
+          let rotation = frame ^. #motion ^. #rotation
           let sign = if rotation ^. #direction == Clockwise then 1 else -1
           guard $ ring == rotation ^. #ring
           pure $ Turns $

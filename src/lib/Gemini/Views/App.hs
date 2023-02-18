@@ -147,8 +147,9 @@ debugView store =
         ]
     ]
     [ paragraph $ prettyText $ store ^. #errors
-    , paragraph $ show $ toSolveStage $ currentGemini store
-    , paragraph $ prettyText $ store ^.. #buffered % each % #motion
+    , paragraph $ show $ store ^. #gemini % to toSolveStage
+    , paragraph $ prettyText $ store ^.. #buffered % each
+    -- paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
     ]
   )
   where
@@ -280,8 +281,10 @@ undoButton _store =
           when (is #_Nothing frame) $ do
             history <- use #history
             case history of
-              Seq.Empty      -> pure ()
-              rest :|> _last -> #history .= rest
+              Seq.Empty -> pure ()
+              h :<| rest -> do
+                (#history .= rest)
+                (#gemini %= applyToGemini (h & #amount %~ invert))
     ]
     [ Html.text "Undo" ]
 
@@ -319,7 +322,7 @@ nextBotMoveButton store =
     [ Html.onClickC $ do
         Actions.run $ do
           Actions.updateRefreshRate $ store ^. #animation % #refreshRate
-          let move = Solve.nextMove $ bufferedGemini store
+          let move = Solve.nextMove $ store ^. #gemini
           Actions.applyBotMove move
     ]
     [ Html.text "Next" ]
@@ -334,7 +337,7 @@ scrambleButton =
         pure $
           (#history  .~ Seq.Empty) .
           (#recorded .~ Seq.Empty) .
-          (#original %~ scramble) .
+          (#gemini   %~ scramble) .
           (#stats    ?~ Stats { scrambledAt, solvedAt = Nothing })
     ]
     [ Html.text "Scramble" ]

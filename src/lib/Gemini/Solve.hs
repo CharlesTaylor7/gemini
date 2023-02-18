@@ -54,7 +54,7 @@ nextMove g =
                     case m `compareCyclic` 2 of
                       -- exceeds
                       Exceeds ->
-                        botMove [l (7 - m), c 1, l (7 - m), c (-1), l 1]
+                        botMove [l (7 - m), c 1, l (m - n - 5), c 4, l (n - 2)]
 
                       -- precedes
                       _       ->
