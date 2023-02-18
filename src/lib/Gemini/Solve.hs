@@ -1,3 +1,4 @@
+{-# options_GHC -Wwarn #-}
 module Gemini.Solve
   ( solutionPairs
   , nextMove
@@ -6,16 +7,19 @@ module Gemini.Solve
   , BotMove(..)
   ) where
 
+
 import           Optics
+import           Optics.Core.Extras (is)
 import           Relude
 
 import           Data.Cyclic        as Cyclic
 import           Data.Gemini        as Gemini
 import           Gemini.Solve.Types
-import           Gemini.Types       ()
 
 
 newtype BotMove = BotMove [Motion]
+botMove :: [Motion] -> BotMove
+botMove = BotMove . toListOf (each % to normalize % #_Just)
 
 
 disks :: Color -> Ring -> IxFold DiskIndex Gemini Disk
@@ -40,19 +44,46 @@ nextMove g =
   case toSolveStage g of
     StageRed ->
         case closest g 11 (disks Red CenterRing) of
-          Just n -> BotMove [c (11 - n), l 1]
+          Just n -> botMove [c (11 - n), l 1]
           _           ->
             case closest g 11 (disks Red RightRing) of
-              Just n -> BotMove [ r (11 - n), c 4, l 1]
+              Just n -> botMove [ r (11 - n), c 4, l 1]
               _      ->
-                case closest g 7 (disks Red LeftRing `excluding` redLocations) of
-                  Just _n -> BotMove []
-                  _       -> noMove
+                case (firstRed, firstNotInSequence) of
+                  (Just m, Just n) ->
+                    case m `compareCyclic` 2 of
+                      -- exceeds
+                      Exceeds ->
+                        botMove [l (7 - m), c 1, l (m - n - 5), c 4, l (n - 2)]
+
+                      -- precedes
+                      _       ->
+                        botMove [l (2 - m), c (-1), l (5 - m + n), c 4, l (n - 2)]
+                  _ -> noMove
+
     _ -> noMove
 
   where
-    redLocations = fromList $ Cyclic <$> [7..15] :: Set DiskIndex
     noMove = BotMove []
+    firstRed :: Maybe DiskIndex
+    firstRed =
+      g & (
+        headOf $
+          Gemini.disksFrom LeftRing [6,5..] %
+          filtered (is $ _2 % #color % #_Red) %
+          _1
+      )
+
+    firstNotInSequence :: Maybe DiskIndex
+    firstNotInSequence =
+      g & (
+        headOf $
+          Gemini.disksFrom LeftRing [8..] %
+          filtered (isn't $ _2 % #color % #_Red) %
+          _1
+
+      )
+
 
 
 type Pair a = (a, a)

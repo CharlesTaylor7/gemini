@@ -289,7 +289,6 @@ undoButton _store =
     [ Html.text "Undo" ]
 
 
-
 numberInput :: Int -> Html m Int
 numberInput initial =
   Html.input'

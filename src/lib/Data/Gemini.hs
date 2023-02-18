@@ -1,7 +1,8 @@
 module Data.Gemini
   ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, solvedColors
   , disksOf
-  , look
+  , disksFrom
+--  , look
   -- | Positions
   , pattern L, pattern C, pattern R
   -- | Rotations
@@ -329,16 +330,17 @@ geminiIx location = #geminiDiskMap % trustMe (ix (locationToIndex location))
     trustMe t = lens (fromMaybe (error "trustMe") . preview t) (flip $ set t)
 
 
-look :: Location -> Gemini -> Disk
-look location g = fromMaybe (error "invalid gemini") $
-  g ^? #geminiDiskMap % ix (locationToIndex location)
-
-
 disksOf :: Ring -> IxFold DiskIndex Gemini Disk
 disksOf ring =
   reindexed Cyclic $
   ifolding $ \g ->
   inhabitants <&> \cyclic -> g ^. geminiIx (Location ring cyclic)
+
+
+disksFrom :: Ring -> [DiskIndex] -> Fold Gemini (DiskIndex, Disk)
+disksFrom ring range =
+  folding $ \g ->
+  range <&> \i -> (i, g ^. geminiIx (Location ring i))
 
 
 geminiFromList :: [(Location, Disk)] -> Gemini
