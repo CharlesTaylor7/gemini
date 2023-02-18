@@ -59,28 +59,34 @@ applyMove move = do
 
 applyBotMove :: Monad m => BotMove -> Action m ()
 applyBotMove (BotMove motions) = do
-  (#buffered %= \b -> b <> fromList motions)
+  g <- gets bufferedGemini
+  let
+    steps = motions
+      & scanl (flip applyToGemini) g
+      & drop 1
+      & zipWith Step motions
+
+  (#buffered %= \b -> b <> fromList steps)
   b <- use #buffered
   f <- use $ #animation % #frame
   case (b, f) of
     (h :<| rest, Nothing) -> do
       (#buffered .= rest)
-      (#animation % #frame ?= AnimationFrame { tick = 0, motion = h })
+      (#animation % #frame ?= AnimationFrame { tick = 0, step = h })
     _                     ->
       pure ()
 
 -- | apply the motion to the history and the gemini state, but don't check if the puzzle is solved
 applyMotionUnchecked :: Monad m => Motion -> Action m ()
 applyMotionUnchecked motion = do
+    g <- gets currentGemini
+
     -- apply to puzzle
-    (#gemini %= applyToGemini motion)
+    (#history %= (:|> Step { gemini = applyToGemini motion g, motion }))
 
     -- if recording, apply to recorded move
     recording <- use $ #options % #recording
     when recording $ #recorded %= applyToHistory motion
-
-    -- apply to history to tally move count
-    (#history %= applyToHistory motion)
 
 
 applyMotionToStore :: MonadJSM m => Motion -> Action m ()
@@ -97,7 +103,7 @@ applyMotionToStore motion = do
 checkWin :: MonadJSM m => Action m ()
 checkWin = do
   wasScrambled <- get <&> isn't (#stats % _Nothing)
-  isSolved <- use $ #gemini % to isSolved
+  isSolved <- gets $ isSolved . currentGemini
   when (wasScrambled && isSolved) $ do
     solvedAt <- dateNow
     (#stats % _Just % #solvedAt ?= solvedAt)
@@ -144,16 +150,16 @@ animate s =
       s
 
     -- We have completed the animation
-    Just f | f ^. #tick >= k * f ^. #motion % #amount % #unCyclic ->
+    Just f | f ^. #tick >= k * f ^. #step % #motion % #amount % #unCyclic ->
 
       -- | apply the motion
-      s & runPure (applyMotionUnchecked (f ^. #motion)) &
+      s & runPure (applyMotionUnchecked (f ^. #step % #motion)) &
 
       case s ^. #buffered of
 
         -- | More buffered moves
-        motion :<| buffered ->
-          (#animation % #frame ?~ AnimationFrame { tick = 0, motion }) .
+        step :<| buffered ->
+          (#animation % #frame ?~ AnimationFrame { tick = 0, step }) .
           (#buffered .~ buffered)
 
         -- | No buffered moves left

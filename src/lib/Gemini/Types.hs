@@ -3,6 +3,9 @@ module Gemini.Types
     Store(..), initialStore
   , Action
   , HoverState(..), DragState(..), Options(..), Env(..), Deployment(..), DomInfo(..) , Confetti(..)
+  , currentGemini
+  , bufferedGemini
+  , Step(..)
   , Animation(..)
   , AnimationFrame(..)
   , Stats(..)
@@ -65,16 +68,17 @@ instance Pretty Animation where
       ]
 
 data AnimationFrame = AnimationFrame
-  { tick   :: !Int
-  , motion :: !Motion
+  { tick :: !Int
+  , step :: !Step
   }
   deriving stock (Eq, Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
 instance Pretty AnimationFrame where
-  pretty AnimationFrame { tick, motion } =
-    pretty tick <+> pretty motion
+  pretty f =
+    f ^. #tick  % to pretty <+> f ^. #step % #motion % to pretty
+
 
 data Stats = Stats
   { scrambledAt :: !Timestamp
@@ -174,11 +178,15 @@ data Move = Move
 instance Pretty Move where
   pretty = prettyList . toList . view #motions
 
+data Step = Step { motion :: !Motion, gemini :: !Gemini }
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (NFData)
 
 data Store = Store
-  { gemini    :: !Gemini
-  , history   :: !(Seq Motion)
-  , buffered  :: !(Seq Motion)
+  { original  :: !Gemini
+  , history   :: !(Seq Step)
+  , buffered  :: !(Seq Step)
   , animation :: !Animation
   , hover     :: !(Maybe HoverState)
   , drag      :: !(Maybe DragState)
@@ -194,12 +202,26 @@ data Store = Store
   deriving anyclass (FromJSON, ToJSON)
   deriving anyclass (NFData)
 
+bufferedGemini :: Store -> Gemini
+bufferedGemini s =
+  case s ^. #buffered of
+    _ :|> last -> last ^. #gemini
+    _          ->
+      case s ^? #animation % #frame % #_Just % #step % #gemini of
+        Just g -> g
+        _      -> currentGemini s
+
+currentGemini :: Store -> Gemini
+currentGemini s =
+  case s ^. #history of
+    _ :|> last -> last ^. #gemini
+    _          -> s ^. #original
 
 
 -- | Initial state of the app
 initialStore :: Env -> Store
 initialStore env = Store
-  { gemini = initialGemini
+  { original = initialGemini
   , history = Seq.Empty
   , buffered = Seq.Empty
   , animation = Animation
