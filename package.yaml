@@ -85,6 +85,7 @@ ghc-options:
   # general
   - -ferror-spans
   - -freverse-errors
+  - -fdiagnostics-color=always
   # warnings
   - -Wall
   - -Wmissing-deriving-strategies
