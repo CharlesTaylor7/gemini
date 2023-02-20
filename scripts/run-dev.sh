@@ -1,1 +1,1 @@
-ghcid --command "stack repl --main-is gemini:dev-server" --warnings --run
+ghcid --command "stack repl --main-is gemini:dev-server --only-main" --warnings --run

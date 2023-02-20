@@ -22,7 +22,7 @@ import           Gemini.Views.App            (Deployment (..), Env (..), Store (
 
 import           Gemini.Views.Puzzle         (loadDomInfo)
 
-main:: IO ()
+main :: IO ()
 main =
   Rapid.rapid 0 $ \r -> do
     storeTVar <- Rapid.createRef r ("storeTVar" :: Text) $ do
