@@ -14,7 +14,6 @@ import           Shpadoinkle.Backend.ParDiff (ParDiffT, runParDiff, stage)
 import qualified Shpadoinkle.Html            as Html
 import qualified Shpadoinkle.Run             as Run
 
-
 import           Gemini.Env                  (envOptional)
 import           Gemini.FFI                  (onResize)
 import           Gemini.Ref                  (initGlobalRef)
@@ -68,7 +67,6 @@ json = prism' encode decode'
 -- lawless, but for the same reasons as `non`. Should be harmless
 withDefault :: Prism' s a -> a -> Iso' s a
 withDefault prism def = iso (fromMaybe def . preview prism ) (review prism)
-
 
 getEnv :: Deployment -> IO Env
 getEnv deployment = do
