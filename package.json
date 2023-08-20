@@ -1,0 +1,24 @@
+{
+  "name": "hello-deku",
+  "version": "0.0.0",
+  "repository": "git@github.com:CharlesTaylor7/hello-deku.git",
+  "author": "Charles Taylor <charlestaylor95@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "postinstall": "spago install",
+    "watch:purs": "spago build -w",
+    "watch:js": "PORT=3000 parcel --open serve public/dev.html --dist-dir .parcel",
+    "tailwind": "tailwindcss -i tailwind.source.css -o dist/index.css",
+    "prebuild": "yarn run tailwind && parcel build dist/index.css && cp public/prod.html dist/index.html",
+    "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",
+    "clean:parcel": "rm -rf .parcel*"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.2",
+    "parcel": "^2.9.3",
+    "purescript": "^0.15.10",
+    "spago": "^0.21.0",
+    "tailwindcss": "^3.3.3"
+  }
+}

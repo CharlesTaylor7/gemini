@@ -1,0 +1,44 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/**
+      - src/**
+      - package.json
+      - index.js
+      - dist/index.html
+
+jobs:
+  deploy:
+    name: Deploy to Github Pages
+    permissions:
+      pages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Cache PureScript dependencies
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-spago-${{ hashFiles('**/*.dhall') }}
+          path: |
+            .spago
+            output
+
+      - name: Build
+        run: |
+          yarn
+          yarn build
+
+      # How to setup deploy key:
+      # https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-create-ssh-deploy-key
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: dist

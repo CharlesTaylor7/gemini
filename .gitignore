@@ -1,7 +1,21 @@
-/.stack-work/
-/dist-newstyle
-*~
-/.env
-/.hie/
-recorded-moves.txt
-**/.DS_STORE
+# NPM
+/node_modules/
+
+# Parcel
+/.parcel-cache/
+/.parcel/
+
+# Spago deps
+/.spago/
+
+# Spago compilation
+/output/
+
+# ESbuild bundle
+/dist/
+
+# Yarn
+/yarn-error.log
+
+# Tailwind output
+/public/index.css

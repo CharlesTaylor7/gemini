@@ -1,0 +1,9 @@
+procs:
+  Purescript:
+    shell: yarn watch:purs
+
+  Dev Server:
+    shell: yarn watch:js
+
+  Tailwind:
+    shell: yarn tailwind --watch
