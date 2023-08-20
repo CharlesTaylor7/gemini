@@ -26,11 +26,11 @@ import           Data.Cyclic
 import           Data.Finitary
 import           Data.Permutation
 
-import qualified Data.IntMap            as Map
-import qualified Data.List              as List
-import qualified Data.List.NonEmpty     as NE
-import qualified Data.Sequence          as Seq
-import qualified Prettyprinter          as Pretty
+import  Data.IntMap            as Map
+import  Data.List              as List
+import  Data.List.NonEmpty     as NE
+import  Data.Sequence          as Seq
+import  Prettyprinter          as Pretty
 
 import           Data.Aeson             (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
 import           Prettyprinter          (Pretty (..))

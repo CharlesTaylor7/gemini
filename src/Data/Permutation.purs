@@ -16,13 +16,13 @@ import           Relude        hiding (break, cycle)
 import           Data.Aeson    (FromJSON, ToJSON)
 import           Data.Group
 
-import qualified Data.IntSet   as Set
+import  Data.IntSet   as Set
 import           Data.Sequence (Seq ((:<|), (:|>)))
-import qualified Data.Sequence as Seq
+import  Data.Sequence as Seq
 
 import           Optics
 import           Prettyprinter (Pretty (..))
-import qualified Prettyprinter as Pretty
+import  Prettyprinter as Pretty
 
 import           Gemini.Utils  (knownInt, natsUnder)
 
