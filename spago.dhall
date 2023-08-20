@@ -1,4 +1,4 @@
-{ name = "hello-deku"
+{ name = "gemini"
 , dependencies =
   [ "console"
   , "effect"
