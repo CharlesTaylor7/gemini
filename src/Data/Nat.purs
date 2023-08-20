@@ -1,5 +1,6 @@
 module Data.Nat
   ( class KnownNat
+  , module Num
   , knownInt
   , natsUnder
   ) where
@@ -7,6 +8,8 @@ module Data.Nat
 import Prelude
 
 import Data.Enum (enumFromTo)
+
+import Data.Typelevel.Num.Aliases as Num
 import Data.Typelevel.Num.Sets (class Nat, toInt')
 
 import Type.Proxy (Proxy(..))
