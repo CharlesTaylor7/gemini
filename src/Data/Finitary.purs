@@ -1,12 +1,12 @@
-{-# language DefaultSignatures #-}
 module Data.Finitary
-  ( Finitary(..)
+  ( class Finitary, inhabitants
   ) where
 
-import           Relude
-
+import Prelude
+import Data.Enum (class Enum, enumFromTo)
 
 class Finitary a where
-  inhabitants :: [a]
-  default inhabitants :: (Bounded a, Enum a) => [a]
-  inhabitants = [minBound..maxBound]
+  inhabitants :: Array a
+
+instance (Bounded a, Enum a) => Finitary a where
+  inhabitants = enumFromTo bottom top
