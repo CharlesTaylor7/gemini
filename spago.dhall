@@ -5,6 +5,7 @@
   , "prelude"
   , "deku"
   , "tuples"
+  , "typelevel-prelude"
   , "typelevel"
   , "enums"
   ]

@@ -15,11 +15,12 @@ import Deku.Pursx (pursx, (~~))
 import Deku.Attributes as Attr
 import Deku.Attribute (xdata)
 import Deku.Hooks (useState)
+import Deku.Extra (keys)
 
 
 mainDev :: Effect (Effect Unit)
 mainDev = do
-  log "9"
+  log $ keys { apple: "334", banana: "32" }
   runInBody' app
 
 
@@ -32,14 +33,15 @@ app = Deku.do
   H.button
     [ Event.click $ counter <#> add 1 >>> setCounter
     , Attr.klass_ "bg-blue-200 p-2 border rounded-lg"
+    , Attr.klass_ "m-2"
     , pure (xdata "testid" "my-testid")
     ]
     [ text (show <$> counter)
     , (pursx :: _ Template) ~~
         { adj: 
             text $
-            counter <#> \c -> if c `mod` 2 == 0 then "noob" else "master"
+            counter <#> \c -> if c `mod` 2 == 0 then "even" else "odd"
         }
     ]
 
-type Template = "<p>Now you're a Deku ~adj~</p>"
+type Template = "<span>~adj~</span>"
