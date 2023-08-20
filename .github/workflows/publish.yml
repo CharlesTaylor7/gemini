@@ -6,9 +6,7 @@ on:
     paths:
       - .github/**
       - src/**
-      - package.json
-      - index.js
-      - dist/index.html
+      - public/prod.html
 
 jobs:
   deploy:
