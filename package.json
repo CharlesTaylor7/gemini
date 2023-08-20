@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "postinstall": "spago install",
-    "watch:purs": "spago build -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport\"",
+    "watch:purs": "spago build -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
     "watch:js": "PORT=3000 parcel --open serve public/dev.html --dist-dir .parcel",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/index.css",
     "prebuild": "yarn run tailwind && parcel build dist/index.css && cp public/prod.html dist/index.html",
