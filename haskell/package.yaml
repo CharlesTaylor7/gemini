@@ -22,7 +22,7 @@ dependencies:
 - base >= 4.14 && < 4.16
 - relude
 - text
-- async
+  # - async
 - bytestring
 - containers
 - vector

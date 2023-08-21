@@ -8,15 +8,16 @@
   "scripts": {
     "postinstall": "spago install",
     "watch:purs": "spago build -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName,UnusedImport\"",
-    "watch:js": "PORT=3000 parcel --open serve public/dev.html --dist-dir .parcel",
+    "watch:js": "PORT=3000 parcel --open serve parcel-dev.html --dist-dir .parcel",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/index.css",
-    "prebuild": "yarn run tailwind && parcel build dist/index.css && cp public/prod.html dist/index.html",
+    "prebuild": "yarn run tailwind && cp -r public/* dist/",
     "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",
-    "clean:parcel": "rm -rf .parcel*"
+    "clean:parcel": "rm -rf .parcel/ .parcel-cache/"
   },
   "devDependencies": {
     "esbuild": "^0.19.2",
     "parcel": "^2.9.3",
+    "parcel-reporter-static-files-copy": "^1.5.2",
     "purescript": "^0.15.10",
     "purescript-psa": "^0.8.2",
     "spago": "^0.21.0",

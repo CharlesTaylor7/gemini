@@ -12,7 +12,7 @@ extra-deps:
 - optics-th-0.4.1
 
 # misc
-- random-1.2.1
+# - random-1.2.1
 - rapid-0.1.4@sha256:570dbbaf2d57d5de8ed239cae8aad3fcef59737e31246ea7e6999d46d41ae3da,1768
 
 # shpadoinkle

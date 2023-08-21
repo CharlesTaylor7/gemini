@@ -87,7 +87,6 @@ library
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , aeson
-    , async
     , base >=4.14 && <4.16
     , bytestring
     , containers
@@ -151,7 +150,6 @@ executable dev-server
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , aeson
-    , async
     , base >=4.14 && <4.16
     , bytestring
     , containers
@@ -222,7 +220,6 @@ test-suite gemini-test
     , Shpadoinkle-backend-pardiff
     , Shpadoinkle-html
     , aeson
-    , async
     , base >=4.14 && <4.16
     , bytestring
     , containers

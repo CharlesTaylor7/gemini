@@ -617,7 +617,7 @@
     "@parcel/utils" "2.9.3"
     posthtml "^0.16.4"
 
-"@parcel/plugin@2.9.3":
+"@parcel/plugin@2.9.3", "@parcel/plugin@^2.0.0-beta.1":
   version "2.9.3"
   resolved "https://registry.yarnpkg.com/@parcel/plugin/-/plugin-2.9.3.tgz#90e9a9482fa27735494372f5643db01abcf3fdb6"
   integrity sha512-qN85Gqr2GMuxX1dT1mnuO9hOcvlEv1lrYrCxn7CJN2nUhbwcfG+LEvcrCzCOJ6XtIHm+ZBV9h9p7FfoPLvpw+g==
@@ -2568,6 +2568,13 @@ parallel-transform@^1.1.0:
     cyclist "^1.0.1"
     inherits "^2.0.3"
     readable-stream "^2.1.5"
+
+parcel-reporter-static-files-copy@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/parcel-reporter-static-files-copy/-/parcel-reporter-static-files-copy-1.5.2.tgz#aed0370717ea5d5185d6b09aea9cf9e6f479366c"
+  integrity sha512-NyIP8dOBj4WiZYAfKKTFWrMh8/kjrP72673G3hs7TOoT/30QWwUQpRA7oW4IxbjY2ICOo2sV06Z1lzPKCDbrGA==
+  dependencies:
+    "@parcel/plugin" "^2.0.0-beta.1"
 
 parcel@^2.9.3:
   version "2.9.3"

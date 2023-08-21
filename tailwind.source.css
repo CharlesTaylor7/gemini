@@ -1,3 +1,427 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* defaults */
+:root {
+    --disk-unknown: purple;
+    --disk-white: white;
+    --disk-black: black;
+    --disk-yellow: #fadd00;
+    --disk-red: #ad0000;
+    --disk-green: #45ab36;
+    --disk-blue: #00aeff;
+    --ring-diameter: 350px;
+    --ring-background: #816c5b;
+    --panel-border: #82a6e3;
+    --button-background: #0069ed;
+    --button-background-hover: #0053ba;
+    --background-color: #9aaecd;
+    --scrollbar-color: #a2dcd7;
+    --stats-background: gray;
+}
+
+* {
+    margin: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: var(--background-color);
+}
+
+/* button reset */
+button {
+    color: #000000;
+    display: inline-block;
+    border: none;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    user-select: none;
+    font-family: sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 10px;
+    /* background-color: gray; */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* drag */
+.dragging {
+    cursor: grabbing;
+}
+
+/* root div */
+.gemini-app {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.main-panel {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 48px;
+    align-items: center;
+}
+
+
+/* header */
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.control-panel {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.button-group.options {
+    display: flex;
+    flex-flow: column;
+    align-items: flex-end;
+}
+
+.button-group.actions {
+    display: flex;
+    flex-flow: row no-wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+
+.action-button {
+    display: block;
+    color: white;
+    padding: 6px 12px;
+    width: 98px;
+
+    background: var(--button-background);
+    box-shadow: 3px 3px 3px rgb(0 0 0 / 48%);
+    transition:
+        background 250ms ease-in-out,
+        transform 250ms ease-in-out,
+        box-shadow 250ms ease-in-out;
+}
+
+.action-button:hover,
+.action-button:active {
+    background: var(--button-background-hover);
+}
+
+.action-button:active {
+    box-shadow: none;
+    transform: translate(1px, 1px);
+}
+
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    cursor: pointer;
+}
+
+.checkbox input {
+    cursor: pointer;
+}
+
+.checkbox-label {
+    padding-right: 5px;
+}
+
+/* footer */
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.link > img {
+    height: 20px;
+    padding-right: 5px;
+}
+
+.confetti {
+    z-index: 3;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background: url("https://media.giphy.com/media/5T06ftQWtCMy0XFaaI/giphy.gif");
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+}
+
+.confetti.fade-in {
+    visibility: visible;
+    opacity: 1;
+    animation: 1s fade-in;
+}
+
+.confetti.fade-out {
+    visibility: visible;
+    opacity: 0;
+    animation: 1s fade-out;
+}
+
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+.stats-box {
+    background: #ddfaff;
+    border: 1px solid var(--stats-background);
+    border-radius: 10px;
+}
+
+.stats-header {
+    border-bottom: 1px solid var(--stats-background);
+    text-align: center;
+    font-size: 30px;
+    padding: 12px;
+} 
+
+.stats {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100px;
+    padding: 24px 12px;
+}
+
+.right-panel {
+    z-index: 2;
+}
+
+.saved-moves-panel {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: scroll;
+    max-height: calc(100vh-24px);
+    padding-right: 12px;
+    margin: 12px;
+}
+
+* {
+    scrollbar-color: var(--scrollbar-color) var(--background-color);
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color);
+    border-radius: 24px;
+}
+
+.move {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.move-description {
+    display: flex;
+    flex-direction: column;
+    background: #c8d0ff;
+    border: none;
+    padding: 0;
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-family: monospace;
+    cursor: pointer;
+}
+
+
+.motions {
+    user-select: none;
+}
+
+.cycles {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    cursor: default;
+    margin-left: 12px;
+}
+
+.cycle {
+    text-align: left;
+    user-select: none;
+    flex: 1 1 auto;
+}
+
+.cycle:hover {
+    background-color: #85bcff;
+}
+
+.delete-move {
+    margin-left: 12px;
+    --width: 23px;
+    flex: 0 0 var(--width);
+    height: var(--width);
+    border-radius: 100%;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold ;
+    background-color: #efefef;
+    transition:
+        background-color 250ms ease-in-out;
+}
+
+.delete-move:hover {
+    background-color: #c4c4c4;
+}
+
+.move-blank {
+    height: 100px;
+}
+
+/* puzzle */
+.gemini-row {
+    display: flex;
+    justify-content: center;
+}
+
+.gemini {
+    display: flex;
+    position: relative;
+    font-size: 35px;
+    user-select: none;
+    height: var(--ring-diameter);
+    width: calc(3 * var(--ring-diameter));
+    flex-shrink: 0;
+    margin: 0 -157px;
+    background: url(/public/textures/wood.jpg)
+}
+
+.ring {
+    width: 100%;
+    position: relative;
+    border-radius: 100%;
+}
+
+.ring.left {
+    left: 14.9%;
+}
+
+.ring.center {
+}
+
+.ring.right {
+    right: 14.9%;
+}
+
+.disk {
+    height: 14%;
+    width: 14%;
+    position: absolute;
+    border-radius: 100%;
+    box-sizing: border-box;
+    cursor: grab;
+    z-index: 2;
+    box-shadow: 3px 3px 1px rgba(28, 25, 23, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.disk.dragging {
+    border: 2px solid magenta;
+}
+
+.disk.hidden {
+    display: none;
+}
+
+.disk.drag-disabled {
+    cursor: not-allowed;
+}
+
+.disk.highlight {
+    border: 4px solid #f100ff;
+}
+
+.disk.active-cycle {
+    border: 4px solid blue;
+}
+
+.dragging div.disk {
+    cursor: grabbing;
+}
+
+.disk-label {
+    user-select: none;
+}
+
+
+/* colors */
+.disk.unknown {
+    background-color: var(--disk-unknown);
+}
+
+.disk.white {
+    background-color: var(--disk-white);
+}
+
+.disk.black {
+    color: white;
+    background-color: var(--disk-black);
+}
+
+.disk.yellow {
+    background-color: var(--disk-yellow);
+}
+
+.disk.red {
+    background-color: var(--disk-red);
+}
+
+.disk.green {
+    background-color: var(--disk-green);
+}
+
+.disk.blue {
+    background-color: var(--disk-blue);
+}
