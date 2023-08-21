@@ -28,3 +28,176 @@ component = Deku.do
     [ ]
     [ text_ "Hello" ]
 
+{-
+  
+geminiView :: Nut 
+geminiView =
+  D.div
+    [ D.class'
+      [ ("gemini" :: Text, True)
+      , ("dragging", isn't (#drag % _Nothing) store)
+      ]
+    ] $
+    concat
+      [ [D.div' [D.className "background"]]
+      , map ringView inhabitants
+      ]
+  where
+    gemini = store ^. #gemini
+    options = store ^. #options
+    mobile = options ^. #mobile
+    dragged = dragAngle store
+
+    highlighted :: Set Location
+    highlighted =
+      if options ^. #highlightPairs
+      then setOf (to solutionPairs % folded % each) gemini
+      else mempty
+
+    activeCycle :: Set Location
+    activeCycle = setOf (#hover % _Just % #cycle % _Just % folded) store
+
+    hidden :: Set Location
+    hidden = hiddenLocations store
+
+    activeMoveLabels :: Map Location Text
+    activeMoveLabels = store
+      & itoListOf (#hover % _Just % #move % #moveCycles % each <%> ifolded)
+      & map (\((i, j), x) -> (x, show (i + 1) <> Text.singleton (toLetter j)))
+      & fromList
+
+    ringView :: Ring -> Html m Store
+    ringView ring =
+      D.div [ D.className $ ringClass ring] $
+        disks ring
+
+    disks :: Ring -> [Html m Store]
+    disks ring = flip map inhabitants $ \position ->
+      let
+        location = Location ring position
+        (color, diskLabel) =
+          case gemini ^? geminiIx location of
+            Just Disk { color, label } -> (Text.toLower $ show color, show label)
+            Nothing                    -> ("unknown", "")
+
+        draggedAngle :: Angle
+        draggedAngle = fromMaybe mempty $ do
+          (draggedRing, angle) <- dragged
+          guard $ ring == draggedRing ^. #ring
+          pure angle
+
+        animatedAngle :: Angle
+        animatedAngle = fromMaybe mempty $ do
+          frame <- store ^. #animation % #frame
+          let rotation = frame ^. #motion ^. #rotation
+          let sign = if rotation ^. #direction == Clockwise then 1 else -1
+          guard $ ring == rotation ^. #ring
+          pure $ Turns $
+            let
+              n = sign * fromIntegral (frame ^. #tick)
+              d = store ^. #animation % #ticksPerRotation % to (*18) % to fromIntegral
+            in
+              n / d
+
+        diskAngle = angleOnCircle position <> draggedAngle <> animatedAngle
+
+        k = 43
+        (x, y) =
+          ( k * (1 + cosine diskAngle)
+          , k * (1 + sine diskAngle)
+          )
+
+        defaultLabel :: Maybe Text
+        defaultLabel = (options ^. #showLabels && isn't (#hover % _Just) store) `orNothing` diskLabel
+
+        cycleLabel :: Maybe Text
+        cycleLabel = activeMoveLabels ^? ix location
+
+        toLabelSpan label = D.span [ ("className", "disk-label") ] [ D.text label ]
+
+        isDraggedDisk :: Location -> Bool
+        isDraggedDisk l = Just l == dragged ^? _Just % _1
+      in
+          D.div
+            ( D.class'
+              [ ("disk", True)
+              , (color, True)
+              , ("dragging", isDraggedDisk location)
+              , ("highlight", highlighted ^. contains location)
+              , ("active-cycle", activeCycle ^. contains location)
+              , ("hidden", hidden ^. contains location)
+              ]
+            : D.styleProp
+              [ ("left", show x <> "%")
+              , ("top", show y <> "%")
+              ]
+            : [ ("mousedown", onDragStart location)
+              , ("touchstart", onDragStart location)
+              ]
+            )
+            if mobile
+            then []
+            else [ foldMap First [cycleLabel, defaultLabel] & getFirst & fromMaybe "" & toLabelSpan ]
+
+
+
+hiddenLocations :: Store -> Set Location
+hiddenLocations store =
+  ambiguousLocations
+  & map (\(left, right) -> if Just (right ^. #ring) == activeRing store then left else right)
+  & fromList
+  where
+    activeRing :: Store -> Maybe Ring
+    activeRing s =
+      s ^? to dragAngle % #_Just % _1 % #ring <|>
+      s ^? #animation % #frame % #_Just % #motion % #rotation % #ring
+
+
+angleOnCircle :: forall n. NonZero n => Cyclic n -> Angle
+angleOnCircle (Cyclic k) = turns ~~ offset
+  where
+    turns = Turns $ (fromIntegral k) / (fromIntegral $ knownInt @n)
+    -- By arbitrary choice, the initial position is at the top of the circle
+    offset = Degrees 90
+
+
+ringClass :: Ring -> Text
+ringClass = const "ring " <> \case
+  LeftRing   -> "left"
+  CenterRing -> "center"
+  RightRing  -> "right"
+
+
+toLetter :: Int -> Char
+toLetter i = toEnum $ i + 97
+
+loadDomInfo :: JSM DomInfo
+loadDomInfo = do
+  ringInfo :: [(Ring, Point)] <- for inhabitants $ \ring -> do
+    let selector = ringClass ring & Text.words & Text.intercalate "." & ("." <>)
+    elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
+    rect <- jsCall elem "getBoundingClientRect" ()
+    width <- rect ! ("width" :: Text) >>= fromJSValUnchecked
+    left <- rect ! ("left" :: Text) >>= fromJSValUnchecked
+    top <- rect ! ("top" :: Text) >>= fromJSValUnchecked
+    let radius = width / 2;
+    pure $ (ring, Point (left + radius) (top + radius))
+
+  let getDiameter :: Text -> JSM Double
+      getDiameter selector = do
+        elem <- jsCall (jsg ("document" :: Text)) "querySelector" selector
+        rect <- jsCall elem "getBoundingClientRect" ()
+        rect ! ("width" :: Text) >>= fromJSValUnchecked
+
+  ringRadius <- do
+    ring <- getDiameter ".ring"
+    disk <- getDiameter ".disk"
+    pure $ (ring - disk) / 2
+
+  pure $
+    DomInfo
+      { ringRadius
+      , ringCenters = ringInfo & Map.fromList
+      }
+
+-}
