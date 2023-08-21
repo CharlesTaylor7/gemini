@@ -1,4 +1,6 @@
 module Data.Gemini
+  where
+{-
   ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, solvedColors
   , disksOf
   , disksFrom
@@ -59,13 +61,6 @@ instance Pretty Location where
     pretty ring <> Pretty.viaShow n
 
 
--- | Positions
-{-# COMPLETE L, C, R #-}
-pattern L, C, R :: DiskIndex -> Location
-pattern L n = Location LeftRing n
-pattern C n = Location CenterRing n
-pattern R n = Location RightRing n
-
 
 -- | Gemini transformations
 -- The 6 basic motions are called:
@@ -97,27 +92,11 @@ type Ring
   | CenterRing
   | RightRing
   
-  
-  
-
-instance Pretty Ring where
-  pretty LeftRing   = "L"
-  pretty CenterRing = "C"
-  pretty RightRing  = "R"
-
 
 type Disk = Disk
   { color :: Color
   , label :: Int
   }
-  
-  
-  
-
-instance Pretty Disk where
-  pretty Disk { color, label } =
-    pretty color <> Pretty.viaShow label
-
 
 type Color
   = White
@@ -127,16 +106,6 @@ type Color
   | Green
   | Blue
   
-  
-  
-
-instance Pretty Color where
-  pretty White  = "W"
-  pretty Yellow = "Y"
-  pretty Black  = "B"
-  pretty Red    = "R"
-  pretty Green  = "G"
-  pretty Blue   = "U"
 
 
 --  Basic operations
@@ -468,6 +437,8 @@ isFinished expectedCount (head :| rest) = go rest head head
         Equal   -> True
         _       -> False
 
+-}
+  {-
     go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
     go [] _   _   = True
     go (x:xs) min max
@@ -479,3 +450,4 @@ isFinished expectedCount (head :| rest) = go rest head head
       -- ^ x is between the min & max
       | otherwise = False
       -- ^ x is outside the band of acceptability
+      -}

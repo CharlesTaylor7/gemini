@@ -1,4 +1,7 @@
 module Gemini.Types
+  where
+
+    {-
   ( -- ui types
     Store(..), initialStore
   --, Action
@@ -11,7 +14,7 @@ import           Prelude
 -- import           Data.Angle       as Angle
 -- import           Data.Cyclic      as Cyclic
 import           Data.Finitary    as Finitary
-import           Data.Gemini      as Gemini
+-- import           Data.Gemini      as Gemini
 -- import           Data.Permutation as Permutation
 -- import           Data.Point       as Point
 import           Data.Timestamp   as Timestamp
@@ -99,8 +102,8 @@ type Store = Store
 -- | Initial state of the app
 initialStore :: Env -> Store
 initialStore env = 
-  { gemini: Gemini.initialGemini
-  , history: Seq.Empty
+  { history: Seq.Empty
+  -- , gemini: Gemini.initialGemini
   , buffered: Seq.Empty
   , recorded: Seq.Empty
   , moves: Seq.Empty
@@ -122,3 +125,4 @@ initialStore env =
   , stats: Nothing
   , errors: []
   }
+-}
