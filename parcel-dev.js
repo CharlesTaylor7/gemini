@@ -1,4 +1,4 @@
-import { mainDev } from '../output/Main/index.js';
+import { mainDev } from './output/Main/index.js';
 
 let cancellationCallback;
 function main() {
