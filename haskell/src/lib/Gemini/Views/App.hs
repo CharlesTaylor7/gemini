@@ -148,12 +148,11 @@ header store =
       if store ^. #env % #deployment % to (== Prod)
       then []
       else
-        [ --confettiButton & option #confetti
-        , checkBox "Highlight pairs" & option #highlightPairs
+        [ checkBox "Highlight pairs" & option #highlightPairs
         ]
     , buttonGroup "actions"
       [ scrambleButton
-      --, (store ^. #options % #mobile % to not) `orEmpty` recordButton store
+      , (store ^. #options % #mobile % to not) `orEmpty` recordButton store
       , nextBotMoveButton store
       , undoButton store
       , Html.text "ticks per"
