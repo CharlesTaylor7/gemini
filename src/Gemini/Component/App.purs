@@ -20,6 +20,7 @@ import Deku.Hooks (useState)
 import Deku.Extra (className)
 
 import Gemini.Env (Env)
+import Gemini.Component.Puzzle as Puzzle
 
 
 component :: Nut
@@ -37,7 +38,7 @@ component = Deku.do
     [ D.div
         [ klass_ "main-panel"]
         [ header 
-        --, geminiView 
+        , Puzzle.component
         , footer 
         ]
     , D.div [ klass_ "right-panel"]
