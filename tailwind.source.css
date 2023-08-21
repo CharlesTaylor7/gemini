@@ -1,5 +1,4 @@
 @tailwind base;
-@tailwind components;
 @tailwind utilities;
 
 /* defaults */
@@ -27,6 +26,7 @@
 
 html {
     height: 100%;
+    font-family: Times, serif;
 }
 
 body {
@@ -425,3 +425,4 @@ button {
 .disk.blue {
     background-color: var(--disk-blue);
 }
+

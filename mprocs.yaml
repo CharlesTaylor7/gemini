@@ -11,4 +11,3 @@ procs:
   Legacy Haskell App:
     cwd: haskell/
     shell: ./scripts/run-dev.sh
-
