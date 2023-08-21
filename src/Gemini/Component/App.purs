@@ -57,6 +57,15 @@ header =
       , checkBox "Keyboard controls?"
       , checkBox "Bot controls?"
       ]
+    , D.div
+      [ klass_ "button-group actions" ]
+      [ D.button
+        [ klass_ "action-button" ]
+        [ text_ "Scramble" ]
+      , D.button
+        [ klass_ "action-button" ]
+        [ text_ "Undo" ]
+      ] 
     ]
   ]
 
