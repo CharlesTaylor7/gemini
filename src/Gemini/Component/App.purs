@@ -55,7 +55,6 @@ header =
       [ klass_ "button-group options"]
       [ checkBox "Labels"
       , checkBox "Keyboard controls?"
-      , checkBox "Bot controls?"
       ]
     , D.div
       [ klass_ "button-group actions" ]
