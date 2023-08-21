@@ -14,7 +14,7 @@ module Data.Gemini
   )
   where
 
-import           Relude                 hiding (cycle, get)
+import           Prelude
 
 import           Optics
 import           Optics.State.Operators
@@ -23,25 +23,18 @@ import           Data.Cyclic
 import           Data.Finitary
 import           Data.Permutation
 
-import qualified Data.IntMap            as Map
-import qualified Data.List              as List
-import qualified Data.List.NonEmpty     as NE
-import qualified Data.Sequence          as Seq
-import qualified Prettyprinter          as Pretty
+import Data.IntMap            as Map
+import Data.List              as List
+import Data.List.NonEmpty     as NE
+import Data.Sequence          as Seq
 
-import           Data.Aeson             (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
-import           Prettyprinter          (Pretty (..))
-import           System.Random.Stateful (Uniform (..))
-
+type IntMap = Map.Map Int
 
 -- | An opaque wrapper.
 -- Use `geminiFromList` or `initialGemini` to initialize.
 -- Use `applyToGemini` to rotate / permute the puzzle.
 -- Use `geminiIx` to read / write at specific locations
 newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData)
 
 instance Each Location Gemini Gemini Disk Disk where
   each = reindexed indexToLocation $ #geminiDiskMap % each
@@ -52,14 +45,11 @@ type DiskIndex = Cyclic 18
 -- | Location on the gemini puzzle, where a disk can slide
 -- the 4 locations where a pair of rings intersect each has two possible representations as a Location type
 -- We normalize by prefering the leftmost ring. See `canonical`.
-data Location = Location
-  { ring     :: !Ring
-  , position :: !DiskIndex
+type Location = 
+  { ring     :: Ring
+  , position :: DiskIndex
   -- ^ Positions start at the top of the ring, run clockwise from there
   }
-  deriving stock (Eq, Show, Ord, Generic)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData)
 
 instance Finitary Location where
   inhabitants = Location <$> inhabitants <*> inhabitants
@@ -83,13 +73,10 @@ pattern R n = Location RightRing n
 -- L is a clockwise rotation of the left ring, L' is anticlockwise
 -- C is for the central ring
 -- R is for the right ring
-data Rotation = Rotation
-  { ring      :: !Ring
-  , direction :: !RotationDirection
+type Rotation = Rotation
+  { ring      :: Ring
+  , direction :: RotationDirection
   }
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData, Uniform)
 
 instance Finitary Rotation where
   inhabitants = Rotation <$> inhabitants <*> inhabitants
@@ -97,21 +84,21 @@ instance Finitary Rotation where
 instance Pretty Rotation where
   pretty Rotation { ring, direction } = pretty ring <> if direction == Clockwise then "" else "'"
 
-data RotationDirection
+type RotationDirection
   = Clockwise
   | AntiClockwise
-  deriving stock (Eq, Show, Generic, Bounded, Enum)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData, Uniform, Finitary)
+  
+  
+  
 
 
-data Ring
+type Ring
   = LeftRing
   | CenterRing
   | RightRing
-  deriving stock (Eq, Show, Generic, Ord, Bounded, Enum)
-  deriving anyclass (FromJSON, ToJSON, FromJSONKey, ToJSONKey)
-  deriving anyclass (NFData, Uniform, Finitary)
+  
+  
+  
 
 instance Pretty Ring where
   pretty LeftRing   = "L"
@@ -119,29 +106,29 @@ instance Pretty Ring where
   pretty RightRing  = "R"
 
 
-data Disk = Disk
-  { color :: !Color
-  , label :: !Int
+type Disk = Disk
+  { color :: Color
+  , label :: Int
   }
-  deriving stock (Eq, Show, Generic, Ord)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData)
+  
+  
+  
 
 instance Pretty Disk where
   pretty Disk { color, label } =
     pretty color <> Pretty.viaShow label
 
 
-data Color
+type Color
   = White
   | Yellow
   | Black
   | Red
   | Green
   | Blue
-  deriving stock (Eq, Show, Generic, Ord, Bounded, Enum)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData, Finitary)
+  
+  
+  
 
 instance Pretty Color where
   pretty White  = "W"
@@ -179,13 +166,13 @@ instance ToPermutation Rotation where
         AntiClockwise -> reverse inhabitants
 
 
-data Motion = Motion
-  { amount   :: !(Cyclic 18)
-  , rotation :: !Rotation
+type Motion = Motion
+  { amount   :: Cyclic 18
+  , rotation :: Rotation
   }
-  deriving stock (Eq, Generic, Show)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData)
+  
+  
+  
 
 instance ToPermutation Motion where
   toPerm Motion { amount = Cyclic amount, rotation } = (`pow` amount) $ toPerm rotation
@@ -273,10 +260,10 @@ onRing ring location = candidates
     candidates = location : toList (sibling location)
 
 
-data Choice a = Obvious a | Ambiguous a a
-  deriving stock (Eq, Generic, Show, Functor)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData)
+type Choice a = Obvious a | Ambiguous a a
+  
+  
+  
 
 instance Pretty a => Pretty (Choice a) where
   pretty = Pretty.viaShow . fmap pretty
@@ -284,9 +271,9 @@ instance Pretty a => Pretty (Choice a) where
 data Chosen
   = ChoseLeft
   | ChoseRight
-  deriving stock (Eq, Generic, Show)
-  deriving anyclass (FromJSON, ToJSON)
-  deriving anyclass (NFData)
+  
+  
+  
 
 dragRing :: Location -> Choice Location
 dragRing loc1 =
