@@ -15,17 +15,15 @@ import Deku.Pursx (pursx, (~~))
 import Deku.Attributes as Attr
 import Deku.Attribute (xdata)
 import Deku.Hooks (useState)
-import Deku.Extra (className)
 
 
 mainDev :: Effect (Effect Unit)
-mainDev = do
-  log $ className { apple: "334", banana: "32" }
-  runInBody' app
+mainDev = runInBody' app
 
 
 main :: Effect Unit
 main = runInBody app
+
 
 app :: Nut
 app = Deku.do
@@ -33,7 +31,6 @@ app = Deku.do
   H.button
     [ Event.click $ counter <#> add 1 >>> setCounter
     , Attr.klass_ "bg-blue-200 p-2 border rounded-lg"
-    , Attr.klass_ "m-2"
     , pure (xdata "testid" "my-testid")
     ]
     [ text (show <$> counter)
