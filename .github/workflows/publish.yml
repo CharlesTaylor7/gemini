@@ -4,9 +4,9 @@ on:
     branches:
       - main
     paths:
-      - .github/**
+      - .github/workflows/publish.yml
       - src/**
-      - public/prod.html
+      - static/**
 
 jobs:
   deploy:
