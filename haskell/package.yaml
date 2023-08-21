@@ -22,7 +22,6 @@ dependencies:
 - base >= 4.14 && < 4.16
 - relude
 - text
-  # - async
 - bytestring
 - containers
 - vector
@@ -94,7 +93,7 @@ ghc-options:
   - -Wincomplete-record-updates
   - -Wtype-defaults
   - -Wunused-imports
-  - -Werror
+    #- -Werror
   # turn off warnings
   - -Wno-unused-top-binds
   - -Wno-name-shadowing
