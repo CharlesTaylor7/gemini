@@ -1,76 +1,75 @@
-module Gemini.Views.App
+module Gemini.Component.App
   ( component
   ) where
 
-component :: Int
-component = 2
+import Prelude
+import Data.Tuple.Nested ((/\))
+import Effect (Effect)
+import Effect.Console (log)
 
-{-
--- | Components
-rootView :: MonadJSM m => Store -> Html m Store
-rootView store =
-  Html.div
-    [ Html.class'
-      [ ("gemini-app" :: Text, True)
-      , ("dragging", False)
+import Deku.Control (text)
+import Deku.Listeners as Event
+import Deku.Core (Nut)
+import Deku.Do as Deku
+import Deku.DOM as H
+import Deku.Pursx (pursx, (~~))
+import Deku.Attributes as Attr
+import Deku.Attribute (xdata, (!:=))
+import Deku.Hooks (useState)
+import Deku.Extra (className)
+
+
+component :: Nut
+component = Deku.do
+  H.div
+    [ className 
+      [ "gemini-app" /\ pure true
+      , "dragging" /\ pure false -- isn't (#drag % _Nothing) store
+      , "justify-between" /\ pure false 
+      , "justify-center" /\ pure true 
       ]
-    , Html.styleProp
-      [ ("justify-content"
-        , if store ^. #options % #recording || isn't (#moves % _Empty) store
-          then "space-between"
-          else "center"
-        )
-      ]
-    -- autofocus so that keyboard events are active on page load
-    , Html.autofocus True
-    , Html.tabIndex 0
-    , keyboardMotions
-    -- drag update
-    , ("mousemove", onDragUpdate)
-    , ("touchmove", onDragUpdate)
-    -- drag end
-    , ("mouseup", onDragEnd)
-    , ("mouseleave", onDragEnd)
-    , ("touchend", onDragEnd)
-    , ("touchcancel", onDragEnd)
+    --, H.Autofocus !:= true
+    --, H.Tabindex !:= 0
     ]
+    []
+{-
     [ confettiView store
-    , Html.div
-        [ Html.className "main-panel"]
+    , H.div
+        [ H.className "main-panel"]
         [ header store
         , geminiView store
         , debugView store
         , footer store
         ]
-    , Html.div [ Html.className "right-panel"]
+    , H.div [ className "right-panel"]
       [ recordedMovesPanel store ]
     ]
 
 
-confettiView :: MonadJSM m => Store -> Html m Store
+confettiView :: MonadJSM m => Store -> H m Store
 confettiView store =
-  Html.div
-    [ Html.class'
+  H.div
+    [ H.class'
       [ ("confetti" :: Text, True)
       , ("fade-in",  store ^. confetti == FadeIn)
       , ("fade-out", store ^. confetti == FadeOut)
       ]
     ]
-    [ Html.div [ Html.className "stats-box" ]
-      [ Html.div [ Html.className "stats-header" ]
-        [ Html.text "🎉 Solved!!! 🎉" ]
-      , Html.div [ Html.className "stats" ]
-        [ Html.p_
-          [ Html.text $
+    [ H.div [ className "stats-box" ]
+      [ H.div [ className "stats-header" ]
+        [ H.text "🎉 Solved!!! 🎉" ]
+      , H.div [ className "stats" ]
+        [ H.p_
+          [ H.text $
               "Solved in "
             <> elapsed
             <> " with "
             <> (store ^. #history % to length % to show)
             <> " motions"
           ]
-        , Html.button
-          [ Html.className "action-button"
-          , Html.onClickC $
+        , H.button
+          [ H.className "action-button"
+          , H.onClickC $
             Continuation.pur (confetti .~ FadeOut)
             `Continuation.before`
             Continuation.merge
@@ -81,7 +80,7 @@ confettiView store =
                   (#stats .~ Nothing)
               )
           ]
-          [ Html.text "Continue" ]
+          [ H.text "Continue" ]
         ]
       ]
     ]
@@ -97,11 +96,11 @@ confettiView store =
       pure $ prettyCompactText $ Timestamp (solvedAt - scrambledAt)
 
 
-debugView :: forall m a. Store -> Html m a
+debugView :: forall m a. Store -> H m a
 debugView store =
   (store ^. #options % #debug) `orEmpty`
-  ( Html.div
-    [ Html.styleProp
+  ( H.div
+    [ H.styleProp
         [ ("padding", "12px")
         , ("display", "flex")
         , ("flex-direction", "column")
@@ -114,14 +113,14 @@ debugView store =
     ]
   )
   where
-    paragraph :: forall m a. Text -> Html m a
-    paragraph = Html.p_ . pure . Html.text
+    paragraph :: forall m a. Text -> H m a
+    paragraph = H.p_ . pure . Html.text
 
 
-header :: forall m. MonadJSM m => Store -> Html m Store
+header :: forall m. MonadJSM m => Store -> H m Store
 header store =
-  Html.div [ Html.className "header" ]
-  [ Html.div [ Html.className "control-panel" ]
+  H.div [ className "header" ]
+  [ H.div [ className "control-panel" ]
     [ htmlWhen (store ^. #options % #mobile % to not) $
       buttonGroup "options" $
       [ checkBox "Labels" & option #showLabels
@@ -141,22 +140,22 @@ header store =
       --, (store ^. #options % #mobile % to not) `orEmpty` recordButton store
       , nextBotMoveButton store
       , undoButton store
-      , Html.text "ticks per"
+      , H.text "ticks per"
       , numberInput & zoomComponent (#animation % #ticksPerRotation) store
-      , Html.text "refresh rate"
+      , H.text "refresh rate"
       , refreshRateInput $ store ^. #animation % #refreshRate
       ]
     ]
   ]
   where
-    option :: Optic' A_Lens ix Options s -> (s -> Html m s) -> Html m Store
+    option :: Optic' A_Lens ix Options s -> (s -> H m s) -> Html m Store
     option optic = zoomComponent (#options % optic) store
 
 
-footer :: Store -> Html m Store
+footer :: Store -> H m Store
 footer store =
-  Html.div [ Html.className "footer" ]
-  [ Html.div [ Html.className "links" ]
+  H.div [ className "footer" ]
+  [ H.div [ className "links" ]
     [ hyperlink
       "public/icons/GitHub.png"
       ( "https://github.com/CharlesTaylor7/gemini/tree/"
@@ -166,77 +165,77 @@ footer store =
       "View Source"
     ]
   , htmlWhen (store ^. #options % #showKeyboardShortcuts) $
-      Html.div [ Html.className "explain-controls" ]
-      [ Html.div_ $ pure $ Html.text "Q: Rotate left disk counter clockwise"
-      , Html.div_ $ pure $ Html.text "W: Rotate left disk clockwise"
-      , Html.div_ $ pure $ Html.text "T: Rotate center disk counter clockwise"
-      , Html.div_ $ pure $ Html.text "Y: Rotate center disk clockwise"
-      , Html.div_ $ pure $ Html.text "O: Rotate right disk counter clockwise"
-      , Html.div_ $ pure $ Html.text "P: Rotate right disk clockwise"
+      H.div [ className "explain-controls" ]
+      [ H.div_ $ pure $ Html.text "Q: Rotate left disk counter clockwise"
+      , H.div_ $ pure $ Html.text "W: Rotate left disk clockwise"
+      , H.div_ $ pure $ Html.text "T: Rotate center disk counter clockwise"
+      , H.div_ $ pure $ Html.text "Y: Rotate center disk clockwise"
+      , H.div_ $ pure $ Html.text "O: Rotate right disk counter clockwise"
+      , H.div_ $ pure $ Html.text "P: Rotate right disk clockwise"
       ]
   ]
   where
-    hyperlink :: Text -> Text -> Text -> Html m a
+    hyperlink :: Text -> Text -> Text -> H m a
     hyperlink iconSrc linkUrl display =
-      Html.a
-        [ Html.className "link"
-        , Html.href linkUrl
-        , Html.target "_blank"
-        , Html.rel "noopener noreferrer"
+      H.a
+        [ H.className "link"
+        , H.href linkUrl
+        , H.target "_blank"
+        , H.rel "noopener noreferrer"
         ]
-        [ Html.img [ Html.src iconSrc ] []
-        , Html.text display
+        [ H.img [ Html.src iconSrc ] []
+        , H.text display
         ]
 
 
-buttonGroup :: Text -> [Html m a] -> Html m a
-buttonGroup className = Html.div [ Html.class' ["button-group", className] ]
+buttonGroup :: Text -> [H m a] -> Html m a
+buttonGroup className = H.div [ Html.class' ["button-group", className] ]
 
 
-checkBox :: Text -> Bool -> Html m Bool
+checkBox :: Text -> Bool -> H m Bool
 checkBox label checked =
-  Html.label
-    [ Html.className "checkbox" ]
-    [ Html.span
-        [ Html.className "checkbox-label" ]
-        [ Html.text label ]
-    , Html.input'
-        [ Html.type' "checkbox"
-        , Html.checked checked
-        , Html.onCheck const
+  H.label
+    [ H.className "checkbox" ]
+    [ H.span
+        [ H.className "checkbox-label" ]
+        [ H.text label ]
+    , H.input'
+        [ H.type' "checkbox"
+        , H.checked checked
+        , H.onCheck const
         ]
     ]
 
 
-actionButton :: [(Text, Prop m a)] -> [Html m a] -> Html m a
-actionButton props = Html.button $ Html.className "action-button" : props
+actionButton :: [(Text, Prop m a)] -> [H m a] -> Html m a
+actionButton props = H.button $ className "action-button" : props
 
 
-recordButton :: Store -> Html m Store
+recordButton :: Store -> H m Store
 recordButton store =
   if store ^. #options % #recording
   then stopRecordingButton
   else startRecordingButton
   where
-    startRecordingButton :: Html m Store
+    startRecordingButton :: H m Store
     startRecordingButton =
       actionButton
-        [ Html.onClick $ #options % #recording .~ True ]
-        [ Html.text $ "Start Recording" ]
+        [ H.onClick $ #options % #recording .~ True ]
+        [ H.text $ "Start Recording" ]
 
 
-    stopRecordingButton :: Html m Store
+    stopRecordingButton :: H m Store
     stopRecordingButton =
       actionButton
-        [ Html.onClick $ stopRecording ]
-        [ Html.text $ "Stop Recording" ]
+        [ H.onClick $ stopRecording ]
+        [ H.text $ "Stop Recording" ]
 
 
 
-undoButton :: Monad m => Store -> Html m Store
+undoButton :: Monad m => Store -> H m Store
 undoButton _store =
   actionButton
-    [ Html.onClickC $ do
+    [ H.onClickC $ do
         Actions.run $ do
           frame <- use $ #animation % #frame
           when (is #_Nothing frame) $ do
@@ -247,29 +246,29 @@ undoButton _store =
                 (#history .= rest)
                 (#gemini %= applyToGemini (h & #amount %~ invert))
     ]
-    [ Html.text "Undo" ]
+    [ H.text "Undo" ]
 
 
-numberInput :: Int -> Html m Int
+numberInput :: Int -> H m Int
 numberInput initial =
-  Html.input'
-    [ Html.className "number-input"
-    , Html.type' "number"
-    , Html.onInput \text old ->
+  H.input'
+    [ H.className "number-input"
+    , H.type' "number"
+    , H.onInput \text old ->
         case Read.decimal text of
           Right (new, _) -> new
           Left _         -> old
-    , Html.value (show initial)
+    , H.value (show initial)
     ]
 
 
-refreshRateInput :: MonadJSM m => Int -> Html m Store
+refreshRateInput :: MonadJSM m => Int -> H m Store
 refreshRateInput initial =
-  Html.input'
-    [ Html.className "number-input"
-    , Html.type' "number"
-    , Html.value (show initial)
-    , Html.onInputC \text ->
+  H.input'
+    [ H.className "number-input"
+    , H.type' "number"
+    , H.value (show initial)
+    , H.onInputC \text ->
         Actions.run $
           case Read.decimal text of
             Right (num, _) -> Actions.updateRefreshRate num
@@ -277,21 +276,21 @@ refreshRateInput initial =
     ]
 
 
-nextBotMoveButton :: MonadJSM m => Store -> Html m Store
+nextBotMoveButton :: MonadJSM m => Store -> H m Store
 nextBotMoveButton store =
   actionButton
-    [ Html.onClickC $ do
+    [ H.onClickC $ do
         Actions.run $ do
           Actions.updateRefreshRate $ store ^. #animation % #refreshRate
           let move = Solve.nextMove $ store ^. #gemini
           Actions.applyBotMove move
     ]
-    [ Html.text "Next" ]
+    [ H.text "Next" ]
 
-scrambleButton :: forall m. MonadJSM m => Html m Store
+scrambleButton :: forall m. MonadJSM m => H m Store
 scrambleButton =
   actionButton
-    [ Html.onClickM $ do
+    [ H.onClickM $ do
         rotations :: [Rotation] <- replicateM 1000 $ uniformM globalStdGen
         let scramble gemini = foldl' (flip applyToGemini) gemini rotations
         scrambledAt <- dateNow
@@ -301,6 +300,6 @@ scrambleButton =
           (#gemini   %~ scramble) .
           (#stats    ?~ Stats { scrambledAt, solvedAt = Nothing })
     ]
-    [ Html.text "Scramble" ]
+    [ H.text "Scramble" ]
 
 -}
