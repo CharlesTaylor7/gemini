@@ -15,12 +15,12 @@ import Deku.Pursx (pursx, (~~))
 import Deku.Attributes as Attr
 import Deku.Attribute (xdata)
 import Deku.Hooks (useState)
-import Deku.Extra (keys)
+import Deku.Extra (className)
 
 
 mainDev :: Effect (Effect Unit)
 mainDev = do
-  log $ keys { apple: "334", banana: "32" }
+  log $ className { apple: "334", banana: "32" }
   runInBody' app
 
 
