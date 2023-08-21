@@ -78,7 +78,6 @@ rootView store =
         [ Html.className "main-panel"]
         [ header store
         , geminiView store
-        , debugView store
         , footer store
         ]
     , Html.div [ Html.className "right-panel"]
@@ -136,27 +135,6 @@ confettiView store =
       pure $ prettyCompactText $ Timestamp (solvedAt - scrambledAt)
 
 
-debugView :: forall m a. Store -> Html m a
-debugView store =
-  (store ^. #options % #debug) `orEmpty`
-  ( Html.div
-    [ Html.styleProp
-        [ ("padding", "12px")
-        , ("display", "flex")
-        , ("flex-direction", "column")
-        ]
-    ]
-    [ paragraph $ prettyText $ store ^. #errors
-    , paragraph $ show $ store ^. #gemini % to toSolveStage
-    , paragraph $ prettyText $ store ^.. #buffered % each
-    -- paragraph $ prettyCompactText $ store ^.. #gemini % to solutionPairs % folded
-    ]
-  )
-  where
-    paragraph :: forall m a. Text -> Html m a
-    paragraph = Html.p_ . pure . Html.text
-
-
 header :: forall m. MonadJSM m => Store -> Html m Store
 header store =
   Html.div [ Html.className "header" ]
@@ -165,14 +143,12 @@ header store =
       buttonGroup "options" $
       [ checkBox "Labels" & option #showLabels
       , checkBox "Keyboard controls?" & option #showKeyboardShortcuts
-      , checkBox "Bot controls?" & option #showBotControls
       ]
       <>
       if store ^. #env % #deployment % to (== Prod)
       then []
       else
         [ --confettiButton & option #confetti
-          checkBox "Debug" & option #debug
         , checkBox "Highlight pairs" & option #highlightPairs
         ]
     , buttonGroup "actions"
