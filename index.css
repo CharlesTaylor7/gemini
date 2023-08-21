@@ -916,7 +916,7 @@ button {
   width: calc(3 * var(--ring-diameter));
   flex-shrink: 0;
   margin: 0 -157px;
-  background: url(./textures/wood.jpg)
+  background: url(./wood.jpg)
 }
 
 .ring {
