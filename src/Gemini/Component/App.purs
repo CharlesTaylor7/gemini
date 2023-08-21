@@ -66,7 +66,7 @@ footer =
   D.div [ klass_ "footer" ]
   [ D.div [ klass_ "links" ]
     [ hyperlink
-      "./icons/Github.png"
+      "./github.png"
       "https://github.com/CharlesTaylor7/gemini"
       "View Source"
     ]
