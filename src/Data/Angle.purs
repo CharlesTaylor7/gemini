@@ -1,68 +1,87 @@
 module Data.Angle
-  ( AngleUnit(..)
-  , Angle, Radians, Degrees, Turns
+  ( Angle, AngleUnit
   , sine, cosine, arctan
+  , (:*), construct
+  , as
   )
   where
 
-import           Relude
+import Prelude
 
-import           Data.Group
+import Data.Group (class Group)
+import Data.Number as Math
 
+{-
+foreign import data Radians :: Type
+foreign import data Degrees :: Type
+foreign import data Turns :: Type
 
-data AngleUnit
-  = Radian
-  | Degree
-  | Turn
+class AngleUnit (unit :: Type) where
+  radiansToUnit :: Number
+  unitToRadians :: Number
+-}
+
+data AngleUnit 
+  = Degrees
+  | Radians
+  | Turns
   -- ^ How many turns of a circle? e.g. 1 turn is equal to 2 pi radians and 360 degrees.
 
 
--- | Opaque data type. Angles are internally stored as a 'Double' in radians.
+construct :: Number -> AngleUnit -> Angle
+construct x =
+  case _ of
+    Radians -> Angle x
+    Degrees -> Angle $ degreesToRadians x
+    Turns -> Angle $ turnsToRadians x
+
+as :: Angle -> AngleUnit -> Number
+as (Angle radians) =
+  case _ of
+    Radians -> radians
+    Degrees -> radiansToDegrees radians
+    Turns -> radiansToTurns radians
+
+
+infixr 0 construct as :*
+--infixr 0 deconstruct as 
+
+-- | Opaque data type. Angles are internally stored as a 'Number' in radians.
 -- Construct or match on the amount of the angle by using one of these bi-directional pattern synonyms:
 -- `Radians`, `Degrees`, `Turns`
-newtype Angle = Angle Double
-  deriving stock (Eq, Ord, Show, Generic)
-  deriving anyclass (NFData)
-  deriving (Semigroup, Monoid, Group) via (Sum Double)
+newtype Angle = Angle Number
+instance Semigroup Angle where
+  append (Angle a) (Angle b) = Angle (a + b)
+
+instance Monoid Angle where
+  mempty = Angle 0.0
+
+instance Group Angle where
+  invert (Angle th) = Angle (-th)
 
 
--- | Construct or match on the radians of an angle
-pattern Radians :: Double -> Angle
-pattern Radians radians = Angle radians
-{-# COMPLETE Radians #-}
+-- conversions for degrees
+radiansToDegrees :: Number -> Number
+radiansToDegrees radians = radians * 180.0 / Math.pi
 
--- | Construct or match on the degrees of an angle
-pattern Degrees :: Double -> Angle
-pattern Degrees degrees <- Angle (radiansToDegrees -> degrees) where
-  Degrees degrees = Radians $ degreesToRadians degrees
-{-# COMPLETE Degrees #-}
+degreesToRadians :: Number -> Number
+degreesToRadians degrees = degrees * Math.pi / 180.0
 
-radiansToDegrees :: Double -> Double
-radiansToDegrees radians = radians * 180 / pi
+-- conversions for turns
+radiansToTurns :: Number -> Number
+radiansToTurns radians = radians / (2.0 * Math.pi)
 
-degreesToRadians :: Double -> Double
-degreesToRadians degrees = degrees * pi / 180
-
--- | Construct or match on the turns of an angle
-pattern Turns :: Double -> Angle
-pattern Turns turns <- Angle (radiansToTurns -> turns) where
-  Turns turns = Radians $ turnsToRadians turns
-{-# COMPLETE Turns #-}
-
-radiansToTurns :: Double -> Double
-radiansToTurns radians = radians / (2 * pi)
-
-turnsToRadians :: Double -> Double
-turnsToRadians turns   =  turns * 2 * pi
+turnsToRadians :: Number -> Number
+turnsToRadians turns = turns * 2.0 * Math.pi
 
 
-sine :: Angle -> Double
-sine (Radians radians) = sin radians
+sine :: Angle -> Number
+sine (Angle radians) = Math.sin radians
 
 
-cosine :: Angle -> Double
-cosine (Radians radians) = cos radians
+cosine :: Angle -> Number
+cosine (Angle radians) = Math.cos radians
 
 
-arctan :: Double -> Double -> Angle
-arctan y x = Radians $ atan2 y x
+arctan :: Number -> Number -> Angle
+arctan y x = Angle (Math.atan2 y x)

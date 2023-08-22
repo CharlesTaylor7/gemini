@@ -23,3 +23,6 @@ pow x n = case compare n 0 of
       | n `mod` 2 == 0 = g (x <> x) (n `div` 2) c
       | n == 1 = x <> c
       | otherwise = g (x <> x) (n `div` 2) (x <> c)
+
+
+

@@ -78,6 +78,7 @@ fromCycles (Cycles cycles) =
       List.concatMap pairs $ 
         List.fromFoldable cycles
 
+
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
 pairs :: forall f a. Foldable f => f a -> List (a /\ a)
 pairs x =
@@ -85,8 +86,8 @@ pairs x =
     Nothing      -> Nil
     Just list ->
       let { head: a, tail: as } = NonEmptyList.uncons list
-          go (Cons x (Cons y rest)) = x /\ y : go (y : rest)
-          go (Cons x Nil)        = x /\ a : Nil
+          go (Cons x (Cons y rest)) = (x /\ y) : go (y : rest)
+          go (Cons x Nil)        = (x /\ a) : Nil
           go _          = Nil
       in go (a:as)
 
