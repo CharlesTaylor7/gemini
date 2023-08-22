@@ -12,6 +12,7 @@
   , "arrays"
   , "ordered-collections"
   , "safe-coerce"
+  , "lists"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

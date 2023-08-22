@@ -19,6 +19,6 @@ import Type.Proxy (Proxy(..))
 knownInt :: forall n. Nat n => Proxy n -> Int
 knownInt = toInt'
 
-natsUnder :: forall bound. Nat bound => Array Int
-natsUnder = enumFromTo 0 $ n - 1
-  where n = knownInt (Proxy :: _ bound)
+natsUnder :: forall bound. Nat bound => Proxy n -> Array Int
+natsUnder proxy = enumFromTo 0 $ n - 1
+  where n = knownInt proxy
