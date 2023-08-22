@@ -11,15 +11,6 @@ import Prelude
 import Data.Group (class Group)
 import Data.Number as Math
 
-{-
-foreign import data Radians :: Type
-foreign import data Degrees :: Type
-foreign import data Turns :: Type
-
-class AngleUnit (unit :: Type) where
-  radiansToUnit :: Number
-  unitToRadians :: Number
--}
 
 data AngleUnit 
   = Degrees

@@ -1,48 +1,44 @@
 module Data.Gemini
-  where
-{-
-  ( Gemini, applyToGemini, isSolved, geminiIx, initialGemini, solvedColors
+  ( Gemini, applyToGemini, geminiLookup, initialGemini
+  -- isSolved, solvedColors
   , disksOf
   , disksFrom
-  , L, C, R
   , l, c, r
   , DiskIndex
   , Location(..), indexToLocation, sibling, ambiguousLocations, canonical
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   , Motion(..), normalize
   , GeminiPermutation
-  , ToPermutation(..)
+  , class ToPermutation
   , Choice(..), dragRing, Chosen(..)
   )
   where
 
-import           Prelude
+import Prelude
 
-import           Optics
-import           Optics.State.Operators
-
-import           Data.Cyclic
-import           Data.Finitary
-import           Data.Permutation
-
-import Data.IntMap            as Map
-import Data.List              as List
-import Data.List.NonEmpty     as NE
-import Data.Sequence          as Seq
-
-type IntMap = Map.Map Int
+import Data.Cyclic
+import Data.Finitary
+import Data.Permutation
+import Data.Maybe (Maybe(..))
+import Data.Foldable (class Foldable)
+import Data.Array as Array
+import Data.Map (Map)
+import Data.Map as Map
+import Data.Maybe (fromJust)
+import Data.List as List
+import Data.List.NonEmpty as NE
+import Data.Nat
+import Data.Tuple.Nested (type (/\), (/\))
+import Partial.Unsafe (unsafePartial)
 
 -- | An opaque wrapper.
 -- Use `geminiFromList` or `initialGemini` to initialize.
 -- Use `applyToGemini` to rotate / permute the puzzle.
 -- Use `geminiIx` to read / write at specific locations
-newtype Gemini = Gemini { geminiDiskMap :: IntMap Disk }
-
-instance Each Location Gemini Gemini Disk Disk where
-  each = reindexed indexToLocation $ #geminiDiskMap % each
+newtype Gemini = Gemini (Map Int Disk)
 
 
-type DiskIndex = Cyclic 18
+type DiskIndex = Cyclic D18
 
 -- | Location on the gemini puzzle, where a disk can slide
 -- the 4 locations where a pair of rings intersect each has two possible representations as a Location type
@@ -52,13 +48,13 @@ type Location =
   , position :: DiskIndex
   -- ^ Positions start at the top of the ring, run clockwise from there
   }
+location :: Ring -> DiskIndex -> Location
+location ring position = { ring, position }
+
 
 instance Finitary Location where
   inhabitants = Location <$> inhabitants <*> inhabitants
 
-instance Pretty Location where
-  pretty Location { ring, position = Cyclic n} =
-    pretty ring <> Pretty.viaShow n
 
 
 
@@ -76,18 +72,13 @@ type Rotation = Rotation
 instance Finitary Rotation where
   inhabitants = Rotation <$> inhabitants <*> inhabitants
 
-instance Pretty Rotation where
-  pretty Rotation { ring, direction } = pretty ring <> if direction == Clockwise then "" else "'"
 
-type RotationDirection
+data RotationDirection
   = Clockwise
   | AntiClockwise
   
-  
-  
 
-
-type Ring
+data Ring
   = LeftRing
   | CenterRing
   | RightRing
@@ -98,7 +89,10 @@ type Disk = Disk
   , label :: Int
   }
 
-type Color
+disk :: Ring -> DiskIndex -> Location
+disk color label = { color, label }
+
+data Color
   = White
   | Yellow
   | Black
@@ -109,7 +103,7 @@ type Color
 
 
 --  Basic operations
-type GeminiPermutation = Permutation 54
+type GeminiPermutation = Permutation D54
 
 
 -- | Typeclass for things that describe permutations of the Gemini puzzle
@@ -127,8 +121,8 @@ instance ToPermutation (Cycles Int)  where
 
 instance ToPermutation Rotation where
   toPerm Rotation { ring, direction } =
-    fromCycles . cycles . Seq.singleton . cycle $
-    flip map positions $ locationToIndex . Location ring
+    fromCycles <<< cycles <<< Array<<<singleton <<< cycle $
+    flip map positions $ locationToIndex <<< Location ring
     where
       positions = case direction of
         Clockwise     -> inhabitants
@@ -136,44 +130,39 @@ instance ToPermutation Rotation where
 
 
 type Motion = Motion
-  { amount   :: Cyclic 18
+  { amount   :: Cyclic D18
   , rotation :: Rotation
   }
   
-  
-  
 
 instance ToPermutation Motion where
-  toPerm Motion { amount = Cyclic amount, rotation } = (`pow` amount) $ toPerm rotation
-
-instance Pretty Motion where
-  pretty Motion { amount = Cyclic amount, rotation } =
-    pretty amount <> pretty rotation
-  prettyList = Pretty.sep . fmap pretty
+  toPerm Motion { amount: Cyclic amount, rotation } = 
+    ((toPerm rotation) `pow` amount)
 
 
 normalize :: Motion -> Maybe Motion
-normalize Motion { amount = 0 } = Nothing
+normalize { amount: 0 } = Nothing
 normalize motion = Just $ do
-  let sign = if motion ^. directionL == Clockwise then 1 else -1
-  let n = sign * (motion ^. #amount)
+  let sign = if motion.rotation.direction == Clockwise then 1 else -1
+  let n = sign * (motion.amount)
   if n <= 9
-  then motion & #amount .~ n & directionL .~ Clockwise
-  else motion & #amount .~ (-n) & directionL .~ AntiClockwise
-  where
-    directionL :: Lens' Motion RotationDirection
-    directionL = #rotation % #direction
+    then motion { amount = n, rotation { direction = Clockwise } }
+    else motion { amount = -n, rotation { direction = AntiClockwise } }
 
 
 -- | Motions
-l, c, r :: Cyclic 18 -> Motion
+l:: Cyclic D18 -> Motion
 l n = Motion { amount = n, rotation = Rotation { direction = Clockwise, ring = LeftRing }}
+
+c:: Cyclic D18 -> Motion
 c n = Motion { amount = n, rotation = Rotation { direction = Clockwise, ring = CenterRing }}
+  
+r :: Cyclic D18 -> Motion
 r n = Motion { amount = n, rotation = Rotation { direction = Clockwise, ring = RightRing }}
 
 
 applyToGemini :: ToPermutation a => a -> Gemini -> Gemini
-applyToGemini = permuteGemini . toPerm
+applyToGemini = permuteGemini <<< toPerm
 
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
@@ -183,16 +172,16 @@ permuteGemini p (Gemini disks) =
     for_ (domain p) $ \n -> do
       let disk = disks ^? ix n
       case disk of
-        Nothing   -> pure ()
+        Nothing   -> pure unit
         Just disk -> at (permute p n) ?= disk
 
 
-ambiguousLocations :: [(Location, Location)]
+ambiguousLocations :: Array (Location /\ Location)
 ambiguousLocations =
-  [ (Location LeftRing 2  , Location CenterRing 16)
-  , (Location LeftRing 7  , Location CenterRing 11)
-  , (Location CenterRing 2, Location RightRing  16)
-  , (Location CenterRing 7, Location RightRing  11)
+  [ (Location LeftRing 2  /\ Location CenterRing 16)
+  , (Location LeftRing 7  /\ Location CenterRing 11)
+  , (Location CenterRing 2 /\ Location RightRing  16)
+  , (Location CenterRing 7/\ Location RightRing  11)
   ]
 
 -- | if the position exists on two different rings, then prefer the left one
@@ -216,32 +205,26 @@ inverseCanonical location                = location
 -- | The other name for this location, if it has one
 sibling :: Location -> Maybe Location
 sibling l = [canonical l, inverseCanonical l]
-  & filter (/= l)
-  & preview (ix 0)
+  # filter (notEq l)
+  # preview (ix 0)
 
 
 -- | Get a location on a specific ring, if it exists on that ring
 onRing :: Ring -> Location -> Maybe Location
 onRing ring location = candidates
-  & filter (\loc -> loc ^. #ring == ring)
-  & preview (ix 0)
+  # filter (\loc -> loc.ring == ring)
+  # preview (ix 0)
   where
     candidates = location : toList (sibling location)
 
 
-type Choice a = Obvious a | Ambiguous a a
-  
-  
+data Choice a = Obvious a | Ambiguous a a
   
 
-instance Pretty a => Pretty (Choice a) where
-  pretty = Pretty.viaShow . fmap pretty
 
 data Chosen
   = ChoseLeft
   | ChoseRight
-  
-  
   
 
 dragRing :: Location -> Choice Location
@@ -255,7 +238,7 @@ dragRing loc1 =
 indexToLocation :: Int -> Location
 indexToLocation n = Location ring (Cyclic p)
   where
-    (r, p) = n `quotRem` 18
+    (r /\ p) = n `quotRem` 18
     ring = case r of
         0 -> LeftRing
         1 -> CenterRing
@@ -264,134 +247,140 @@ indexToLocation n = Location ring (Cyclic p)
 
 -- | Convert a location to its index in the gemini map
 locationToIndex :: Location -> Int
-locationToIndex = index . canonical
+locationToIndex = index <<< canonical
   where
     index Location { ring, position } = (ringIndex ring) * 18 + unCyclic position
 
     ringIndex :: Ring -> Int
-    ringIndex = \case
+    ringIndex = case _ of
       LeftRing   -> 0
       CenterRing -> 1
       RightRing  -> 2
 
 
 -- | Index into the gemini map
-geminiIx :: Location -> Lens' Gemini Disk
-geminiIx location = #geminiDiskMap % trustMe (ix (locationToIndex location))
-  where
-    trustMe :: forall s a. AffineTraversal' s a -> Lens' s a
-    trustMe t = lens (fromMaybe (error "trustMe") . preview t) (flip $ set t)
+geminiLookup :: Gemini -> Location -> Disk
+geminiLookup (Gemini diskMap) = 
+  diskMap 
+  # Map.lookup (locationToIndex location) 
+  # unsafeFromJust
+
+unsafeFromJust :: forall a. Maybe a -> a
+unsafeFromJust = unsafePartial <<< fromJust
 
 
 disksOf :: Ring -> IxFold DiskIndex Gemini Disk
 disksOf ring =
   reindexed Cyclic $
   ifolding $ \g ->
-  inhabitants <&> \cyclic -> g ^. geminiIx (Location ring cyclic)
+  inhabitants <#> \cyclic -> g ^. geminiIx (Location ring cyclic)
 
 
-disksFrom :: Ring -> [DiskIndex] -> Fold Gemini (DiskIndex, Disk)
+disksFrom :: Ring -> Array DiskIndex -> Fold Gemini (DiskIndex /\ Disk)
 disksFrom ring range =
   folding $ \g ->
-  range <&> \i -> (i, g ^. geminiIx (Location ring i))
+  range <#> \i -> (i /\ geminiLookup (Location ring i) g)
 
 
-geminiFromList :: [(Location, Disk)] -> Gemini
-geminiFromList items = Gemini $ fromList $
-  map (\(location, disk) -> (locationToIndex location, disk)) items
+unsafeGemini :: forall f. Functor f => Foldable f => f (Location /\ Disk) -> Gemini
+unsafeGemini items = Gemini $ Map.fromFoldable $
+  map (\(location /\ disk) -> (locationToIndex location /\ disk)) items
+
 
 
 initialGemini :: Gemini
-initialGemini = geminiFromList
+initialGemini = unsafeGemini
   -- red
-  [ (Location LeftRing 12, Disk Red 1)
-  , (Location LeftRing 13, Disk Red 2)
-  , (Location LeftRing 14, Disk Red 3)
-  , (Location LeftRing 15, Disk Red 4)
-  , (Location LeftRing 16, Disk Red 5)
-  , (Location LeftRing 17, Disk Red 6)
-  , (Location LeftRing 0, Disk Red 7)
-  , (Location LeftRing 1, Disk Red 8)
+  [ (location LeftRing 12 /\ disk Red 1)
+  , (location LeftRing 13 /\ disk Red 2)
+  , (location LeftRing 14 /\ disk Red 3)
+  , (location LeftRing 15 /\ disk Red 4)
+  , (location LeftRing 16 /\ disk Red 5)
+  , (location LeftRing 17 /\ disk Red 6)
+  , (location LeftRing 0 /\ disk Red 7)
+  , (location LeftRing 1 /\ disk Red 8)
   -- yellow
-  , (Location LeftRing 3, Disk Yellow 1)
-  , (Location LeftRing 4, Disk Yellow 2)
-  , (Location LeftRing 5, Disk Yellow 3)
-  , (Location LeftRing 6, Disk Yellow 4)
-  , (Location LeftRing 7, Disk Yellow 5)
-  , (Location LeftRing 8, Disk Yellow 6)
-  , (Location LeftRing 9, Disk Yellow 7)
-  , (Location LeftRing 10, Disk Yellow 8)
-  , (Location LeftRing 11, Disk Yellow 9)
+  , (location LeftRing 3 /\ disk Yellow 1)
+  , (location LeftRing 4 /\ disk Yellow 2)
+  , (location LeftRing 5 /\ disk Yellow 3)
+  , (location LeftRing 6 /\ disk Yellow 4)
+  , (location LeftRing 7 /\ disk Yellow 5)
+  , (location LeftRing 8 /\ disk Yellow 6)
+  , (location LeftRing 9 /\ disk Yellow 7)
+  , (location LeftRing 10 /\ disk Yellow 8)
+  , (location LeftRing 11 /\ disk Yellow 9)
   -- black
-  , (Location CenterRing 12, Disk Black 1)
-  , (Location CenterRing 13, Disk Black 2)
-  , (Location CenterRing 14, Disk Black 3)
-  , (Location CenterRing 15, Disk Black 4)
-  , (Location CenterRing 16, Disk Black 5)
-  , (Location CenterRing 17, Disk Black 6)
-  , (Location CenterRing 0, Disk Black 7)
-  , (Location CenterRing 1, Disk Black 8)
+  , (location CenterRing 12 /\ disk Black 1)
+  , (location CenterRing 13 /\ disk Black 2)
+  , (location CenterRing 14 /\ disk Black 3)
+  , (location CenterRing 15 /\ disk Black 4)
+  , (location CenterRing 16 /\ disk Black 5)
+  , (location CenterRing 17 /\ disk Black 6)
+  , (location CenterRing 0 /\ disk Black 7)
+  , (location CenterRing 1 /\ disk Black 8)
   -- blue
-  , (Location CenterRing 3, Disk Blue 1)
-  , (Location CenterRing 4, Disk Blue 2)
-  , (Location CenterRing 5, Disk Blue 3)
-  , (Location CenterRing 6, Disk Blue 4)
-  , (Location CenterRing 7, Disk Blue 5)
-  , (Location CenterRing 8, Disk Blue 6)
-  , (Location CenterRing 9, Disk Blue 7)
-  , (Location CenterRing 10, Disk Blue 8)
+  , (location CenterRing 3 /\ disk Blue 1)
+  , (location CenterRing 4 /\ disk Blue 2)
+  , (location CenterRing 5 /\ disk Blue 3)
+  , (location CenterRing 6 /\ disk Blue 4)
+  , (location CenterRing 7 /\ disk Blue 5)
+  , (location CenterRing 8 /\ disk Blue 6)
+  , (location CenterRing 9 /\ disk Blue 7)
+  , (location CenterRing 10 /\ disk Blue 8)
   -- green
-  , (Location RightRing 3, Disk Green 1)
-  , (Location RightRing 4, Disk Green 2)
-  , (Location RightRing 5, Disk Green 3)
-  , (Location RightRing 6, Disk Green 4)
-  , (Location RightRing 7, Disk Green 5)
-  , (Location RightRing 8, Disk Green 6)
-  , (Location RightRing 9, Disk Green 7)
-  , (Location RightRing 10, Disk Green 8)
+  , (location RightRing 3 /\ disk Green 1)
+  , (location RightRing 4 /\ disk Green 2)
+  , (location RightRing 5 /\ disk Green 3)
+  , (location RightRing 6 /\ disk Green 4)
+  , (location RightRing 7 /\ disk Green 5)
+  , (location RightRing 8 /\ disk Green 6)
+  , (location RightRing 9 /\ disk Green 7)
+  , (location RightRing 10 /\ disk Green 8)
   -- white
-  , (Location RightRing 12, Disk White 1)
-  , (Location RightRing 13, Disk White 2)
-  , (Location RightRing 14, Disk White 3)
-  , (Location RightRing 15, Disk White 4)
-  , (Location RightRing 16, Disk White 5)
-  , (Location RightRing 17, Disk White 6)
-  , (Location RightRing 0, Disk White 7)
-  , (Location RightRing 1, Disk White 8)
-  , (Location RightRing 2, Disk White 9)
+  , (location RightRing 12 /\ disk White 1)
+  , (location RightRing 13 /\ disk White 2)
+  , (location RightRing 14 /\ disk White 3)
+  , (location RightRing 15 /\ disk White 4)
+  , (location RightRing 16 /\ disk White 5)
+  , (location RightRing 17 /\ disk White 6)
+  , (location RightRing 0 /\ disk White 7)
+  , (location RightRing 1 /\ disk White 8)
+  , (location RightRing 2 /\ disk White 9)
   ]
 
-
+{-
 -- | Is the puzzle solved?
--- That is, every disk is grouped with other disks of the same color in sequence.
+-- That is, every disk is grouped with other disks of the same color in sequence<<<
 isSolved :: Gemini -> Bool
-isSolved gemini =
-  gemini ^. #geminiDiskMap
-    & Map.toList
-    & selectGroups (view $ _2 % #color)
-    & all (\(color, items) -> items <&> (view $ _1 % to indexToLocation) & isFinishedSequence color)
+isSolved (Gemini diskMap) =
+  diskMap
+    # Map.toList
+    # selectGroups (\(_ /\ disk) -> disk.color)
+    # all (\(color /\ items) -> items <#> (\(i/\_) -> indexToLocation i) # isFinishedSequence color)
 
 
-solvedColors :: Gemini -> [Color]
-solvedColors gemini =
-  gemini ^. #geminiDiskMap
-    & Map.toList
-    & selectGroups (view $ _2 % #color)
-    & filter (\(color, items) -> items <&> (view $ _1 % to indexToLocation) & isFinishedSequence color)
-    & map fst
+solvedColors :: Gemini -> Array Color
+solvedColors (Gemini diskMap) =
+  diskMap
+    # Map.toList
+    # selectGroups (\(_ /\ disk) -> disk.color)
+    # filter (\(color /\ items) -> items <#> (\(i/\_) -> indexToLocation i) # isFinishedSequence color)
+    # map fst
+
+toArray :: forall f. FoldableWithIndex f -> f ~> Array
+toArray = error ""
 
 
-
--- | Sort & group items by key projection
-selectGroups :: (Ord key) => (a -> key) -> [a] -> [(key, NonEmpty a)]
+-- | Sort # group items by key projection
+selectGroups :: forall key a. (Ord key) => (a -> key) -> Array a -> Array (key /\ NonEmpty a)
 selectGroups projection foldable =
   foldable
   -- | decorate with the key for comparison
-  & fmap (\x -> (projection x, x))
-  & List.sortBy (compare `on` fst)
-  & NE.groupBy ((==) `on` fst)
+  # fmap (\x -> (projection x /\ x))
+  # List.sortBy (compare `on` fst)
+  # NE.groupBy ((==) `on` fst)
   -- | only list the key once per group
-  & fmap (\group -> let (key, _):|_ = group in (key, fmap snd group))
+  # fmap (\group -> let (key, _):|_ = group in (key, fmap snd group))
 
 
 -- | check if a set of disk locations is a finished sequence
@@ -400,9 +389,9 @@ isFinishedSequence color ls =
   if numberOfRings > 2
   then False
   else ls
-    & fmap (onRing mostCommonRing)
-    & sequenceA
-    & maybe False (isFinished (diskCount color) . fmap (view #position))
+    # fmap (onRing mostCommonRing)
+    # sequenceA
+    # maybe False (isFinished (diskCount color) <<< fmap (_.position))
   where
     diskCount :: Color -> Int
     diskCount White  = 9
@@ -410,17 +399,17 @@ isFinishedSequence color ls =
     diskCount _      = 8
 
     mostCommonRing :: Ring
-    mostCommonRing = ringGroups & List.maximumBy (compare `on` length) & head & view #ring
+    mostCommonRing = ringGroups # List.maximumBy (compare `on` length) # head # (_.ring)
 
     ringGroups :: [NonEmpty Location]
-    ringGroups = ls & NE.groupBy ((==) `on` view #ring)
+    ringGroups = ls # NE.groupBy ((==) `on` view #ring)
 
     numberOfRings :: Int
     numberOfRings = length ringGroups
 
 
 -- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
-isFinished :: forall n. NonZero n => Int -> NonEmpty (Cyclic n) -> Bool
+isFinished :: forall n. Pos n => Int -> NonEmpty (Cyclic n) -> Bool
 isFinished expectedCount (head :| rest) = go rest head head
   where
     precedes :: Cyclic n -> Cyclic n -> Bool
@@ -437,17 +426,15 @@ isFinished expectedCount (head :| rest) = go rest head head
         Equal   -> True
         _       -> False
 
--}
-  {-
     go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
     go [] _   _   = True
     go (x:xs) min max
-      | x `precedes` min && (max - x < Cyclic expectedCount) = go xs x max
+      | x `precedes` min ## (max - x < Cyclic expectedCount) = go xs x max
       -- ^ x is the new min
-      | x `exceeds` max && (x - min < Cyclic expectedCount) = go xs min x
+      | x `exceeds` max ## (x - min < Cyclic expectedCount) = go xs min x
       -- ^ x is the new max
-      | x `precedes` max && x `exceeds` min = go xs min max
-      -- ^ x is between the min & max
+      | x `precedes` max ## x `exceeds` min = go xs min max
+      -- ^ x is between the min # max
       | otherwise = False
       -- ^ x is outside the band of acceptability
-      -}
+-}
