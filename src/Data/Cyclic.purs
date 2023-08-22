@@ -35,11 +35,9 @@ instance Pos n => Semiring (Cyclic n) where
 instance Pos n => Ring (Cyclic n) where
   sub (MkCyclic x) (MkCyclic y) = cyclic $ x - y
 
-{-
 -- | Finitary instance
 instance Pos n => Finitary (Cyclic n) where
   inhabitants = coerce $ natsUnder @n
-  -}
 
 -- How do you impose order on the elements of a cyclic group?
 data CyclicOrdering

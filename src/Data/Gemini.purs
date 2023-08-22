@@ -25,7 +25,7 @@ import Data.Cyclic
 import Data.Group (pow)
 import Data.Finitary
 import Data.Permutation
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Foldable (class Foldable, foldMap)
 import Data.Array as Array
 import Data.Map (Map)
@@ -36,6 +36,8 @@ import Data.List.NonEmpty as NE
 import Data.Nat
 import Data.Tuple.Nested (type (/\), (/\))
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
+import Type.Equality as TE
+import Safe.Coerce (coerce)
 
 -- | An opaque wrapper.
 -- Use `geminiFromList` or `initialGemini` to initialize.
@@ -54,8 +56,10 @@ newtype Location = Location
   , position :: DiskIndex
   -- ^ Positions start at the top of the ring, run clockwise from there
   }
-location :: Ring -> DiskIndex -> Location
-location ring position = Location { ring, position }
+derive instance Eq Location
+
+location :: Ring -> Int -> Location
+location ring position = Location { ring, position: cyclic position }
 
 {-
 instance Finitary Location where
@@ -75,8 +79,7 @@ newtype Rotation = Rotation
   }
 
 rotation :: Ring -> RotationDirection -> Rotation
-rotation ring direction = Rotation { ring, direction }
-
+rotation ring direction = coerce { ring, direction }
 
 {-
 instance Finitary Rotation where
@@ -92,6 +95,7 @@ data Ring
   = LeftRing
   | CenterRing
   | RightRing
+derive instance Eq Ring
   
 
 type Disk =
@@ -99,7 +103,7 @@ type Disk =
   , label :: Int
   }
 
-disk :: Ring -> DiskIndex -> Location
+disk :: Color -> Int -> Disk
 disk color label = { color, label }
 
 data Color
@@ -120,19 +124,20 @@ type GeminiPermutation = Permutation D54
 class ToPermutation a where
   toPerm :: a -> GeminiPermutation
 
-{-
 instance (Foldable f, ToPermutation a) => ToPermutation (f a) where
   toPerm = foldMap toPerm
 
 instance ToPermutation Rotation where
-  toPerm { ring, direction } =
+  toPerm (Rotation { ring, direction }) =
     fromCycles <<< cycles <<< Array.singleton <<< cycle $
-    flip map positions $ locationToIndex <<< location ring
+    flip map positions $ locationToIndex <<< Location <<< ({ ring, position: _ })
     where
+      positions :: Array (Cyclic D18)
       positions = case direction of
         Clockwise     -> inhabitants
         AntiClockwise -> Array.reverse inhabitants
 
+{-
 instance ToPermutation GeminiPermutation where
   toPerm = identity
 
@@ -141,28 +146,25 @@ instance ToPermutation (Cycles Int)  where
 -}
 
 
-type Motion =
+newtype Motion = Motion
   { amount   :: Cyclic D18
   , rotation :: Rotation
   }
   
 
-instance TypeEquals r Motion => ToPermutation r where
-  toPerm record =
-    let 
-        { amount, rotation } = from record
-    in
-      ((toPerm rotation) `pow` unCyclic amount)
-
+instance ToPermutation Motion where
+  toPerm (Motion { amount, rotation }) =
+    (toPerm rotation) `pow` unCyclic amount
 {-
 normalize :: Motion -> Maybe Motion
-normalize (Motion{ amount: 0 } = Nothing
-normalize motion = Just $ do
+normalize (Motion { amount: zero }) = Nothing
+normalize (Motion motion) = Just $ do
   let sign = if motion.rotation.direction == Clockwise then 1 else -1
   let n = sign * (motion.amount)
   if n <= 9
     then motion { amount = n, rotation { direction = Clockwise } }
     else motion { amount = -n, rotation { direction = AntiClockwise } }
+-}
 
 
 -- | Motions
@@ -181,8 +183,6 @@ type LocationPair =
   { canonical :: Location
   , alternate :: Location
   }
-locationPair :: Location -> Location -> LocationPair
-locationPair canonical alternate = { canonical, alternate }
 
 ambiguousLocations :: Array LocationPair
 ambiguousLocations =
@@ -195,8 +195,10 @@ ambiguousLocations =
 
 -- | if the position exists on two different rings, then prefer the canonical one
 canonical :: Location -> Location
-canonical location = location
-
+canonical location = fromMaybe location $
+      Array.find (\{alternate} -> alternate == location) ambiguousLocations
+      <#> _.canonical
+    
 
 -- | if the position exists on two different rings, then prefer the alternate one
 alternate :: Location -> Location
@@ -215,10 +217,7 @@ sibling l =
 
 
 
-
-
 data Choice a = Obvious a | Ambiguous a a
-  
 
 
 data Chosen
@@ -235,7 +234,7 @@ dragRing loc1 =
 
 -- | Invert a disk coordinate to its canonical location
 indexToLocation :: Int -> Location
-indexToLocation n = { ring, position: cyclic r }
+indexToLocation n = Location { ring, position: cyclic r }
   where
     (q /\ r) = n `divMod` 18
     ring = case q of
@@ -249,7 +248,8 @@ indexToLocation n = { ring, position: cyclic r }
 locationToIndex :: Location -> Int
 locationToIndex = index <<< canonical
   where
-    index { ring, position } = (ringIndex ring) * 18 + unCyclic position
+    index (Location { ring, position }) = 
+      (ringIndex ring) * 18 + unCyclic position
 
     ringIndex :: Ring -> Int
     ringIndex = case _ of
@@ -260,7 +260,7 @@ locationToIndex = index <<< canonical
 
 -- | Index into the gemini map
 geminiLookup :: Gemini -> Location -> Disk
-geminiLookup (Gemini diskMap) = 
+geminiLookup (Gemini diskMap) location = 
   diskMap 
   # Map.lookup (locationToIndex location) 
   # unsafeFromJust
@@ -338,7 +338,6 @@ initialGemini = unsafeGemini
   , (location RightRing 1 /\ disk White 8)
   , (location RightRing 2 /\ disk White 9)
   ]
--}
 
 {-
 

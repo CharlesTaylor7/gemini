@@ -16,6 +16,7 @@
   , "foldable-traversable"
   , "maybe"
   , "numbers"
+  , "type-equality"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
