@@ -48,18 +48,20 @@ data CyclicOrdering
   | Opposite
 derive instance Eq CyclicOrdering
 
-{-
 compareCyclic :: forall n. Pos n => Cyclic n -> Cyclic n -> CyclicOrdering
 compareCyclic a b =
-  if | b- == 0                 -> Equal
-     | even k && difference == halfway -> Opposite
-     | difference <= halfway           -> Precedes
-     | otherwise                       -> Exceeds
-  where
-    k = knownInt @n
+  let
+    k = knownInt (Proxy :: _ n)
     halfway = MkCyclic $ k `div` 2
     difference = b - a
--}
+  in 
+    if difference == 0  then Equal
+    else if even k && difference == halfway then Opposite
+    else if difference <= halfway           then Precedes
+    else Exceeds
+
+even :: Int -> Boolean
+even = (_ `mod` 2) >>> eq 0
 
 distance :: forall n. Pos n => Cyclic n -> Cyclic n -> Int
 distance a b = do
