@@ -23,6 +23,7 @@ import Control.Alt ((<|>))
 import Control.Alternative (guard)
 import Data.Cyclic
 import Data.Group (pow)
+import Data.Enum (class Enum)
 import Data.Finitary
 import Data.Permutation
 import Data.Maybe (Maybe(..), fromMaybe)
@@ -63,7 +64,7 @@ location ring position = Location { ring, position: cyclic position }
 
 {-
 instance Finitary Location where
-  inhabitants = location <$> inhabitants <*> inhabitants
+  inhabitants = Location <$> inhabitants <*> inhabitants
 -}
 
 
@@ -79,16 +80,17 @@ newtype Rotation = Rotation
   }
 
 rotation :: Ring -> RotationDirection -> Rotation
-rotation ring direction = coerce { ring, direction }
+rotation ring direction = Rotation { ring, direction }
 
-{-
 instance Finitary Rotation where
   inhabitants = rotation <$> inhabitants <*> inhabitants
-  -}
 
 data RotationDirection
   = Clockwise
   | AntiClockwise
+
+instance Finitary RotationDirection where  
+  inhabitants = [Clockwise, AntiClockwise]
   
 
 data Ring
@@ -96,7 +98,9 @@ data Ring
   | CenterRing
   | RightRing
 derive instance Eq Ring
-  
+
+instance Finitary Ring where  
+  inhabitants = [LeftRing, CenterRing, RightRing]
 
 type Disk =
   { color :: Color
@@ -105,6 +109,7 @@ type Disk =
 
 disk :: Color -> Int -> Disk
 disk color label = { color, label }
+
 
 data Color
   = White
@@ -153,10 +158,10 @@ newtype Motion = Motion
   , rotation :: Rotation
   }
   
-
 instance ToPermutation Motion where
   toPerm (Motion { amount, rotation }) =
     (toPerm rotation) `pow` unCyclic amount
+
 {-
 normalize :: Motion -> Maybe Motion
 normalize (Motion { amount: zero }) = Nothing
