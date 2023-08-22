@@ -19,6 +19,8 @@ import Deku.Attribute as Attr
 import Deku.Hooks (useState)
 import Deku.Extra (className)
 
+import Data.Gemini as Gemini 
+
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 
@@ -38,7 +40,7 @@ component = Deku.do
     [ D.div
         [ klass_ "main-panel"]
         [ header 
-        , Puzzle.component
+        , Puzzle.component Gemini.initialGemini
         , footer 
         ]
     , D.div [ klass_ "right-panel"]

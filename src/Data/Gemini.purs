@@ -26,6 +26,8 @@ import Data.Cyclic
 import Data.Group (pow)
 import Data.Enum (class Enum)
 import Data.Finitary
+import Data.Generic.Rep (class Generic)
+import Data.Show.Generic (genericShow)
 import Data.Permutation
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Foldable (class Foldable, foldMap)
@@ -119,6 +121,8 @@ data Color
   | Red
   | Green
   | Blue
+derive instance Generic Color _
+instance Show Color where show = genericShow
   
 
 
@@ -267,8 +271,8 @@ locationToIndex = index <<< canonical
 
 
 -- | Index into the gemini map
-geminiLookup :: Gemini -> Location -> Disk
-geminiLookup (Gemini diskMap) location = 
+geminiLookup :: Location -> Gemini -> Disk
+geminiLookup location (Gemini diskMap) = 
   diskMap 
   # Map.lookup (locationToIndex location) 
   # unsafeFromJust

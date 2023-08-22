@@ -1,5 +1,5 @@
 module Data.Angle
-  ( Angle, AngleUnit
+  ( Angle, AngleUnit(..)
   , sine, cosine, arctan
   , (:*), construct
   , as
@@ -34,7 +34,7 @@ as (Angle radians) =
     Turns -> radiansToTurns radians
 
 
-infixr 0 construct as :*
+infixr 6 construct as :*
 --infixr 0 deconstruct as 
 
 -- | Opaque data type. Angles are internally stored as a 'Number' in radians.

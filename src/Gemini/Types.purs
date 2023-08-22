@@ -5,21 +5,24 @@ module Gemini.Types
   , HoverState(..), DragState(..), Options, Env(..), Deployment(..), DomInfo(..) , Confetti(..)
   , Stats(..)
   , Move(..)
+  -- Reexports
+  , module Gemini
   ) where
 
-import           Prelude
+import Prelude
 import Data.Maybe(Maybe(..))
-import           Data.Angle       as Angle
-import           Data.Cyclic      as Cyclic
-import           Data.Finitary    as Finitary
+import Data.Angle       as Angle
+import Data.Cyclic      as Cyclic
+import Data.Finitary    as Finitary
 import Data.Map (Map)
 import Data.Map as Map
-import           Data.Gemini      ( Gemini, Location, Ring, Choice, Chosen )
-import           Data.Gemini      as Gemini
-import           Data.Permutation (Cycles, Cycle)
-import           Data.Permutation as Permutation
-import           Data.Point (Point)
-import           Data.Timestamp (Timestamp)
+import Data.Nat
+import Data.Gemini      ( Gemini, Location(..), Ring(..), Choice, Chosen )
+import Data.Gemini      as Gemini
+import Data.Permutation (Cycles, Cycle)
+import Data.Permutation as Permutation
+import Data.Point (Point)
+import Data.Timestamp (Timestamp)
 
 
 
@@ -52,12 +55,12 @@ type DomInfo =
 
 
 type Options = 
-  { showLabels            :: Boolean
+  { showLabels  :: Boolean
   , showKeyboardShortcuts :: Boolean
-  , recording             :: Boolean
-  , confetti              :: Confetti
-  , highlightPairs        :: Boolean
-  , mobile                :: Boolean
+  , recording   :: Boolean
+  , confetti    :: Confetti
+  , highlightPairs :: Boolean
+  , mobile      :: Boolean
   }
 
 
