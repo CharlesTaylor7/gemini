@@ -1,19 +1,20 @@
 module Data.Gemini
   ( Gemini
-  -- , geminiLookup, initialGemini
+  , geminiLookup, initialGemini
   -- , applyToGemini
-  -- isSolved, solvedColors
+  -- , isSolved, solvedColors
   -- , disksOf , disksFrom
-  -- , l, c, r
+  , l, c, r
   , DiskIndex
   , Location(..)
-  --, indexToLocation
-  -- , sibling, ambiguousLocations, canonical
+  , indexToLocation
+  , sibling, ambiguousLocations, canonical
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
-  --, Motion(..), normalize
+  , Motion(..)
+  -- , normalize
   , GeminiPermutation
   , class ToPermutation, toPerm
-  -- , Choice(..), dragRing, Chosen(..)
+  , Choice(..), dragRing, Chosen(..)
   )
   where
 

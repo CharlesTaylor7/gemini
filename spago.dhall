@@ -19,6 +19,7 @@
   , "type-equality"
   , "control"
   , "partial"
+  , "catenable-lists"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
