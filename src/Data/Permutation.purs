@@ -23,11 +23,14 @@ import Data.List (List(..), (:))
 import Data.List as List
 import Data.List.NonEmpty as NonEmptyList
 
-newtype Cycles a = Cycles (Array (Cycle a)) 
 newtype Cycle a = Cycle (Array a)
 derive instance Functor Cycle
 derive instance Foldable Cycle
+
+
+newtype Cycles a = Cycles (Array (Cycle a)) 
 derive instance Functor Cycles
+
 
 cycle :: forall f a. Foldable f => f a -> Cycle a
 cycle = Cycle <<< Array.fromFoldable
