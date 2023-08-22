@@ -2,24 +2,46 @@
 -}
 module Data.Permutation
   ( Permutation(..), permute, domain
-  , Cycle(..), cycle
-  , Cycles(..), cycles, toCycles, fromCycles
+  , Cycle, cycle
+  , Cycles, cycles
+  -- , toCycles
+  , fromCycles
   ) where
 
 import Prelude
 
+import Data.Group (class Group)
+import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Foldable (class Foldable)
+import Data.Tuple (Tuple(..))
+import Data.Array as Array
 import Data.Set as Set
+import Data.Map (Map)
 import Data.Map as Map
-import Data.Nat (Nat, Pos, knownInt, natsUnder, Proxy(..))
+import Data.Nat (class Nat, knownInt, natsUnder, Proxy(..))
+import Data.List (List(..), (:))
 import Data.List as List
 import Data.List.NonEmpty as NonEmptyList
+
+newtype Cycles a = Cycles (Array (Cycle a)) 
+newtype Cycle a = Cycle (Array a)
+derive instance Functor Cycle
+derive instance Foldable Cycle
+derive instance Functor Cycles
+
+cycle :: forall f a. Foldable f => f a -> Cycle a
+cycle = Cycle <<< Array.fromFoldable
+
+cycles :: forall f a. Foldable f => f (Cycle a) -> Cycles a
+cycles = Cycles <<< Array.fromFoldable
+
 
 newtype Permutation (bound :: Type) = Permutation (Map Int Int)
 
 -- Because the permutation representation is not normalized,
 -- we determine if permutations are equal if they map every element of the domain the same way
 instance Nat n => Eq (Permutation n) where
-  eq p q = all 
+  eq p q = Array.all 
     (\k -> permute p k == permute q k) 
     (natsUnder (Proxy :: _ n))
 
@@ -30,38 +52,42 @@ instance Nat bound => Semigroup (Permutation bound) where
     # Map.fromFoldable
     # Permutation
     where
-      composed = permute q . permute p
+      composed = permute q <<< permute p
 
 instance Nat n => Monoid (Permutation n) where
   mempty = identityPermutation
 
-identityPermutation :: Permutation n
-identityPermutation = Permutation mempty
+identityPermutation :: forall n. Permutation n
+identityPermutation = Permutation Map.empty
 
 instance Nat bound => Group (Permutation bound) where
-  invert p = natsUnder @bound
+  invert p = natsUnder (Proxy :: _ bound)
     # map (\n -> Tuple (permute p n) n)
     # Map.fromFoldable
     # Permutation
 
 
-permute :: Permutation n -> Int -> Int
-permute (Permutation map) n = map ^? ix n # fromMaybe n
+permute :: forall n. Permutation n -> Int -> Int
+permute (Permutation map) n = map # Map.lookup n # fromMaybe n
 
 
-fromCycles :: Cycles Int -> Permutation n
-fromCycles (Cycles cycles) = Permutation $ fromList $ concatMap pairs $ cycles
+fromCycles :: forall n. Cycles Int -> Permutation n
+fromCycles (Cycles cycles) = 
+  Permutation $ 
+    Map.fromFoldable $ 
+      List.concatMap pairs $ 
+        List.fromFoldable cycles
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
-pairs :: Foldable f => f a -> Tuple a a
+pairs :: forall f a. Foldable f => f a -> List (Tuple a a)
 pairs x =
   case NonEmptyList.fromFoldable x of
-    Nothing      -> []
+    Nothing      -> Nil
     Just list ->
       let { head: a, tail: as } = NonEmptyList.uncons list
-          go (x:y:rest) = Tuple x y : go (y : rest)
-          go (x:Nil)        = Cons (Tuple x a) Nil
-          go _          = []
+          go (Cons x (Cons y rest)) = Tuple x y : go (y : rest)
+          go (Cons x Nil)        = Cons (Tuple x a) Nil
+          go _          = Nil
       in go (a:as)
 
 
