@@ -1,6 +1,7 @@
 module Data.Nat
-  ( class KnownNat
+  ( module Data.Typelevel.Num.Sets
   , module Num
+  , module Type.Proxy
   , knownInt
   , natsUnder
   ) where
@@ -10,17 +11,14 @@ import Prelude
 import Data.Enum (enumFromTo)
 
 import Data.Typelevel.Num.Aliases as Num
-import Data.Typelevel.Num.Sets (class Nat, toInt')
+import Data.Typelevel.Num.Sets (class Nat, class Pos, toInt')
 
 import Type.Proxy (Proxy(..))
 
 
-class Nat a <= KnownNat a
-instance Nat a => KnownNat a
-
-knownInt :: forall n. Nat n => Int
-knownInt = toInt' (Proxy :: _ n)
+knownInt :: forall n. Nat n => Proxy n -> Int
+knownInt = toInt'
 
 natsUnder :: forall bound. Nat bound => Array Int
 natsUnder = enumFromTo 0 $ n - 1
-  where n = toInt' (Proxy :: _ bound)
+  where n = knownInt (Proxy :: _ bound)
