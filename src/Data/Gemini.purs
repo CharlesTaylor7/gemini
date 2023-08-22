@@ -12,7 +12,7 @@ module Data.Gemini
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   --, Motion(..), normalize
   , GeminiPermutation
-  , class ToPermutation
+  , class ToPermutation, toPerm
   -- , Choice(..), dragRing, Chosen(..)
   )
   where
@@ -124,8 +124,10 @@ type GeminiPermutation = Permutation D54
 class ToPermutation a where
   toPerm :: a -> GeminiPermutation
 
+{-
 instance (Foldable f, ToPermutation a) => ToPermutation (f a) where
   toPerm = foldMap toPerm
+  -}
 
 instance ToPermutation Rotation where
   toPerm (Rotation { ring, direction }) =

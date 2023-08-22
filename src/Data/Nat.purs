@@ -4,6 +4,7 @@ module Data.Nat
   , module Type.Proxy
   , knownInt
   , natsUnder
+  , proxy
   ) where
 
 import Prelude
@@ -15,6 +16,8 @@ import Data.Typelevel.Num.Sets (class Nat, class Pos, toInt')
 
 import Type.Proxy (Proxy(..))
 
+proxy :: forall k. Proxy k
+proxy = Proxy
 
 knownInt :: forall n. Nat n => Proxy n -> Int
 knownInt = toInt'

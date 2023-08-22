@@ -5,7 +5,7 @@
   , "prelude"
   , "deku"
   , "tuples"
-  , "typelevel-prelude"
+  -- , "typelevel-prelude"
   , "typelevel"
   , "enums"
   , "hyrule"
@@ -17,6 +17,8 @@
   , "maybe"
   , "numbers"
   , "type-equality"
+  , "control"
+  , "partial"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
