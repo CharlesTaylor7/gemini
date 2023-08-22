@@ -13,12 +13,13 @@ import           Data.Angle       as Angle
 import           Data.Cyclic      as Cyclic
 import           Data.Finitary    as Finitary
 import Data.Map (Map)
-import           Data.Gemini      ( Gemini, Location, Ring)
+import Data.Map as Map
+import           Data.Gemini      ( Gemini, Location, Ring, Choice, Chosen )
 import           Data.Gemini      as Gemini
-import           Data.Permutation (Cycles)
+import           Data.Permutation (Cycles, Cycle)
 import           Data.Permutation as Permutation
 import           Data.Point (Point)
-import           Data.Timestamp   as Timestamp
+import           Data.Timestamp (Timestamp)
 
 
 
@@ -82,7 +83,7 @@ type Move =
   }
 
 
-type Store = Store
+type Store = 
   { gemini    :: Gemini
   --, history   :: (Seq Motion)
   --, buffered  :: (Seq Motion)
@@ -123,8 +124,8 @@ initialStore env =
       }
   , env: env
   , dom: 
-    { ringCenters: mempty
-    , ringRadius: 0
+    { ringCenters: Map.empty
+    , ringRadius: 0.0
     }
   --, stats: Nothing
   --, errors: []
