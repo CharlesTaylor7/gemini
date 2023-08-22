@@ -1,6 +1,6 @@
 module Data.Cyclic
   ( Cyclic, cyclic, unCyclic
-  --, compareCyclic, CyclicOrdering(..)
+  , compareCyclic, CyclicOrdering(..)
   , distance
   ) where
 
@@ -16,6 +16,7 @@ import Safe.Coerce (coerce)
 -- Note: Cyclic has an ord instance because its required to put the data into a map.
 -- For relative comparisons, consider  using compareCyclic instead of compare
 newtype Cyclic (n :: Type) = MkCyclic Int
+derive instance Eq (Cyclic n)
 
 unCyclic :: forall n. Cyclic n -> Int
 unCyclic (MkCyclic x) = x
@@ -52,10 +53,10 @@ compareCyclic :: forall n. Pos n => Cyclic n -> Cyclic n -> CyclicOrdering
 compareCyclic a b =
   let
     k = knownInt (Proxy :: _ n)
-    halfway = MkCyclic $ k `div` 2
-    difference = b - a
+    halfway = k `div` 2
+    difference = unCyclic $ b - a
   in 
-    if difference == 0  then Equal
+    if difference == zero then Equal
     else if even k && difference == halfway then Opposite
     else if difference <= halfway           then Precedes
     else Exceeds
