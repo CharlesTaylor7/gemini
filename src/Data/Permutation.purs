@@ -13,7 +13,7 @@ import Prelude
 import Data.Group (class Group)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Foldable (class Foldable)
-import Data.Tuple (Tuple(..))
+import Data.Tuple.Nested (type (/\), (/\))
 import Data.Array as Array
 import Data.Set as Set
 import Data.Map (Map)
@@ -48,7 +48,7 @@ instance Nat n => Eq (Permutation n) where
 
 instance Nat bound => Semigroup (Permutation bound) where
   append p q = natsUnder (Proxy :: _ bound)
-    # map (\n -> Tuple n $ composed n)
+    # map (\n -> n /\ composed n)
     # Map.fromFoldable
     # Permutation
     where
@@ -62,7 +62,7 @@ identityPermutation = Permutation Map.empty
 
 instance Nat bound => Group (Permutation bound) where
   invert p = natsUnder (Proxy :: _ bound)
-    # map (\n -> Tuple (permute p n) n)
+    # map (\n -> permute p n /\ n)
     # Map.fromFoldable
     # Permutation
 
@@ -79,14 +79,14 @@ fromCycles (Cycles cycles) =
         List.fromFoldable cycles
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
-pairs :: forall f a. Foldable f => f a -> List (Tuple a a)
+pairs :: forall f a. Foldable f => f a -> List (a /\ a)
 pairs x =
   case NonEmptyList.fromFoldable x of
     Nothing      -> Nil
     Just list ->
       let { head: a, tail: as } = NonEmptyList.uncons list
-          go (Cons x (Cons y rest)) = Tuple x y : go (y : rest)
-          go (Cons x Nil)        = Cons (Tuple x a) Nil
+          go (Cons x (Cons y rest)) = x /\ y : go (y : rest)
+          go (Cons x Nil)        = x /\ a : Nil
           go _          = Nil
       in go (a:as)
 
