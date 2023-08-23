@@ -42,8 +42,7 @@ import Gemini.Types
 -- type Event a = (a -> Effect Unit) -> Effect (Effect Unit)
 
 component :: Event Store -> Nut
-component event = (event <#> _.gemini)
-  <#~> view
+component event = (event <#> _.gemini) <#~> view
 
 view :: Gemini -> Nut
 view gemini = Deku.do
@@ -62,29 +61,36 @@ view gemini = Deku.do
     disks ring = flip map inhabitants $ \position ->
       let
         location = Location { ring, position }
-        color =
-          let 
-            disk = geminiLookup location gemini
-          in
-            String.toLower (show disk.color) 
 
-        diskAngle = angleOnCircle position
-
-        k = 43.0
-        (x /\ y) =
-          (  k * (1.0 + cosine diskAngle)
-          /\ k * (1.0 + sine diskAngle)
-          )
-
-        toLabelSpan label = D.span [ klass_ "disk-label" ] [ text_ label ]
       in
-          D.div
-            [ klass_ ("disk " <> color)
-            , D.Style !:= fold [ "left: ", show x, "%; top: ", show y, "%"]
-            ]
-            []
+        disk location gemini
+        
 
+disk :: Location -> Gemini -> Nut
+disk location@(Location { ring, position }) gemini = 
+  let
+    color =
+      gemini
+      # geminiLookup location 
+      # _.color
+      # show
+      # String.toLower
 
+    diskAngle = angleOnCircle position
+
+    k = 43.0
+    (x /\ y) =
+      (  k * (1.0 + cosine diskAngle)
+      /\ k * (1.0 + sine diskAngle)
+      )
+
+    toLabelSpan label = D.span [ klass_ "disk-label" ] [ text_ label ]
+      in
+        D.div
+          [ klass_ ("disk " <> color)
+          , D.Style !:= fold [ "left: ", show x, "%; top: ", show y, "%"]
+          ]
+          []
 {-
 
 hiddenLocations :: Set Location
