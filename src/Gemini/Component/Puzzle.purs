@@ -42,8 +42,8 @@ import Gemini.Types
 -- type Event a = (a -> Effect Unit) -> Effect (Effect Unit)
 
 component :: Event Store -> Nut
-component event = (event <#> \store -> view store.gemini)
-  <#~> identity
+component event = (event <#> _.gemini)
+  <#~> view
 
 view :: Gemini -> Nut
 view gemini = Deku.do
