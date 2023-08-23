@@ -22,6 +22,7 @@
   , "catenable-lists"
   , "strings"
   , "integers"
+  , "random"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

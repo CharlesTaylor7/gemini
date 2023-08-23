@@ -1,5 +1,5 @@
-- [ ] Port static version of the app
-  - [ ] Puzzle disks
+- [x] Port static version of the app
+  - [x] Puzzle disks
   - [x] Footer
   - [x] View on Github
 
@@ -7,3 +7,6 @@
   - [ ] Keyboard controls
   - [ ] Mouse dragging
   - [ ] Touch controls
+  - [ ] Scramble
+  - [ ] Undo
+  - [ ] Recording moves
