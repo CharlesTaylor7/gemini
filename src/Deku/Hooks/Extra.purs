@@ -3,9 +3,9 @@ module Deku.Hooks.Extra where
 import Prelude
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)
-import Deku.Core (Nut(..), NutF(..), envy)
+import Deku.Core (Nut)
 import Deku.Extra (Event, Pusher)
-import Deku.Hooks (useRef, useState)
+import Deku.Hooks (useRef, useState')
 import Deku.Do as Deku
 
 useStateRef 
@@ -14,7 +14,6 @@ useStateRef
   -> ((Effect a /\ Pusher a) -> Nut)
   -> Nut
 useStateRef initial callback = Deku.do 
-  pusher /\ event <- useState initial
+  pusher /\ event <- useState'
   effect <- useRef initial event
   callback $ effect /\ pusher
-
