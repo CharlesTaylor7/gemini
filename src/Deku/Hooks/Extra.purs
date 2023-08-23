@@ -1,4 +1,8 @@
-module Deku.Hooks.Extra where
+module Deku.Hooks.Extra 
+  ( Store
+  , useStore
+  )
+  where
 
 import Prelude
 import Data.Tuple.Nested (type (/\), (/\))
@@ -8,12 +12,14 @@ import Deku.Extra (Event, Pusher)
 import Deku.Hooks (useRef, useState')
 import Deku.Do as Deku
 
-useStateRef 
+type Store a = { value :: Effect a, dispatch :: Pusher a }
+
+useStore 
   :: forall a
    . a
-  -> ((Effect a /\ Pusher a) -> Nut)
+  -> (Store a -> Nut)
   -> Nut
-useStateRef initial callback = Deku.do 
+useStore initial callback = Deku.do 
   pusher /\ event <- useState'
   effect <- useRef initial event
-  callback $ effect /\ pusher
+  callback $ { value: effect, dispatch: pusher }

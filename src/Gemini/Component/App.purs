@@ -17,19 +17,19 @@ import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=), unsafeAttribute, AttributeValue(..))
 import Deku.Attribute as Attr
-import Deku.Hooks (useState)
+import Deku.Hooks.Extra (useStore)
 import Deku.Extra (className, autoFocus, tabIndex)
 
 import Data.Gemini as Gemini 
 
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
-import Gemini.Types (initialStore, Store)
+import Gemini.Types (initialAppState, AppState)
 
 
 component :: Nut
 component = Deku.do
-  setState /\ store <- useState initialStore 
+  store <- useStore initialAppState 
   (pursx :: _ """
     <div class="gemini-app" ~attrs~>
       <div class="main-panel">

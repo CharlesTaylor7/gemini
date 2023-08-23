@@ -26,7 +26,7 @@ import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, klass,  href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
-import Deku.Hooks (useState)
+import Deku.Hooks.Extra (Store, useStore)
 import Deku.Extra (Event, className)
 
 import Data.Nat
@@ -41,10 +41,10 @@ import Gemini.Types
 
 -- type Event a = (a -> Effect Unit) -> Effect (Effect Unit)
 
-component :: Event Store -> Nut
+component :: Store AppState -> Nut
 component event = view (event <#> _.gemini)
 
-view :: Event Gemini -> Nut
+view :: Store AppState -> Nut
 view gemini = Deku.do
   D.div [ klass_ "gemini" ] $
     Array.concat 

@@ -1,6 +1,6 @@
 module Gemini.Types
   ( -- ui types
-    Store(..), initialStore
+    AppState(..), initialAppState
   --, Action
   , HoverState(..), DragState(..), Options, Env(..), Deployment(..), DomInfo(..) , Confetti(..)
   , Stats(..)
@@ -86,7 +86,7 @@ type Move =
   }
 
 
-type Store = 
+type AppState = 
   { gemini    :: Gemini
   -- , history   :: (Seq Motion)
   -- , buffered  :: (Seq Motion)
@@ -105,8 +105,8 @@ type Store =
 
 
 -- | Initial state of the app
-initialStore :: Store
-initialStore = 
+initialAppState :: AppState
+initialAppState = 
   { gemini: Gemini.initialGemini
   -- | Every isntance of Seq, can probably be replaced with CatQueue 
   -- | a double ended catenable queue

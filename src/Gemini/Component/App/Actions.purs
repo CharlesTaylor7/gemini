@@ -20,11 +20,12 @@ import Deku.Hooks (useState)
 import Deku.Listeners as Listener
 import Deku.Extra (className)
 
+import Data.Gemini (Gemini)
 import Data.Gemini as Gemini 
 
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
-import Gemini.Types (initialStore, Store)
+
 
 keyboardEvents :: Int
 keyboardEvents = 2
@@ -47,6 +48,4 @@ keyboardMotions =
     _     -> Continuation.pur identity
     where
       apply = Actions.toContinuation . applyRotation
-
-
 -}
