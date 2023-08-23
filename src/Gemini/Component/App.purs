@@ -28,12 +28,7 @@ import Gemini.Component.Puzzle as Puzzle
 component :: Nut
 component = Deku.do
   D.div
-    [ className 
-      [ "gemini-app" /\ pure true
-      , "dragging" /\ pure false -- isn't (#drag % _Nothing) store
-      , "justify-between" /\ pure false 
-      , "justify-center" /\ pure true 
-      ]
+    [ klass_  "gemini-app" 
     --, D.Autofocus !:= true
     --, D.Tabindex !:= 0
     ]
