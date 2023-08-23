@@ -21,6 +21,7 @@
   , "partial"
   , "catenable-lists"
   , "strings"
+  , "integers"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
