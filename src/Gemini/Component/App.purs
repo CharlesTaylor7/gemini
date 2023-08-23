@@ -54,21 +54,13 @@ header :: Nut
 header =
   D.div [ klass_ "header" ]
   [ D.div [ klass_ "control-panel" ]
-    [ D.div 
-      [ klass_ "button-group options"]
-      [ checkBox "Labels"
-      , checkBox "Keyboard controls?"
-      ]
-    , D.div
-      [ klass_ "button-group actions" ]
-      [ D.button
-        [ klass_ "action-button" ]
-        [ text_ "Scramble" ]
-      , D.button
-        [ klass_ "action-button" ]
-        [ text_ "Undo" ]
-      ] 
-    ]
+    [ D.button
+      [ klass_ "action-button" ]
+      [ text_ "Scramble" ]
+    , D.button
+      [ klass_ "action-button" ]
+      [ text_ "Undo" ]
+    ] 
   ]
 
 
