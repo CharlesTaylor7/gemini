@@ -3,6 +3,7 @@ module Gemini.Component.App
   ) where
 
 import Prelude
+import Control.Alt ((<|>))
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Console (log)
@@ -14,10 +15,10 @@ import Deku.Do as Deku
 import Deku.DOM as D
 import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, href_)
-import Deku.Attribute (xdata, (!:=))
+import Deku.Attribute (xdata, (!:=), unsafeAttribute, AttributeValue(..))
 import Deku.Attribute as Attr
 import Deku.Hooks (useState)
-import Deku.Extra (className)
+import Deku.Extra (className, autoFocus, tabIndex)
 
 import Data.Gemini as Gemini 
 
@@ -29,24 +30,23 @@ import Gemini.Types (initialStore, Store)
 component :: Nut
 component = Deku.do
   setState /\ store <- useState initialStore 
-  D.div
-    [ klass_  "gemini-app" 
-    --, D.Autofocus !:= true
-    --, D.Tabindex !:= 0
-    ]
-    [ D.div
-        [ klass_ "main-panel"]
-        [ header 
-        , Puzzle.component store
-        , footer 
-        ]
-    , D.div [ klass_ "right-panel"]
-      [ 
-        --recordedMovesPanel 
-      ]
-    ]
-
-
+  (pursx :: _ """
+    <div class="gemini-app" ~attrs~>
+      <div class="main-panel">
+        ~header~
+        ~puzzle~
+        ~footer~
+      </div>
+      <div class="right-panel" data-todo="recorded-moves">
+      </div>
+    </div>
+  """) ~~
+    { header
+    , attrs: tabIndex (pure 0) <|> autoFocus
+    , puzzle: Puzzle.component store
+    , footer
+    }
+   
 header :: Nut 
 header =
   D.div [ klass_ "header" ]
@@ -102,4 +102,3 @@ checkBox label =
       <input type="checkbox" />
     </label>
   """) ~~ { label: text_ label }
-    

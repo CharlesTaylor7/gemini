@@ -23,7 +23,7 @@ import Deku.Control ((<#~>))
 import Deku.Do as Deku
 import Deku.DOM as D
 import Deku.Pursx (pursx, (~~), (~!~))
-import Deku.Attributes (klass_, href_)
+import Deku.Attributes (klass_, klass,  href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
 import Deku.Hooks (useState)
@@ -42,9 +42,9 @@ import Gemini.Types
 -- type Event a = (a -> Effect Unit) -> Effect (Effect Unit)
 
 component :: Event Store -> Nut
-component event = (event <#> _.gemini) <#~> view
+component event = view (event <#> _.gemini)
 
-view :: Gemini -> Nut
+view :: Event Gemini -> Nut
 view gemini = Deku.do
   D.div [ klass_ "gemini" ] $
     Array.concat 
@@ -66,15 +66,15 @@ view gemini = Deku.do
         disk location gemini
         
 
-disk :: Location -> Gemini -> Nut
+disk :: Location -> Event Gemini -> Nut
 disk location@(Location { ring, position }) gemini = 
   let
     color =
       gemini
-      # geminiLookup location 
-      # _.color
-      # show
-      # String.toLower
+      <#> geminiLookup location 
+      >>> _.color
+      >>> show
+      >>> String.toLower
 
     diskAngle = angleOnCircle position
 
@@ -87,7 +87,7 @@ disk location@(Location { ring, position }) gemini =
     toLabelSpan label = D.span [ klass_ "disk-label" ] [ text_ label ]
       in
         D.div
-          [ klass_ ("disk " <> color)
+          [ klass (map (append "disk ") color)
           , D.Style !:= fold [ "left: ", show x, "%; top: ", show y, "%"]
           ]
           []

@@ -1,9 +1,10 @@
-- [x] Port static version of the app
+- Port static version of the app
   - [x] Puzzle disks
   - [x] Footer
   - [x] View on Github
+- [x] Discard dom in hmr
 
-- [ ] Reimplement ui one piece at a time
+- Reimplement ui one piece at a time
   - [ ] Keyboard controls
   - [ ] Mouse dragging
   - [ ] Touch controls
