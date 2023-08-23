@@ -1,5 +1,6 @@
 module Deku.Extra
   ( className
+  , module FRP.Event
   ) where
 
 import Prelude

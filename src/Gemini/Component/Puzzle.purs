@@ -19,6 +19,7 @@ import Effect.Console (log)
 import Deku.Control (text, text_)
 import Deku.Listeners as Event
 import Deku.Core (Nut, NutWith)
+import Deku.Control ((<#~>))
 import Deku.Do as Deku
 import Deku.DOM as D
 import Deku.Pursx (pursx, (~~), (~!~))
@@ -26,7 +27,7 @@ import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
 import Deku.Hooks (useState)
-import Deku.Extra (className)
+import Deku.Extra (Event, className)
 
 import Data.Nat
 import Data.Angle
@@ -38,9 +39,14 @@ import Data.Group (invert)
 import Gemini.Env (Env)
 import Gemini.Types
 
+-- type Event a = (a -> Effect Unit) -> Effect (Effect Unit)
 
-component :: Gemini -> Nut
-component gemini = Deku.do
+component :: Event Store -> Nut
+component event = (event <#> \store -> view store.gemini)
+  <#~> identity
+
+view :: Gemini -> Nut
+view gemini = Deku.do
   D.div [ klass_ "gemini" ] $
     Array.concat 
       [ [D.div [klass_ "background"] [] ]
@@ -56,12 +62,11 @@ component gemini = Deku.do
     disks ring = flip map inhabitants $ \position ->
       let
         location = Location { ring, position }
-        (color /\ diskLabel) =
+        color =
           let 
             disk = geminiLookup location gemini
           in
-            String.toLower (show disk.color) /\ show disk.label
-
+            String.toLower (show disk.color) 
 
         diskAngle = angleOnCircle position
 

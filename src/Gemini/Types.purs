@@ -88,25 +88,25 @@ type Move =
 
 type Store = 
   { gemini    :: Gemini
-  --, history   :: (Seq Motion)
-  --, buffered  :: (Seq Motion)
-  --, animation :: Animation
+  -- , history   :: (Seq Motion)
+  -- , buffered  :: (Seq Motion)
+  -- , animation :: Animation
   , hover     :: (Maybe HoverState)
   , drag      :: (Maybe DragState)
   , options   :: Options
-  , env       :: Env
+  -- , env       :: Env
   , dom       :: DomInfo
-  --, moves     :: (Seq Move)
-  --, recorded  :: (Seq Motion)
-  --, stats     :: (Maybe Stats)
-  --, errors    :: Array String
+  -- , moves     :: (Seq Move)
+  -- , recorded  :: (Seq Motion)
+  -- , stats     :: (Maybe Stats)
+  -- , errors    :: Array String
   }
 
 
 
 -- | Initial state of the app
-initialStore :: Env -> Store
-initialStore env = 
+initialStore :: Store
+initialStore = 
   { gemini: Gemini.initialGemini
   -- | Every isntance of Seq, can probably be replaced with CatQueue 
   -- | a double ended catenable queue
@@ -125,7 +125,7 @@ initialStore env =
       , highlightPairs: false
       , showKeyboardShortcuts: false
       }
-  , env: env
+  -- , env: env
   , dom: 
     { ringCenters: Map.empty
     , ringRadius: 0.0

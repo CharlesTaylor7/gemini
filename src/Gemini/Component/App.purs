@@ -23,10 +23,12 @@ import Data.Gemini as Gemini
 
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
+import Gemini.Types (initialStore, Store)
 
 
 component :: Nut
 component = Deku.do
+  setState /\ store <- useState initialStore 
   D.div
     [ klass_  "gemini-app" 
     --, D.Autofocus !:= true
@@ -35,7 +37,7 @@ component = Deku.do
     [ D.div
         [ klass_ "main-panel"]
         [ header 
-        , Puzzle.component Gemini.initialGemini
+        , Puzzle.component store
         , footer 
         ]
     , D.div [ klass_ "right-panel"]
@@ -80,22 +82,24 @@ footer =
 
 hyperlink :: String -> String -> String -> Nut
 hyperlink iconSrc linkUrl display =
-  D.a
-    [ klass_ "link"
-    , href_ linkUrl
-    , D.Target !:= "_blank"
-    , D.Rel !:= "noopener noreferrer"
-    ]
-    [ D.img [ D.Src !:= iconSrc ] []
-    , text_ display
-    ]
+  (pursx :: _ """
+    <a class="link" target="_blank" rel="noopener noreferrer" ~linkHref~>
+        <img ~src~ />
+        ~label~
+    </a>
+  """) ~~ 
+    { linkHref: href_ linkUrl
+    , src: D.Src !:= iconSrc
+    , label: text_ display
+    }
+   
 
 checkBox :: String -> Nut
 checkBox label =
-  D.label
-    [ klass_ "checkbox" ]
-    [ D.span
-        [ klass_ "checkbox-label" ]
-        [ text_ label ]
-    , (pursx :: _ "<input type=\"checkbox\" />") ~~ {}
-    ]
+  (pursx :: _ """
+    <label class="checkbox">
+      <span class="checkbox-label">~label~</span>
+      <input type="checkbox" />
+    </label>
+  """) ~~ { label: text_ label }
+    
