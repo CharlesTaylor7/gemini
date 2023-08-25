@@ -228,7 +228,8 @@ sibling l =
     (guard (a /= l) *> pure a) <|>
     (guard (c /= l) *> pure c)
 
-
+siblingIndex :: Int -> Maybe Int
+siblingIndex = map locationToIndex <<< sibling <<< indexToLocation
 
 data Choice a = Obvious a | Ambiguous a a
 
@@ -359,14 +360,14 @@ permuteGemini :: GeminiPermutation -> Gemini -> Gemini
 permuteGemini p (Gemini disks) =
   Gemini $ Map.fromFoldable $ items
   where
+    lookup = flip Map.lookup disks
+
     items :: Array (Int /\ Disk)
     items =
       (domain p) <#> \n -> do
-        case Map.lookup n disks of
-          Nothing   -> 2 /\ { color: Red, label: 2 }
-          -- unit
-          Just disk -> 
-            (permute p n) /\ disk
+        case lookup n <|> (siblingIndex n >>= lookup) of
+          Nothing   -> unsafeCrashWith "wat"
+          Just disk -> permute p n /\ disk
 
 {-
 disksOf :: Ring -> IxFold DiskIndex Gemini Disk
