@@ -1,5 +1,6 @@
 module Gemini.Prelude
   ( module Prelude
+  , module Debug
   , module Data.Nat
   , module Data.Angle
   , module Data.Cyclic
@@ -20,6 +21,7 @@ module Gemini.Prelude
   ) where
 
 import Prelude hiding (class Ring)
+import Debug (spy)
 import Data.Nat
 import Data.Angle
 import Data.Cyclic

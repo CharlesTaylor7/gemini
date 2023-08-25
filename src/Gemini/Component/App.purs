@@ -25,6 +25,7 @@ import Data.Gemini as Gemini
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.Types (initialAppState, AppState)
+import Gemini.Component.App.Actions (keyboardEvents)
 
 
 component :: Nut
@@ -42,7 +43,7 @@ component = Deku.do
     </div>
   """) ~~
     { header
-    , attrs: tabIndex (pure 0) <|> autoFocus
+    , attrs: keyboardEvents store <|> autoFocus <|> tabIndex (pure 0)
     , puzzle: Puzzle.component store
     , footer
     }

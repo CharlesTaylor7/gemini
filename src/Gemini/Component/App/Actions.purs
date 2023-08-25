@@ -34,13 +34,13 @@ type Hook a = Effect a /\ Pusher a
 keyboardEvents :: forall e. Store AppState -> Event (Attribute e)
 keyboardEvents store =
   Listener.keyDown_ $ Event.key >>> case _ of
-    "Q" -> apply $ rotation LeftRing AntiClockwise
-    "W" -> apply $ rotation LeftRing Clockwise
-    "T" -> apply $ rotation CenterRing AntiClockwise
-    "Y" -> apply $ rotation CenterRing Clockwise
-    "O" -> apply $ rotation RightRing AntiClockwise
-    "P" -> apply $ rotation RightRing Clockwise
-    _   -> pure unit
+    "q" -> apply $ rotation LeftRing AntiClockwise
+    "w" -> apply $ rotation LeftRing Clockwise
+    "t" -> apply $ rotation CenterRing AntiClockwise
+    "y" -> apply $ rotation CenterRing Clockwise
+    "o" -> apply $ rotation RightRing AntiClockwise
+    "p" -> apply $ rotation RightRing Clockwise
+    key   -> log key
     where
       apply :: Rotation -> Effect Unit
       apply = modify store <<< overGemini <<< applyRotation

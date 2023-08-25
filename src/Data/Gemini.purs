@@ -358,7 +358,6 @@ applyToGemini = permuteGemini <<< toPerm
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
 permuteGemini p (Gemini disks) =
   Gemini $ Map.fromFoldable $ items
-
   where
     items :: Array (Int /\ Disk)
     items =
@@ -366,8 +365,8 @@ permuteGemini p (Gemini disks) =
         case Map.lookup n disks of
           Nothing   -> 2 /\ { color: Red, label: 2 }
           -- unit
-          Just disk -> unsafeCrashWith "wat"
-          -- at (permute p n) ?= disk
+          Just disk -> 
+            (permute p n) /\ disk
 
 {-
 disksOf :: Ring -> IxFold DiskIndex Gemini Disk
