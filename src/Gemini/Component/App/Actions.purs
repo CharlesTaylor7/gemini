@@ -5,7 +5,6 @@ module Gemini.Component.App.Actions
 import Gemini.Prelude
 
 import Deku.Control (text, text_)
-import Deku.Listeners as Event
 import Deku.Core (Nut, NutWith)
 import Deku.Do as Deku
 import Deku.DOM as D
@@ -45,6 +44,8 @@ keyboardEvents store =
       apply :: Rotation -> Effect Unit
       apply = modify store <<< overGemini <<< applyRotation
 
+
+-- | In terms of lenses, this is equivalent to: over _gemini
 overGemini :: (Gemini -> Gemini) -> AppState -> AppState
 overGemini f s = s { gemini = f s.gemini }
 
@@ -53,5 +54,3 @@ applyRotation r = Gemini.applyToGemini $ toMotion r
 
 toMotion :: Rotation -> Motion
 toMotion rotation = Motion { amount: cyclic 1, rotation }
-
-
