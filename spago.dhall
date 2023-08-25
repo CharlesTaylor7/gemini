@@ -24,6 +24,7 @@
   , "integers"
   , "random"
   , "web-uievents"
+  , "debug"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
