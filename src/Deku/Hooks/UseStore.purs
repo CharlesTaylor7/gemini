@@ -1,7 +1,6 @@
 module Deku.Hooks.UseStore 
   ( Store
   , useStore
-  , modify
   )
   where
 
@@ -13,15 +12,16 @@ import Deku.Extra (Event, Pusher)
 import Deku.Hooks (useRef, useState)
 import Deku.Do as Deku
 
-type Store a = 
-  { current :: Effect a
-  , event :: Event a
-  , dispatch :: Pusher a 
+type Store a =
+  { subscribe :: Event a
+  , modify :: (a -> a) -> Effect Unit
   }
 
-modify :: forall a. Store a -> (a -> a) -> Effect Unit
-modify { current, dispatch } transform =
-  current >>= (transform >>> dispatch)
+
+modify :: forall a. Effect a -> Pusher a -> (a -> a) -> Effect Unit
+modify ref pusher transform =
+  ref >>= (transform >>> pusher)
+
 
 useStore 
   :: forall a
@@ -29,6 +29,6 @@ useStore
   -> (Store a -> Nut)
   -> Nut
 useStore initial callback = Deku.do 
-  dispatch /\ event <- useState initial
-  current <- useRef initial event
-  callback $ { current, event, dispatch }
+  pusher /\ event <- useState initial
+  ref <- useRef initial event
+  callback $ { subscribe: event, modify: modify ref pusher}

@@ -13,7 +13,7 @@ import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
 import Deku.Hooks (useState)
-import Deku.Hooks.UseStore (Store, modify)
+import Deku.Hooks.UseStore (Store)
 import Deku.Listeners as Listener
 import Deku.Extra (className)
 
@@ -42,7 +42,7 @@ keyboardEvents store =
     key   -> log key
     where
       apply :: Rotation -> Effect Unit
-      apply = modify store <<< overGemini <<< applyRotation
+      apply = store.modify <<< overGemini <<< applyRotation
 
 
 -- | In terms of lenses, this is equivalent to: over _gemini

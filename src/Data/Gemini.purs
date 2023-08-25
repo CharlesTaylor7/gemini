@@ -358,7 +358,7 @@ applyToGemini = permuteGemini <<< toPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
 permuteGemini p (Gemini disks) =
-  Gemini $ Map.fromFoldable $ items
+  Gemini $ Map.fromFoldable items
   where
     lookup = flip Map.lookup disks
 

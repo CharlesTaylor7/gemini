@@ -45,7 +45,7 @@ component store = Deku.do
       let
         location = Location { ring, position }
       in
-        disk location (store.event <#> _.gemini)
+        disk location (store.subscribe <#> _.gemini)
         
 
 disk :: Location -> Event Gemini -> Nut
