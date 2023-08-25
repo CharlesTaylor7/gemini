@@ -18,15 +18,12 @@ import Deku.Hooks.UseStore (Store, modify)
 import Deku.Listeners as Listener
 import Deku.Extra (className)
 
-import Data.Gemini (Gemini)
 import Data.Gemini as Gemini 
+import Web.UIEvent.KeyboardEvent as Event
 
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 
-
-keyboardEvents :: Int
-keyboardEvents = 2
 
 type KeyboardEvent = { key :: String }
 
@@ -34,15 +31,27 @@ type Pusher a = a -> Effect Unit
 type Hook a = Effect a /\ Pusher a
 
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
-keyboardMotions :: forall e. Store AppState -> Event (Attribute e)
-keyboardMotions =
-  Listener.keyDown_ $ case _ of
-    Key.Q -> apply $ Rotation LeftRing AntiClockwise
-    Key.W -> apply $ Rotation LeftRing Clockwise
-    Key.T -> apply $ Rotation CenterRing AntiClockwise
-    Key.Y -> apply $ Rotation CenterRing Clockwise
-    Key.O -> apply $ Rotation RightRing AntiClockwise
-    Key.P -> apply $ Rotation RightRing Clockwise
-    _     -> Continuation.pur identity
+keyboardEvents :: forall e. Store AppState -> Event (Attribute e)
+keyboardEvents store =
+  Listener.keyDown_ $ Event.key >>> case _ of
+    "Q" -> apply $ rotation LeftRing AntiClockwise
+    "W" -> apply $ rotation LeftRing Clockwise
+    "T" -> apply $ rotation CenterRing AntiClockwise
+    "Y" -> apply $ rotation CenterRing Clockwise
+    "O" -> apply $ rotation RightRing AntiClockwise
+    "P" -> apply $ rotation RightRing Clockwise
+    _   -> pure unit
     where
-      apply = Actions.toContinuation . applyRotation
+      apply :: Rotation -> Effect Unit
+      apply = modify store <<< overGemini <<< applyRotation
+
+overGemini :: (Gemini -> Gemini) -> AppState -> AppState
+overGemini f s = s { gemini = f s.gemini }
+
+applyRotation :: Rotation -> Gemini -> Gemini
+applyRotation r = Gemini.applyToGemini $ toMotion r
+
+toMotion :: Rotation -> Motion
+toMotion rotation = Motion { amount: cyclic 1, rotation }
+
+

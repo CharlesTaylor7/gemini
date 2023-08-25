@@ -4,12 +4,12 @@ module Gemini.Component.Puzzle
 
 import Gemini.Prelude
 
-import Data.Set as Set
-import Data.Map as Map
 import Data.Array as Array
-import Data.String.Common as String
 import Data.Int as Int
-
+import Data.Map as Map
+import Data.Set as Set
+import Data.String.Common as String
+import Data.Gemini (geminiLookup)
 
 import Deku.Control (text, text_)
 import Deku.Listeners as Event
@@ -25,7 +25,6 @@ import Deku.Hooks.UseStore (Store, useStore)
 import Deku.Extra (Event, className)
 
 import Gemini.Env (Env)
-import Gemini.Types (AppState, Gemini, Location(..), Ring(..), geminiLookup)
 
 
 component :: Store AppState -> Nut

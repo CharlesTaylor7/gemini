@@ -5,12 +5,10 @@ module Gemini.Types
   , HoverState(..), DragState(..), Options, Env(..), Deployment(..), DomInfo(..) , Confetti(..)
   , Stats(..)
   , Move(..)
-  -- Reexports
-  , module Gemini
   ) where
 
 import Prelude
-import Data.Maybe(Maybe(..))
+import Data.Maybe (Maybe(..))
 import Data.Angle       as Angle
 import Data.Cyclic      as Cyclic
 import Data.Finitary    as Finitary

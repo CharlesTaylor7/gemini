@@ -1,7 +1,7 @@
 module Data.Gemini
   ( Gemini
   , geminiLookup, initialGemini
-  -- , applyToGemini
+  , applyToGemini
   -- , isSolved, solvedColors
   -- , disksOf , disksFrom
   , l, c, r
@@ -11,6 +11,7 @@ module Data.Gemini
   , sibling, ambiguousLocations, canonical
   , Ring(..), Rotation(..), RotationDirection(..), Disk(..), Color(..)
   , Motion(..)
+  , rotation
   -- , normalize
   , GeminiPermutation
   , class ToPermutation, toPerm
@@ -180,10 +181,10 @@ normalize (Motion motion) = Just $ do
 
 
 -- | Motions
-l:: Cyclic D18 -> Motion
+l :: Cyclic D18 -> Motion
 l amount = Motion { amount, rotation: rotation LeftRing Clockwise}
 
-c:: Cyclic D18 -> Motion
+c :: Cyclic D18 -> Motion
 c amount = Motion { amount, rotation: rotation CenterRing Clockwise }
   
 r :: Cyclic D18 -> Motion
@@ -351,8 +352,24 @@ initialGemini = unsafeGemini
   , (location RightRing 2 /\ disk White 9)
   ]
 
-{-
+applyToGemini :: forall a. ToPermutation a => a -> Gemini -> Gemini
+applyToGemini = permuteGemini <<< toPerm
 
+permuteGemini :: GeminiPermutation -> Gemini -> Gemini
+permuteGemini p (Gemini disks) =
+  Gemini $ Map.fromFoldable $ items
+
+  where
+    items :: Array (Int /\ Disk)
+    items =
+      (domain p) <#> \n -> do
+        case Map.lookup n disks of
+          Nothing   -> 2 /\ { color: Red, label: 2 }
+          -- unit
+          Just disk -> unsafeCrashWith "wat"
+          -- at (permute p n) ?= disk
+
+{-
 disksOf :: Ring -> IxFold DiskIndex Gemini Disk
 disksOf ring =
   reindexed Cyclic $
@@ -364,20 +381,6 @@ disksFrom :: Ring -> Array DiskIndex -> Fold Gemini (DiskIndex /\ Disk)
 disksFrom ring range =
   folding $ \g ->
   range <#> \i -> (i /\ geminiLookup (Location ring i) g)
-
-applyToGemini :: ToPermutation a => a -> Gemini -> Gemini
-applyToGemini = permuteGemini <<< toPerm
-
-
-permuteGemini :: GeminiPermutation -> Gemini -> Gemini
-permuteGemini p (Gemini disks) =
-  Gemini $
-  flip execState mempty $
-    for_ (domain p) $ \n -> do
-      let disk = disks ^? ix n
-      case disk of
-        Nothing   -> pure unit
-        Just disk -> at (permute p n) ?= disk
 
 -- | Get a location on a specific ring, if it exists on that ring
 onRing :: Ring -> Location -> Maybe Location
