@@ -23,10 +23,10 @@ module Gemini.Prelude
 import Prelude hiding (class Ring)
 import Debug (spy)
 import Data.Nat
-import Data.Angle
-import Data.Cyclic
-import Data.Finitary 
-import Data.Group
+import Data.Angle (Angle, AngleUnit(..), arctan, as, cosine, sine, (:*))
+import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
+import Data.Finitary (class Finitary, inhabitants)
+import Data.Group (class Group, invert, pow)
 import Data.Gemini 
   ( Gemini
   , Rotation(..)

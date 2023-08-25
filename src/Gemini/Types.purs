@@ -9,22 +9,14 @@ module Gemini.Types
 
 import Prelude
 import Data.Maybe (Maybe(..))
-import Data.Angle       as Angle
-import Data.Cyclic      as Cyclic
-import Data.Finitary    as Finitary
 import Data.Map (Map)
 import Data.Map as Map
-import Data.Nat
-import Data.Gemini      ( Gemini, Location(..), Ring(..), Choice, Chosen )
-import Data.Gemini      as Gemini
+import Data.Gemini (Choice, Chosen, Gemini, Location, Ring, initialGemini)
 import Data.Permutation (Cycles, Cycle)
-import Data.Permutation as Permutation
 import Data.Point (Point)
 import Data.Timestamp (Timestamp)
 
 
-
--- | UI Definitions
 
 type Stats = 
   { scrambledAt :: Timestamp
@@ -105,7 +97,7 @@ type AppState =
 -- | Initial state of the app
 initialAppState :: AppState
 initialAppState = 
-  { gemini: Gemini.initialGemini
+  { gemini: initialGemini
   -- | Every isntance of Seq, can probably be replaced with CatQueue 
   -- | a double ended catenable queue
   -- | CatList is a one way queue only
