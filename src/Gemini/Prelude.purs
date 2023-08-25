@@ -12,6 +12,7 @@ module Gemini.Prelude
   , module Data.Tuple.Nested
   , module Effect
   , module Effect.Console
+  , module Partial.Unsafe
   ) where
 
 import Prelude
@@ -25,6 +26,7 @@ import Data.Map (Map)
 import Data.Maybe (Maybe(..))
 import Data.Foldable (fold)
 import Data.Tuple.Nested (type (/\), (/\))
+import Partial.Unsafe (unsafeCrashWith)
 
 import Effect (Effect)
 import Effect.Console (log)

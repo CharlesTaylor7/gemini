@@ -21,7 +21,7 @@ import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, klass,  href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
-import Deku.Hooks.Extra (Store, useStore)
+import Deku.Hooks.UseStore (Store, useStore)
 import Deku.Extra (Event, className)
 
 import Gemini.Env (Env)

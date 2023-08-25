@@ -2,10 +2,7 @@ module Gemini.Component.App.Actions
   ( keyboardEvents
   ) where
 
-import Prelude
-import Data.Tuple.Nested (type (/\), (/\))
-import Effect (Effect)
-import Effect.Console (log)
+import Gemini.Prelude
 
 import Deku.Control (text, text_)
 import Deku.Listeners as Event
@@ -17,6 +14,7 @@ import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
 import Deku.Hooks (useState)
+import Deku.Hooks.UseStore (Store, modify)
 import Deku.Listeners as Listener
 import Deku.Extra (className)
 
@@ -34,11 +32,11 @@ type KeyboardEvent = { key :: String }
 
 type Pusher a = a -> Effect Unit
 type Hook a = Effect a /\ Pusher a
-{-
-keyboardMotions :: forall e. Effect Gemini -> Event (Attribute e)
+
+-- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
+keyboardMotions :: forall e. Store AppState -> Event (Attribute e)
 keyboardMotions =
-  Listener.onKeydown_ $ \case
-    -- the keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
+  Listener.keyDown_ $ case _ of
     Key.Q -> apply $ Rotation LeftRing AntiClockwise
     Key.W -> apply $ Rotation LeftRing Clockwise
     Key.T -> apply $ Rotation CenterRing AntiClockwise
@@ -48,4 +46,3 @@ keyboardMotions =
     _     -> Continuation.pur identity
     where
       apply = Actions.toContinuation . applyRotation
--}

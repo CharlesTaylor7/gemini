@@ -1,6 +1,7 @@
-module Deku.Hooks.Extra 
+module Deku.Hooks.UseStore 
   ( Store
   , useStore
+  , modify
   )
   where
 
@@ -17,6 +18,10 @@ type Store a =
   , event :: Event a
   , dispatch :: Pusher a 
   }
+
+modify :: forall a. Store a -> (a -> a) -> Effect Unit
+modify { current, dispatch } transform =
+  current >>= (transform >>> dispatch)
 
 useStore 
   :: forall a

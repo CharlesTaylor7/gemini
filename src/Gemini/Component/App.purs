@@ -17,7 +17,7 @@ import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=), unsafeAttribute, AttributeValue(..))
 import Deku.Attribute as Attr
-import Deku.Hooks.Extra (useStore)
+import Deku.Hooks.UseStore (Store, useStore)
 import Deku.Extra (className, autoFocus, tabIndex)
 
 import Data.Gemini as Gemini 
