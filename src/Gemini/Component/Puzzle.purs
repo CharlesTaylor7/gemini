@@ -2,19 +2,14 @@ module Gemini.Component.Puzzle
   ( component
   ) where
 
-import Prelude
-import Data.Tuple.Nested ((/\))
-import Data.Set (Set)
+import Gemini.Prelude
+
 import Data.Set as Set
-import Data.Map (Map)
 import Data.Map as Map
 import Data.Array as Array
-import Data.Maybe (Maybe(..))
 import Data.String.Common as String
-import Data.Foldable (fold)
+import Data.Int as Int
 
-import Effect (Effect)
-import Effect.Console (log)
 
 import Deku.Control (text, text_)
 import Deku.Listeners as Event
@@ -29,23 +24,12 @@ import Deku.Attribute as Attr
 import Deku.Hooks.Extra (Store, useStore)
 import Deku.Extra (Event, className)
 
-import Data.Nat
-import Data.Angle
-import Data.Cyclic
-import Data.Finitary (inhabitants)
-import Data.Int as Int
-import Data.Group (invert)
-
 import Gemini.Env (Env)
-import Gemini.Types
+import Gemini.Types (AppState, Gemini, Location(..), Ring(..), geminiLookup)
 
--- type Event a = (a -> Effect Unit) -> Effect (Effect Unit)
 
 component :: Store AppState -> Nut
-component event = view (event <#> _.gemini)
-
-view :: Store AppState -> Nut
-view gemini = Deku.do
+component store = Deku.do
   D.div [ klass_ "gemini" ] $
     Array.concat 
       [ [D.div [klass_ "background"] [] ]
@@ -61,13 +45,12 @@ view gemini = Deku.do
     disks ring = flip map inhabitants $ \position ->
       let
         location = Location { ring, position }
-
       in
-        disk location gemini
+        disk location (store.event <#> _.gemini)
         
 
 disk :: Location -> Event Gemini -> Nut
-disk location@(Location { ring, position }) gemini = 
+disk location@(Location { position }) gemini = 
   let
     color =
       gemini
@@ -79,12 +62,9 @@ disk location@(Location { ring, position }) gemini =
     diskAngle = angleOnCircle position
 
     k = 43.0
-    (x /\ y) =
-      (  k * (1.0 + cosine diskAngle)
-      /\ k * (1.0 + sine diskAngle)
-      )
+    x = k * (1.0 + cosine diskAngle)
+    y = k * (1.0 + sine diskAngle)
 
-    toLabelSpan label = D.span [ klass_ "disk-label" ] [ text_ label ]
       in
         D.div
           [ klass (map (append "disk ") color)
