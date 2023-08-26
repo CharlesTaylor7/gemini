@@ -1,5 +1,10 @@
 module Resize 
-  ( onResize
+  ( DomRect
+  , Observer
+  , onResize
+  , observer
+  , subscribe
+  , event
   ) where
 
 import Prelude
@@ -23,7 +28,36 @@ onResize el = makeEvent $ \pusher -> do
   ob # observe el 
 
   pure $ ob # disconnect
-    
+
+
+observer :: (DomRect -> Effect Unit) -> Effect Observer
+observer pusher = unsafePartial (
+    newResizeObserver $ \[{ target }] -> 
+      pusher =<< getBoundingClientRect target
+  )
+
+subscribe :: Element -> Effect Observer -> Effect Unit
+subscribe el ob = do
+  ob <- ob
+  ob # observe el
+
+
+event :: Effect Observer -> Event DomRect 
+event ob = makeEvent $ \_pusher -> do
+  ob <- ob
+  pure $ ob # disconnect
+
+
+--makeEvent $ \pusher -> do
+
+  -- pusher =<< getBoundingClientRect el
+
+
+  -- ob # observe el 
+
+  -- pure $ ob # disconnect
+   
+   
 
 foreign import data Observer :: Type
 
