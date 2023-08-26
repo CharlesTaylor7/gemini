@@ -20,7 +20,6 @@ import Deku.Extra (className)
 
 import Data.Array as Array
 import Data.Unfoldable
-import Data.Foldable
 import Data.Gemini as Gemini 
 import Data.Gemini.Motions (l, l', c, c', r, r') 
 import Web.UIEvent.KeyboardEvent as Event
@@ -37,7 +36,7 @@ type Pusher a = a -> Effect Unit
 type Hook a = Effect a /\ Pusher a
 
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
-keyboardEvents :: Store AppState -> Event.KeyboardEvent -> Effect Unit
+keyboardEvents :: Store Gemini -> Event.KeyboardEvent -> Effect Unit
 keyboardEvents store =
   Event.key >>> case _ of
     "q" -> apply $ l' 1
@@ -49,14 +48,14 @@ keyboardEvents store =
     key -> log key
     where
       apply :: Motion -> Effect Unit
-      apply = store.modify <<< overGemini <<< Gemini.applyToGemini
+      apply = store.modify <<< Gemini.applyToGemini
 
 
-scramble :: Store AppState -> Effect Unit
+scramble :: Store Gemini -> Effect Unit
 scramble store = do
   randomInts :: Array _ <- replicateA 1000 $ randomInt 0 5
   let perm = foldMap (\i -> Gemini.toPerm (actions `unsafeIndex` i)) randomInts
-  store.modify $ overGemini $ Gemini.applyToGemini perm
+  store.modify $ Gemini.applyToGemini perm
   where
     actions = [ l 1, l' 1, c 1, c' 1, r 1, r' 1]
 
@@ -65,6 +64,3 @@ unsafeIndex arr = Array.index arr >>> unsafeFromJust
 
 unsafeFromJust :: forall a. Maybe a -> a
 unsafeFromJust m = unsafePartial $ fromJust m
-
-overGemini :: (Gemini -> Gemini) -> AppState -> AppState
-overGemini f s = s { gemini = f s.gemini }

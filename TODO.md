@@ -11,3 +11,4 @@
   - [ ] Touch controls
   - [ ] Recording moves
   - [ ] Undo
+- On mobile, detect device orientation and reflow format

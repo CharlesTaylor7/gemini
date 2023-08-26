@@ -39,7 +39,7 @@ import Data.Gemini
 import Data.Set (Set)
 import Data.Map (Map)
 import Data.Maybe (Maybe(..))
-import Data.Foldable (fold)
+import Data.Foldable (fold, foldMap)
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)
 import Effect.Console (log)

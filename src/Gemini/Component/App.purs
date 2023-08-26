@@ -2,7 +2,7 @@ module Gemini.Component.App
   ( component
   ) where
 
-import Prelude
+import Gemini.Prelude
 import Control.Alt ((<|>))
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
@@ -20,7 +20,7 @@ import Deku.Attribute as Attr
 import Deku.Hooks.UseStore (Store, useStore)
 import Deku.Extra (className, autoFocus, tabIndex)
 
-import Data.Gemini as Gemini 
+import Data.Gemini as Gemini
 
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
@@ -30,7 +30,7 @@ import Gemini.Component.App.Actions (keyboardEvents, scramble)
 
 component :: Nut
 component = Deku.do
-  store <- useStore initialAppState 
+  gemini <- useStore Gemini.initialGemini 
   (pursx :: _ """
     <div class="gemini-app" ~attrs~>
       <div class="main-panel">
@@ -42,13 +42,13 @@ component = Deku.do
       </div>
     </div>
   """) ~~
-    { header: header store
-    , attrs: Listener.keyDown_ (keyboardEvents store) <|> autoFocus <|> tabIndex (pure 0)
-    , puzzle: Puzzle.component store
+    { header: header gemini
+    , attrs: Listener.keyDown_ (keyboardEvents gemini) <|> autoFocus <|> tabIndex (pure 0)
+    , puzzle: Puzzle.component gemini
     , footer
     }
    
-header :: Store AppState -> Nut 
+header :: Store Gemini -> Nut 
 header store =
   D.div [ klass_ "header" ]
   [ D.div [ klass_ "control-panel" ]

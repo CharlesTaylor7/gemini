@@ -14,7 +14,6 @@ import Data.Gemini (geminiLookup)
 import Deku.Control (text, text_)
 import Deku.Listeners as Event
 import Deku.Core (Nut, NutWith)
-import Deku.Control ((<#~>))
 import Deku.Do as Deku
 import Deku.DOM as D
 import Deku.Pursx (pursx, (~~), (~!~))
@@ -27,7 +26,7 @@ import Deku.Extra (Event, className)
 import Gemini.Env (Env)
 
 
-component :: Store AppState -> Nut
+component :: Store Gemini -> Nut
 component store = Deku.do
   D.div [ klass_ "gemini" ] $
     Array.concat 
@@ -45,7 +44,7 @@ component store = Deku.do
       let
         location = Location { ring, position }
       in
-        disk location (store.subscribe <#> _.gemini)
+        disk location store.subscribe
         
 
 disk :: Location -> Event Gemini -> Nut
