@@ -13,6 +13,7 @@
   , "safe-coerce"
   , "lists"
   , "foldable-traversable"
+  , "unfoldable"
   , "maybe"
   , "numbers"
   , "type-equality"

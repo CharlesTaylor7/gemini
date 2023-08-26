@@ -18,10 +18,14 @@ import Deku.Hooks.UseStore (Store)
 import Deku.Listeners as Listener
 import Deku.Extra (className)
 
+import Data.Array as Array
 import Data.Unfoldable
+import Data.Foldable
 import Data.Gemini as Gemini 
 import Data.Gemini.Motions (l, l', c, c', r, r') 
 import Web.UIEvent.KeyboardEvent as Event
+import Data.Maybe (fromJust)
+import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
@@ -52,11 +56,16 @@ keyboardEvents store =
 scramble :: forall e. Store AppState -> Effect Unit
 scramble store = do
   randomInts :: Array Int <- replicateA 1000 $ randomInt 0 5
-  log $ show randomInts
-
+  let perm = foldMap (\i -> Gemini.toPerm (actions `unsafeIndex` i)) randomInts
+  store.modify $ overGemini $ Gemini.applyToGemini perm
   where
     actions = [ l 1, l' 1, c 1, c' 1, r 1, r' 1]
 
+unsafeIndex :: forall a. Array a -> Int -> a
+unsafeIndex arr = Array.index arr >>> unsafeFromJust
+
+unsafeFromJust :: forall a. Maybe a -> a
+unsafeFromJust m = unsafePartial $ fromJust m
 
 overGemini :: (Gemini -> Gemini) -> AppState -> AppState
 overGemini f s = s { gemini = f s.gemini }

@@ -134,11 +134,6 @@ type GeminiPermutation = Permutation D54
 class ToPermutation a where
   toPerm :: a -> GeminiPermutation
 
-{-
-instance (Foldable f, ToPermutation a) => ToPermutation (f a) where
-  toPerm = foldMap toPerm
-  -}
-
 instance ToPermutation Rotation where
   toPerm (Rotation { ring, direction }) =
     fromCycles <<< cycles <<< Array.singleton <<< cycle $
@@ -149,13 +144,11 @@ instance ToPermutation Rotation where
         Clockwise     -> inhabitants
         AntiClockwise -> Array.reverse inhabitants
 
-{-
 instance ToPermutation GeminiPermutation where
   toPerm = identity
 
 instance ToPermutation (Cycles Int)  where
   toPerm = fromCycles
--}
 
 
 newtype Motion = Motion
