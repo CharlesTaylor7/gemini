@@ -26,6 +26,7 @@
   , "debug"
   , "web-uievents"
   , "web-dom"
+  , "st"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
