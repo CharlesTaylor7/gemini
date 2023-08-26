@@ -7,7 +7,9 @@ procs:
 
   Tailwind:
     shell: yarn tailwind --watch
+    autostart: false
 
   Legacy Haskell App:
     cwd: haskell/
     shell: ./scripts/run-dev.sh
+    autostart: false
