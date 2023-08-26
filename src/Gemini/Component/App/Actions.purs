@@ -31,7 +31,6 @@ import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Effect.Random (randomInt)
 
-
 type KeyboardEvent = { key :: String }
 
 type Pusher a = a -> Effect Unit
@@ -53,9 +52,9 @@ keyboardEvents store =
       apply = store.modify <<< overGemini <<< Gemini.applyToGemini
 
 
-scramble :: forall e. Store AppState -> Effect Unit
+scramble :: Store AppState -> Effect Unit
 scramble store = do
-  randomInts <- replicateA 1000 $ randomInt 0 5
+  randomInts :: Array _ <- replicateA 1000 $ randomInt 0 5
   let perm = foldMap (\i -> Gemini.toPerm (actions `unsafeIndex` i)) randomInts
   store.modify $ overGemini $ Gemini.applyToGemini perm
   where
