@@ -4,7 +4,6 @@ module Data.Gemini
   , applyToGemini
   -- , isSolved, solvedColors
   -- , disksOf , disksFrom
-  , l, c, r
   , DiskIndex
   , Location(..)
   , indexToLocation

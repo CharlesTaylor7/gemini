@@ -25,7 +25,7 @@ import Data.Gemini as Gemini
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.Types (initialAppState, AppState)
-import Gemini.Component.App.Actions (keyboardEvents)
+import Gemini.Component.App.Actions (keyboardEvents, scramble)
 
 
 component :: Nut
@@ -42,18 +42,20 @@ component = Deku.do
       </div>
     </div>
   """) ~~
-    { header
+    { header: header store
     , attrs: Listener.keyDown_ (keyboardEvents store) <|> autoFocus <|> tabIndex (pure 0)
     , puzzle: Puzzle.component store
     , footer
     }
    
-header :: Nut 
-header =
+header :: Store AppState -> Nut 
+header store =
   D.div [ klass_ "header" ]
   [ D.div [ klass_ "control-panel" ]
     [ D.button
-      [ klass_ "action-button" ]
+      [ klass_ "action-button" 
+      , Listener.click_ $ scramble store
+      ]
       [ text_ "Scramble" ]
     , D.button
       [ klass_ "action-button" ]

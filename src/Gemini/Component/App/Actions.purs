@@ -1,5 +1,6 @@
 module Gemini.Component.App.Actions
   ( keyboardEvents
+  , scramble
   ) where
 
 import Gemini.Prelude
@@ -17,7 +18,9 @@ import Deku.Hooks.UseStore (Store)
 import Deku.Listeners as Listener
 import Deku.Extra (className)
 
+import Data.Unfoldable
 import Data.Gemini as Gemini 
+import Data.Gemini.Motions (l, l', c, c', r, r') 
 import Web.UIEvent.KeyboardEvent as Event
 
 import Gemini.Env (Env)
@@ -34,25 +37,25 @@ type Hook a = Effect a /\ Pusher a
 keyboardEvents :: Store AppState -> Event.KeyboardEvent -> Effect Unit
 keyboardEvents store =
   Event.key >>> case _ of
-    "q" -> apply $ rotation LeftRing AntiClockwise
-    "w" -> apply $ rotation LeftRing Clockwise
-    "t" -> apply $ rotation CenterRing AntiClockwise
-    "y" -> apply $ rotation CenterRing Clockwise
-    "o" -> apply $ rotation RightRing AntiClockwise
-    "p" -> apply $ rotation RightRing Clockwise
-    key   -> log key
+    "q" -> apply $ l' 1
+    "w" -> apply $ l 1
+    "t" -> apply $ c' 1
+    "y" -> apply $ c 1
+    "o" -> apply $ r' 1
+    "p" -> apply $ r 1
+    key -> log key
     where
-      apply :: Rotation -> Effect Unit
-      apply = store.modify <<< overGemini <<< applyRotation
+      apply :: Motion -> Effect Unit
+      apply = store.modify <<< overGemini <<< Gemini.applyToGemini
 
-      applyRotation :: Rotation -> Gemini -> Gemini
-      applyRotation r = Gemini.applyToGemini $ toMotion r
-
-      toMotion :: Rotation -> Motion
-      toMotion rotation = Motion { amount: cyclic 1, rotation }
 
 scramble :: forall e. Store AppState -> Effect Unit
 scramble store = do
+  randomInts :: Array Int <- replicateA 1000 $ randomInt 0 5
+  log $ show randomInts
+
+  where
+    actions = [ l 1, l' 1, c 1, c' 1, r 1, r' 1]
 
 
 overGemini :: (Gemini -> Gemini) -> AppState -> AppState
