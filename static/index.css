@@ -23,6 +23,7 @@
 
 html {
     height: 100%;
+    font-family: Times, serif;
 }
 
 body {
@@ -139,29 +140,6 @@ button {
 }
 
 .checkbox-label {
-    padding-right: 5px;
-}
-
-/* footer */
-.footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-end;
-    align-items: end;
-}
-
-.link {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    text-decoration: none;
-}
-
-.link > img {
-    height: 20px;
     padding-right: 5px;
 }
 
@@ -332,20 +310,19 @@ button {
     background: url(./wood.jpg)
 }
 
-.ring {
+.gemini-ring {
     width: 100%;
     position: relative;
-    border-radius: 100%;
 }
 
-.ring.left {
+.gemini-ring.left {
     left: 14.9%;
 }
 
-.ring.center {
+.gemini-ring.center {
 }
 
-.ring.right {
+.gemini-ring.right {
     right: 14.9%;
 }
 

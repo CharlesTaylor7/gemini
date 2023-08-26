@@ -69,32 +69,66 @@ header store =
 footer :: Nut
 footer =
   D.div [ klass_ "footer" ]
-  [ D.div [ klass_ "links" ]
+  [ D.div [ klass_ "explain-controls" ]
+    [ D.div__ "Q: Rotate left disk counter clockwise"
+    , D.div__ "W: Rotate left disk clockwise"
+    , D.div__ "T: Rotate center disk counter clockwise"
+    , D.div__ "Y: Rotate center disk clockwise"
+    , D.div__ "O: Rotate right disk counter clockwise"
+    , D.div__ "P: Rotate right disk clockwise"
+    ]
+  ]
+
+{-
+.view-source-link {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.link > img {
+    height: 20px;
+    padding-right: 5px;
+}
+
+  D.div [ klass_ "links" ]
     [ hyperlink
       "./github.png"
       "https://github.com/CharlesTaylor7/gemini"
       "View Source"
     ]
-  , D.div [ klass_ "explain-controls" ]
-      [ D.div__ "Q: Rotate left disk counter clockwise"
-      , D.div__ "W: Rotate left disk clockwise"
-      , D.div__ "T: Rotate center disk counter clockwise"
-      , D.div__ "Y: Rotate center disk clockwise"
-      , D.div__ "O: Rotate right disk counter clockwise"
-      , D.div__ "P: Rotate right disk clockwise"
-      ]
-  ]
+-}
 
 hyperlink :: String -> String -> String -> Nut
 hyperlink iconSrc linkUrl display =
   (pursx :: _ """
-    <a class="link" target="_blank" rel="noopener noreferrer" ~linkHref~>
-        <img ~src~ />
+    <a target="_blank" rel="noopener noreferrer" ~linkAttrs~>
+        <img ~imgAttrs~ />
         ~label~
     </a>
   """) ~~ 
-    { linkHref: href_ linkUrl
-    , src: D.Src !:= iconSrc
+    { linkAttrs: 
+        klass_ "flex items-center p-2" <|>
+        href_ linkUrl
+    , imgAttrs: 
+        klass_ "h-[20px]" <|>
+        D.Src !:= iconSrc
     , label: text_ display
     }
    

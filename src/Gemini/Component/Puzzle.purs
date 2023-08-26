@@ -85,7 +85,7 @@ angleOnCircle k = turns <> -90.0 :* Degrees
 
 
 ringClass :: Ring -> String
-ringClass = const "ring " <> case _ of
+ringClass = const "gemini-ring " <> case _ of
   LeftRing   -> "left"
   CenterRing -> "center"
   RightRing  -> "right"
