@@ -24,13 +24,14 @@ import Data.Gemini as Gemini
 
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
-import Gemini.Types (initialAppState, AppState)
+import Gemini.Types (initialAppState, AppState, DomInfo)
 import Gemini.Component.App.Actions (keyboardEvents, scramble)
 
 
 component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini 
+  domInfo <- useStore (Nothing :: _ DomInfo)
   (pursx :: _ """
     <div class="gemini-app" ~attrs~>
       <div class="main-panel">

@@ -5,11 +5,12 @@ module Deku.Hooks.UseStore
   where
 
 import Prelude
+import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)
 import Deku.Core (Nut)
 import Deku.Extra (Event, Pusher)
-import Deku.Hooks (useRef, useState)
+import Deku.Hooks (useRef, useState, useState')
 import Deku.Do as Deku
 
 type Store a =
@@ -32,3 +33,4 @@ useStore initial callback = Deku.do
   pusher /\ event <- useState initial
   ref <- useRef initial event
   callback $ { subscribe: event, modify: modify ref pusher}
+

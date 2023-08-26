@@ -26,6 +26,7 @@ import Deku.Extra (Event, className)
 import Gemini.Env (Env)
 
 
+
 component :: Store Gemini -> Nut
 component store = Deku.do
   D.div [ klass_ "gemini" ] $

@@ -1,8 +1,8 @@
 module Gemini.Types
-  ( -- ui types
-    AppState(..), initialAppState
-  --, Action
-  , HoverState(..), DragState(..), Options, Env(..), Deployment(..), DomInfo(..) , Confetti(..)
+  ( AppState(..), initialAppState
+  , HoverState(..), DragState(..), Options, Env(..), Deployment(..)
+  , DomInfo(..)
+  , Confetti(..)
   , Stats(..)
   , Move(..)
   ) where
@@ -17,7 +17,6 @@ import Data.Point (Point)
 import Data.Timestamp (Timestamp)
 
 
-
 type Stats = 
   { scrambledAt :: Timestamp
   , solvedAt    :: (Maybe Timestamp)
@@ -26,31 +25,38 @@ type Stats =
 
 type HoverState = 
   { move  :: Move
-  , cycle :: (Maybe (Cycle Location))
+  , cycle :: Maybe (Cycle Location)
   }
 
+type Move = {}
+{- 
+type Move = 
+  { motions    :: (Seq Motion)
+  , moveCycles :: (Cycles Location)
+  }
+-}
 
 type DragState = 
-  { location     :: (Choice Location)
-  , chosen       :: (Maybe Chosen)
+  { location     :: Choice Location
+  , chosen       :: Maybe Chosen
   , initialPoint :: Point
   , currentPoint :: Point
   }
 
 
 type DomInfo = 
-  { ringCenters :: (Map Ring Point)
+  { ringCenters :: Map Ring Point
   , ringRadius  :: Number
   }
 
 
 type Options = 
-  { showLabels  :: Boolean
+  { showLabels            :: Boolean
   , showKeyboardShortcuts :: Boolean
-  , recording   :: Boolean
-  , confetti    :: Confetti
-  , highlightPairs :: Boolean
-  , mobile      :: Boolean
+  , recording             :: Boolean
+  , confetti              :: Confetti
+  , highlightPairs        :: Boolean
+  , mobile                :: Boolean
   }
 
 
@@ -69,11 +75,7 @@ data Deployment
   | Dev
 
 
--- | Core Definitions
-type Move = 
-  --{ motions    :: (Seq Motion)
-  { moveCycles :: (Cycles Location)
-  }
+
 
 
 type AppState = 
@@ -85,7 +87,6 @@ type AppState =
   , drag      :: (Maybe DragState)
   , options   :: Options
   -- , env       :: Env
-  , dom       :: DomInfo
   -- , moves     :: (Seq Move)
   -- , recorded  :: (Seq Motion)
   -- , stats     :: (Maybe Stats)
@@ -116,10 +117,6 @@ initialAppState =
       , showKeyboardShortcuts: false
       }
   -- , env: env
-  , dom: 
-    { ringCenters: Map.empty
-    , ringRadius: 0.0
-    }
   --, stats: Nothing
   --, errors: []
   }
