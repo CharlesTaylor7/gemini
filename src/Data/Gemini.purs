@@ -180,17 +180,6 @@ normalize (Motion motion) = Just $ do
 -}
 
 
--- | Motions
-l :: Cyclic D18 -> Motion
-l amount = Motion { amount, rotation: rotation LeftRing Clockwise}
-
-c :: Cyclic D18 -> Motion
-c amount = Motion { amount, rotation: rotation CenterRing Clockwise }
-  
-r :: Cyclic D18 -> Motion
-r amount = Motion { amount, rotation: rotation RightRing Clockwise }
-
-
 
 type LocationPair = 
   { canonical :: Location

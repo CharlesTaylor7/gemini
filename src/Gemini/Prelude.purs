@@ -45,7 +45,7 @@ import Effect (Effect)
 import Effect.Console (log)
 import Partial.Unsafe (unsafeCrashWith)
 
-import Deku.Attribute (Attribute)
+import Deku.Attribute (Attribute, class Attr)
 import FRP.Event (Event)
 
 import Gemini.Types (AppState)

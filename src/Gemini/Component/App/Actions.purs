@@ -22,6 +22,7 @@ import Web.UIEvent.KeyboardEvent as Event
 
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
+import Effect.Random (randomInt)
 
 
 type KeyboardEvent = { key :: String }
@@ -30,9 +31,9 @@ type Pusher a = a -> Effect Unit
 type Hook a = Effect a /\ Pusher a
 
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
-keyboardEvents :: forall e. Store AppState -> Event (Attribute e)
+keyboardEvents :: Store AppState -> Event.KeyboardEvent -> Effect Unit
 keyboardEvents store =
-  Listener.keyDown_ $ Event.key >>> case _ of
+  Event.key >>> case _ of
     "q" -> apply $ rotation LeftRing AntiClockwise
     "w" -> apply $ rotation LeftRing Clockwise
     "t" -> apply $ rotation CenterRing AntiClockwise
@@ -44,13 +45,15 @@ keyboardEvents store =
       apply :: Rotation -> Effect Unit
       apply = store.modify <<< overGemini <<< applyRotation
 
+      applyRotation :: Rotation -> Gemini -> Gemini
+      applyRotation r = Gemini.applyToGemini $ toMotion r
 
--- | In terms of lenses, this is equivalent to: over _gemini
+      toMotion :: Rotation -> Motion
+      toMotion rotation = Motion { amount: cyclic 1, rotation }
+
+scramble :: forall e. Store AppState -> Effect Unit
+scramble store = do
+
+
 overGemini :: (Gemini -> Gemini) -> AppState -> AppState
 overGemini f s = s { gemini = f s.gemini }
-
-applyRotation :: Rotation -> Gemini -> Gemini
-applyRotation r = Gemini.applyToGemini $ toMotion r
-
-toMotion :: Rotation -> Motion
-toMotion rotation = Motion { amount: cyclic 1, rotation }

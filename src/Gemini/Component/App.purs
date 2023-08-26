@@ -9,7 +9,7 @@ import Effect (Effect)
 import Effect.Console (log)
 
 import Deku.Control (text, text_)
-import Deku.Listeners as Event
+import Deku.Listeners as Listener
 import Deku.Core (Nut, NutWith)
 import Deku.Do as Deku
 import Deku.DOM as D
@@ -43,7 +43,7 @@ component = Deku.do
     </div>
   """) ~~
     { header
-    , attrs: keyboardEvents store <|> autoFocus <|> tabIndex (pure 0)
+    , attrs: Listener.keyDown_ (keyboardEvents store) <|> autoFocus <|> tabIndex (pure 0)
     , puzzle: Puzzle.component store
     , footer
     }

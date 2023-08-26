@@ -5,9 +5,9 @@
 - [x] Discard dom in hmr
 
 - Reimplement ui one piece at a time
-  - [ ] Keyboard controls
+  - [x] Keyboard controls
+  - [ ] Scramble
   - [ ] Mouse dragging
   - [ ] Touch controls
-  - [ ] Scramble
   - [ ] Undo
   - [ ] Recording moves
