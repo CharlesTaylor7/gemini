@@ -55,7 +55,7 @@ keyboardEvents store =
 
 scramble :: forall e. Store AppState -> Effect Unit
 scramble store = do
-  randomInts :: Array Int <- replicateA 1000 $ randomInt 0 5
+  randomInts <- replicateA 1000 $ randomInt 0 5
   let perm = foldMap (\i -> Gemini.toPerm (actions `unsafeIndex` i)) randomInts
   store.modify $ overGemini $ Gemini.applyToGemini perm
   where

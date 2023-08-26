@@ -6,8 +6,8 @@
 
 - Reimplement ui one piece at a time
   - [x] Keyboard controls
-  - [ ] Scramble
+  - [x] Scramble
+  - [ ] Undo
   - [ ] Mouse dragging
   - [ ] Touch controls
-  - [ ] Undo
   - [ ] Recording moves
