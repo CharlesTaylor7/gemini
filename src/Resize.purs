@@ -1,28 +1,38 @@
-module Resize where
+module Resize 
+  ( onResize
+  ) where
 
 import Prelude
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2)
-import Web.DOM (Element)
-import Partial.Unsafe (unsafeCrashWith)
 import FRP.Event (Event, makeEvent)
+import Partial.Unsafe (unsafeCrashWith, unsafePartial)
+import Web.DOM (Element)
 
-foreign import data DomRect :: Type
+
+type Subscribe = (DomRect -> Effect Unit) -> Effect (Effect Unit)
 
 onResize :: Element -> Event DomRect
-onResize el = makeEvent ?callback
-  --unsafeCrashWith ""
-{- What I need is simply to attach an observer to a particular element
--}
+onResize el = makeEvent $ \pusher -> do
 
-{- full sketch of the API
+  pusher =<< getBoundingClientRect el
+
+  ob <- newResizeObserver $ \_ -> 
+    pusher =<< getBoundingClientRect el
+
+  ob # observe el 
+
+  pure $ ob # disconnect
+    
 
 foreign import data Observer :: Type
-foreign import data Entry :: Type
-type Callback = (EffectFn2 (Array Entry) Observer Unit)
 
-foreign import newResizeObserver :: Callback -> Effect Observer
-foreign import observe :: Observer -> Element -> Effect Unit
-foreign import unobserve :: Observer -> Element -> Effect Unit
+
+type Listener = Array { target :: Element } -> Effect Unit
+
+foreign import data DomRect :: Type
+foreign import getBoundingClientRect :: Element -> Effect DomRect
+foreign import newResizeObserver :: Listener -> Effect Observer
+foreign import observe :: Element -> Observer -> Effect Unit
 foreign import disconnect :: Observer -> Effect Unit
--}
+-- foreign import unobserve :: Element -> Observer -> Effect Unit

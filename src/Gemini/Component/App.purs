@@ -4,9 +4,11 @@ module Gemini.Component.App
 
 import Gemini.Prelude
 import Control.Alt ((<|>))
+import Data.Gemini as Gemini
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Console (log)
+import Resize (onResize)
 
 import Deku.Control (text, text_)
 import Deku.Listeners as Listener
@@ -20,8 +22,6 @@ import Deku.Attribute as Attr
 import Deku.Hooks.UseStore (Store, useStore)
 import Deku.Extra (className, autoFocus, tabIndex)
 
-import Data.Gemini as Gemini
-
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.Types (initialAppState, AppState, DomInfo)
@@ -32,6 +32,7 @@ component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini 
   domInfo <- useStore (Nothing :: _ DomInfo)
+  --resize <- onResize
   (pursx :: _ """
     <div class="gemini-app" ~attrs~>
       <div class="main-panel">
