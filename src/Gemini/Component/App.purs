@@ -68,8 +68,8 @@ header store =
 
 footer :: Nut
 footer =
-  D.div [ klass_ "footer" ]
-  [ D.div [ klass_ "explain-controls" ]
+  D.div []
+  [ D.div [ klass_ "text-2xl" ]
     [ D.div__ "Q: Rotate left disk counter clockwise"
     , D.div__ "W: Rotate left disk clockwise"
     , D.div__ "T: Rotate center disk counter clockwise"
@@ -77,59 +77,32 @@ footer =
     , D.div__ "O: Rotate right disk counter clockwise"
     , D.div__ "P: Rotate right disk clockwise"
     ]
-  ]
-
-{-
-.view-source-link {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-end;
-    align-items: end;
-}
-
-.footer {
-    display: flex;
-    justify-content: center;
-}
-
-.link {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    text-decoration: none;
-}
-
-.link > img {
-    height: 20px;
-    padding-right: 5px;
-}
-
-  D.div [ klass_ "links" ]
+  , D.div [ klass_ "fixed bottom-0 left-0" ]
     [ hyperlink
       "./github.png"
       "https://github.com/CharlesTaylor7/gemini"
       "View Source"
     ]
--}
+  ]
 
 hyperlink :: String -> String -> String -> Nut
 hyperlink iconSrc linkUrl display =
   (pursx :: _ """
     <a target="_blank" rel="noopener noreferrer" ~linkAttrs~>
         <img ~imgAttrs~ />
-        ~label~
+        <span ~labelAttrs~>~label~</span>
     </a>
   """) ~~ 
     { linkAttrs: 
-        klass_ "flex items-center p-2" <|>
+        klass_ "flex items-center p-2 underline decoration-sky-500/30" <|>
         href_ linkUrl
     , imgAttrs: 
-        klass_ "h-[20px]" <|>
+        klass_ "h-[20px] m-2" <|>
         D.Src !:= iconSrc
-    , label: text_ display
+    , labelAttrs:
+        klass_ "decoration-sky-500/30"
+    , label: 
+        text_ display
     }
    
 
