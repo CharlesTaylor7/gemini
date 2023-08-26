@@ -1,5 +1,5 @@
-export const getBoundingClientRect = (el) => () => el.getBoundingClientRect();
-export const newResizeObserver = listener => () => new ResizeObserver((entries) => listener(entries)());
-export const observe = (el) => (ob) => () => ob.observe(el);
-export const disconnect = (ob) => () => ob.disconnect();
+export const getBoundingClientRectF = (el) => () => el.getBoundingClientRect();
+export const newResizeObserverF = listener => () => new ResizeObserver((entries) => listener(entries)());
+export const observeF = (el) => (ob) => () => ob.observe(el);
+export const disconnectF = (ob) => () => ob.disconnect();
 

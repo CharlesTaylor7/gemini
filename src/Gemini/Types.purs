@@ -1,7 +1,6 @@
 module Gemini.Types
   ( AppState(..), initialAppState
   , HoverState(..), DragState(..), Options, Env(..), Deployment(..)
-  , DomInfo(..)
   , Confetti(..)
   , Stats(..)
   , Move(..)
@@ -9,8 +8,6 @@ module Gemini.Types
 
 import Prelude
 import Data.Maybe (Maybe(..))
-import Data.Map (Map)
-import Data.Map as Map
 import Data.Gemini (Choice, Chosen, Gemini, Location, Ring, initialGemini)
 import Data.Permutation (Cycles, Cycle)
 import Data.Point (Point)
@@ -44,11 +41,6 @@ type DragState =
   }
 
 
-type DomInfo = 
-  { ringCenters :: Map Ring Point
-  , ringRadius  :: Number
-  }
-
 
 type Options = 
   { showLabels            :: Boolean
@@ -73,9 +65,6 @@ type Env =
 data Deployment
   = Prod
   | Dev
-
-
-
 
 
 type AppState = 

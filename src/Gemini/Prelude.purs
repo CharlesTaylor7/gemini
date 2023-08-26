@@ -10,6 +10,7 @@ module Gemini.Prelude
   , module Data.Set
   , module Data.Map
   , module Data.Maybe
+  , module Data.Point
   , module Data.Foldable
   , module Data.Tuple.Nested
   , module Effect
@@ -38,6 +39,7 @@ import Data.Gemini
   )
 import Data.Set (Set)
 import Data.Map (Map)
+import Data.Point (Point)
 import Data.Maybe (Maybe(..))
 import Data.Foldable (fold, foldMap)
 import Data.Tuple.Nested (type (/\), (/\))
