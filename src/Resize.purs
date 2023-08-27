@@ -25,14 +25,11 @@ observe =
   , listen:
       \el -> do
         let { ref, ob } = observer
-
         -- Unregister any previous elements listened to
         ob # disconnectF
-
         -- Fire once immediately
         pusher <- toEffect $ Ref.read ref
         pusher el
-
         -- Register resize listener
         ob # observeF el
   }

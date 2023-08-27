@@ -29,7 +29,6 @@ import Gemini.Types (initialAppState, AppState)
 import Gemini.Component.App.Actions (keyboardEvents, scramble)
 import Gemini.DomInfo
 
-
 component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini
@@ -51,11 +50,11 @@ component = Deku.do
   )
     ~~
       { header: header gemini
-      , attrs: 
-          Listener.keyDown_ (keyboardEvents gemini) <|> 
-            autoFocus <|> 
-              tabIndex (pure 0) <|>
-                D.Self !:= \e -> resize.listen e
+      , attrs:
+          (D.Self !:= \e -> resize.listen e)
+            <|> autoFocus
+            <|> tabIndex (pure 0)
+            <|> Listener.keyDown_ (keyboardEvents gemini)
       , puzzle: Puzzle.component gemini
       , footer
       }
