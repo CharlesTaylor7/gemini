@@ -48,6 +48,8 @@ import Data.Gemini
   , Motion(..)
   , Ring(..)
   , Location(..)
+  , Choice(..)
+  , Chosen(..)
   )
 import Gemini.Types
   ( Hover(..)
