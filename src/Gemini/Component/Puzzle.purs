@@ -83,35 +83,3 @@ ringClass =
         LeftRing -> "left"
         CenterRing -> "center"
         RightRing -> "right"
-
-{-
-loadDomInfo :: JSM DomInfo
-loadDomInfo = do
-  ringInfo :: [(Ring, Point)] <- for inhabitants $ \ring -> do
-    let selector = ringClass ring # String.words # String.intercalate "." # ("." <>)
-    elem <- jsCall (jsg ("document" :: String)) "querySelector" selector
-    rect <- jsCall elem "getBoundingClientRect" ()
-    width <- rect ! ("width" :: String) >>= fromJSValUnchecked
-    left <- rect ! ("left" :: String) >>= fromJSValUnchecked
-    top <- rect ! ("top" :: String) >>= fromJSValUnchecked
-    let radius = width / 2;
-    pure $ (ring, Point (left + radius) (top + radius))
-
-  let getDiameter :: String -> JSM Double
-      getDiameter selector = do
-        elem <- jsCall (jsg ("document" :: String)) "querySelector" selector
-        rect <- jsCall elem "getBoundingClientRect" ()
-        rect ! ("width" :: String) >>= fromJSValUnchecked
-
-  ringRadius <- do
-    ring <- getDiameter ".ring"
-    disk <- getDiameter ".disk"
-    pure $ (ring - disk) / 2
-
-  pure $
-    DomInfo
-      { ringRadius
-      , ringCenters = ringInfo # Map.fromList
-      }
-
--}
