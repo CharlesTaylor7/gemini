@@ -19,9 +19,8 @@ import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=), unsafeAttribute, AttributeValue(..))
 import Deku.Attribute as Attr
 import Deku.Extra (className, autoFocus, tabIndex)
-import Deku.Hooks (useEffect)
+import Deku.Hooks (useEffect, useRef)
 import Deku.Hooks.UseStore (Store, useStore)
-import FRP.Event as Event
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.DomInfo (DomInfo)
@@ -32,9 +31,8 @@ import Gemini.DomInfo
 component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini
-  domInfo <- useStore (Nothing :: _ DomInfo)
   let resize = Resize.observe
-  useEffect resize.event \_ -> loadDomInfo >>= Just >>> const >>> domInfo.modify
+  domInfo <- useRef initialDomInfo (resize.event `bindToEffect` const loadDomInfo)
   ( pursx ::
       _ """
     <div class="gemini-app" ~attrs~>
