@@ -47,20 +47,22 @@ component = Deku.do
     </div>
   """
   )
-    ~~
-      { header: header gemini
-      , attrs:
-          (D.Self !:= \e -> resize.listen e)
-            <|> autoFocus
-            <|> tabIndex (pure 0)
-            <|> Listener.keyDown_ (keyboardEvents gemini)
-            <|> (D.OnPointermove !:= Attr.cb (onDragUpdate drag))
-            <|> (D.OnPointerup !:= Attr.cb (onDragEnd { gemini, drag }))
-            <|> (D.OnPointerleave !:= Attr.cb (onDragEnd { gemini, drag }))
-            <|> (D.OnPointercancel !:= Attr.cb (onDragEnd { gemini, drag }))
-      , puzzle: Puzzle.component gemini
-      , footer
-      }
+    ~~ let
+        dragEnd = Attr.cb $ onDragEnd { gemini, drag }
+      in
+        { header: header gemini
+        , attrs:
+            (D.Self !:= \e -> resize.listen e)
+              <|> autoFocus
+              <|> tabIndex (pure 0)
+              <|> Listener.keyDown_ (keyboardEvents gemini)
+              <|> (D.OnPointermove !:= Attr.cb (onDragUpdate drag))
+              <|> (D.OnPointerup !:= dragEnd)
+              <|> (D.OnPointerleave !:= dragEnd)
+              <|> (D.OnPointercancel !:= dragEnd)
+        , puzzle: Puzzle.component gemini
+        , footer
+        }
 
 header :: Store Gemini -> Nut
 header store =
