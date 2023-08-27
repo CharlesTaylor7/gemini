@@ -15,7 +15,7 @@ import FRP.Event (Event, makeEvent)
 import Partial.Unsafe (unsafeCrashWith, unsafePartial)
 import Web.DOM (Element)
 
-observe :: { event :: Event DomRect, listen :: Element -> Effect Unit }
+observe :: { event :: Event Element, listen :: Element -> Effect Unit }
 observe = 
   { event: makeEvent \pusher -> do
       let { ref, ob } = observer
@@ -29,7 +29,7 @@ observe =
   } 
 
   where
-    observer :: Observer
+    observer :: Observer Element
     observer = unsafePerformEffect $ do
       ref <- toEffect $ Ref.new mempty
       let 
@@ -37,14 +37,14 @@ observe =
           unsafePartial (
             newResizeObserverF $ \[{ target }] -> do
               pusher <- toEffect $ Ref.read ref
-              pusher =<< getBoundingClientRectF target
+              pusher target
           )
       pure $ { ref, ob }
 
 
-type Observer = 
+type Observer a = 
   { ob :: ForeignObserver
-  , ref :: STRef Global (DomRect -> Effect Unit) 
+  , ref :: STRef Global (a -> Effect Unit) 
   }
 
 foreign import data ForeignObserver :: Type
