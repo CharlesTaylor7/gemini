@@ -78,3 +78,98 @@ unsafePointerEvent = unsafeCoerce
 
 point :: PointerEvent -> Point
 point { clientX, clientY } = Point { x: clientX, y: clientY }
+
+
+{-
+
+
+updateDrag :: Point -> Store -> Store
+updateDrag mouse = execState $ do
+
+  -- update current point to where mouse is
+  (#drag % _Just % #currentPoint .= mouse)
+
+  initialLocation <- preuse $ #drag % _Just % #location
+  dragged <- get <&> dragAngle
+  chosen <- preuse $ #drag % _Just % #chosen
+
+  case (initialLocation, dragged) of
+    (Just (Ambiguous left _), Just (loc, Turns turns)) ->
+      case chosen of
+        -- lock choice
+        Nothing | abs (turns * 18) > 1 ->
+          (#drag % _Just % #chosen ?= if loc == left then ChoseLeft else ChoseRight)
+
+        -- unlock choice
+        Just _  | abs (turns * 18) < 1 ->
+          (#drag % _Just % #chosen .= Nothing)
+
+        -- do nothing
+        _ -> pure ()
+
+    _ -> pure ()
+
+
+endDrag :: MonadJSM m => Point -> Action m ()
+endDrag mouse = do
+  modify $ updateDrag mouse
+  drag <- dragAngle <$> get
+  case drag of
+    Nothing -> pure ()
+    Just (location, theta) -> do
+      (#drag .= Nothing)
+      let ring = location ^. #ring
+      let n = angleToPosition theta
+      let motion = Motion { amount = abs n, rotation = Rotation { ring, direction = Clockwise } }
+      case normalize motion of
+        Nothing     -> pure ()
+        Just motion -> applyMotionToStore motion
+
+
+angleToPosition :: forall n. NonZero n => Angle -> Cyclic n
+angleToPosition (Turns turns) = Cyclic $ floor $ (k * turns) + 0.5
+  where k = fromIntegral $ knownInt @n
+
+
+disambiguate :: Store -> DragState -> Location
+disambiguate store drag =
+  case drag ^. #location of
+    Obvious location -> location
+    Ambiguous loc1 loc2 ->
+      case drag ^. #chosen of
+        Just ChoseLeft -> loc1
+        Just ChoseRight -> loc2
+        Nothing -> do
+          let distanceTo :: Location -> Double
+              distanceTo location = do
+                let radius = store ^. #dom ^. #ringRadius
+                let origin = ringOrigin store (location ^. #ring)
+                let mouse = drag ^. #currentPoint
+                let p = mouse ~~ origin
+                abs (norm p - radius)
+          if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
+
+
+ringOrigin :: Store -> Ring -> Point
+ringOrigin store ring =
+  case store ^? #dom % #ringCenters % ix ring of
+    Just origin -> origin
+    _           -> error "impossible"
+
+-- | angle of current ring being dragged, (via location that disambiguates)
+dragAngle :: Store -> Maybe (Location, Angle)
+dragAngle store =
+  case store ^. #drag of
+    Nothing -> Nothing
+    Just drag -> do
+      let location = disambiguate store drag
+      let angleWith :: Point -> Angle
+          angleWith point = do
+            let origin = ringOrigin store (location ^. #ring)
+            let p = point ~~ origin
+            angleToOrigin p
+
+      let DragState { initialPoint, currentPoint } = drag
+      let currentAngle = angleWith currentPoint ~~ angleWith initialPoint
+      Just $ (location, currentAngle)
+-}
