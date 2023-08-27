@@ -56,6 +56,9 @@ component = Deku.do
             <|> tabIndex (pure 0)
             <|> Listener.keyDown_ (keyboardEvents gemini)
             <|> D.OnPointermove !:= Attr.cb (onDragUpdate drag)
+            <|> D.OnPointerup !:= Attr.cb (onDragEnd { gemini, drag })
+            <|> D.OnPointerleave !:= Attr.cb (onDragEnd { gemini, drag })
+            <|> D.OnPointercancel !:= Attr.cb (onDragEnd { gemini, drag })
       , puzzle: Puzzle.component gemini
       , footer
       }
