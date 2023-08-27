@@ -29,7 +29,7 @@ import Unsafe.Coerce (unsafeCoerce)
 type DragStore
   = Store (Maybe Drag)
 
-onDragStart :: DragStore -> Web.Event -> Effect Unit
+onDragStart :: { drag :: DragStore, location :: Location } -> Web.Event -> Effect Unit
 onDragStart = unsafeCrashWith "TODO"
 
 onDragUpdate :: DragStore -> Web.Event -> Effect Unit

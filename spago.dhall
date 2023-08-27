@@ -19,7 +19,7 @@
   , "type-equality"
   , "control"
   , "partial"
-  , "catenable-lists"
+  -- , "catenable-lists"
   , "strings"
   , "integers"
   , "random"
