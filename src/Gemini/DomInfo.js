@@ -1,8 +1,8 @@
 export const loadDomInfoF = () => ({ 
   ringRadius: ringRadius(),  
-  leftRingCenter: ringCenter(".left.ring")
-  centerRingCenter: ringCenter(".center.ring")
-  rightRingCenter: ringCenter(".right.ring")
+  leftRingCenter: ringCenter(".left.gemini-ring")
+  centerRingCenter: ringCenter(".center.gemini-ring")
+  rightRingCenter: ringCenter(".right.gemini-ring")
 })
 
 
@@ -23,7 +23,7 @@ function getDiameter(selector) {
 }
 
 function ringRadius() {
-  let ring = getDiameter(".ring")
+  let ring = getDiameter(".gemini-ring")
   let disk = getDiameter(".disk")
   return (ring - disk) / 2.0;
 }
