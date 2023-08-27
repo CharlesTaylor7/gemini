@@ -18,7 +18,7 @@ import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, klass, href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
-import Deku.Hooks.UseStore (Store, useStore)
+import Gemini.Store as Store 
 import Deku.Extra (Event, className)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions

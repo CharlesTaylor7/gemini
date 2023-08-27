@@ -13,7 +13,6 @@ import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
 import Deku.Hooks (useState)
-import Deku.Hooks.UseStore (Store)
 import Deku.Listeners as Listener
 import Deku.Extra (className)
 import Data.Array as Array

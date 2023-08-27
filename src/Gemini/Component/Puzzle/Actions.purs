@@ -14,7 +14,6 @@ import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=))
 import Deku.Attribute as Attr
 import Deku.Hooks (useState)
-import Deku.Hooks.UseStore (Store)
 import Deku.Listeners as Listener
 import Deku.Extra (className)
 import Data.Array as Array
@@ -24,11 +23,13 @@ import Data.Angle as Angle
 import Data.Gemini as Gemini
 import Data.Point as Point
 import Data.Gemini.Motions (l, l', c, c', r, r')
+
 import Web.Event.Internal.Types as Web
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Unsafe.Coerce (unsafeCoerce)
 import Gemini.DomInfo
+import Gemini.Store as Store
 
 
 type Props = ( domInfo :: Effect DomInfo, drag :: Store (Maybe Drag), gemini :: Store Gemini )
@@ -46,12 +47,12 @@ onDragStart { drag, location } event =
   where
   mouse = unsafePointerEvent >>> point $ event
 
-onDragUpdate :: {|Props} -> Web.Event -> Effect Unit
+onDragUpdate :: {| Props } -> Web.Event -> Effect Unit
 onDragUpdate drag event = do
   maybe <- drag.ref
   case maybe of
     Nothing -> pure unit
-    Just {} -> do
+    Just drag -> do
       -- | todo: disambiguate ambiguous
       drag.modify
         $ underMaybe
@@ -106,7 +107,7 @@ dragAngle store = do
   {location, angle: currentAngle }
   -}
 
-ringOrigin :: Props -> Ring -> Effect Point
+ringOrigin :: {| Props } -> Ring -> Effect Point
 ringOrigin store ring = 
   store.domInfo <#> \dom -> dom.ringCenter ring
 

@@ -19,6 +19,7 @@ module Gemini.Prelude
   , module Deku.Attribute
   , module FRP.Event
   , module Gemini.Types
+  , module Gemini.Store
   , logAnything
   ) where
 
@@ -40,6 +41,7 @@ import Effect.Console (log)
 import Partial.Unsafe (unsafeCrashWith)
 import Deku.Attribute (Attribute, class Attr)
 import FRP.Event (Event)
+import Gemini.Store (Store)
 import Data.Gemini
   ( Gemini
   , Rotation(..)

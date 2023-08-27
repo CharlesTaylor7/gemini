@@ -20,7 +20,7 @@ import Deku.Attribute (xdata, (!:=), unsafeAttribute, AttributeValue(..))
 import Deku.Attribute as Attr
 import Deku.Extra (className, autoFocus, tabIndex)
 import Deku.Hooks (useEffect, useRef)
-import Deku.Hooks.UseStore (Store, useStore)
+import Gemini.Store (Store, useStore)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.DomInfo (DomInfo)
