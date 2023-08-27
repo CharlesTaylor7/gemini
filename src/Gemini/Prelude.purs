@@ -23,21 +23,12 @@ module Gemini.Prelude
   ) where
 
 import Prelude hiding (class Ring)
-import Debug (spy)
+import Debug (class DebugWarning)
 import Data.Nat
 import Data.Angle (Angle, AngleUnit(..), arctan, as, cosine, sine, (:*))
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
 import Data.Finitary (class Finitary, inhabitants)
 import Data.Group (class Group, invert, pow)
-import Data.Gemini
-  ( Gemini
-  , Rotation(..)
-  , rotation
-  , RotationDirection(..)
-  , Motion(..)
-  , Ring(..)
-  , Location(..)
-  )
 import Data.Set (Set)
 import Data.Map (Map)
 import Data.Point (Point(..))
@@ -49,6 +40,15 @@ import Effect.Console (log)
 import Partial.Unsafe (unsafeCrashWith)
 import Deku.Attribute (Attribute, class Attr)
 import FRP.Event (Event)
+import Data.Gemini
+  ( Gemini
+  , Rotation(..)
+  , rotation
+  , RotationDirection(..)
+  , Motion(..)
+  , Ring(..)
+  , Location(..)
+  )
 import Gemini.Types
   ( Hover(..)
   , Drag(..)
@@ -57,4 +57,7 @@ import Gemini.Types
   , Move(..)
   )
 
-foreign import logAnything :: forall a. String -> a -> Effect Unit
+logAnything :: DebugWarning => forall a. String -> a -> Effect Unit
+logAnything = logAnythingF
+
+foreign import logAnythingF :: forall a. String -> a -> Effect Unit

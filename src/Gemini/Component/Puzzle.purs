@@ -23,7 +23,8 @@ import Deku.Extra (Event, className)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions
 
-type Props = { gemini :: Store Gemini, drag :: Store (Maybe Drag) }
+type Props
+  = { gemini :: Store Gemini, drag :: Store (Maybe Drag) }
 
 component :: Props -> Nut
 component props = Deku.do

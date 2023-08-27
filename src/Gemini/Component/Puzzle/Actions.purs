@@ -30,13 +30,28 @@ type DragStore
   = Store (Maybe Drag)
 
 onDragStart :: { drag :: DragStore, location :: Location } -> Web.Event -> Effect Unit
-onDragStart = unsafeCrashWith "TODO"
+onDragStart { drag, location } event =
+  drag.modify \_ ->
+    Just
+      { location: Gemini.dragRing location
+      , chosen: Nothing
+      , initialPoint: mouse
+      , currentPoint: mouse
+      }
+
+  where
+  mouse = unsafePointerEvent >>> point $ event
 
 onDragUpdate :: DragStore -> Web.Event -> Effect Unit
-onDragUpdate = unsafeCrashWith "todo"
+onDragUpdate drag event = do
+  maybe <- drag.ref
+  case maybe of
+    Nothing -> pure unit
+    Just {} ->
+      pure unit
 
 onDragEnd :: { drag :: DragStore, gemini :: Store Gemini } -> Web.Event -> Effect Unit
-onDragEnd = unsafeCrashWith "TODO"
+onDragEnd { drag, gemini } event = pure unit
 
 -- Point event utilities
 type PointerEvent
