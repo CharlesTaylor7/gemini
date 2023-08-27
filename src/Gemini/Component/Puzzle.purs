@@ -21,9 +21,12 @@ import Deku.Attribute as Attr
 import Deku.Hooks.UseStore (Store, useStore)
 import Deku.Extra (Event, className)
 import Gemini.Env (Env)
+import Gemini.Component.Puzzle.Actions
 
-component :: Store Gemini -> Nut
-component store = Deku.do
+type Props = { gemini :: Store Gemini, drag :: Store (Maybe Drag) }
+
+component :: Props -> Nut
+component props = Deku.do
   D.div [ klass_ "gemini" ]
     $ Array.concat
         [ [ D.div [ klass_ "background" ] [] ]
@@ -42,13 +45,13 @@ component store = Deku.do
           let
             location = Location { ring, position }
           in
-            disk location store.subscribe
+            disk location props
 
-disk :: Location -> Event Gemini -> Nut
-disk location@(Location { position }) gemini =
+disk :: Location -> Props -> Nut
+disk location@(Location { position }) props =
   let
     color =
-      gemini
+      props.gemini.subscribe
         <#> geminiLookup location
         >>> _.color
         >>> show
@@ -63,6 +66,7 @@ disk location@(Location { position }) gemini =
     D.div
       [ klass (map (append "disk ") color)
       , D.Style !:= fold [ "left: ", show x, "%; top: ", show y, "%" ]
+      , D.OnPointerdown !:= Attr.cb (onDragStart props.drag)
       ]
       []
 {-
