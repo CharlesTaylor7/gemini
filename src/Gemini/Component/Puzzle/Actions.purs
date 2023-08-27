@@ -47,11 +47,24 @@ onDragUpdate drag event = do
   maybe <- drag.ref
   case maybe of
     Nothing -> pure unit
-    Just {} ->
-      pure unit
+    Just {} -> do
+      -- | todo: disambiguate ambiguous
+      drag.modify
+        $ underMaybe
+        $ \drag@{ location, chosen, initialPoint, currentPoint } ->
+            drag
+              { currentPoint = mouse
+              }
+
+  where
+  mouse = unsafePointerEvent >>> point $ event
 
 onDragEnd :: { drag :: DragStore, gemini :: Store Gemini } -> Web.Event -> Effect Unit
 onDragEnd { drag, gemini } event = pure unit
+
+underMaybe :: forall a. (a -> a) -> (Maybe a -> Maybe a)
+underMaybe _ Nothing = Nothing
+underMaybe f (Just a) = Just (f a)
 
 -- Point event utilities
 type PointerEvent

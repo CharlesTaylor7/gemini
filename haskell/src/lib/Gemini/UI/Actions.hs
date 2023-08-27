@@ -199,6 +199,7 @@ startDrag location mouse =
 
 updateDrag :: Point -> Store -> Store
 updateDrag mouse = execState $ do
+
   -- update current point to where mouse is
   (#drag % _Just % #currentPoint .= mouse)
 
