@@ -15,9 +15,11 @@
     "clean:parcel": "rm -rf .parcel/ .parcel-cache/"
   },
   "devDependencies": {
+    "@rowtype-yoga/prettier-plugin-purescript": "^1.11.2",
     "esbuild": "^0.19.2",
     "parcel": "^2.9.3",
     "parcel-reporter-static-files-copy": "^1.5.2",
+    "prettier": "^3.0.2",
     "purescript": "^0.15.10",
     "purescript-psa": "^0.8.2",
     "spago": "^0.21.0",
