@@ -1,4 +1,4 @@
-module Demo 
+module Demo
   ( component
   ) where
 
@@ -6,7 +6,6 @@ import Prelude
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Console (log)
-
 import Deku.Control (text)
 import Deku.Listeners as Event
 import Deku.Core (Nut)
@@ -17,7 +16,6 @@ import Deku.Attributes as Attr
 import Deku.Attribute (xdata)
 import Deku.Hooks (useState)
 
-
 component :: Nut
 component = Deku.do
   setCounter /\ counter <- useState 0
@@ -27,11 +25,14 @@ component = Deku.do
     , pure (xdata "testid" "my-testid")
     ]
     [ text (show <$> counter)
-    , (pursx :: _ Template) ~~
-        { adj: 
-            text $
-            counter <#> \c -> if c `mod` 2 == 0 then "even" else "odd"
-        }
+    , (pursx :: _ Template)
+        ~~
+          { adj:
+              text
+                $ counter
+                <#> \c -> if c `mod` 2 == 0 then "even" else "odd"
+          }
     ]
 
-type Template = "<span>~adj~</span>"
+type Template
+  = "<span>~adj~</span>"

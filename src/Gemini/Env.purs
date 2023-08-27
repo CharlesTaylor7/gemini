@@ -1,8 +1,7 @@
-module Gemini.Env 
+module Gemini.Env
   ( Env
-  )
-  where
+  ) where
 
-type Env = {
-  commit :: String
-}
+type Env
+  = { commit :: String
+    }

@@ -1,21 +1,23 @@
 module Data.Cyclic
-  ( Cyclic, cyclic, unCyclic
-  , compareCyclic, CyclicOrdering(..)
+  ( Cyclic
+  , cyclic
+  , unCyclic
+  , compareCyclic
+  , CyclicOrdering(..)
   , distance
   ) where
 
 import Prelude
-
 import Data.Finitary (class Finitary)
-import Data.Group    (class Group)
-import Data.Nat      (class Nat, class Pos, proxy, knownInt, natsUnder)
+import Data.Group (class Group)
+import Data.Nat (class Nat, class Pos, proxy, knownInt, natsUnder)
 import Safe.Coerce (coerce)
-
 
 -- | Cyclic group of order n
 -- Note: Cyclic has an ord instance because its required to put the data into a map.
 -- For relative comparisons, consider  using compareCyclic instead of compare
-newtype Cyclic (n :: Type) = MkCyclic Int
+newtype Cyclic (n :: Type)
+  = MkCyclic Int
 derive instance Eq (Cyclic n)
 
 unCyclic :: forall n. Cyclic n -> Int
@@ -30,7 +32,6 @@ instance Pos n => Semiring (Cyclic n) where
   one = cyclic 1
   add (MkCyclic x) (MkCyclic y) = cyclic $ x + y
   mul (MkCyclic x) (MkCyclic y) = cyclic $ x * y
-
 
 instance Pos n => Ring (Cyclic n) where
   sub (MkCyclic x) (MkCyclic y) = cyclic $ x - y
@@ -53,11 +54,15 @@ compareCyclic a b =
     k = knownInt (proxy :: _ n)
     halfway = k `div` 2
     difference = unCyclic $ b - a
-  in 
-    if difference == zero then Equal
-    else if even k && difference == halfway then Opposite
-    else if difference <= halfway           then Precedes
-    else Exceeds
+  in
+    if difference == zero then
+      Equal
+    else if even k && difference == halfway then
+      Opposite
+    else if difference <= halfway then
+      Precedes
+    else
+      Exceeds
 
 even :: Int -> Boolean
 even = (_ `mod` 2) >>> eq 0

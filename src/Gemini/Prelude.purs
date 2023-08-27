@@ -4,8 +4,8 @@ module Gemini.Prelude
   , module Data.Nat
   , module Data.Angle
   , module Data.Cyclic
-  , module Data.Finitary 
-  , module Data.Group 
+  , module Data.Finitary
+  , module Data.Group
   , module Data.Gemini
   , module Data.Set
   , module Data.Map
@@ -28,7 +28,7 @@ import Data.Angle (Angle, AngleUnit(..), arctan, as, cosine, sine, (:*))
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
 import Data.Finitary (class Finitary, inhabitants)
 import Data.Group (class Group, invert, pow)
-import Data.Gemini 
+import Data.Gemini
   ( Gemini
   , Rotation(..)
   , rotation
@@ -46,8 +46,6 @@ import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)
 import Effect.Console (log)
 import Partial.Unsafe (unsafeCrashWith)
-
 import Deku.Attribute (Attribute, class Attr)
 import FRP.Event (Event)
-
 import Gemini.Types (AppState)

@@ -1,6 +1,11 @@
 module Gemini.Types
-  ( AppState(..), initialAppState
-  , HoverState(..), DragState(..), Options, Env(..), Deployment(..)
+  ( AppState(..)
+  , initialAppState
+  , HoverState(..)
+  , DragState(..)
+  , Options
+  , Env(..)
+  , Deployment(..)
   , Confetti(..)
   , Stats(..)
   , Move(..)
@@ -13,80 +18,74 @@ import Data.Permutation (Cycles, Cycle)
 import Data.Point (Point)
 import Data.Timestamp (Timestamp)
 
+type Stats
+  = { scrambledAt :: Timestamp
+    , solvedAt :: (Maybe Timestamp)
+    }
 
-type Stats = 
-  { scrambledAt :: Timestamp
-  , solvedAt    :: (Maybe Timestamp)
-  }
+type HoverState
+  = { move :: Move
+    , cycle :: Maybe (Cycle Location)
+    }
 
-
-type HoverState = 
-  { move  :: Move
-  , cycle :: Maybe (Cycle Location)
-  }
-
-type Move = {}
+type Move
+  = {}
 {- 
 type Move = 
   { motions    :: (Seq Motion)
   , moveCycles :: (Cycles Location)
   }
 -}
+type DragState
+  = { location :: Choice Location
+    , chosen :: Maybe Chosen
+    , initialPoint :: Point
+    , currentPoint :: Point
+    }
 
-type DragState = 
-  { location     :: Choice Location
-  , chosen       :: Maybe Chosen
-  , initialPoint :: Point
-  , currentPoint :: Point
-  }
+type Options
+  = { showLabels :: Boolean
+    , showKeyboardShortcuts :: Boolean
+    , recording :: Boolean
+    , confetti :: Confetti
+    , highlightPairs :: Boolean
+    , mobile :: Boolean
+    }
 
-
-
-type Options = 
-  { showLabels            :: Boolean
-  , showKeyboardShortcuts :: Boolean
-  , recording             :: Boolean
-  , confetti              :: Confetti
-  , highlightPairs        :: Boolean
-  , mobile                :: Boolean
-  }
-
-
-data Confetti = Off | FadeIn | FadeOut
+data Confetti
+  = Off
+  | FadeIn
+  | FadeOut
 derive instance Eq Confetti
 
-type Env = 
-  { port       :: Int
-  , commit     :: String
-  , deployment :: Deployment
-  }
-
+type Env
+  = { port :: Int
+    , commit :: String
+    , deployment :: Deployment
+    }
 
 data Deployment
   = Prod
   | Dev
 
-
-type AppState = 
-  { gemini    :: Gemini
-  -- , history   :: (Seq Motion)
-  -- , buffered  :: (Seq Motion)
-  -- , animation :: Animation
-  , hover     :: (Maybe HoverState)
-  , drag      :: (Maybe DragState)
-  , options   :: Options
-  -- , env       :: Env
-  -- , moves     :: (Seq Move)
-  -- , recorded  :: (Seq Motion)
-  -- , stats     :: (Maybe Stats)
-  -- , errors    :: Array String
-  }
-
-
+type AppState
+  = { gemini :: Gemini
+    -- , history   :: (Seq Motion)
+    -- , buffered  :: (Seq Motion)
+    -- , animation :: Animation
+    , hover :: (Maybe HoverState)
+    , drag :: (Maybe DragState)
+    , options :: Options
+    -- , env       :: Env
+    -- , moves     :: (Seq Move)
+    -- , recorded  :: (Seq Motion)
+    -- , stats     :: (Maybe Stats)
+    -- , errors    :: Array String
+    }
 
 -- | Initial state of the app
 initialAppState :: AppState
-initialAppState = 
+initialAppState =
   { gemini: initialGemini
   -- | Every isntance of Seq, can probably be replaced with CatQueue 
   -- | a double ended catenable queue
@@ -97,7 +96,7 @@ initialAppState =
   -- , moves: Seq.Empty
   , hover: Nothing
   , drag: Nothing
-  , options: 
+  , options:
       { showLabels: false
       , recording: false
       , mobile: false
