@@ -1,14 +1,11 @@
-- Port static version of the app
-  - [x] Puzzle disks
-  - [x] Footer
-  - [x] View on Github
-- [x] Discard dom in hmr
-
-- Reimplement ui one piece at a time
+- [x] Port static version of the app
+- Reimplement features one piece at a time
   - [x] Keyboard controls
   - [x] Scramble
   - [ ] Mouse dragging
   - [ ] Touch controls
   - [ ] Recording moves
   - [ ] Undo
-- On mobile, detect device orientation and reflow format
+  - [ ] Confetti drop on Solve
+
+- [ ] On mobile, detect device orientation and reflow format
