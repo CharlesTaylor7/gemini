@@ -11,10 +11,14 @@ import Control.Monad.ST.Ref as Ref
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2)
 import Effect.Unsafe (unsafePerformEffect)
+import Effect.Console as Console
 import FRP.Event (Event, makeEvent)
 import Partial.Unsafe (unsafeCrashWith, unsafePartial)
 import Web.DOM (Element)
 
+-- | the listen callback, sets up the source of the event.
+-- the event fires immediately after listening,
+-- and whenever the element is resized inside the DOM
 observe :: { event :: Event Element, listen :: Element -> Effect Unit }
 observe =
   { event:
@@ -38,8 +42,11 @@ observe =
   observer :: Observer Element
   observer = { ref, ob }
     where
+    -- Technically violates referential transparency, but the JS output is correct...
     ref = unsafePerformEffect $ toEffect $ Ref.new mempty
     ob =
+      -- Safe, because the callback would never run with an empty array.
+      -- The callback only runs when an element resizes
       unsafePartial
         ( newResizeObserverF
             $ \[ { target } ] -> do
