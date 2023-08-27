@@ -32,7 +32,6 @@ component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini
   drag <- useStore (Nothing :: _ Drag)
-
   let resize = Resize.observe
   domInfo <- useRef initialDomInfo (resize.event `bindToEffect` const loadDomInfo)
   ( pursx ::
@@ -55,10 +54,10 @@ component = Deku.do
             <|> autoFocus
             <|> tabIndex (pure 0)
             <|> Listener.keyDown_ (keyboardEvents gemini)
-            <|> D.OnPointermove !:= Attr.cb (onDragUpdate drag)
-            <|> D.OnPointerup !:= Attr.cb (onDragEnd { gemini, drag })
-            <|> D.OnPointerleave !:= Attr.cb (onDragEnd { gemini, drag })
-            <|> D.OnPointercancel !:= Attr.cb (onDragEnd { gemini, drag })
+            <|> (D.OnPointermove !:= Attr.cb (onDragUpdate drag))
+            <|> (D.OnPointerup !:= Attr.cb (onDragEnd { gemini, drag }))
+            <|> (D.OnPointerleave !:= Attr.cb (onDragEnd { gemini, drag }))
+            <|> (D.OnPointercancel !:= Attr.cb (onDragEnd { gemini, drag }))
       , puzzle: Puzzle.component gemini
       , footer
       }

@@ -14,10 +14,10 @@ initialDomInfo = { ringRadius: 0.0, ringCenter: mempty }
 
 -- | copied from FRP.Event v2.4.0
 bindToEffect :: forall a b. Event a -> (a -> Effect b) -> Event b
-bindToEffect e f = Event.makeEvent \k -> do
-  u <- Event.subscribe e (f >=> k)
-  pure u
-
+bindToEffect e f =
+  Event.makeEvent \k -> do
+    u <- Event.subscribe e (f >=> k)
+    pure u
 
 type DomInfo
   = { ringCenter :: Ring -> Point

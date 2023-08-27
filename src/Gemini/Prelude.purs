@@ -49,8 +49,7 @@ import Effect.Console (log)
 import Partial.Unsafe (unsafeCrashWith)
 import Deku.Attribute (Attribute, class Attr)
 import FRP.Event (Event)
-import Gemini.Types 
-
+import Gemini.Types
   ( Hover(..)
   , Drag(..)
   , Confetti(..)
@@ -58,4 +57,4 @@ import Gemini.Types
   , Move(..)
   )
 
-foreign import logAnything :: forall a. a -> Effect Unit
+foreign import logAnything :: forall a. String -> a -> Effect Unit

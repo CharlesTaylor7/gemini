@@ -1,1 +1,2 @@
-export const logAnything = (something) => () => console.log(something);
+export const logAnything = (tag) => (something) => () =>
+  console.log(tag, something);

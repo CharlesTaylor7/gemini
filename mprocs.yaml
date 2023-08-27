@@ -5,6 +5,10 @@ procs:
   Dev Server:
     shell: yarn watch:js
 
+  Format:
+    shell: yarn format
+    autostart: false
+
   Tailwind:
     shell: yarn tailwind --watch
     autostart: false

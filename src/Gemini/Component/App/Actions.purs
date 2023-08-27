@@ -27,7 +27,6 @@ import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Effect.Random (randomInt)
 
-
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
 keyboardEvents :: Store Gemini -> Event.KeyboardEvent -> Effect Unit
 keyboardEvents store =
