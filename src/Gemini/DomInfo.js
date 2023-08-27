@@ -5,7 +5,6 @@ export const loadDomInfoF = () => ({
   rightRingCenter: ringCenter(".right.gemini-ring")
 })
 
-
 function ringCenter(selector) {
   let elem = document.querySelector(selector)
   let rect = elem.getBoundingClientRect()

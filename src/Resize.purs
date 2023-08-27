@@ -30,16 +30,14 @@ observe =
 
   where
     observer :: Observer Element
-    observer = unsafePerformEffect $ do
-      ref <- toEffect $ Ref.new mempty
-      let 
-        ob = 
-          unsafePartial (
-            newResizeObserverF $ \[{ target }] -> do
-              pusher <- toEffect $ Ref.read ref
-              pusher target
-          )
-      pure $ { ref, ob }
+    observer = { ref, ob }
+      where
+        ref = unsafePerformEffect $ toEffect $ Ref.new mempty
+        ob = unsafePartial (
+          newResizeObserverF $ \[{ target }] -> do
+            pusher <- toEffect $ Ref.read ref
+            pusher target
+        )
 
 
 type Observer a = 
