@@ -34,9 +34,9 @@ import Gemini.Store as Store
 
 type Props = ( domInfo :: Effect DomInfo, drag :: Store (Maybe Drag), gemini :: Store Gemini )
 
-onDragStart :: { location :: Location | Props } -> Web.Event -> Effect Unit
+onDragStart :: { location :: Location, drag :: Store (Maybe Drag) } -> Web.Event -> Effect Unit
 onDragStart { drag, location } event =
-  drag.modify \_ ->
+  Store.set drag $
     Just
       { location: Gemini.dragRing location
       , chosen: Nothing
@@ -48,16 +48,14 @@ onDragStart { drag, location } event =
   mouse = unsafePointerEvent >>> point $ event
 
 onDragUpdate :: {| Props } -> Web.Event -> Effect Unit
-onDragUpdate drag event = do
-  maybe <- drag.ref
+onDragUpdate { drag } event = do
+  maybe <- Store.read drag
   case maybe of
     Nothing -> pure unit
-    Just drag -> do
-      -- | todo: disambiguate ambiguous
-      drag.modify
-        $ underMaybe
-        $ \drag@{ location, chosen, initialPoint, currentPoint } ->
-            drag
+    -- | todo: disambiguate ambiguous
+    Just d -> do
+     Store.set drag $ Just $
+            d
               { currentPoint = mouse
               }
 
@@ -108,19 +106,22 @@ dragAngle store = do
   -}
 
 ringOrigin :: {| Props } -> Ring -> Effect Point
-ringOrigin store ring = 
-  store.domInfo <#> \dom -> dom.ringCenter ring
+ringOrigin { domInfo } ring = 
+  domInfo <#> \dom -> dom.ringCenter ring
 
 
-disambiguate :: Store -> Effect Location
-disambiguate { domInfo, drag } = do
+disambiguate :: Drag -> Location
+disambiguate drag = do
   case drag.location of
     Obvious location -> location
     Ambiguous loc1 loc2 ->
       case drag.chosen of
         Just ChoseLeft -> loc1
         Just ChoseRight -> loc2
-        Nothing -> unsafeCrashWith "Todo"
+        -- | left wins
+        Nothing -> loc1
+
+        --unsafeCrashWith "Todo"
         {-
           do
           let distanceTo :: Location -> Double

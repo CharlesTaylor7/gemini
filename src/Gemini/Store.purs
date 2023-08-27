@@ -21,6 +21,7 @@ modify :: forall a. Store a -> (a -> a) -> Effect Unit
 modify (Store { ref, pusher }) transform =
   ref >>= (transform >>> pusher)
 
+
 set :: forall a. Store a -> a -> Effect Unit
 set (Store { pusher }) value =
   pusher value 
@@ -29,8 +30,10 @@ set (Store { pusher }) value =
 subscribe :: forall a. Store a -> Event a
 subscribe (Store { event }) = event
 
+
 read :: forall a. Store a -> Effect a
 read (Store { ref }) = ref
+
 
 useStore ::
   forall a.

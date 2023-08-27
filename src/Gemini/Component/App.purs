@@ -48,7 +48,8 @@ component = Deku.do
   """
   )
     ~~ let
-        dragEnd = Attr.cb $ onDragEnd { gemini, drag }
+        props = { gemini, drag, domInfo }
+        dragEnd = Attr.cb $ onDragEnd props
       in
         { header: header gemini
         , attrs:
@@ -56,7 +57,7 @@ component = Deku.do
               <|> autoFocus
               <|> tabIndex (pure 0)
               <|> Listener.keyDown_ (keyboardEvents gemini)
-              <|> (D.OnPointermove !:= Attr.cb (onDragUpdate drag))
+              <|> (D.OnPointermove !:= Attr.cb (onDragUpdate props))
               <|> (D.OnPointerup !:= dragEnd)
               <|> (D.OnPointerleave !:= dragEnd)
               <|> (D.OnPointercancel !:= dragEnd)

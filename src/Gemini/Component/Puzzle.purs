@@ -52,7 +52,7 @@ disk :: Location -> Props -> Nut
 disk location@(Location { position }) props =
   let
     color =
-      props.gemini.subscribe
+      Store.subscribe props.gemini
         <#> geminiLookup location
         >>> _.color
         >>> show

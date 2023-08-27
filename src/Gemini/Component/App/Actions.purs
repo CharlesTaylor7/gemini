@@ -5,9 +5,6 @@ module Gemini.Component.App.Actions
 
 import Gemini.Prelude
 import Deku.Control (text, text_)
-import Deku.Core (Nut, NutWith)
-import Deku.Do as Deku
-import Deku.DOM as D
 import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=))
@@ -24,6 +21,7 @@ import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
+import Gemini.Store as Store
 import Effect.Random (randomInt)
 
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
@@ -40,13 +38,13 @@ keyboardEvents store =
         key -> log key
   where
   apply :: Motion -> Effect Unit
-  apply = store.modify <<< Gemini.applyToGemini
+  apply = Store.modify store <<< Gemini.applyToGemini
 
 scramble :: Store Gemini -> Effect Unit
-scramble store = do
+scramble gemini = do
   randomInts :: Array _ <- replicateA 1000 $ randomInt 0 5
   let perm = foldMap (\i -> Gemini.toPerm (actions `unsafeIndex` i)) randomInts
-  store.modify $ Gemini.applyToGemini perm
+  Store.modify gemini $ Gemini.applyToGemini perm
   where
   actions = [ l 1, l' 1, c 1, c' 1, r 1, r' 1 ]
 
