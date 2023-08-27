@@ -18,19 +18,24 @@ import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, href_)
 import Deku.Attribute (xdata, (!:=), unsafeAttribute, AttributeValue(..))
 import Deku.Attribute as Attr
-import Deku.Hooks.UseStore (Store, useStore)
 import Deku.Extra (className, autoFocus, tabIndex)
+import Deku.Hooks (useEffect)
+import Deku.Hooks.UseStore (Store, useStore)
+import FRP.Event as Event
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.DomInfo (DomInfo)
 import Gemini.Types (initialAppState, AppState)
 import Gemini.Component.App.Actions (keyboardEvents, scramble)
+import Gemini.DomInfo
+
 
 component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini
   domInfo <- useStore (Nothing :: _ DomInfo)
   let resize = Resize.observe
+  useEffect resize.event \_ -> loadDomInfo >>= Just >>> const >>> domInfo.modify
   ( pursx ::
       _ """
     <div class="gemini-app" ~attrs~>
@@ -46,7 +51,11 @@ component = Deku.do
   )
     ~~
       { header: header gemini
-      , attrs: Listener.keyDown_ (keyboardEvents gemini) <|> autoFocus <|> tabIndex (pure 0)
+      , attrs: 
+          Listener.keyDown_ (keyboardEvents gemini) <|> 
+            autoFocus <|> 
+              tabIndex (pure 0) <|>
+                D.Self !:= \e -> resize.listen e
       , puzzle: Puzzle.component gemini
       , footer
       }

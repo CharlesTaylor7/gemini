@@ -19,6 +19,7 @@ module Gemini.Prelude
   , module Deku.Attribute
   , module FRP.Event
   , module Gemini.Types
+  , logAnything
   ) where
 
 import Prelude hiding (class Ring)
@@ -49,3 +50,5 @@ import Partial.Unsafe (unsafeCrashWith)
 import Deku.Attribute (Attribute, class Attr)
 import FRP.Event (Event)
 import Gemini.Types (AppState)
+
+foreign import logAnything :: forall a. a -> Effect Unit

@@ -5,7 +5,7 @@ module Resize
 
 import Prelude
 import Control.Monad.ST
-import Control.Monad.ST.Global
+import Control.Monad.ST.Global (Global, toEffect)
 import Control.Monad.ST.Ref (STRef)
 import Control.Monad.ST.Ref as Ref
 import Effect (Effect)
@@ -24,8 +24,16 @@ observe =
         pure $ ob # disconnectF
   , listen:
       \el -> do
-        let { ob } = observer
+        let { ref, ob } = observer
+
+        -- Unregister any previous elements listened to
         ob # disconnectF
+
+        -- Fire once immediately
+        pusher <- toEffect $ Ref.read ref
+        pusher el
+
+        -- Register resize listener
         ob # observeF el
   }
 
