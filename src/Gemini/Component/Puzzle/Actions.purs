@@ -1,5 +1,7 @@
 module Gemini.Component.Puzzle.Actions
-  ( drag
+  ( onDragStart
+  , onDragUpdate
+  , onDragEnd
   ) where
 
 import Gemini.Prelude
@@ -19,13 +21,33 @@ import Data.Array as Array
 import Data.Unfoldable
 import Data.Gemini as Gemini
 import Data.Gemini.Motions (l, l', c, c', r, r')
-import Web.UIEvent.KeyboardEvent as Event
+
+import Web.Event.Internal.Types as Web
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
-import Gemini.Env (Env)
-import Gemini.Component.Puzzle as Puzzle
-import Effect.Random (randomInt)
+import Unsafe.Coerce (unsafeCoerce)
 
+type DragStore = Store (Maybe Drag)
 
-drag :: Int
-drag = 42
+onDragStart :: DragStore -> Web.Event -> Effect Unit
+onDragStart = unsafeCrashWith "TODO"
+
+onDragUpdate :: DragStore -> Web.Event -> Effect Unit
+onDragUpdate = unsafeCrashWith "todo"
+
+onDragEnd :: { drag :: DragStore, gemini :: Store Gemini } -> Web.Event -> Effect Unit
+onDragEnd = unsafeCrashWith "TODO"
+
+-- Point event utilities
+
+type PointerEvent = {
+  clientX :: Number,
+  clientY :: Number
+}
+
+-- given a mouse event / pointer event, gets the location of the event
+unsafePointerEvent :: Web.Event -> PointerEvent
+unsafePointerEvent = unsafeCoerce
+
+point :: PointerEvent -> Point
+point { clientX, clientY } = Point { x: clientX, y: clientY }

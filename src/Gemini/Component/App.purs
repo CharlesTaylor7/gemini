@@ -24,13 +24,15 @@ import Deku.Hooks.UseStore (Store, useStore)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.DomInfo (DomInfo)
-import Gemini.Types (initialAppState, AppState)
-import Gemini.Component.App.Actions (keyboardEvents, scramble)
+import Gemini.Component.App.Actions
+import Gemini.Component.Puzzle.Actions
 import Gemini.DomInfo
 
 component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini
+  drag <- useStore (Nothing :: _ Drag)
+
   let resize = Resize.observe
   domInfo <- useRef initialDomInfo (resize.event `bindToEffect` const loadDomInfo)
   ( pursx ::
@@ -53,6 +55,7 @@ component = Deku.do
             <|> autoFocus
             <|> tabIndex (pure 0)
             <|> Listener.keyDown_ (keyboardEvents gemini)
+            <|> D.OnPointermove !:= Attr.cb (onDragUpdate drag)
       , puzzle: Puzzle.component gemini
       , footer
       }

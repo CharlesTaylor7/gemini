@@ -40,7 +40,7 @@ import Data.Gemini
   )
 import Data.Set (Set)
 import Data.Map (Map)
-import Data.Point (Point)
+import Data.Point (Point(..))
 import Data.Maybe (Maybe(..))
 import Data.Foldable (fold, foldMap)
 import Data.Tuple.Nested (type (/\), (/\))
@@ -49,6 +49,13 @@ import Effect.Console (log)
 import Partial.Unsafe (unsafeCrashWith)
 import Deku.Attribute (Attribute, class Attr)
 import FRP.Event (Event)
-import Gemini.Types (AppState)
+import Gemini.Types 
+
+  ( Hover(..)
+  , Drag(..)
+  , Confetti(..)
+  , Stats(..)
+  , Move(..)
+  )
 
 foreign import logAnything :: forall a. a -> Effect Unit

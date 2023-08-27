@@ -47,3 +47,4 @@ onDragEnd :: MonadJSM m => Prop m Store
 onDragEnd = listenerProp $ \_ event -> do
   mouse <- mousePosition event
   pure $ Actions.run $ Actions.endDrag mouse
+

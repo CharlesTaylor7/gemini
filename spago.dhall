@@ -25,8 +25,10 @@
   , "random"
   , "debug"
   , "web-uievents"
+  , "web-events"
   , "web-dom"
   , "st"
+  , "unsafe-coerce"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
