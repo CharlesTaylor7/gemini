@@ -574,19 +574,6 @@ video {
   align-items: center;
 }
 
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.border {
-  border-width: 1px;
-}
-
-.bg-blue-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(191 219 254 / var(--tw-bg-opacity));
-}
-
 .p-2 {
   padding: 0.5rem;
 }
