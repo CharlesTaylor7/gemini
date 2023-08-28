@@ -6,10 +6,9 @@ import Gemini.Prelude
 import Gemini.Store (Store, useStore)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
-import Gemini.DomInfo (DomInfo)
+import Gemini.DomInfo (DomInfo, initialDomInfo, bindToEffect, loadDomInfo)
 import Gemini.Component.App.Actions
 import Gemini.Component.Puzzle.Actions
-import Gemini.DomInfo
 import Data.Gemini as Gemini
 import Deku.Do as Deku
 import Deku.DOM as D
@@ -101,11 +100,10 @@ hyperlink iconSrc linkUrl display =
     ~~
       { linkAttrs:
           klass_ "flex items-center p-2 underline decoration-sky-500/30"
-            <|> href_ linkUrl
+            <|> (D.Href !:= linkUrl)
       , imgAttrs:
           klass_ "h-[20px] m-2"
-            <|> D.Src
-            !:= iconSrc
+            <|> (D.Src !:= iconSrc)
       , labelAttrs:
           klass_ "decoration-sky-500/30"
       , label:

@@ -5,17 +5,7 @@ module Gemini.Component.Puzzle.Actions
   ) where
 
 import Gemini.Prelude
-import Deku.Control (text, text_)
-import Deku.Core (Nut, NutWith)
 import Deku.Do as Deku
-import Deku.DOM as D
-import Deku.Pursx (pursx, (~~), (~!~))
-import Deku.Attributes (klass_, href_)
-import Deku.Attribute (xdata, (!:=))
-import Deku.Attribute as Attr
-import Deku.Hooks (useState)
-import Deku.Listeners as Listener
-import Deku.Extra (className)
 import Data.Array as Array
 import Data.Unfoldable
 import Data.Int as Int
@@ -67,9 +57,6 @@ onDragEnd { drag, gemini } event = do
   where
   mouse = point $ event
 
-underMaybe :: forall a. (a -> a) -> (Maybe a -> Maybe a)
-underMaybe _ Nothing = Nothing
-underMaybe f (Just a) = Just (f a)
 
 point :: PointerEvent -> Point
 point { clientX, clientY } = Point { x: clientX, y: clientY }

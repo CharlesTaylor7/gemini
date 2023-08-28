@@ -2,25 +2,16 @@ module Gemini.Component.Puzzle
   ( component
   ) where
 
-import Gemini.Prelude hiding (fold)
-import Data.Foldable (fold)
+import Gemini.Prelude 
 import Data.Array as Array
 import Data.Int as Int
 import Data.Map as Map
 import Data.Set as Set
 import Data.String.Common as String
 import Data.Gemini (geminiLookup)
-import Deku.Control (text, text_)
-import Deku.Listeners as Event
-import Deku.Core (Nut, NutWith)
 import Deku.Do as Deku
 import Deku.DOM as D
-import Deku.Pursx (pursx, (~~), (~!~))
-import Deku.Attributes (klass_, klass, href_)
-import Deku.Attribute (xdata, (!:=), attr)
-import Deku.Attribute as Attr
 import Gemini.Store as Store
-import Deku.Extra (Event, className)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions
 
@@ -76,10 +67,8 @@ disk location@(Location { position }) props =
         }
 
 {-
-
 hiddenLocations :: Set Location
 hiddenLocations = ambiguousLocations # map _.alternate
-
 -}
 angleOnCircle :: forall n. Pos n => Cyclic n -> Angle
 angleOnCircle k = turns <> -90.0 :* Degrees
