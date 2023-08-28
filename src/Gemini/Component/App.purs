@@ -10,11 +10,9 @@ import Gemini.DomInfo (DomInfo)
 import Gemini.Component.App.Actions
 import Gemini.Component.Puzzle.Actions
 import Gemini.DomInfo
-
 import Data.Gemini as Gemini
 import Deku.Do as Deku
 import Deku.DOM as D
-
 import Resize as Resize
 
 component :: Nut

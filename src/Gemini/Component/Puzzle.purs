@@ -2,7 +2,8 @@ module Gemini.Component.Puzzle
   ( component
   ) where
 
-import Gemini.Prelude
+import Gemini.Prelude hiding (fold)
+import Data.Foldable (fold)
 import Data.Array as Array
 import Data.Int as Int
 import Data.Map as Map
@@ -16,9 +17,9 @@ import Deku.Do as Deku
 import Deku.DOM as D
 import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, klass, href_)
-import Deku.Attribute (xdata, (!:=))
+import Deku.Attribute (xdata, (!:=), attr)
 import Deku.Attribute as Attr
-import Gemini.Store as Store 
+import Gemini.Store as Store
 import Deku.Extra (Event, className)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions
@@ -64,12 +65,16 @@ disk location@(Location { position }) props =
     x = k * (1.0 + cosine diskAngle)
     y = k * (1.0 + sine diskAngle)
   in
-    D.div
-      [ klass (map (append "disk ") color)
-      --, D.Style !:= (fold [ "left: ", show x, "%; top: ", show y, "%" ])
-      , D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location })
-      ]
-      []
+    (pursx :: _ "<div ~diskAttrs~ />")
+      ~~
+        { diskAttrs:
+            klass (append "disk " <$> color)
+              <|> D.Style
+              !:= fold [ "left: ", show x, "%; top: ", show y, "%" ]
+              <|> D.OnPointerdown
+              !:= pointer (onDragStart { drag: props.drag, location })
+        }
+
 {-
 
 hiddenLocations :: Set Location

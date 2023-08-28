@@ -6,14 +6,13 @@ module Deku.Extra
   , pointer
   , Pusher
   , module FRP.Event
-  , module Web.UIEvent.KeyboardEvent 
+  , module Web.UIEvent.KeyboardEvent
   , PointerEvent
   ) where
 
 import Prelude
 import Effect (Effect)
 import FRP.Event (Event)
-import FRP.Event as FRP.Event
 import Data.Tuple.Nested (type (/\), (/\))
 import Data.Array as Array
 import Control.Apply (lift2)
@@ -24,27 +23,25 @@ import Web.Event.Event as Web
 import Web.UIEvent.KeyboardEvent (KeyboardEvent)
 import Unsafe.Coerce (unsafeCoerce)
 
-
 type Pusher a
   = a -> Effect Unit
 
 keyboard :: (KeyboardEvent -> Effect Unit) -> Cb
 keyboard f = cb $ f <<< convert
-  where convert :: Web.Event -> KeyboardEvent
-        convert = unsafeCoerce
+  where
+  convert :: Web.Event -> KeyboardEvent
+  convert = unsafeCoerce
 
 pointer :: (PointerEvent -> Effect Unit) -> Cb
 pointer f = cb $ f <<< convert
-  where convert :: Web.Event -> PointerEvent
-        convert = unsafeCoerce
+  where
+  convert :: Web.Event -> PointerEvent
+  convert = unsafeCoerce
 
 type PointerEvent
   = { clientX :: Number
     , clientY :: Number
     }
-
-
-
 
 className :: forall e. Attr e H.Class String => Array (String /\ Event Boolean) -> Event (Attribute e)
 className = klass <<< classNameStr

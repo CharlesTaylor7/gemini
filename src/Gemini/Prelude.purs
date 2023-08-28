@@ -2,7 +2,6 @@ module Gemini.Prelude
   ( module Prelude
   , module Control.Alt
   , module Debug
-  , module Debug
   , module Data.Nat
   , module Data.Angle
   , module Data.Cyclic

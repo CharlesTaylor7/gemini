@@ -1,5 +1,5 @@
 -- | Reexport most commonly used utilities
-module Deku.Common 
+module Deku.Common
   ( module Deku.Control
   , module Deku.Core
   , module Deku.Pursx
@@ -13,9 +13,6 @@ import Deku.Control (text, text_)
 import Deku.Core (Nut)
 import Deku.Pursx (pursx, (~~), (~!~))
 import Deku.Attributes (klass_, href_)
-import Deku.Attribute (xdata, (!:=)
--- unsafeAttribute, AttributeValue(..), Attribute
-, class Attr)
-
+import Deku.Attribute (xdata, (!:=), attr, class Attr)
 import Deku.Hooks (useEffect, useRef)
 import Deku.Extra as Extra

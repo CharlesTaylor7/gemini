@@ -23,44 +23,44 @@ import Data.Angle as Angle
 import Data.Gemini as Gemini
 import Data.Point as Point
 import Data.Gemini.Motions (l, l', c, c', r, r')
-
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Gemini.DomInfo
 import Gemini.Store as Store
 
-
-type Props = ( domInfo :: Effect DomInfo, drag :: Store (Maybe Drag), gemini :: Store Gemini )
+type Props
+  = ( domInfo :: Effect DomInfo, drag :: Store (Maybe Drag), gemini :: Store Gemini )
 
 onDragStart :: { location :: Location, drag :: Store (Maybe Drag) } -> PointerEvent -> Effect Unit
 onDragStart { drag, location } event =
-  Store.set drag $
-    Just
-      { location: Gemini.dragRing location
-      , chosen: Nothing
-      , initialPoint: mouse
-      , currentPoint: mouse
-      }
+  Store.set drag
+    $ Just
+        { location: Gemini.dragRing location
+        , chosen: Nothing
+        , initialPoint: mouse
+        , currentPoint: mouse
+        }
 
   where
   mouse = point event
 
-onDragUpdate :: {| Props } -> PointerEvent -> Effect Unit
+onDragUpdate :: { | Props } -> PointerEvent -> Effect Unit
 onDragUpdate { drag } event = do
   maybe <- Store.read drag
   case maybe of
     Nothing -> pure unit
     -- | todo: disambiguate ambiguous
     Just d -> do
-     Store.set drag $ Just $
-            d
-              { currentPoint = mouse
-              }
+      Store.set drag
+        $ Just
+        $ d
+            { currentPoint = mouse
+            }
 
   where
   mouse = point event
 
-onDragEnd :: { |Props} -> PointerEvent -> Effect Unit
+onDragEnd :: { | Props } -> PointerEvent -> Effect Unit
 onDragEnd { drag, gemini } event = do
   pure unit
 
@@ -76,9 +76,10 @@ point { clientX, clientY } = Point { x: clientX, y: clientY }
 
 angleToPosition :: forall n. Pos n => Angle -> Cyclic n
 angleToPosition angle = cyclic $ Int.floor $ (k * turns) + 0.5
-  where 
-    k = Int.toNumber $ knownInt (proxy :: _ n)
-    turns = angle `Angle.as` Angle.Turns
+  where
+  k = Int.toNumber $ knownInt (proxy :: _ n)
+  turns = angle `Angle.as` Angle.Turns
+
 {-
 -- | angle of current ring being dragged, (via location that disambiguates)
 dragAngle :: Store -> { location :: Location, angle :: Angle }
@@ -94,11 +95,9 @@ dragAngle store = do
   let currentAngle = angleWith currentPoint <> invert (angleWith initialPoint)
   {location, angle: currentAngle }
   -}
-
-ringOrigin :: {| Props } -> Ring -> Effect Point
-ringOrigin { domInfo } ring = 
+ringOrigin :: { | Props } -> Ring -> Effect Point
+ringOrigin { domInfo } ring =
   domInfo <#> \dom -> dom.ringCenter ring
-
 
 disambiguate :: Drag -> Location
 disambiguate drag = do
@@ -111,8 +110,8 @@ disambiguate drag = do
         -- | left wins
         Nothing -> loc1
 
-        --unsafeCrashWith "Todo"
-        {-
+--unsafeCrashWith "Todo"
+{-
           do
           let distanceTo :: Location -> Double
               distanceTo location = do
@@ -123,9 +122,6 @@ disambiguate drag = do
                 abs (norm p - radius)
           if distanceTo loc1 <= distanceTo loc2 then loc1 else loc2
           -}
-
-
-
 {-
 
 
