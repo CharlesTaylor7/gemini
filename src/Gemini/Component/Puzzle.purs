@@ -66,8 +66,8 @@ disk location@(Location { position }) props =
   in
     D.div
       [ klass (map (append "disk ") color)
-      , D.Style !:= fold [ "left: ", show x, "%; top: ", show y, "%" ]
-      , D.OnPointerdown !:= Attr.cb (onDragStart { drag: props.drag, location })
+      --, D.Style !:= (fold [ "left: ", show x, "%; top: ", show y, "%" ])
+      , D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location })
       ]
       []
 {-

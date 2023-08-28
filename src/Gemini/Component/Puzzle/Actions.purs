@@ -24,17 +24,15 @@ import Data.Gemini as Gemini
 import Data.Point as Point
 import Data.Gemini.Motions (l, l', c, c', r, r')
 
-import Web.Event.Internal.Types as Web
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
-import Unsafe.Coerce (unsafeCoerce)
 import Gemini.DomInfo
 import Gemini.Store as Store
 
 
 type Props = ( domInfo :: Effect DomInfo, drag :: Store (Maybe Drag), gemini :: Store Gemini )
 
-onDragStart :: { location :: Location, drag :: Store (Maybe Drag) } -> Web.Event -> Effect Unit
+onDragStart :: { location :: Location, drag :: Store (Maybe Drag) } -> PointerEvent -> Effect Unit
 onDragStart { drag, location } event =
   Store.set drag $
     Just
@@ -45,9 +43,9 @@ onDragStart { drag, location } event =
       }
 
   where
-  mouse = unsafePointerEvent >>> point $ event
+  mouse = point event
 
-onDragUpdate :: {| Props } -> Web.Event -> Effect Unit
+onDragUpdate :: {| Props } -> PointerEvent -> Effect Unit
 onDragUpdate { drag } event = do
   maybe <- Store.read drag
   case maybe of
@@ -60,26 +58,18 @@ onDragUpdate { drag } event = do
               }
 
   where
-  mouse = unsafePointerEvent >>> point $ event
+  mouse = point event
 
-onDragEnd :: { |Props} -> Web.Event -> Effect Unit
+onDragEnd :: { |Props} -> PointerEvent -> Effect Unit
 onDragEnd { drag, gemini } event = do
   pure unit
 
   where
-  mouse = unsafePointerEvent >>> point $ event
+  mouse = point $ event
 
 underMaybe :: forall a. (a -> a) -> (Maybe a -> Maybe a)
 underMaybe _ Nothing = Nothing
 underMaybe f (Just a) = Just (f a)
-
-type PointerEvent
-  = { clientX :: Number
-    , clientY :: Number
-    }
-
-unsafePointerEvent :: Web.Event -> PointerEvent
-unsafePointerEvent = unsafeCoerce
 
 point :: PointerEvent -> Point
 point { clientX, clientY } = Point { x: clientX, y: clientY }

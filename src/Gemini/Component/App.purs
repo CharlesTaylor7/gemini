@@ -3,23 +3,6 @@ module Gemini.Component.App
   ) where
 
 import Gemini.Prelude
-import Control.Alt ((<|>))
-import Data.Gemini as Gemini
-import Data.Tuple.Nested ((/\))
-import Effect (Effect)
-import Effect.Console (log)
-import Resize as Resize
-import Deku.Control (text, text_)
-import Deku.Listeners as Listener
-import Deku.Core (Nut, NutWith)
-import Deku.Do as Deku
-import Deku.DOM as D
-import Deku.Pursx (pursx, (~~), (~!~))
-import Deku.Attributes (klass_, href_)
-import Deku.Attribute (xdata, (!:=), unsafeAttribute, AttributeValue(..))
-import Deku.Attribute as Attr
-import Deku.Extra (className, autoFocus, tabIndex)
-import Deku.Hooks (useEffect, useRef)
 import Gemini.Store (Store, useStore)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
@@ -27,6 +10,12 @@ import Gemini.DomInfo (DomInfo)
 import Gemini.Component.App.Actions
 import Gemini.Component.Puzzle.Actions
 import Gemini.DomInfo
+
+import Data.Gemini as Gemini
+import Deku.Do as Deku
+import Deku.DOM as D
+
+import Resize as Resize
 
 component :: Nut
 component = Deku.do
@@ -49,15 +38,15 @@ component = Deku.do
   )
     ~~ let
         props = { gemini, drag, domInfo }
-        dragEnd = Attr.cb $ onDragEnd props
+        dragEnd = pointer $ onDragEnd props
       in
         { header: header gemini
         , attrs:
             (D.Self !:= \e -> resize.listen e)
               <|> autoFocus
               <|> tabIndex (pure 0)
-              <|> Listener.keyDown_ (keyboardEvents gemini)
-              <|> (D.OnPointermove !:= Attr.cb (onDragUpdate props))
+              <|> (D.OnKeydown !:= keyboard (keyboardEvents gemini))
+              <|> (D.OnPointermove !:= pointer (onDragUpdate props))
               <|> (D.OnPointerup !:= dragEnd)
               <|> (D.OnPointerleave !:= dragEnd)
               <|> (D.OnPointercancel !:= dragEnd)
@@ -71,7 +60,7 @@ header store =
     [ D.div [ klass_ "control-panel" ]
         [ D.button
             [ klass_ "action-button"
-            , Listener.click_ $ scramble store
+            , D.OnClick !:= scramble store
             ]
             [ text_ "Scramble" ]
         {-
