@@ -2,7 +2,7 @@ module Gemini.Component.Puzzle
   ( component
   ) where
 
-import Gemini.Prelude 
+import Gemini.Prelude
 import Data.Array as Array
 import Data.Int as Int
 import Data.Map as Map
@@ -60,16 +60,10 @@ disk location@(Location { position }) props =
       ~~
         { diskAttrs:
             klass (append "disk " <$> color)
-              <|> D.Style
-              !:= fold [ "left: ", show x, "%; top: ", show y, "%" ]
-              <|> D.OnPointerdown
-              !:= pointer (onDragStart { drag: props.drag, location })
+              <|> (D.Style !:= fold [ "left: ", show x, "%; top: ", show y, "%" ])
+              <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
         }
 
-{-
-hiddenLocations :: Set Location
-hiddenLocations = ambiguousLocations # map _.alternate
--}
 angleOnCircle :: forall n. Pos n => Cyclic n -> Angle
 angleOnCircle k = turns <> -90.0 :* Degrees
   where
@@ -82,3 +76,8 @@ ringClass =
         LeftRing -> "left"
         CenterRing -> "center"
         RightRing -> "right"
+
+{-
+hiddenLocations :: Set Location
+hiddenLocations = ambiguousLocations # map _.alternate
+-}

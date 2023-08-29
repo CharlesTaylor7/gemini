@@ -54,7 +54,7 @@ onDragEnd :: { | Props } -> PointerEvent -> Effect Unit
 onDragEnd props@{ drag, gemini } event = do
   onDragUpdate props event
   drag <- Store.read drag
-  case drag of 
+  case drag of
     Nothing -> pure unit
     Just drag -> do
       angle <- dragAngle props
@@ -62,7 +62,6 @@ onDragEnd props@{ drag, gemini } event = do
       let n = angleToPosition angle
       let motion = Motion { amount: n, rotation: Rotation { ring, direction: Clockwise } }
       Store.modify gemini $ Gemini.applyToGemini motion
-
 
 point :: PointerEvent -> Point
 point { clientX, clientY } = Point { x: clientX, y: clientY }
@@ -74,26 +73,25 @@ angleToPosition angle = cyclic $ Int.floor $ (k * turns) + 0.5
   turns = angle `Angle.as` Angle.Turns
 
 -- | angle of current ring being dragged, (via location that disambiguates)
-dragAngle :: { | Props } -> Effect Angle 
+dragAngle :: { | Props } -> Effect Angle
 dragAngle { drag, domInfo } = do
   maybeDrag <- Store.read drag
-  case maybeDrag of 
+  case maybeDrag of
     Nothing -> pure mempty
     Just drag@{ initialPoint, currentPoint } -> do
       let Location { ring } = disambiguate drag
       angleStart <- angleWith ring initialPoint
-      angleEnd   <- angleWith ring currentPoint
+      angleEnd <- angleWith ring currentPoint
       pure $ angleEnd <> invert angleStart
   where
   angleWith :: Ring -> Point -> Effect Angle
   angleWith ring point = do
-      origin <- ringOrigin domInfo ring
-      let p = point <> invert origin
-      pure $ Point.angleToOrigin p
-
+    origin <- ringOrigin domInfo ring
+    let p = point <> invert origin
+    pure $ Point.angleToOrigin p
 
 ringOrigin :: Effect DomInfo -> Ring -> Effect Point
-ringOrigin  domInfo  ring =
+ringOrigin domInfo ring =
   domInfo <#> \dom -> dom.ringCenter ring
 
 disambiguate :: Drag -> Location
