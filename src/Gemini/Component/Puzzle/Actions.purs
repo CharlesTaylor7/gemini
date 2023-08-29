@@ -51,11 +51,17 @@ onDragUpdate { drag } event = do
   mouse = point event
 
 onDragEnd :: { | Props } -> PointerEvent -> Effect Unit
-onDragEnd { drag, gemini } event = do
-  pure unit
-
-  where
-  mouse = point $ event
+onDragEnd props@{ drag, gemini } event = do
+  onDragUpdate props event
+  drag <- Store.read drag
+  case drag of 
+    Nothing -> pure unit
+    Just drag -> do
+      angle <- dragAngle props
+      let Location { ring } = disambiguate drag
+      let n = angleToPosition angle
+      let motion = Motion { amount: n, rotation: Rotation { ring, direction: Clockwise } }
+      Store.modify gemini $ Gemini.applyToGemini motion
 
 
 point :: PointerEvent -> Point
@@ -67,23 +73,27 @@ angleToPosition angle = cyclic $ Int.floor $ (k * turns) + 0.5
   k = Int.toNumber $ knownInt (proxy :: _ n)
   turns = angle `Angle.as` Angle.Turns
 
-{-
 -- | angle of current ring being dragged, (via location that disambiguates)
-dragAngle :: Store -> { location :: Location, angle :: Angle }
-dragAngle store = do
-  let location = disambiguate store
-  let angleWith :: Point -> Angle
-      angleWith point = do
-        let origin = ringOrigin store (location.ring)
-        let p = point <> invert origin
-        Point.angleToOrigin p
+dragAngle :: { | Props } -> Effect Angle 
+dragAngle { drag, domInfo } = do
+  maybeDrag <- Store.read drag
+  case maybeDrag of 
+    Nothing -> pure mempty
+    Just drag@{ initialPoint, currentPoint } -> do
+      let Location { ring } = disambiguate drag
+      angleStart <- angleWith ring initialPoint
+      angleEnd   <- angleWith ring currentPoint
+      pure $ angleEnd <> invert angleStart
+  where
+  angleWith :: Ring -> Point -> Effect Angle
+  angleWith ring point = do
+      origin <- ringOrigin domInfo ring
+      let p = point <> invert origin
+      pure $ Point.angleToOrigin p
 
-  let { initialPoint, currentPoint } = drag
-  let currentAngle = angleWith currentPoint <> invert (angleWith initialPoint)
-  {location, angle: currentAngle }
-  -}
-ringOrigin :: { | Props } -> Ring -> Effect Point
-ringOrigin { domInfo } ring =
+
+ringOrigin :: Effect DomInfo -> Ring -> Effect Point
+ringOrigin  domInfo  ring =
   domInfo <#> \dom -> dom.ringCenter ring
 
 disambiguate :: Drag -> Location
