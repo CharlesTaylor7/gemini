@@ -8,6 +8,8 @@ module Data.Gemini
   , DiskIndex
   , Location(..)
   , indexToLocation
+  , locationToIndex
+  , location
   , sibling
   , ambiguousLocations
   , canonical
@@ -246,10 +248,10 @@ indexToLocation n = Location { ring, position: cyclic r }
 
 -- | Convert a location to its index in the gemini map
 locationToIndex :: Location -> Int
-locationToIndex = index <<< canonical
-  where
-  index (Location { ring, position }) =
+locationToIndex (Location { ring, position }) =
     (ringIndex ring) * 18 + unCyclic position
+
+  where
 
   ringIndex :: Ring -> Int
   ringIndex = case _ of

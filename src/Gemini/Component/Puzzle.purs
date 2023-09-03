@@ -9,7 +9,7 @@ import Data.Map as Map
 import Data.Point as Point
 import Data.Set as Set
 import Data.String.Common as String
-import Data.Gemini (geminiLookup)
+import Data.Gemini (geminiLookup, locationToIndex, location)
 import Deku.Do as Deku
 import Deku.DOM as D
 import Deku.Hooks (useState)
@@ -102,10 +102,37 @@ ringClass =
         CenterRing -> "center"
         RightRing -> "right"
 
-{-
-hiddenLocations :: Set Location
-hiddenLocations = ambiguousLocations # map _.alternate
--}
+
+hiddenLocationIndices :: Drag -> Set Int
+hiddenLocationIndices drag = 
+  case ring of
+    LeftRing -> leftRingHides
+    CenterRing -> centerRingHides
+    RightRing -> rightRingHides
+  where
+    Location {ring} = disambiguate drag 
+
+leftRingHides :: Set Int
+leftRingHides = Set.fromFoldable $ map locationToIndex 
+  [ location CenterRing 16 
+  , location CenterRing 11 
+  ]
+
+centerRingHides :: Set Int
+centerRingHides = Set.fromFoldable $ map locationToIndex 
+  [ location LeftRing 2
+  , location LeftRing 7
+  , location RightRing 16
+  , location RightRing 11
+  ]
+
+rightRingHides :: Set Int
+rightRingHides = Set.fromFoldable $ map locationToIndex 
+  [ location CenterRing 2
+  , location CenterRing 7
+  ]
+
+
 -- | angle of current ring being dragged, (via location that disambiguates)
 dragAngle :: Ring -> DragProps -> Angle
 dragAngle r { drag, domInfo } = fromMaybe mempty do

@@ -1,6 +1,5 @@
 module Deku.Extra
-  ( className
-  , autoFocus
+  ( autoFocus
   , tabIndex
   , keyboard
   , pointer
