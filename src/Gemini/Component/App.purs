@@ -19,7 +19,8 @@ component = Deku.do
   gemini <- useStore Gemini.initialGemini
   drag <- useStore (Nothing :: _ Drag)
   let resize = Resize.observe
-  domInfo <- useRef initialDomInfo (resize.event `bindToEffect` const loadDomInfo)
+  let domInfoEvent = resize.event `bindToEffect` const loadDomInfo
+  domInfo <- useRef initialDomInfo domInfoEvent
   ( pursx ::
       _ """
     <div class="gemini-app" ~attrs~>

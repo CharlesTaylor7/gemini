@@ -3,6 +3,7 @@ module Gemini.Component.Puzzle.Actions
   , onDragUpdate
   , onDragEnd
   , dragAngle
+  , disambiguate
   ) where
 
 import Gemini.Prelude
@@ -92,7 +93,13 @@ angleToPosition angle = cyclic $ Int.floor $ (k * turns) + 0.5
   turns = angle `Angle.as` Angle.Turns
 
 -- | angle of current ring being dragged, (via location that disambiguates)
-dragAngle :: forall rest. { drag :: Store (Maybe Drag), domInfo :: Effect DomInfo | rest } -> Effect Angle
+dragAngle ::
+  forall rest.
+  { drag :: Store (Maybe Drag)
+  , domInfo :: Effect DomInfo
+  | rest
+  } ->
+  Effect Angle
 dragAngle { drag, domInfo } = do
   maybeDrag <- Store.read drag
   case maybeDrag of

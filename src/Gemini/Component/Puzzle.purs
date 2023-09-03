@@ -6,6 +6,7 @@ import Gemini.Prelude
 import Data.Array as Array
 import Data.Int as Int
 import Data.Map as Map
+import Data.Point as Point
 import Data.Set as Set
 import Data.String.Common as String
 import Data.Gemini (geminiLookup)
@@ -82,3 +83,30 @@ ringClass =
 hiddenLocations :: Set Location
 hiddenLocations = ambiguousLocations # map _.alternate
 -}
+-- | angle of current ring being dragged, (via location that disambiguates)
+dragAngle ::
+  forall rest.
+  { drag :: Maybe Drag
+  , domInfo :: DomInfo
+  | rest
+  } ->
+  Angle
+dragAngle { drag, domInfo } = do
+  let maybeDrag = drag
+  case maybeDrag of
+    Nothing -> mempty
+    Just drag@{ initialPoint, currentPoint } -> do
+      let Location { ring } = disambiguate drag
+      let angleStart = angleWith ring initialPoint
+      let angleEnd = angleWith ring currentPoint
+      angleEnd <> invert angleStart
+  where
+  angleWith :: Ring -> Point -> Angle
+  angleWith ring point = do
+    let origin = ringOrigin domInfo ring
+    let p = point <> invert origin
+    Point.angleToOrigin p
+
+ringOrigin :: DomInfo -> Ring -> Point
+ringOrigin dom ring =
+  dom.ringCenter ring
