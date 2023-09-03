@@ -12,6 +12,7 @@ import Data.String.Common as String
 import Data.Gemini (geminiLookup)
 import Deku.Do as Deku
 import Deku.DOM as D
+import Deku.Hooks (useState)
 import Deku.Attributes (style)
 import Gemini.Store as Store
 import Gemini.Env (Env)
@@ -47,7 +48,7 @@ component props = Deku.do
             disk location props
 
 disk :: Location -> Props -> Nut
-disk location@(Location { position }) props =
+disk location@(Location { position }) props = Deku.do
   let
     color =
       props.gemini
@@ -56,28 +57,29 @@ disk location@(Location { position }) props =
         >>> show
         >>> String.toLower
 
-    diskAngle = ado
+    dragged = ado
       drag <- Store.subscribe props.drag
-      domInfo <- props.domInfo 
-      in angleOnCircle position <> dragAngle drag domInfo
-  in
-    (pursx :: _ "<div ~diskAttrs~ />")
-      ~~
-        { diskAttrs:
-            klass (append "disk " <$> color)
-              <|> (style (diskStyle <$> diskAngle))
-              <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
-        }
+      domInfo <- props.domInfo
+      in dragAngle drag domInfo
 
+    initial = angleOnCircle position
+  (pursx :: _ "<div ~diskAttrs~ />")
+    ~~
+      { diskAttrs:
+          klass (append "disk " <$> color)
+            <|> (style (diskStyle <$> (pure initial <|> (append initial <$> dragged))))
+            --pure(diskStyle (angleOnCircle position))))
+            <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
+      }
 
 diskStyle :: Angle -> String
-diskStyle diskAngle = 
-  let 
+diskStyle diskAngle =
+  let
     k = 43.0
     x = k * (1.0 + cosine diskAngle)
     y = k * (1.0 + sine diskAngle)
-  in "left: " <> show x <> "%; top: " <> show y <> "%"
-
+  in
+    "left: " <> show x <> "%; top: " <> show y <> "%"
 
 angleOnCircle :: forall n. Pos n => Cyclic n -> Angle
 angleOnCircle k = turns <> -90.0 :* Degrees
