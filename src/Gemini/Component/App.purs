@@ -67,11 +67,6 @@ header store =
             , D.OnClick !:= scramble store
             ]
             [ text_ "Scramble" ]
-        {-
-    , D.button
-      [ klass_ "action-button" ]
-      [ text_ "Undo" ]
-    -}
         ]
     ]
 

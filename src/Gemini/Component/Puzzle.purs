@@ -16,8 +16,8 @@ import Deku.Hooks (useState)
 import Deku.Attributes (style)
 import Gemini.Store as Store
 import Gemini.Env (Env)
-import Gemini.Component.Puzzle.Actions
-import Gemini.DomInfo
+import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
+import Gemini.DomInfo (DomInfo, bindToEffect)
 import FRP.Event (sampleOnRight, filterMap)
 
 type Props
@@ -26,12 +26,13 @@ type Props
     , domInfo :: Effect DomInfo
     }
 
-type DragProps = { drag :: Drag, domInfo :: DomInfo }
-dragProps :: Props -> Event DragProps 
+type DragProps
+  = { drag :: Drag, domInfo :: DomInfo }
+dragProps :: Props -> Event DragProps
 dragProps { drag, domInfo } =
-  (Store.subscribe drag # filterMap identity) 
-    `bindToEffect` \drag -> domInfo <#> { drag, domInfo: _ }
-
+  (Store.subscribe drag # filterMap identity)
+    `bindToEffect`
+      \drag -> domInfo <#> { drag, domInfo: _ }
 
 component :: Props -> Nut
 component props = Deku.do
@@ -56,18 +57,7 @@ component props = Deku.do
             disk location props
 
 disk :: Location -> Props -> Nut
-disk location@(Location { position, ring }) props = Deku.do
-  let
-    color =
-      props.gemini
-        <#> geminiLookup location
-        >>> _.color
-        >>> show
-        >>> String.toLower
-
-    dragged = dragProps props <#> dragAngle ring
-
-    initial = angleOnCircle position
+disk location@(Location { position, ring }) props =
   (pursx :: _ "<div ~diskAttrs~ />")
     ~~
       { diskAttrs:
@@ -76,6 +66,17 @@ disk location@(Location { position, ring }) props = Deku.do
             --pure(diskStyle (angleOnCircle position))))
             <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
       }
+  where
+  color =
+    props.gemini
+      <#> geminiLookup location
+      >>> _.color
+      >>> show
+      >>> String.toLower
+
+  dragged = dragProps props <#> dragAngle ring
+
+  initial = angleOnCircle position
 
 diskStyle :: Angle -> String
 diskStyle diskAngle =
@@ -105,10 +106,11 @@ hiddenLocations = ambiguousLocations # map _.alternate
 -}
 -- | angle of current ring being dragged, (via location that disambiguates)
 dragAngle :: Ring -> DragProps -> Angle
-dragAngle r {drag, domInfo} =
-  if r == ring
-  then angleEnd <> invert angleStart
-  else mempty
+dragAngle r { drag, domInfo } =
+  if r == ring then
+    angleEnd <> invert angleStart
+  else
+    mempty
   where
   Location { ring } = disambiguate drag
   angleWith point = do
