@@ -149,7 +149,7 @@ instance ToPermutation Rotation where
       <<< Array.singleton
       <<< cycle
       $ flip map positions
-      $ locationToIndex
+      $ locationToIndex'
       <<< Location
       <<< ({ ring, position: _ })
     where
@@ -219,7 +219,7 @@ sibling l =
       <|> (guard (c /= l) *> pure c)
 
 siblingIndex :: Int -> Maybe Int
-siblingIndex = map locationToIndex <<< sibling <<< indexToLocation
+siblingIndex = map locationToIndex' <<< sibling <<< indexToLocation
 
 data Choice a
   = Obvious a
@@ -249,7 +249,7 @@ indexToLocation n = Location { ring, position: cyclic r }
 -- | Convert a location to its index in the gemini map
 locationToIndex :: Location -> Int
 locationToIndex (Location { ring, position }) =
-    (ringIndex ring) * 18 + unCyclic position
+  (ringIndex ring) * 18 + unCyclic position
 
   where
 
@@ -259,11 +259,14 @@ locationToIndex (Location { ring, position }) =
     CenterRing -> 1
     RightRing -> 2
 
+locationToIndex' :: Location -> Int
+locationToIndex' = canonical >>> locationToIndex
+
 -- | Index into the gemini map
 geminiLookup :: Location -> Gemini -> Disk
 geminiLookup location (Gemini diskMap) =
   diskMap
-    # Map.lookup (locationToIndex location)
+    # Map.lookup (locationToIndex' location)
     # unsafeFromJust
 
 unsafeFromJust :: forall a. Maybe a -> a
@@ -276,7 +279,7 @@ unsafeGemini :: forall f. Functor f => Foldable f => f (Location /\ Disk) -> Gem
 unsafeGemini items =
   Gemini
     $ Map.fromFoldable
-    $ map (\(location /\ disk) -> (locationToIndex location /\ disk)) items
+    $ map (\(location /\ disk) -> (locationToIndex' location /\ disk)) items
 
 initialGemini :: Gemini
 initialGemini =

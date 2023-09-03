@@ -19,6 +19,7 @@ import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
 import Gemini.DomInfo (DomInfo, bindToEffect)
 import FRP.Event (sampleOnRight, filterMap)
+import Utils (logAnything)
 
 type Props
   = { gemini :: Event Gemini
@@ -36,6 +37,9 @@ dragProps { drag, domInfo } =
   (Store.subscribe drag)
     `bindToEffect`
       \drag -> domInfo <#> { drag, domInfo: _ }
+
+monitor :: forall a. String -> Event a -> Event a
+monitor tag event = event `bindToEffect` \a -> logAnything tag a *> pure a
 
 component :: Props -> Nut
 component props = Deku.do
@@ -64,7 +68,7 @@ disk location@(Location { position, ring }) props =
   (pursx :: _ "<div ~diskAttrs~ />")
     ~~
       { diskAttrs:
-          klass (append "disk " <$> color)
+          className [ pure "disk", color, hidden location <$> Store.subscribe props.drag ]
             <|> (style (diskStyle <$> (pure initial <|> (append initial <$> dragged))))
             <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
       }
@@ -75,10 +79,15 @@ disk location@(Location { position, ring }) props =
       >>> _.color
       >>> show
       >>> String.toLower
-
-  dragged = dragProps props <#> dragAngle ring
-
+  drag = dragProps props
+  dragged = drag <#> dragAngle ring
   initial = angleOnCircle position
+
+hidden :: Location -> Maybe Drag -> String
+hidden _ Nothing = ""
+hidden loc (Just drag)
+  | locationToIndex loc `Set.member` hiddenLocationIndices drag = "hidden"
+  | otherwise = ""
 
 diskStyle :: Angle -> String
 diskStyle diskAngle =
@@ -102,45 +111,48 @@ ringClass =
         CenterRing -> "center"
         RightRing -> "right"
 
-
 hiddenLocationIndices :: Drag -> Set Int
-hiddenLocationIndices drag = 
+hiddenLocationIndices drag =
   case ring of
     LeftRing -> leftRingHides
     CenterRing -> centerRingHides
     RightRing -> rightRingHides
   where
-    Location {ring} = disambiguate drag 
+  Location { ring } = disambiguate drag
 
 leftRingHides :: Set Int
-leftRingHides = Set.fromFoldable $ map locationToIndex 
-  [ location CenterRing 16 
-  , location CenterRing 11 
-  ]
+leftRingHides =
+  Set.fromFoldable
+    $ map locationToIndex
+        [ location CenterRing 16
+        , location CenterRing 11
+        ]
 
 centerRingHides :: Set Int
-centerRingHides = Set.fromFoldable $ map locationToIndex 
-  [ location LeftRing 2
-  , location LeftRing 7
-  , location RightRing 16
-  , location RightRing 11
-  ]
+centerRingHides =
+  Set.fromFoldable
+    $ map locationToIndex
+        [ location LeftRing 2
+        , location LeftRing 7
+        , location RightRing 16
+        , location RightRing 11
+        ]
 
 rightRingHides :: Set Int
-rightRingHides = Set.fromFoldable $ map locationToIndex 
-  [ location CenterRing 2
-  , location CenterRing 7
-  ]
-
+rightRingHides =
+  Set.fromFoldable
+    $ map locationToIndex
+        [ location CenterRing 2
+        , location CenterRing 7
+        ]
 
 -- | angle of current ring being dragged, (via location that disambiguates)
 dragAngle :: Ring -> DragProps -> Angle
-dragAngle r { drag, domInfo } = fromMaybe mempty do
-  drag <- drag
-
-  let Location { ring } = disambiguate drag
-  guard $ r == ring
-
-  let offset = invert $ domInfo.ringCenter ring
-  let angleWith = append offset >>> Point.angleToOrigin
-  pure $ angleWith drag.currentPoint <> invert (angleWith drag.initialPoint)
+dragAngle r { drag, domInfo } =
+  fromMaybe mempty do
+    drag <- drag
+    let Location { ring } = disambiguate drag
+    guard $ r == ring
+    let offset = invert $ domInfo.ringCenter ring
+    let angleWith = append offset >>> Point.angleToOrigin
+    pure $ angleWith drag.currentPoint <> invert (angleWith drag.initialPoint)
