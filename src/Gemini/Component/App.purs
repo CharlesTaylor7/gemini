@@ -24,7 +24,7 @@ component = Deku.do
   domInfo <- useRef initialDomInfo domInfoEvent
   ( pursx ::
       _ """
-    <div class="gemini-app" ~attrs~>
+    <div class="w-full h-full flex justify-center fixed" ~attrs~>
       <div class="main-panel">
         ~header~
         ~puzzle~

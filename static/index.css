@@ -50,17 +50,6 @@ button {
     -moz-appearance: none;
 }
 
-
-/* root div */
-.gemini-app {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-}
-
 .main-panel {
     display: flex;
     flex-flow: column nowrap;
