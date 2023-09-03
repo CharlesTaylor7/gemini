@@ -22,8 +22,7 @@ modify (Store { ref, pusher }) transform =
   ref >>= (transform >>> pusher)
 
 set :: forall a. Store a -> a -> Effect Unit
-set (Store { pusher }) value = do
-  logAnything "set" value
+set (Store { pusher }) value =
   pusher value
 
 subscribe :: forall a. Store a -> Event a

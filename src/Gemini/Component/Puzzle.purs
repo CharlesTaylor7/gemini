@@ -56,7 +56,7 @@ component props = Deku.do
             disk location props
 
 disk :: Location -> Props -> Nut
-disk location@(Location { position }) props = Deku.do
+disk location@(Location { position, ring }) props = Deku.do
   let
     color =
       props.gemini
@@ -65,7 +65,7 @@ disk location@(Location { position }) props = Deku.do
         >>> show
         >>> String.toLower
 
-    dragged = dragProps props <#> dragAngle
+    dragged = dragProps props <#> dragAngle ring
 
     initial = angleOnCircle position
   (pursx :: _ "<div ~diskAttrs~ />")
@@ -104,9 +104,11 @@ hiddenLocations :: Set Location
 hiddenLocations = ambiguousLocations # map _.alternate
 -}
 -- | angle of current ring being dragged, (via location that disambiguates)
-dragAngle :: DragProps -> Angle
-dragAngle {drag, domInfo} =
-  angleEnd <> invert angleStart
+dragAngle :: Ring -> DragProps -> Angle
+dragAngle r {drag, domInfo} =
+  if r == ring
+  then angleEnd <> invert angleStart
+  else mempty
   where
   Location { ring } = disambiguate drag
   angleWith point = do
