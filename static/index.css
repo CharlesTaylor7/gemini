@@ -179,134 +179,11 @@ button {
     to   { opacity: 0; }
 }
 
-.stats-box {
-    background: #ddfaff;
-    border: 1px solid var(--stats-background);
-    border-radius: 10px;
-}
-
-.stats-header {
-    border-bottom: 1px solid var(--stats-background);
-    text-align: center;
-    font-size: 30px;
-    padding: 12px;
-} 
-
-.stats {
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    justify-content: space-between;
-    height: 100px;
-    padding: 24px 12px;
-}
-
-.right-panel {
-    z-index: 2;
-}
-
-.saved-moves-panel {
-    flex: 0 1 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow-y: scroll;
-    max-height: calc(100vh-24px);
-    padding-right: 12px;
-    margin: 12px;
-}
-
-* {
-    scrollbar-color: var(--scrollbar-color) var(--background-color);
-}
-
-*::-webkit-scrollbar {
-    width: 8px;
-}
-
-*::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-color);
-    border-radius: 24px;
-}
-
-.move {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.move-description {
-    display: flex;
-    flex-direction: column;
-    background: #c8d0ff;
-    border: none;
-    padding: 0;
-    border-radius: 10px;
-    padding: 6px 12px;
-    font-family: monospace;
-    cursor: pointer;
-}
-
-
-.motions {
-    user-select: none;
-}
-
-.cycles {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    cursor: default;
-    margin-left: 12px;
-}
-
-.cycle {
-    text-align: left;
-    user-select: none;
-    flex: 1 1 auto;
-}
-
-.cycle:hover {
-    background-color: #85bcff;
-}
-
-.delete-move {
-    margin-left: 12px;
-    --width: 23px;
-    flex: 0 0 var(--width);
-    height: var(--width);
-    border-radius: 100%;
-    text-align: center;
-    font-size: 15px;
-    font-weight: bold ;
-    background-color: #efefef;
-    transition:
-        background-color 250ms ease-in-out;
-}
-
-.delete-move:hover {
-    background-color: #c4c4c4;
-}
-
-.move-blank {
-    height: 100px;
-}
-
-/* puzzle */
-.gemini-row {
-    display: flex;
-    justify-content: center;
-}
 
 .gemini {
     display: flex;
-    position: relative;
-    font-size: 35px;
-    user-select: none;
     height: var(--ring-diameter);
     width: calc(3 * var(--ring-diameter));
-    flex-shrink: 0;
-    margin: 0 -157px;
     background: url(./wood.jpg)
 }
 
@@ -317,9 +194,6 @@ button {
 
 .gemini-ring.left {
     left: 14.9%;
-}
-
-.gemini-ring.center {
 }
 
 .gemini-ring.right {
