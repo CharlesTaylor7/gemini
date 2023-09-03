@@ -3,6 +3,7 @@ module Deku.Extra
   , tabIndex
   , keyboard
   , pointer
+  , className
   , Pusher
   , module FRP.Event
   , module Web.UIEvent.KeyboardEvent
@@ -12,6 +13,7 @@ module Deku.Extra
 import Prelude
 import Effect (Effect)
 import FRP.Event (Event)
+import Data.Foldable (foldMap)
 import Data.Tuple.Nested (type (/\), (/\))
 import Data.Array as Array
 import Control.Apply (lift2)
@@ -21,6 +23,7 @@ import Deku.Attributes (klass)
 import Web.Event.Event as Web
 import Web.UIEvent.KeyboardEvent (KeyboardEvent)
 import Unsafe.Coerce (unsafeCoerce)
+import Safe.Coerce (coerce)
 
 type Pusher a
   = a -> Effect Unit
@@ -42,19 +45,25 @@ type PointerEvent
     , clientY :: Number
     }
 
-className :: forall e. Attr e H.Class String => Array (String /\ Event Boolean) -> Event (Attribute e)
-className = klass <<< classNameStr
+newtype ClassName = ClassName String
 
-classNameStr :: Array (String /\ Event Boolean) -> Event String
-classNameStr =
-  Array.foldl
-    ( \acc (label /\ event) ->
-        let
-          f b s = if b then label <> " " <> s else s
-        in
-          lift2 f event acc
-    )
-    (pure "")
+className :: forall e. Attr e H.Class String => Array (Event String) -> Event (Attribute e)
+className = klass <<< coerce <<< foldMap safeCoerce
+  where
+    safeCoerce :: Event String -> Event ClassName
+    safeCoerce = coerce
+
+instance Semigroup ClassName where
+  append a@(ClassName x) b@(ClassName y) 
+    | x == "" = b
+    | y == "" = a
+    | otherwise =
+      ClassName $
+        x <> " " <> y
+
+instance Monoid ClassName where
+  mempty = ClassName ""
+
 
 autoFocus :: forall e. Event (Attribute e)
 autoFocus = pure $ unsafeAttribute { key: "autofocus", value: Prop' "" }
