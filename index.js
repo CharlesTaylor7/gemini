@@ -4,7 +4,7 @@
         <span ~labelAttrs~>~label~</span>
     </a>
   `}})()()(Df(df(Df(Df(gi)({reflectType:function(){return"linkAttrs"}})({reflectSymbol:function(){return"linkAttrs"}}))({reflectType:function(){return"labelAttrs"}})({reflectSymbol:function(){return"labelAttrs"}}))(eM)(nM))({reflectType:function(){return"imgAttrs"}})({reflectSymbol:function(){return"imgAttrs"}})),vn=Vt(ye),aM=Ln(Jm),iM=ge(Km),oM=Ln(Xm),fM=ge(cA),cM=Ln(Vm),yf=Ln(di),pM=Ln(jm),lM=ge(eA),_M=df(gi),vM=$i({reflectType:function(){return`
-    <div class="gemini-app" ~attrs~>
+    <div class="w-full h-full flex justify-center fixed" ~attrs~>
       <div class="main-panel">
         ~header~
         ~puzzle~

@@ -46,24 +46,8 @@ button {
     cursor: pointer;
     text-align: center;
     border-radius: 10px;
-    /* background-color: gray; */
     -webkit-appearance: none;
     -moz-appearance: none;
-}
-
-/* drag */
-.dragging {
-    cursor: grabbing;
-}
-
-/* root div */
-.gemini-app {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
 }
 
 .main-panel {
@@ -214,13 +198,6 @@ button {
     align-items: center;
 }
 
-.disk.dragging {
-    border: 2px solid magenta;
-}
-
-.disk.hidden {
-    display: none;
-}
 
 .disk.drag-disabled {
     cursor: not-allowed;
@@ -228,18 +205,6 @@ button {
 
 .disk.highlight {
     border: 4px solid #f100ff;
-}
-
-.disk.active-cycle {
-    border: 4px solid blue;
-}
-
-.dragging div.disk {
-    cursor: grabbing;
-}
-
-.disk-label {
-    user-select: none;
 }
 
 
