@@ -25,7 +25,7 @@ module Gemini.Prelude
 
 import Prelude hiding (class Ring)
 import Control.Alt ((<|>))
-import Debug 
+import Debug
 import Data.Nat
 import Data.Angle (Angle, AngleUnit(..), (:*), arctan, cosine, sine)
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
@@ -61,4 +61,3 @@ import Gemini.Types
   , Stats(..)
   , Move(..)
   )
-

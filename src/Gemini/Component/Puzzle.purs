@@ -18,6 +18,7 @@ import Gemini.Store as Store
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions
 import Gemini.DomInfo
+import FRP.Event (sampleOnRight)
 
 type Props
   = { gemini :: Event Gemini
@@ -57,10 +58,8 @@ disk location@(Location { position }) props = Deku.do
         >>> show
         >>> String.toLower
 
-    dragged = ado
-      drag <- Store.subscribe props.drag
-      domInfo <- props.domInfo
-      in dragAngle drag domInfo
+    dragged =
+      sampleOnRight props.domInfo $ Store.subscribe props.drag <#> dragAngle
 
     initial = angleOnCircle position
   (pursx :: _ "<div ~diskAttrs~ />")
