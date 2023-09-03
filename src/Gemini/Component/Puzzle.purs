@@ -14,9 +14,10 @@ import Deku.DOM as D
 import Gemini.Store as Store
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions
+import Gemini.DomInfo
 
 type Props
-  = { gemini :: Store Gemini, drag :: Store (Maybe Drag) }
+  = { gemini :: Store Gemini, drag :: Store (Maybe Drag), domInfo :: Effect DomInfo }
 
 component :: Props -> Nut
 component props = Deku.do
@@ -50,7 +51,7 @@ disk location@(Location { position }) props =
         >>> show
         >>> String.toLower
 
-    diskAngle = angleOnCircle position
+    diskAngle = angleOnCircle position <> mempty --dragAngle props
 
     k = 43.0
     x = k * (1.0 + cosine diskAngle)

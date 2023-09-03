@@ -2,6 +2,7 @@ module Gemini.Component.Puzzle.Actions
   ( onDragStart
   , onDragUpdate
   , onDragEnd
+  , dragAngle
   ) where
 
 import Gemini.Prelude
@@ -15,13 +16,17 @@ import Data.Point as Point
 import Data.Gemini.Motions (l, l', c, c', r, r')
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
-import Gemini.DomInfo
+import Gemini.DomInfo (DomInfo)
 import Gemini.Store as Store
 
-type Props
-  = ( domInfo :: Effect DomInfo, drag :: Store (Maybe Drag), gemini :: Store Gemini )
-
-onDragStart :: { location :: Location, drag :: Store (Maybe Drag) } -> PointerEvent -> Effect Unit
+onDragStart ::
+  forall rest.
+  { location :: Location
+  , drag :: Store (Maybe Drag)
+  | rest
+  } ->
+  PointerEvent ->
+  Effect Unit
 onDragStart { drag, location } event =
   Store.set drag
     $ Just
@@ -34,7 +39,13 @@ onDragStart { drag, location } event =
   where
   mouse = point event
 
-onDragUpdate :: { | Props } -> PointerEvent -> Effect Unit
+onDragUpdate ::
+  forall rest.
+  { drag :: Store (Maybe Drag)
+  | rest
+  } ->
+  PointerEvent ->
+  Effect Unit
 onDragUpdate { drag } event = do
   maybe <- Store.read drag
   case maybe of
@@ -50,7 +61,15 @@ onDragUpdate { drag } event = do
   where
   mouse = point event
 
-onDragEnd :: { | Props } -> PointerEvent -> Effect Unit
+onDragEnd ::
+  forall rest.
+  { drag :: Store (Maybe Drag)
+  , gemini :: Store Gemini
+  , domInfo :: Effect DomInfo
+  | rest
+  } ->
+  PointerEvent ->
+  Effect Unit
 onDragEnd props@{ drag, gemini } event = do
   onDragUpdate props event
   drag <- Store.read drag
@@ -73,7 +92,7 @@ angleToPosition angle = cyclic $ Int.floor $ (k * turns) + 0.5
   turns = angle `Angle.as` Angle.Turns
 
 -- | angle of current ring being dragged, (via location that disambiguates)
-dragAngle :: { | Props } -> Effect Angle
+dragAngle :: forall rest. { drag :: Store (Maybe Drag), domInfo :: Effect DomInfo | rest } -> Effect Angle
 dragAngle { drag, domInfo } = do
   maybeDrag <- Store.read drag
   case maybeDrag of
