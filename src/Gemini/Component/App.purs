@@ -13,6 +13,7 @@ import Data.Gemini as Gemini
 import Deku.Do as Deku
 import Deku.DOM as D
 import Resize as Resize
+import Gemini.Store as Store
 
 component :: Nut
 component = Deku.do
@@ -48,7 +49,12 @@ component = Deku.do
               <|> (D.OnPointerup !:= dragEnd)
               <|> (D.OnPointerleave !:= dragEnd)
               <|> (D.OnPointercancel !:= dragEnd)
-        , puzzle: Puzzle.component props
+        , puzzle: 
+            Puzzle.component 
+            { gemini: Store.subscribe gemini
+            , drag
+            , domInfo: domInfoEvent
+            }
         , footer
         }
 

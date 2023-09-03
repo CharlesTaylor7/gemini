@@ -18,7 +18,10 @@ import Gemini.Component.Puzzle.Actions
 import Gemini.DomInfo
 
 type Props
-  = { gemini :: Store Gemini, drag :: Store (Maybe Drag), domInfo :: Effect DomInfo }
+  = { gemini :: Event Gemini
+    , drag :: Store (Maybe Drag)
+    , domInfo :: Event DomInfo
+    }
 
 component :: Props -> Nut
 component props = Deku.do
@@ -46,7 +49,7 @@ disk :: Location -> Props -> Nut
 disk location@(Location { position }) props =
   let
     color =
-      Store.subscribe props.gemini
+      props.gemini
         <#> geminiLookup location
         >>> _.color
         >>> show
@@ -84,29 +87,16 @@ hiddenLocations :: Set Location
 hiddenLocations = ambiguousLocations # map _.alternate
 -}
 -- | angle of current ring being dragged, (via location that disambiguates)
-dragAngle ::
-  forall rest.
-  { drag :: Maybe Drag
-  , domInfo :: DomInfo
-  | rest
-  } ->
-  Angle
-dragAngle { drag, domInfo } = do
-  let maybeDrag = drag
-  case maybeDrag of
-    Nothing -> mempty
-    Just drag@{ initialPoint, currentPoint } -> do
-      let Location { ring } = disambiguate drag
-      let angleStart = angleWith ring initialPoint
-      let angleEnd = angleWith ring currentPoint
-      angleEnd <> invert angleStart
+dragAngle :: Maybe Drag -> DomInfo -> Angle
+dragAngle Nothing _ = mempty
+dragAngle (Just drag) domInfo =
+  angleEnd <> invert angleStart
   where
-  angleWith :: Ring -> Point -> Angle
-  angleWith ring point = do
-    let origin = ringOrigin domInfo ring
+  Location { ring } = disambiguate drag
+  angleWith point = do
+    let origin = domInfo.ringCenter ring
     let p = point <> invert origin
     Point.angleToOrigin p
 
-ringOrigin :: DomInfo -> Ring -> Point
-ringOrigin dom ring =
-  dom.ringCenter ring
+  angleStart = angleWith drag.initialPoint
+  angleEnd = angleWith drag.currentPoint
