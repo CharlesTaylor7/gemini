@@ -53,7 +53,7 @@ component = Deku.do
             Puzzle.component
               { gemini: Store.subscribe gemini
               , drag
-              , domInfo: domInfoEvent
+              , domInfo
               }
         , footer
         }

@@ -18,13 +18,20 @@ import Gemini.Store as Store
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions
 import Gemini.DomInfo
-import FRP.Event (sampleOnRight)
+import FRP.Event (sampleOnRight, filterMap)
 
 type Props
   = { gemini :: Event Gemini
     , drag :: Store (Maybe Drag)
-    , domInfo :: Event DomInfo
+    , domInfo :: Effect DomInfo
     }
+
+type DragProps = { drag :: Drag, domInfo :: DomInfo }
+dragProps :: Props -> Event DragProps 
+dragProps { drag, domInfo } =
+  (Store.subscribe drag # filterMap identity) 
+    `bindToEffect` \drag -> domInfo <#> { drag, domInfo: _ }
+
 
 component :: Props -> Nut
 component props = Deku.do
@@ -58,8 +65,7 @@ disk location@(Location { position }) props = Deku.do
         >>> show
         >>> String.toLower
 
-    dragged =
-      sampleOnRight props.domInfo $ Store.subscribe props.drag <#> dragAngle
+    dragged = dragProps props <#> dragAngle
 
     initial = angleOnCircle position
   (pursx :: _ "<div ~diskAttrs~ />")
@@ -98,9 +104,8 @@ hiddenLocations :: Set Location
 hiddenLocations = ambiguousLocations # map _.alternate
 -}
 -- | angle of current ring being dragged, (via location that disambiguates)
-dragAngle :: Maybe Drag -> DomInfo -> Angle
-dragAngle Nothing _ = mempty
-dragAngle (Just drag) domInfo =
+dragAngle :: DragProps -> Angle
+dragAngle {drag, domInfo} =
   angleEnd <> invert angleStart
   where
   Location { ring } = disambiguate drag
