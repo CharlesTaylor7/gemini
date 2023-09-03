@@ -12,6 +12,7 @@ import Data.String.Common as String
 import Data.Gemini (geminiLookup)
 import Deku.Do as Deku
 import Deku.DOM as D
+import Deku.Attributes (style)
 import Gemini.Store as Store
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions
@@ -55,19 +56,28 @@ disk location@(Location { position }) props =
         >>> show
         >>> String.toLower
 
-    diskAngle = angleOnCircle position <> mempty --dragAngle props
-
-    k = 43.0
-    x = k * (1.0 + cosine diskAngle)
-    y = k * (1.0 + sine diskAngle)
+    diskAngle = ado
+      drag <- Store.subscribe props.drag
+      domInfo <- props.domInfo 
+      in angleOnCircle position <> dragAngle drag domInfo
   in
     (pursx :: _ "<div ~diskAttrs~ />")
       ~~
         { diskAttrs:
             klass (append "disk " <$> color)
-              <|> (D.Style !:= fold [ "left: ", show x, "%; top: ", show y, "%" ])
+              <|> (style (diskStyle <$> diskAngle))
               <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
         }
+
+
+diskStyle :: Angle -> String
+diskStyle diskAngle = 
+  let 
+    k = 43.0
+    x = k * (1.0 + cosine diskAngle)
+    y = k * (1.0 + sine diskAngle)
+  in "left: " <> show x <> "%; top: " <> show y <> "%"
+
 
 angleOnCircle :: forall n. Pos n => Cyclic n -> Angle
 angleOnCircle k = turns <> -90.0 :* Degrees

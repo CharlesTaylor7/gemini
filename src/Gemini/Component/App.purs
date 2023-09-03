@@ -49,12 +49,12 @@ component = Deku.do
               <|> (D.OnPointerup !:= dragEnd)
               <|> (D.OnPointerleave !:= dragEnd)
               <|> (D.OnPointercancel !:= dragEnd)
-        , puzzle: 
-            Puzzle.component 
-            { gemini: Store.subscribe gemini
-            , drag
-            , domInfo: domInfoEvent
-            }
+        , puzzle:
+            Puzzle.component
+              { gemini: Store.subscribe gemini
+              , drag
+              , domInfo: domInfoEvent
+              }
         , footer
         }
 
