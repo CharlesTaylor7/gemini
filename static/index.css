@@ -50,42 +50,6 @@ button {
     -moz-appearance: none;
 }
 
-.main-panel {
-    display: flex;
-    flex-flow: column nowrap;
-    gap: 48px;
-    align-items: center;
-}
-
-
-/* header */
-.header {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.control-panel {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 24px;
-}
-
-.button-group.options {
-    display: flex;
-    flex-flow: column;
-    align-items: flex-end;
-}
-
-.button-group.actions {
-    display: flex;
-    flex-flow: row no-wrap;
-    align-items: center;
-    gap: 12px;
-}
-
-
 .action-button {
     display: block;
     color: white;
@@ -108,23 +72,6 @@ button {
 .action-button:active {
     box-shadow: none;
     transform: translate(1px, 1px);
-}
-
-
-.checkbox {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    user-select: none;
-    cursor: pointer;
-}
-
-.checkbox input {
-    cursor: pointer;
-}
-
-.checkbox-label {
-    padding-right: 5px;
 }
 
 .confetti {
@@ -196,15 +143,6 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-
-.disk.drag-disabled {
-    cursor: not-allowed;
-}
-
-.disk.highlight {
-    border: 4px solid #f100ff;
 }
 
 

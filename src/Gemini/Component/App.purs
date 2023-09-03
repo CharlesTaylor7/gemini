@@ -24,8 +24,8 @@ component = Deku.do
   domInfo <- useRef initialDomInfo domInfoEvent
   ( pursx ::
       _ """
-    <div class="w-full h-full flex justify-center fixed" ~attrs~>
-      <div class="main-panel">
+    <div class="mt-12 w-full h-full flex justify-center fixed" ~attrs~>
+      <div class="flex flex-col gap-12 items-center">
         ~header~
         ~puzzle~
         ~footer~
@@ -60,15 +60,18 @@ component = Deku.do
 
 header :: Store Gemini -> Nut
 header store =
-  D.div [ klass_ "header" ]
-    [ D.div [ klass_ "control-panel" ]
-        [ D.button
-            [ klass_ "action-button"
-            , D.OnClick !:= scramble store
-            ]
-            [ text_ "Scramble" ]
-        ]
-    ]
+  ( pursx ::
+      _ """
+    <div class="flex justify-center">
+      <button class="action-button" ~buttonAttrs~>
+        Scramble
+      </button>
+    </div>
+  """
+  )
+    ~~
+      { buttonAttrs: D.OnClick !:= scramble store
+      }
 
 footer :: Nut
 footer =
