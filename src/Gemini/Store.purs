@@ -15,13 +15,15 @@ import Deku.Do as Deku
 import Deku.Extra (Event, Pusher)
 import Deku.Hooks (useRef, useState, useState')
 import Effect (Effect)
+import Utils
 
 modify :: forall a. Store a -> (a -> a) -> Effect Unit
 modify (Store { ref, pusher }) transform =
   ref >>= (transform >>> pusher)
 
 set :: forall a. Store a -> a -> Effect Unit
-set (Store { pusher }) value =
+set (Store { pusher }) value = do
+  logAnything "set" value
   pusher value
 
 subscribe :: forall a. Store a -> Event a

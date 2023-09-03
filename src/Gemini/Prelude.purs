@@ -21,12 +21,11 @@ module Gemini.Prelude
   , module FRP.Event
   , module Gemini.Types
   , module Gemini.Store
-  , logAnything
   ) where
 
 import Prelude hiding (class Ring)
 import Control.Alt ((<|>))
-import Debug (class DebugWarning)
+import Debug 
 import Data.Nat
 import Data.Angle (Angle, AngleUnit(..), (:*), arctan, cosine, sine)
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
@@ -63,7 +62,3 @@ import Gemini.Types
   , Move(..)
   )
 
-logAnything :: DebugWarning => forall a. String -> a -> Effect Unit
-logAnything = logAnythingF
-
-foreign import logAnythingF :: forall a. String -> a -> Effect Unit
