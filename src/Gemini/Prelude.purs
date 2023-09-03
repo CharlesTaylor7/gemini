@@ -1,6 +1,7 @@
 module Gemini.Prelude
   ( module Prelude
   , module Control.Alt
+  , module Control.Alternative
   , module Debug
   , module Data.Nat
   , module Data.Angle
@@ -25,6 +26,7 @@ module Gemini.Prelude
 
 import Prelude hiding (class Ring)
 import Control.Alt ((<|>))
+import Control.Alternative (guard)
 import Debug
 import Data.Nat
 import Data.Angle (Angle, AngleUnit(..), (:*), arctan, cosine, sine)
@@ -34,7 +36,7 @@ import Data.Group (class Group, invert, pow)
 import Data.Set (Set)
 import Data.Map (Map)
 import Data.Point (Point(..))
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Foldable (fold, foldMap)
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)

@@ -27,10 +27,13 @@ type Props
     }
 
 type DragProps
-  = { drag :: Drag, domInfo :: DomInfo }
+  = { drag :: Maybe Drag
+    , domInfo :: DomInfo
+    }
+
 dragProps :: Props -> Event DragProps
 dragProps { drag, domInfo } =
-  (Store.subscribe drag # filterMap identity)
+  (Store.subscribe drag)
     `bindToEffect`
       \drag -> domInfo <#> { drag, domInfo: _ }
 
@@ -63,7 +66,6 @@ disk location@(Location { position, ring }) props =
       { diskAttrs:
           klass (append "disk " <$> color)
             <|> (style (diskStyle <$> (pure initial <|> (append initial <$> dragged))))
-            --pure(diskStyle (angleOnCircle position))))
             <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
       }
   where
@@ -106,17 +108,12 @@ hiddenLocations = ambiguousLocations # map _.alternate
 -}
 -- | angle of current ring being dragged, (via location that disambiguates)
 dragAngle :: Ring -> DragProps -> Angle
-dragAngle r { drag, domInfo } =
-  if r == ring then
-    angleEnd <> invert angleStart
-  else
-    mempty
-  where
-  Location { ring } = disambiguate drag
-  angleWith point = do
-    let origin = domInfo.ringCenter ring
-    let p = point <> invert origin
-    Point.angleToOrigin p
+dragAngle r { drag, domInfo } = fromMaybe mempty do
+  drag <- drag
 
-  angleStart = angleWith drag.initialPoint
-  angleEnd = angleWith drag.currentPoint
+  let Location { ring } = disambiguate drag
+  guard $ r == ring
+
+  let offset = invert $ domInfo.ringCenter ring
+  let angleWith = append offset >>> Point.angleToOrigin
+  pure $ angleWith drag.currentPoint <> invert (angleWith drag.initialPoint)
