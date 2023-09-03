@@ -434,6 +434,10 @@ video {
   display: none;
 }
 
+div:focus {
+  outline: none;
+}
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -554,6 +558,10 @@ video {
   margin: 0.5rem;
 }
 
+.mt-12 {
+  margin-top: 3rem;
+}
+
 .flex {
   display: flex;
 }
@@ -582,12 +590,20 @@ video {
   resize: both;
 }
 
+.flex-col {
+  flex-direction: column;
+}
+
 .items-center {
   align-items: center;
 }
 
 .justify-center {
   justify-content: center;
+}
+
+.gap-12 {
+  gap: 3rem;
 }
 
 .p-2 {
