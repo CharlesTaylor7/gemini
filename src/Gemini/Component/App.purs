@@ -82,30 +82,30 @@ header store =
 
 footer :: Nut
 footer =
-  D.div []
-    [ D.div [ klass_ "text-2xl" ]
-        [ D.div__ "Q: Rotate left disk counter clockwise"
-        , D.div__ "W: Rotate left disk clockwise"
-        , D.div__ "T: Rotate center disk counter clockwise"
-        , D.div__ "Y: Rotate center disk clockwise"
-        , D.div__ "O: Rotate right disk counter clockwise"
-        , D.div__ "P: Rotate right disk clockwise"
-        ]
-    , ( pursx ::
-          _
-            """<div class="fixed bottom-0 left-0">
+  ( pursx ::
+      _ """
+      <div>
+        <div class="text-2xl">
+          <div>Q: Rotate left disk counter clockwise</div>
+          <div>W: Rotate left disk clockwise</div>
+          <div>T: Rotate center disk counter clockwise</div>
+          <div>Y: Rotate center disk clockwise</div>
+          <div>O: Rotate right disk counter clockwise</div>
+          <div>P: Rotate right disk clockwise</div>
+        </div>
+        <div class="fixed bottom-0 left-0">
               ~viewSource~
-              </div>
-          """
-      )
-        ~~
-          { viewSource:
-              hyperlink
-                "./github.png"
-                "https://github.com/CharlesTaylor7/gemini"
-                "View Source"
-          }
-    ]
+        </div>
+      </div>
+    """
+  )
+    ~~
+      { viewSource:
+          hyperlink
+            "./github.png"
+            "https://github.com/CharlesTaylor7/gemini"
+            "View Source"
+      }
 
 hyperlink :: String -> String -> String -> Nut
 hyperlink iconSrc linkUrl display =
