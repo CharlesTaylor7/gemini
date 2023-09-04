@@ -30,7 +30,6 @@ component = Deku.do
       <div class="flex flex-col gap-12 items-center">
         ~header~
         ~puzzle~
-        <p ~hello~ >Hello</p>
         ~footer~
       </div>
     </div>
@@ -40,8 +39,7 @@ component = Deku.do
         props = { gemini, drag, domInfo }
         dragEnd = pointer $ onDragEnd props
       in
-        { hello: Class.name [ "hidden" # Class.when (pure $ not isTouchDevice) ]
-        , header: header gemini
+        { header: header gemini
         -- TODO: use oneOf, or whatever is more efficient
         , attrs:
             Class.name
@@ -84,7 +82,7 @@ footer :: Nut
 footer =
   ( pursx ::
       _ """
-      <div>
+      <div ~footer~>
         <div class="text-2xl">
           <div>Q: Rotate left disk counter clockwise</div>
           <div>W: Rotate left disk clockwise</div>
@@ -94,13 +92,14 @@ footer =
           <div>P: Rotate right disk clockwise</div>
         </div>
         <div class="fixed bottom-0 left-0">
-              ~viewSource~
+          ~viewSource~
         </div>
       </div>
     """
   )
     ~~
-      { viewSource:
+      { footer: Class.name ["hidden" # Class.when (pure isTouchDevice)]
+      , viewSource:
           hyperlink
             "./github.png"
             "https://github.com/CharlesTaylor7/gemini"
