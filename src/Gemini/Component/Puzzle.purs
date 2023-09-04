@@ -48,7 +48,7 @@ component props = Deku.do
   where
   ringView :: Ring -> Nut
   ringView ring =
-    D.div [ klass_ "gemini-ring", style_ $ ringStyle ring ]
+    D.div [ klass_ "w-full relative", style_ $ ringStyle ring ]
       $ disks ring
 
   disks :: Ring -> Array Nut
