@@ -14,6 +14,7 @@ import Deku.Do as Deku
 import Deku.DOM as D
 import Resize as Resize
 import Gemini.Store as Store
+import ClassName as Class
 
 component :: Nut
 component = Deku.do
@@ -24,7 +25,7 @@ component = Deku.do
   domInfo <- useRef initialDomInfo domInfoEvent
   ( pursx ::
       _ """
-    <div class="mt-12 w-full h-full flex justify-center fixed" ~attrs~>
+    <div ~attrs~>
       <div class="flex flex-col gap-12 items-center">
         ~header~
         ~puzzle~
@@ -40,8 +41,14 @@ component = Deku.do
         dragEnd = pointer $ onDragEnd props
       in
         { header: header gemini
+
+        -- TODO: use oneOf, or whatever is more efficient
         , attrs:
-            (D.Self !:= \e -> resize.listen e)
+              Class.name
+                [ pure "mt-12 w-full h-full flex justify-center fixed" 
+                , "cursor-grabbing" `Class.when` (Store.subscribe drag <#> isJust)
+                ]
+              <|> (D.Self !:= \e -> resize.listen e)
               <|> autoFocus
               <|> tabIndex (pure 0)
               <|> (D.OnKeydown !:= keyboard (keyboardEvents gemini))

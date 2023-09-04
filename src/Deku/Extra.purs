@@ -3,7 +3,6 @@ module Deku.Extra
   , tabIndex
   , keyboard
   , pointer
-  , className
   , Pusher
   , module FRP.Event
   , module Web.UIEvent.KeyboardEvent
@@ -44,28 +43,6 @@ type PointerEvent
   = { clientX :: Number
     , clientY :: Number
     }
-
-newtype ClassName
-  = ClassName String
-
-className :: forall e. Attr e H.Class String => Array (Event String) -> Event (Attribute e)
-className = klass <<< coerce <<< foldMap safeCoerce
-  where
-  safeCoerce :: Event String -> Event ClassName
-  safeCoerce = coerce
-
-instance Semigroup ClassName where
-  append a@(ClassName x) b@(ClassName y)
-    | x == "" = b
-    | y == "" = a
-    | otherwise =
-      ClassName
-        $ x
-        <> " "
-        <> y
-
-instance Monoid ClassName where
-  mempty = ClassName ""
 
 autoFocus :: forall e. Event (Attribute e)
 autoFocus = pure $ unsafeAttribute { key: "autofocus", value: Prop' "" }
