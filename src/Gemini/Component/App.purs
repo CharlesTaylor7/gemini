@@ -15,6 +15,7 @@ import Deku.DOM as D
 import Resize as Resize
 import Gemini.Store as Store
 import ClassName as Class
+import Utils
 
 component :: Nut
 component = Deku.do
@@ -29,9 +30,8 @@ component = Deku.do
       <div class="flex flex-col gap-12 items-center">
         ~header~
         ~puzzle~
+        <p ~hello~ >Hello</p>
         ~footer~
-      </div>
-      <div class="right-panel" data-todo="recorded-moves">
       </div>
     </div>
   """
@@ -40,7 +40,8 @@ component = Deku.do
         props = { gemini, drag, domInfo }
         dragEnd = pointer $ onDragEnd props
       in
-        { header: header gemini
+        { hello: Class.name [ "hidden" # Class.when (pure $ not isTouchDevice) ]
+        , header: header gemini
         -- TODO: use oneOf, or whatever is more efficient
         , attrs:
             Class.name
@@ -90,12 +91,20 @@ footer =
         , D.div__ "O: Rotate right disk counter clockwise"
         , D.div__ "P: Rotate right disk clockwise"
         ]
-    , D.div [ klass_ "fixed bottom-0 left-0" ]
-        [ hyperlink
-            "./github.png"
-            "https://github.com/CharlesTaylor7/gemini"
-            "View Source"
-        ]
+    , ( pursx ::
+          _
+            """<div class="fixed bottom-0 left-0">
+              ~viewSource~
+              </div>
+          """
+      )
+        ~~
+          { viewSource:
+              hyperlink
+                "./github.png"
+                "https://github.com/CharlesTaylor7/gemini"
+                "View Source"
+          }
     ]
 
 hyperlink :: String -> String -> String -> Nut

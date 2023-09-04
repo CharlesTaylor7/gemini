@@ -1,10 +1,12 @@
 ## Desktop
-- Change cursor during a drag
+- [x] Change cursor during a drag
 
 ## Mobile
-- Touch Controls work but feel janky
+- [ ] disable drag controls for mobile
+- [ ] Swipe to rotate rings
 - Highlight disk during drag
 - Can't see the whole puzzle. Render smaller and sideways.
+
 
 ## Solving
 - [ ] solve detection
