@@ -69,7 +69,7 @@ disk location@(Location { position, ring }) props =
   (pursx :: _ "<div ~diskAttrs~ />")
     ~~
       { diskAttrs:
-          Class.name [ pure "disk", color, "hidden" `Class.when` (hidden location <$> Store.subscribe props.drag) ]
+          Class.name [ pure "disk", color, "hidden" # Class.when (hidden location <$> Store.subscribe props.drag) ]
             <|> (style (diskStyle <$> (pure initial <|> (append initial <$> dragged))))
             <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
       }
@@ -87,7 +87,7 @@ disk location@(Location { position, ring }) props =
 hidden :: Location -> Maybe Drag -> Boolean
 hidden _ Nothing = false
 hidden loc (Just drag) =
-  locationToIndex loc `Set.member` hiddenLocationIndices drag 
+  locationToIndex loc `Set.member` (spy "indices" (hiddenLocationIndices drag))
 
 diskStyle :: Angle -> String
 diskStyle diskAngle =

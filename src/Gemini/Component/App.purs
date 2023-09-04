@@ -41,13 +41,12 @@ component = Deku.do
         dragEnd = pointer $ onDragEnd props
       in
         { header: header gemini
-
         -- TODO: use oneOf, or whatever is more efficient
         , attrs:
-              Class.name
-                [ pure "mt-12 w-full h-full flex justify-center fixed" 
-                , "cursor-grabbing" `Class.when` (Store.subscribe drag <#> isJust)
-                ]
+            Class.name
+              [ pure "mt-12 w-full h-full flex justify-center fixed"
+              , "cursor-grabbing" # Class.when (Store.subscribe drag <#> isJust)
+              ]
               <|> (D.Self !:= \e -> resize.listen e)
               <|> autoFocus
               <|> tabIndex (pure 0)

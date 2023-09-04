@@ -1,8 +1,7 @@
-module ClassName 
+module ClassName
   ( name
   , when
-  )
-  where
+  ) where
 
 import Prelude
 import Effect (Effect)
@@ -19,16 +18,14 @@ import Web.UIEvent.KeyboardEvent (KeyboardEvent)
 import Unsafe.Coerce (unsafeCoerce)
 import Safe.Coerce (coerce)
 
-
 newtype ClassName
   = ClassName String
 
-type ClassEntry = Event String 
+type ClassEntry
+  = Event String
 
-
-when :: String -> Event Boolean -> Event String
-when name = map (if _ then name else "")
-
+when :: Event Boolean -> String -> Event String
+when event name = event <#> if _ then name else ""
 
 name :: forall e. Attr e D.Class String => Array (Event String) -> Event (Attribute e)
 name = klass <<< coerce <<< foldMap coerceEvent
