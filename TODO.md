@@ -1,11 +1,14 @@
-- [x] Port static version of the app
-- Reimplement features one piece at a time
-  - [x] Keyboard controls
-  - [x] Scramble
-  - [ ] Mouse dragging
-  - [ ] Touch controls
-  - [ ] Recording moves
-  - [ ] Undo
-  - [ ] Confetti drop on Solve
+## Desktop
+- Change cursor during a drag
 
-- [ ] On mobile, detect device orientation and reflow format
+## Mobile
+- Touch Controls work but feel janky
+- Highlight disk during drag
+- Can't see the whole puzzle. Render smaller and sideways.
+
+## Solving
+- [ ] solve detection
+- [ ] Move count
+- [ ] Solve time
+- [ ] Time solve 
+- [ ] Confetti drop
