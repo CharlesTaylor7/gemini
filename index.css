@@ -7,7 +7,6 @@
     --disk-red: #ad0000;
     --disk-green: #45ab36;
     --disk-blue: #00aeff;
-    --ring-diameter: 350px;
     --ring-background: #816c5b;
     --panel-border: #82a6e3;
     --button-background: #0069ed;
@@ -113,18 +112,16 @@ button {
 
 .gemini {
     display: flex;
-    height: var(--ring-diameter);
-    width: calc(3 * var(--ring-diameter));
+    height: 350px;
+    width: calc(3 * 350px);
     background: url(./wood.jpg)
 }
 
 .gemini.mobile {
     flex-direction: column;
-    width: var(--ring-diameter);
-    height: calc(3 * var(--ring-diameter));
+    width: 43vh;
+    height: calc(3 * 43vh);
 }
-
-
 
 .disk {
     height: 14%;
