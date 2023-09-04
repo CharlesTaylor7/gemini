@@ -108,9 +108,9 @@ angleOnCircle k = turns <> -90.0 :* Degrees
 ringStyle :: Ring -> String
 ringStyle =
   case _ of
-    LeftRing -> "top: 14.9%"
-    RightRing -> "bottom: 14.9%"
-    CenterRing -> ""
+    LeftRing -> ""
+    CenterRing -> "top: -11.4%"
+    RightRing -> "top: -22.8%"
 
 hiddenLocationIndices :: Drag -> Set Int
 hiddenLocationIndices drag =
