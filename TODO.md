@@ -1,11 +1,5 @@
-## Desktop
-- [x] Change cursor during a drag
-
-## Mobile
-- [ ] Can't see the whole puzzle. Render smaller and sideways.
+## UI
 - [ ] Highlight disk during drag
-- [ ] disable drag controls for mobile
-- [ ] Swipe to rotate rings
 
 ## Solving
 - [ ] solve detection
