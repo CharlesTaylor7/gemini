@@ -37,10 +37,10 @@ dragProps { drag, domInfo } =
   (Store.subscribe drag)
     `bindToEffect`
       \drag -> domInfo <#> { drag, domInfo: _ }
-
+-- , style_ "transform: rotate(90deg)" 
 component :: Props -> Nut
 component props = Deku.do
-  D.div [ klass_ "gemini", style_ "transform: rotate(90deg)" ]
+  D.div [ klass_ "gemini"]
     $ Array.concat
         [ [ D.div [ klass_ "background" ] [] ]
         , map ringView inhabitants
