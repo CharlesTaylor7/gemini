@@ -25,11 +25,8 @@ component = Deku.do
   let domInfoEvent = resize.event `bindToEffect` const loadDomInfo
   domInfo <- useRef initialDomInfo domInfoEvent
   let props = { gemini, drag, domInfo }
-  if isTouchDevice
-  then Mobile.component props
-  else
-    ( pursx ::
-        _ """
+  ( pursx ::
+      _ """
       <div ~attrs~>
         <div class="flex flex-col gap-12 items-center">
           ~header~
@@ -38,7 +35,7 @@ component = Deku.do
         </div>
       </div>
     """
-    )
+  )
     ~~ let
         dragEnd = pointer $ onDragEnd props
       in
@@ -46,7 +43,8 @@ component = Deku.do
         -- TODO: use oneOf, or whatever is more efficient
         , attrs:
             Class.name
-              [ pure "mt-12 w-full h-full flex justify-center fixed"
+              [ pure "w-full h-full justify-center fixed"
+              , "mt-12 flex" # Class.when (pure $ not isTouchDevice)
               , "cursor-grabbing" # Class.when (Store.subscribe drag <#> isJust)
               ]
               <|> (D.Self !:= \e -> resize.listen e)
@@ -58,7 +56,10 @@ component = Deku.do
               <|> (D.OnPointerleave !:= dragEnd)
               <|> (D.OnPointercancel !:= dragEnd)
         , puzzle:
-            Puzzle.component props
+            if isTouchDevice then
+              Mobile.component props
+            else
+              Puzzle.component props
         , footer
         }
 
@@ -79,7 +80,7 @@ header store =
             [ pure "flex justify-center"
             , "hidden" # Class.when (pure isTouchDevice)
             ]
-      , buttonAttrs: 
+      , buttonAttrs:
           D.OnClick !:= scramble store
       }
 

@@ -42,7 +42,7 @@ component :: Props -> Nut
 component props = Deku.do
   D.div [ klass_ "gemini" ]
     $ map ringView inhabitants
-        
+
   where
   ringView :: Ring -> Nut
   ringView ring =

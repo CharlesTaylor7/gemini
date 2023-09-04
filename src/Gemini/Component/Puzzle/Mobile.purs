@@ -37,10 +37,9 @@ dragProps { drag, domInfo } =
   (Store.subscribe drag)
     `bindToEffect`
       \drag -> domInfo <#> { drag, domInfo: _ }
--- , style_ "transform: rotate(90deg)" 
 component :: Props -> Nut
 component props = Deku.do
-  D.div [ Class.name [ pure "gemini", "mobile" # Class.when (pure isTouchDevice)]]
+  D.div [ Class.name [ pure "gemini", "mobile" # Class.when (pure isTouchDevice) ] ]
     $ map ringView inhabitants
   where
   ringView :: Ring -> Nut

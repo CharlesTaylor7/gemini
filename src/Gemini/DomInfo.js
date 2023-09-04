@@ -7,7 +7,6 @@ export const loadDomInfoF = () => ({
 
 function ringCenter(selector) {
   let elem = document.querySelector(selector);
-  console.log(elem);
   let rect = elem.getBoundingClientRect();
   let width = rect.width;
   let left = rect.left;
