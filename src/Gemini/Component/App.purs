@@ -36,9 +36,9 @@ component = Deku.do
       ~~
         { attrs:
             (D.Self !:= \e -> resize.listen e)
-              <|> (D.OnTouchmove !:= touch "move" (onDragUpdate props))
-              <|> (D.OnTouchend !:= touch "up" (onDragEnd props))
-              <|> (D.OnTouchcancel !:= touch "cance" (onDragEnd props))
+              <|> (D.OnTouchmove !:= touch (onDragUpdate props))
+              <|> (D.OnTouchend !:= touch (onDragEnd props))
+              <|> (D.OnTouchcancel !:= touch (onDragEnd props))
         , puzzle: Mobile.component props
         }
   else
@@ -65,10 +65,10 @@ component = Deku.do
               <|> tabIndex (pure 0)
               <|> (D.Self !:= \e -> resize.listen e)
               <|> (D.OnKeydown !:= keyboard (keyboardEvents gemini))
-              <|> (D.OnPointermove !:= pointer "move" (onDragUpdate props))
-              <|> (D.OnPointerup !:= pointer "up" (onDragEnd props))
-              <|> (D.OnPointerleave !:= pointer "leave" (onDragEnd props))
-              <|> (D.OnPointercancel !:= pointer "cancel" (onDragEnd props))
+              <|> (D.OnPointermove !:= pointer (onDragUpdate props))
+              <|> (D.OnPointerup !:= pointer (onDragEnd props))
+              <|> (D.OnPointerleave !:= pointer (onDragEnd props))
+              <|> (D.OnPointercancel !:= pointer (onDragEnd props))
         , puzzle: Puzzle.component props
         , footer
         }

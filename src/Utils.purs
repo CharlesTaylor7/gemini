@@ -2,7 +2,7 @@ module Utils where
 
 import Prelude
 import Effect
-import Debug (class DebugWarning)
+import Debug (class DebugWarning, spy)
 import FRP.Event (Event)
 import FRP.Event as Event
 
@@ -13,13 +13,9 @@ bindToEffect e f =
     u <- Event.subscribe e (f >=> k)
     pure u
 
-logAnything :: DebugWarning => forall a. String -> a -> Effect Unit
-logAnything = logAnythingF
-
-foreign import logAnythingF :: forall a. String -> a -> Effect Unit
 
 monitor :: forall a. String -> Event a -> Event a
-monitor tag event = event `bindToEffect` \a -> logAnything tag a *> pure a
+monitor tag event = event `bindToEffect` \a -> pure $ spy tag a
 
 -- Technically a side effect, but this value is static for the whole run of the application
 foreign import isTouchDevice :: Boolean

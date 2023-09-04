@@ -36,22 +36,15 @@ keyboard f = cb $ f <<< convert
   convert = unsafeCoerce
 
 pointer :: String -> (PointerEvent -> Effect Unit) -> Cb
-pointer tag f =
-  cb
-    $ f
-    <<< spy tag
-    <<< convert
+pointer f =
+  cb $ f <<< convert
   where
   convert :: Web.Event -> PointerEvent
   convert = unsafeCoerce
 
 touch :: String -> (Touch -> Effect Unit) -> Cb
-touch tag f =
-  cb
-    $ f
-    <<< (\r -> r.changedTouches.item 0)
-    <<< spy tag
-    <<< coerceEvent
+touch f =
+  cb $ f <<< (\r -> r.changedTouches.item 0) <<< coerceEvent
   where
   coerceEvent :: Web.Event -> TouchEvent
   coerceEvent = unsafeCoerce

@@ -74,7 +74,7 @@ disk location@(Location { position, ring }) props =
       { diskAttrs:
           Class.name [ pure "disk", color, "hidden" # Class.when (hidden location <$> Store.subscribe props.drag) ]
             <|> (style (diskStyle <$> (pure initial <|> (append initial <$> dragged))))
-            <|> (D.OnPointerdown !:= pointer "down" (onDragStart { drag: props.drag, location }))
+            <|> (D.OnPointerdown !:= pointer (onDragStart { drag: props.drag, location }))
       }
   where
   color =
