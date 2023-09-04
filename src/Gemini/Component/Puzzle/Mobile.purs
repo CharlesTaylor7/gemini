@@ -41,10 +41,7 @@ dragProps { drag, domInfo } =
 component :: Props -> Nut
 component props = Deku.do
   D.div [ Class.name [ pure "gemini", "mobile" # Class.when (pure isTouchDevice)]]
-    $ Array.concat
-        [ [ D.div [ klass_ "background" ] [] ]
-        , map ringView inhabitants
-        ]
+    $ map ringView inhabitants
   where
   ringView :: Ring -> Nut
   ringView ring =
