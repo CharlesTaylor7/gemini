@@ -72,7 +72,7 @@ onDragEnd ::
   PointerEvent ->
   Effect Unit
 onDragEnd props@{ drag: dragS, gemini } event = do
-  onDragUpdate props event
+  --onDragUpdate props event
   drag <- Store.read dragS
   case drag of
     Nothing -> pure unit

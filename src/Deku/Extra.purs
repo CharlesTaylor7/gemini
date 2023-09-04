@@ -3,6 +3,7 @@ module Deku.Extra
   , tabIndex
   , keyboard
   , pointer
+  , touch
   , Pusher
   , module FRP.Event
   , module Web.UIEvent.KeyboardEvent
@@ -23,6 +24,7 @@ import Web.Event.Event as Web
 import Web.UIEvent.KeyboardEvent (KeyboardEvent)
 import Unsafe.Coerce (unsafeCoerce)
 import Safe.Coerce (coerce)
+import Debug
 
 type Pusher a
   = a -> Effect Unit
@@ -33,13 +35,34 @@ keyboard f = cb $ f <<< convert
   convert :: Web.Event -> KeyboardEvent
   convert = unsafeCoerce
 
-pointer :: (PointerEvent -> Effect Unit) -> Cb
-pointer f = cb $ f <<< convert
+pointer :: String -> (PointerEvent -> Effect Unit) -> Cb
+pointer tag f =
+  cb
+    $ do
+        f <<< spy tag <<< convert
   where
   convert :: Web.Event -> PointerEvent
   convert = unsafeCoerce
 
+touch :: String -> (Touch -> Effect Unit) -> Cb
+touch tag f =
+  cb
+    $ do
+        f <<< (\r -> r.touches.item 0) <<< spy tag <<< coerceEvent
+  where
+  coerceEvent :: Web.Event -> TouchEvent
+  coerceEvent = unsafeCoerce
+
 type PointerEvent
+  = { clientX :: Number
+    , clientY :: Number
+    }
+
+type TouchEvent
+  = { touches :: { item :: Int -> Touch }
+    }
+
+type Touch
   = { clientX :: Number
     , clientY :: Number
     }

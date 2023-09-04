@@ -25,41 +25,51 @@ component = Deku.do
   let domInfoEvent = resize.event `bindToEffect` const loadDomInfo
   domInfo <- useRef initialDomInfo domInfoEvent
   let props = { gemini, drag, domInfo }
-  ( pursx ::
-      _ """
-      <div ~attrs~>
-        <div class="flex flex-col gap-12 items-center">
-          ~header~
-          ~puzzle~
-          ~footer~
-        </div>
-      </div>
-    """
-  )
-    ~~ let
-        dragEnd = pointer $ onDragEnd props
-      in
+  if isTouchDevice then
+    ( pursx ::
+        _ """
+          <div class="w-full h-full fixed" ~attrs~>
+            ~puzzle~
+          </div>
+        """
+    )
+      ~~
+        { attrs:
+            (D.Self !:= \e -> resize.listen e)
+              <|> (D.OnTouchmove !:= touch "move" (onDragUpdate props))
+              <|> (D.OnTouchend !:= touch "up" (onDragEnd props))
+              <|> (D.OnTouchcancel !:= touch "cance" (onDragEnd props))
+        , puzzle: Mobile.component props
+        }
+  else
+    ( pursx ::
+        _ """
+          <div ~attrs~>
+            <div class="flex flex-col gap-12 items-center">
+              ~header~
+              ~puzzle~
+              ~footer~
+            </div>
+          </div>
+        """
+    )
+      ~~
         { header: header gemini
         -- TODO: use oneOf, or whatever is more efficient
         , attrs:
             Class.name
-              [ pure "w-full h-full justify-center fixed"
-              , "mt-12 flex" # Class.when (pure $ not isTouchDevice)
+              [ pure "mt-12 fixed w-full h-full flex justify-center"
               , "cursor-grabbing" # Class.when (Store.subscribe drag <#> isJust)
               ]
-              <|> (D.Self !:= \e -> resize.listen e)
               <|> autoFocus
               <|> tabIndex (pure 0)
+              <|> (D.Self !:= \e -> resize.listen e)
               <|> (D.OnKeydown !:= keyboard (keyboardEvents gemini))
-              <|> (D.OnPointermove !:= pointer (onDragUpdate props))
-              <|> (D.OnPointerup !:= dragEnd)
-              <|> (D.OnPointerleave !:= dragEnd)
-              <|> (D.OnPointercancel !:= dragEnd)
-        , puzzle:
-            if isTouchDevice then
-              Mobile.component props
-            else
-              Puzzle.component props
+              <|> (D.OnPointermove !:= pointer "move" (onDragUpdate props))
+              <|> (D.OnPointerup !:= pointer "up" (onDragEnd props))
+              <|> (D.OnPointerleave !:= pointer "leave" (onDragEnd props))
+              <|> (D.OnPointercancel !:= pointer "cancel" (onDragEnd props))
+        , puzzle: Puzzle.component props
         , footer
         }
 
