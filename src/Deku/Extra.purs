@@ -48,7 +48,7 @@ touch :: String -> (Touch -> Effect Unit) -> Cb
 touch tag f =
   cb
     $ do
-        f <<< (\r -> r.touches.item 0) <<< spy tag <<< coerceEvent
+        f <<< (\r -> r.changedTouches.item 0) <<< spy tag <<< coerceEvent
   where
   coerceEvent :: Web.Event -> TouchEvent
   coerceEvent = unsafeCoerce
@@ -59,7 +59,7 @@ type PointerEvent
     }
 
 type TouchEvent
-  = { touches :: { item :: Int -> Touch }
+  = { changedTouches :: { item :: Int -> Touch }
     }
 
 type Touch
