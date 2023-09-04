@@ -195,8 +195,7 @@ geminiView store =
               [ ("left", show x <> "%")
               , ("top", show y <> "%")
               ]
-            : [ ("mousedown", onDragStart location)
-              , ("touchstart", onDragStart location)
+            : [ ("touchstart", onDragStart location)
               ]
             )
             if mobile

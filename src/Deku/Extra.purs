@@ -35,14 +35,14 @@ keyboard f = cb $ f <<< convert
   convert :: Web.Event -> KeyboardEvent
   convert = unsafeCoerce
 
-pointer :: String -> (PointerEvent -> Effect Unit) -> Cb
+pointer :: (PointerEvent -> Effect Unit) -> Cb
 pointer f =
   cb $ f <<< convert
   where
   convert :: Web.Event -> PointerEvent
   convert = unsafeCoerce
 
-touch :: String -> (Touch -> Effect Unit) -> Cb
+touch :: (Touch -> Effect Unit) -> Cb
 touch f =
   cb $ f <<< (\r -> r.changedTouches.item 0) <<< coerceEvent
   where
