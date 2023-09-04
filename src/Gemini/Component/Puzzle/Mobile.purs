@@ -40,7 +40,7 @@ dragProps { drag, domInfo } =
 -- , style_ "transform: rotate(90deg)" 
 component :: Props -> Nut
 component props = Deku.do
-  D.div [ klass_ "gemini" ]
+  D.div [ Class.name [ pure "gemini", "mobile" # Class.when (pure isTouchDevice)]]
     $ Array.concat
         [ [ D.div [ klass_ "background" ] [] ]
         , map ringView inhabitants
@@ -49,7 +49,7 @@ component props = Deku.do
   ringView :: Ring -> Nut
   ringView ring =
     D.div
-      [ klass_ "w-full relative"
+      [ klass_ "h-full w-full relative"
       , style_ $ ringStyle ring
       , pure
           $ xdata "ring"
@@ -111,8 +111,8 @@ angleOnCircle k = turns <> -90.0 :* Degrees
 ringStyle :: Ring -> String
 ringStyle =
   case _ of
-    LeftRing -> "left: 14.9%"
-    RightRing -> "right: 14.9%"
+    LeftRing -> "top: 14.9%"
+    RightRing -> "bottom: 14.9%"
     CenterRing -> ""
 
 hiddenLocationIndices :: Drag -> Set Int
