@@ -22,12 +22,14 @@ module Gemini.Prelude
   , module FRP.Event
   , module Gemini.Types
   , module Gemini.Store
+  , module Utils
   ) where
 
 import Prelude hiding (class Ring)
 import Control.Alt ((<|>))
 import Control.Alternative (guard)
 import Debug
+import Utils 
 import Data.Nat
 import Data.Angle (Angle, AngleUnit(..), (:*), arctan, cosine, sine)
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)

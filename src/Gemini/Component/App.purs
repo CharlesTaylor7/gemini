@@ -6,7 +6,7 @@ import Gemini.Prelude
 import Gemini.Store (Store, useStore)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
-import Gemini.DomInfo (DomInfo, initialDomInfo, bindToEffect, loadDomInfo)
+import Gemini.DomInfo (DomInfo, initialDomInfo, loadDomInfo)
 import Gemini.Component.App.Actions
 import Gemini.Component.Puzzle.Actions
 import Data.Gemini as Gemini

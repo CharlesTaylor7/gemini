@@ -17,9 +17,9 @@ import Deku.Attributes (style)
 import Gemini.Store as Store
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
-import Gemini.DomInfo (DomInfo, bindToEffect)
+import Gemini.DomInfo (DomInfo)
 import FRP.Event (sampleOnRight, filterMap)
-import Utils (logAnything)
+import Utils (logAnything, bindToEffect)
 import ClassName as Class
 
 type Props
@@ -39,8 +39,6 @@ dragProps { drag, domInfo } =
     `bindToEffect`
       \drag -> domInfo <#> { drag, domInfo: _ }
 
-monitor :: forall a. String -> Event a -> Event a
-monitor tag event = event `bindToEffect` \a -> logAnything tag a *> pure a
 
 component :: Props -> Nut
 component props = Deku.do

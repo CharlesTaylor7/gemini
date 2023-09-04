@@ -2,11 +2,10 @@
 - [x] Change cursor during a drag
 
 ## Mobile
+- [ ] Can't see the whole puzzle. Render smaller and sideways.
+- [ ] Highlight disk during drag
 - [ ] disable drag controls for mobile
 - [ ] Swipe to rotate rings
-- Highlight disk during drag
-- Can't see the whole puzzle. Render smaller and sideways.
-
 
 ## Solving
 - [ ] solve detection
