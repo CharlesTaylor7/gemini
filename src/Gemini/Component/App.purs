@@ -121,15 +121,3 @@ hyperlink iconSrc linkUrl display =
       , label:
           text_ display
       }
-
-checkBox :: String -> Nut
-checkBox label =
-  ( pursx ::
-      _ """
-    <label class="checkbox">
-      <span class="checkbox-label">~label~</span>
-      <input type="checkbox" />
-    </label>
-  """
-  )
-    ~~ { label: text_ label }
