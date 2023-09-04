@@ -15,7 +15,6 @@ import Deku.DOM as D
 import Resize as Resize
 import Gemini.Store as Store
 import ClassName as Class
-import Utils
 
 component :: Nut
 component = Deku.do
@@ -98,7 +97,7 @@ footer =
     """
   )
     ~~
-      { footer: Class.name ["hidden" # Class.when (pure isTouchDevice)]
+      { footer: Class.name [ "hidden" # Class.when (pure isTouchDevice) ]
       , viewSource:
           hyperlink
             "./github.png"

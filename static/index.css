@@ -123,14 +123,6 @@ button {
     position: relative;
 }
 
-.gemini-ring.left {
-    left: 14.9%;
-}
-
-.gemini-ring.right {
-    right: 14.9%;
-}
-
 .disk {
     height: 14%;
     width: 14%;

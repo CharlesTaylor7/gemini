@@ -13,7 +13,6 @@ bindToEffect e f =
     u <- Event.subscribe e (f >=> k)
     pure u
 
-
 logAnything :: DebugWarning => forall a. String -> a -> Effect Unit
 logAnything = logAnythingF
 

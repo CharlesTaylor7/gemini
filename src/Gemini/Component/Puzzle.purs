@@ -19,7 +19,6 @@ import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
 import Gemini.DomInfo (DomInfo)
 import FRP.Event (sampleOnRight, filterMap)
-import Utils (logAnything, bindToEffect, isTouchDevice)
 import ClassName as Class
 
 type Props
@@ -39,7 +38,6 @@ dragProps { drag, domInfo } =
     `bindToEffect`
       \drag -> domInfo <#> { drag, domInfo: _ }
 
-
 component :: Props -> Nut
 component props = Deku.do
   D.div [ klass_ "gemini", style_ "transform: rotate(90deg)" ]
@@ -50,7 +48,7 @@ component props = Deku.do
   where
   ringView :: Ring -> Nut
   ringView ring =
-    D.div [ klass_ $ ringClass ring ]
+    D.div [ klass_ "gemini-ring", style_ $ ringStyle ring ]
       $ disks ring
 
   disks :: Ring -> Array Nut
@@ -101,13 +99,12 @@ angleOnCircle k = turns <> -90.0 :* Degrees
   where
   turns = (Int.toNumber (unCyclic k)) / (Int.toNumber $ knownInt (proxy :: _ n)) :* Turns
 
-ringClass :: Ring -> String
-ringClass =
-  const "gemini-ring"
-    <> case _ of
-        LeftRing -> "left"
-        CenterRing -> "center"
-        RightRing -> "right"
+ringStyle :: Ring -> String
+ringStyle =
+  case _ of
+    LeftRing -> "left: 14.9%"
+    RightRing -> "right: 14.9%"
+    CenterRing -> ""
 
 hiddenLocationIndices :: Drag -> Set Int
 hiddenLocationIndices drag =
