@@ -101,7 +101,7 @@ diskStyle diskAngle =
     "left: " <> show x <> "%; top: " <> show y <> "%"
 
 angleOnCircle :: forall n. Pos n => Cyclic n -> Angle
-angleOnCircle k = turns <> -90.0 :* Degrees
+angleOnCircle k = turns
   where
   turns = (Int.toNumber (unCyclic k)) / (Int.toNumber $ knownInt (proxy :: _ n)) :* Turns
 
@@ -109,8 +109,8 @@ ringStyle :: Ring -> String
 ringStyle =
   case _ of
     LeftRing -> ""
-    CenterRing -> "top: -11.4%"
-    RightRing -> "top: -22.8%"
+    CenterRing -> "top: -14.9%"
+    RightRing -> "top: -29.8%"
 
 hiddenLocationIndices :: Drag -> Set Int
 hiddenLocationIndices drag =
