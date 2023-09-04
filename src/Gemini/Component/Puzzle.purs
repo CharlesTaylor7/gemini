@@ -40,7 +40,7 @@ dragProps { drag, domInfo } =
 -- , style_ "transform: rotate(90deg)" 
 component :: Props -> Nut
 component props = Deku.do
-  D.div [ klass_ "gemini"]
+  D.div [ klass_ "gemini" ]
     $ Array.concat
         [ [ D.div [ klass_ "background" ] [] ]
         , map ringView inhabitants
@@ -48,7 +48,16 @@ component props = Deku.do
   where
   ringView :: Ring -> Nut
   ringView ring =
-    D.div [ klass_ "w-full relative", style_ $ ringStyle ring ]
+    D.div
+      [ klass_ "w-full relative"
+      , style_ $ ringStyle ring
+      , pure
+          $ xdata "ring"
+          $ case ring of
+              LeftRing -> "left"
+              CenterRing -> "center"
+              RightRing -> "right"
+      ]
       $ disks ring
 
   disks :: Ring -> Array Nut

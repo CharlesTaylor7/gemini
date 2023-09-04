@@ -1,12 +1,13 @@
 export const loadDomInfoF = () => ({
   ringRadius: ringRadius(),
-  leftRingCenter: ringCenter(".left.gemini-ring"),
-  centerRingCenter: ringCenter(".center.gemini-ring"),
-  rightRingCenter: ringCenter(".right.gemini-ring"),
+  leftRingCenter: ringCenter('[data-ring="left"]'),
+  centerRingCenter: ringCenter('[data-ring="center"]'),
+  rightRingCenter: ringCenter('[data-ring="right"]'),
 });
 
 function ringCenter(selector) {
   let elem = document.querySelector(selector);
+  console.log(elem)
   let rect = elem.getBoundingClientRect();
   let width = rect.width;
   let left = rect.left;
@@ -22,7 +23,7 @@ function getDiameter(selector) {
 }
 
 function ringRadius() {
-  let ring = getDiameter(".gemini-ring");
-  let disk = getDiameter(".disk");
+  let ring = getDiameter('[data-ring]');
+  let disk = getDiameter('.disk');
   return (ring - disk) / 2.0;
 }
