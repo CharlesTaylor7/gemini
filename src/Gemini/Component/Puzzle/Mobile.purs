@@ -1,4 +1,4 @@
-module Gemini.Component.Puzzle
+module Gemini.Component.Puzzle.Mobile
   ( component
   ) where
 

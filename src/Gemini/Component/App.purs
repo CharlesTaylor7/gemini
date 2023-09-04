@@ -9,6 +9,7 @@ import Gemini.Component.Puzzle as Puzzle
 import Gemini.DomInfo (DomInfo, initialDomInfo, loadDomInfo)
 import Gemini.Component.App.Actions
 import Gemini.Component.Puzzle.Actions
+import Gemini.Component.Puzzle.Mobile as Mobile
 import Data.Gemini as Gemini
 import Deku.Do as Deku
 import Deku.DOM as D
@@ -23,19 +24,22 @@ component = Deku.do
   let resize = Resize.observe
   let domInfoEvent = resize.event `bindToEffect` const loadDomInfo
   domInfo <- useRef initialDomInfo domInfoEvent
-  ( pursx ::
-      _ """
-    <div ~attrs~>
-      <div class="flex flex-col gap-12 items-center">
-        ~header~
-        ~puzzle~
-        ~footer~
+  let props = { gemini, drag, domInfo }
+  if isTouchDevice
+  then Mobile.component props
+  else
+    ( pursx ::
+        _ """
+      <div ~attrs~>
+        <div class="flex flex-col gap-12 items-center">
+          ~header~
+          ~puzzle~
+          ~footer~
+        </div>
       </div>
-    </div>
-  """
-  )
+    """
+    )
     ~~ let
-        props = { gemini, drag, domInfo }
         dragEnd = pointer $ onDragEnd props
       in
         { header: header gemini
@@ -54,11 +58,7 @@ component = Deku.do
               <|> (D.OnPointerleave !:= dragEnd)
               <|> (D.OnPointercancel !:= dragEnd)
         , puzzle:
-            Puzzle.component
-              { gemini: Store.subscribe gemini
-              , drag
-              , domInfo
-              }
+            Puzzle.component props
         , footer
         }
 
@@ -66,7 +66,7 @@ header :: Store Gemini -> Nut
 header store =
   ( pursx ::
       _ """
-    <div class="flex justify-center">
+    <div ~headerAttrs~>
       <button class="action-button" ~buttonAttrs~>
         Scramble
       </button>
@@ -74,7 +74,13 @@ header store =
   """
   )
     ~~
-      { buttonAttrs: D.OnClick !:= scramble store
+      { headerAttrs:
+          Class.name
+            [ pure "flex justify-center"
+            , "hidden" # Class.when (pure isTouchDevice)
+            ]
+      , buttonAttrs: 
+          D.OnClick !:= scramble store
       }
 
 footer :: Nut

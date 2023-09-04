@@ -7,7 +7,7 @@ export const loadDomInfoF = () => ({
 
 function ringCenter(selector) {
   let elem = document.querySelector(selector);
-  console.log(elem)
+  console.log(elem);
   let rect = elem.getBoundingClientRect();
   let width = rect.width;
   let left = rect.left;
@@ -23,7 +23,7 @@ function getDiameter(selector) {
 }
 
 function ringRadius() {
-  let ring = getDiameter('[data-ring]');
-  let disk = getDiameter('.disk');
+  let ring = getDiameter("[data-ring]");
+  let disk = getDiameter(".disk");
   return (ring - disk) / 2.0;
 }
