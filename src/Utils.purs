@@ -13,7 +13,6 @@ bindToEffect e f =
     u <- Event.subscribe e (f >=> k)
     pure u
 
-
 monitor :: forall a. String -> Event a -> Event a
 monitor tag event = event `bindToEffect` \a -> pure $ spy tag a
 
