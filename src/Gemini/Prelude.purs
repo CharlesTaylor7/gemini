@@ -59,9 +59,7 @@ import Data.Gemini
   , Chosen(..)
   )
 import Gemini.Types
-  ( Hover(..)
-  , Drag(..)
+  ( Drag(..)
   , Confetti(..)
   , Stats(..)
-  , Move(..)
   )

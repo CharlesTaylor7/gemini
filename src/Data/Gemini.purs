@@ -77,10 +77,6 @@ derive instance Eq Location
 location :: Ring -> Int -> Location
 location ring position = Location { ring, position: cyclic position }
 
-{-
-instance Finitary Location where
-  inhabitants = Location <$> inhabitants <*> inhabitants
--}
 -- | Gemini transformations
 -- The 6 basic motions are called:
 -- L, L', C, C', R, R'
@@ -174,16 +170,7 @@ instance ToPermutation Motion where
   toPerm (Motion { amount, rotation }) =
     (toPerm rotation) `pow` unCyclic amount
 
-{-
-normalize :: Motion -> Maybe Motion
-normalize (Motion { amount: zero }) = Nothing
-normalize (Motion motion) = Just $ do
-  let sign = if motion.rotation.direction == Clockwise then 1 else -1
-  let n = sign * (motion.amount)
-  if n <= 9
-    then motion { amount = n, rotation { direction = Clockwise } }
-    else motion { amount = -n, rotation { direction = AntiClockwise } }
--}
+
 type LocationPair
   = { canonical :: Location
     , alternate :: Location
