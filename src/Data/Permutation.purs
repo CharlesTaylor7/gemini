@@ -8,7 +8,6 @@ module Data.Permutation
   , cycle
   , Cycles
   , cycles
-  -- , toCycles
   , fromCycles
   ) where
 

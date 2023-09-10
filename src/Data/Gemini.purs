@@ -157,9 +157,6 @@ instance ToPermutation Rotation where
 instance ToPermutation GeminiPermutation where
   toPerm = identity
 
-instance ToPermutation (Cycles Int) where
-  toPerm = fromCycles
-
 newtype Motion
   = Motion
   { amount :: Cyclic D18
@@ -169,7 +166,6 @@ newtype Motion
 instance ToPermutation Motion where
   toPerm (Motion { amount, rotation }) =
     (toPerm rotation) `pow` unCyclic amount
-
 
 type LocationPair
   = { canonical :: Location

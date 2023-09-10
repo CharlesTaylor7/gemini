@@ -11,12 +11,10 @@ import Data.Permutation (Cycles, Cycle)
 import Data.Point (Point)
 import Data.Timestamp (Timestamp)
 
-
 type Stats
   = { scrambledAt :: Maybe Timestamp
     , solvedAt :: Maybe Timestamp
     }
-
 
 type Drag
   = { location :: Choice Location

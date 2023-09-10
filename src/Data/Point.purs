@@ -1,6 +1,5 @@
 module Data.Point
   ( Point(..)
-  , norm
   , angleToOrigin
   ) where
 
@@ -23,11 +22,6 @@ instance Monoid Point where
 
 instance Group Point where
   invert (Point { x, y }) = Point { x: -x, y: -y }
-
--- ## Operations
--- | Distance to the origin
-norm :: Point -> Number
-norm (Point { x, y }) = Math.sqrt $ x * x + y * y
 
 -- | Angle the point makes with the origin
 angleToOrigin :: Point -> Angle
