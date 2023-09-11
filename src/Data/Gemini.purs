@@ -14,12 +14,9 @@ module Data.Gemini
   , ambiguousLocations
   , canonical
   , Ring(..)
-  , Rotation(..)
-  , RotationDirection(..)
   , Disk(..)
   , Color(..)
   , Motion(..)
-  , rotation
   -- , normalize
   , GeminiPermutation
   , class ToPermutation
@@ -77,31 +74,6 @@ derive instance Eq Location
 location :: Ring -> Int -> Location
 location ring position = Location { ring, position: cyclic position }
 
--- | Gemini transformations
--- The 6 basic motions are called:
--- L, L', C, C', R, R'
--- L is a clockwise rotation of the left ring, L' is anticlockwise
--- C is for the central ring
--- R is for the right ring
-newtype Rotation
-  = Rotation
-  { ring :: Ring
-  , direction :: RotationDirection
-  }
-
-rotation :: Ring -> RotationDirection -> Rotation
-rotation ring direction = Rotation { ring, direction }
-
-instance Finitary Rotation where
-  inhabitants = rotation <$> inhabitants <*> inhabitants
-
-data RotationDirection
-  = Clockwise
-  | AntiClockwise
-
-instance Finitary RotationDirection where
-  inhabitants = [ Clockwise, AntiClockwise ]
-
 data Ring
   = LeftRing
   | CenterRing
@@ -138,6 +110,10 @@ type GeminiPermutation
 class ToPermutation a where
   toPerm :: a -> GeminiPermutation
 
+instance ToPermutation Motion where
+  toPerm (Motion {}) = unsafeCrashWith ""
+--(toPerm rotation) `pow` unCyclic amount
+{-
 instance ToPermutation Rotation where
   toPerm (Rotation { ring, direction }) =
     fromCycles
@@ -153,19 +129,15 @@ instance ToPermutation Rotation where
     positions = case direction of
       Clockwise -> inhabitants
       AntiClockwise -> Array.reverse inhabitants
-
+      -}
 instance ToPermutation GeminiPermutation where
   toPerm = identity
 
 newtype Motion
   = Motion
   { amount :: Cyclic D18
-  , rotation :: Rotation
+  , ring :: Ring
   }
-
-instance ToPermutation Motion where
-  toPerm (Motion { amount, rotation }) =
-    (toPerm rotation) `pow` unCyclic amount
 
 type LocationPair
   = { canonical :: Location

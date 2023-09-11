@@ -49,9 +49,6 @@ import FRP.Event (Event)
 import Gemini.Store (Store)
 import Data.Gemini
   ( Gemini
-  , Rotation(..)
-  , rotation
-  , RotationDirection(..)
   , Motion(..)
   , Ring(..)
   , Location(..)

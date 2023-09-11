@@ -72,7 +72,7 @@ onDragEnd ::
   PointerEvent ->
   Effect Unit
 onDragEnd props@{ drag: dragS, gemini } event = do
-  --onDragUpdate props event
+  onDragUpdate props event
   drag <- Store.read dragS
   case drag of
     Nothing -> pure unit
@@ -80,7 +80,7 @@ onDragEnd props@{ drag: dragS, gemini } event = do
       angle <- dragAngle props
       let Location { ring } = disambiguate drag
       let n = angleToPosition angle
-      let motion = Motion { amount: n, rotation: Rotation { ring, direction: Clockwise } }
+      let motion = Motion { amount: n, ring }
       Store.set dragS Nothing
       Store.modify gemini $ Gemini.applyToGemini motion
 
