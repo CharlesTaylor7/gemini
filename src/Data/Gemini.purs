@@ -127,8 +127,8 @@ instance ToPermutation Rotation where
     where
     positions :: Array (Cyclic D18)
     positions = case direction of
-      Clockwise -> inhabitants
-      AntiClockwise -> Array.reverse inhabitants
+      Clockwise -> 
+      AntiClockwise -> 
       -}
 instance ToPermutation GeminiPermutation where
   toPerm = identity

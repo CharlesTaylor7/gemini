@@ -1,14 +1,9 @@
-{- | Manipulate permutations, show them in cycle notation
+{- | Manipulate permutations
 -}
 module Data.Permutation
   ( Permutation(..)
   , permute
   , domain
-  , Cycle
-  , cycle
-  , Cycles
-  , cycles
-  , fromCycles
   ) where
 
 import Prelude
@@ -25,20 +20,6 @@ import Data.List (List(..), (:))
 import Data.List as List
 import Data.List.NonEmpty as NonEmptyList
 
-newtype Cycle a
-  = Cycle (Array a)
-derive instance Functor Cycle
-derive instance Foldable Cycle
-
-newtype Cycles a
-  = Cycles (Array (Cycle a))
-derive instance Functor Cycles
-
-cycle :: forall f a. Foldable f => f a -> Cycle a
-cycle = Cycle <<< Array.fromFoldable
-
-cycles :: forall f a. Foldable f => f (Cycle a) -> Cycles a
-cycles = Cycles <<< Array.fromFoldable
 
 newtype Permutation (bound :: Type)
   = Permutation (Map Int Int)
@@ -76,12 +57,6 @@ instance Nat bound => Group (Permutation bound) where
 permute :: forall n. Permutation n -> Int -> Int
 permute (Permutation map) n = map # Map.lookup n # fromMaybe n
 
-fromCycles :: forall n. Cycles Int -> Permutation n
-fromCycles (Cycles cycles) =
-  Permutation
-    $ Map.fromFoldable
-    $ List.concatMap pairs
-    $ List.fromFoldable cycles
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
 pairs :: forall f a. Foldable f => f a -> List (a /\ a)
