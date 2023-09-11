@@ -7,8 +7,8 @@ import Gemini.Store (Store, useStore)
 import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.DomInfo (DomInfo, initialDomInfo, loadDomInfo)
-import Gemini.Component.App.Actions
-import Gemini.Component.Puzzle.Actions
+import Gemini.Component.App.Actions (keyboardEvents, scramble)
+import Gemini.Component.Puzzle.Actions (onDragEnd, onDragUpdate)
 import Gemini.Component.Puzzle.Mobile as Mobile
 import Data.Gemini as Gemini
 import Deku.Do as Deku

@@ -46,7 +46,5 @@ scramble gemini = do
   rings = inhabitants
 
 unsafeIndex :: forall a. Array a -> Int -> a
-unsafeIndex arr = Array.index arr >>> unsafeFromJust
+unsafeIndex arr i = unsafePartial $ fromJust $ Array.index arr i
 
-unsafeFromJust :: forall a. Maybe a -> a
-unsafeFromJust m = unsafePartial $ fromJust m
