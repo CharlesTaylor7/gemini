@@ -27,6 +27,7 @@ module Data.Gemini
   , Choice(..)
   , dragRing
   , Chosen(..)
+
   ) where
 
 import Prelude
@@ -34,7 +35,7 @@ import Control.Alt ((<|>))
 import Control.Alternative (guard)
 import Data.Cyclic
 import Data.Group (pow)
-import Data.Enum (class Enum)
+import Data.Enum (class Enum, enumFromTo)
 import Data.Finitary
 import Data.Generic.Rep (class Generic)
 import Data.Show.Generic (genericShow)
@@ -138,21 +139,21 @@ type GeminiPermutation
 class ToPermutation a where
   toPerm :: a -> GeminiPermutation
 
+instance ToPermutation Motion where
+  toPerm (Motion { amount, rotation }) =
+    (toPerm rotation) `pow` unCyclic amount
+
 instance ToPermutation Rotation where
   toPerm (Rotation { ring, direction }) =
-    fromCycles
-      <<< cycles
-      <<< Array.singleton
-      <<< cycle
-      $ flip map positions
-      $ locationToIndex'
-      <<< Location
-      <<< ({ ring, position: _ })
+    (enumFromTo 0 18 :: Array _)
+    # map (\i -> let k = 18 * ringIndex ring in (k + i) /\ (k + (i + offset) `mod` 18))
+    # Map.fromFoldable
+    # Permutation
     where
-    positions :: Array (Cyclic D18)
-    positions = case direction of
-      Clockwise -> inhabitants
-      AntiClockwise -> Array.reverse inhabitants
+    offset :: Int
+    offset = case direction of
+      Clockwise -> 1
+      AntiClockwise -> 17
 
 instance ToPermutation GeminiPermutation where
   toPerm = identity
@@ -163,9 +164,6 @@ newtype Motion
   , rotation :: Rotation
   }
 
-instance ToPermutation Motion where
-  toPerm (Motion { amount, rotation }) =
-    (toPerm rotation) `pow` unCyclic amount
 
 type LocationPair
   = { canonical :: Location
@@ -234,13 +232,12 @@ locationToIndex :: Location -> Int
 locationToIndex (Location { ring, position }) =
   (ringIndex ring) * 18 + unCyclic position
 
-  where
 
-  ringIndex :: Ring -> Int
-  ringIndex = case _ of
-    LeftRing -> 0
-    CenterRing -> 1
-    RightRing -> 2
+ringIndex :: Ring -> Int
+ringIndex = case _ of
+  LeftRing -> 0
+  CenterRing -> 1
+  RightRing -> 2
 
 locationToIndex' :: Location -> Int
 locationToIndex' = canonical >>> locationToIndex
