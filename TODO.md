@@ -1,9 +1,9 @@
-## UI
-- [ ] Highlight disk during drag
-
-## Solving
 - [ ] solve detection
 - [ ] Move count
-- [ ] Solve time
-- [ ] Time solve 
+- [ ] Record time to solve
 - [ ] Confetti drop
+- [ ] Leaderboard for solve times that makes use of localstorage
+
+
+- [ ] Reunify code for mobile & desktop views
+- [ ] Test mobile view on iPad
