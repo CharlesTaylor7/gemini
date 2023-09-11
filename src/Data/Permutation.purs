@@ -20,7 +20,6 @@ import Data.List (List(..), (:))
 import Data.List as List
 import Data.List.NonEmpty as NonEmptyList
 
-
 newtype Permutation (bound :: Type)
   = Permutation (Map Int Int)
 
@@ -56,7 +55,6 @@ instance Nat bound => Group (Permutation bound) where
 
 permute :: forall n. Permutation n -> Int -> Int
 permute (Permutation map) n = map # Map.lookup n # fromMaybe n
-
 
 -- | all adjacent pairs in the list plus an extra pair between the last and first item
 pairs :: forall f a. Foldable f => f a -> List (a /\ a)

@@ -111,25 +111,17 @@ class ToPermutation a where
   toPerm :: a -> GeminiPermutation
 
 instance ToPermutation Motion where
-  toPerm (Motion {}) = unsafeCrashWith ""
---(toPerm rotation) `pow` unCyclic amount
-{-
-instance ToPermutation Rotation where
-  toPerm (Rotation { ring, direction }) =
-    fromCycles
-      <<< cycles
-      <<< Array.singleton
-      <<< cycle
-      $ flip map positions
-      $ locationToIndex'
-      <<< Location
-      <<< ({ ring, position: _ })
+  toPerm (Motion { ring, amount }) =
+    Permutation
+      $ Map.fromFoldable
+      $ indices <#> \i -> 
+        let 
+          start = location ring $ unCyclic i 
+          end = location ring $ unCyclic $ i + amount
+        in locationToIndex' start /\ locationToIndex' end
     where
-    positions :: Array (Cyclic D18)
-    positions = case direction of
-      Clockwise -> 
-      AntiClockwise -> 
-      -}
+    indices = inhabitants :: Array (Cyclic D18)
+
 instance ToPermutation GeminiPermutation where
   toPerm = identity
 
