@@ -29,7 +29,7 @@ module Data.Gemini
 import Prelude
 import Control.Alt ((<|>))
 import Control.Alternative (guard)
-import Data.Cyclic
+import Data.Cyclic (Cyclic, cyclic, unCyclic)
 import Data.Group (pow)
 import Data.Enum (class Enum)
 import Data.Finitary

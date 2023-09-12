@@ -4,18 +4,13 @@ module ClassName
   ) where
 
 import Prelude
-import Effect (Effect)
 import FRP.Event (Event)
 import Data.Foldable (foldMap)
-import Data.Tuple.Nested (type (/\), (/\))
-import Data.Array as Array
 import Control.Apply (lift2)
 import Deku.DOM as D
 import Deku.Attribute (Attribute, class Attr, cb, Cb, unsafeAttribute, AttributeValue(..))
 import Deku.Attributes (klass)
-import Web.Event.Event as Web
 import Web.UIEvent.KeyboardEvent (KeyboardEvent)
-import Unsafe.Coerce (unsafeCoerce)
 import Safe.Coerce (coerce)
 
 newtype ClassName

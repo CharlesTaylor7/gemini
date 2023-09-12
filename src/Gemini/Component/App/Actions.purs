@@ -10,8 +10,6 @@ import Data.Gemini as Gemini
 import Data.Gemini.Motions (l, l', c, c', r, r')
 import Web.UIEvent.KeyboardEvent as Event
 import Data.Maybe (fromJust)
-import Partial.Unsafe (unsafePartial, unsafeCrashWith)
-import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.Store as Store
 import Effect.Random (randomInt)

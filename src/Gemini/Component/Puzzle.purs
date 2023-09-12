@@ -15,10 +15,8 @@ import Deku.DOM as D
 import Deku.Hooks (useState)
 import Deku.Attributes (style)
 import Gemini.Store as Store
-import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
 import Gemini.DomInfo (DomInfo)
-import FRP.Event (sampleOnRight, filterMap)
 import ClassName as Class
 
 type Props

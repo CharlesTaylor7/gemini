@@ -7,16 +7,10 @@ module Gemini.Component.Puzzle.Actions
   ) where
 
 import Gemini.Prelude
-import Deku.Do as Deku
-import Data.Array as Array
-import Data.Unfoldable
 import Data.Int as Int
 import Data.Angle as Angle
 import Data.Gemini as Gemini
 import Data.Point as Point
-import Data.Gemini.Motions (l, l', c, c', r, r')
-import Data.Maybe (fromJust)
-import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Gemini.DomInfo (DomInfo)
 import Gemini.Store as Store
 

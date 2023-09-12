@@ -43,7 +43,7 @@ import Data.Foldable (fold, foldMap)
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)
 import Effect.Console (log)
-import Partial.Unsafe (unsafeCrashWith)
+import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Deku.Common
 import FRP.Event (Event)
 import Gemini.Store (Store)
