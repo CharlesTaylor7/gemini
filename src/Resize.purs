@@ -4,16 +4,13 @@ module Resize
   ) where
 
 import Prelude
-import Control.Monad.ST
 import Control.Monad.ST.Global (Global, toEffect)
 import Control.Monad.ST.Ref (STRef)
 import Control.Monad.ST.Ref as Ref
 import Effect (Effect)
-import Effect.Uncurried (EffectFn2)
 import Effect.Unsafe (unsafePerformEffect)
-import Effect.Console as Console
 import FRP.Event (Event, makeEvent)
-import Partial.Unsafe (unsafeCrashWith, unsafePartial)
+import Partial.Unsafe (unsafePartial)
 import Web.DOM (Element)
 
 -- | the listen callback, sets up the source of the event.

@@ -12,10 +12,9 @@ import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested (type (/\), (/\))
 import Deku.Core (Nut)
 import Deku.Do as Deku
-import Deku.Extra (Event, Pusher)
-import Deku.Hooks (useRef, useState, useState')
+import Deku.Extra (Event)
+import Deku.Hooks (useRef, useState)
 import Effect (Effect)
-import Utils
 
 modify :: forall a. Store a -> (a -> a) -> Effect Unit
 modify (Store { ref, pusher }) transform =

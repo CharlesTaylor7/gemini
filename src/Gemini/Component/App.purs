@@ -4,9 +4,8 @@ module Gemini.Component.App
 
 import Gemini.Prelude
 import Gemini.Store (Store, useStore)
-import Gemini.Env (Env)
 import Gemini.Component.Puzzle as Puzzle
-import Gemini.DomInfo (DomInfo, initialDomInfo, loadDomInfo)
+import Gemini.DomInfo (initialDomInfo, loadDomInfo)
 import Gemini.Component.App.Actions (keyboardEvents, scramble)
 import Gemini.Component.Puzzle.Actions (onDragEnd, onDragUpdate)
 import Gemini.Component.Puzzle.Mobile as Mobile

@@ -5,8 +5,6 @@ module Gemini.DomInfo
   ) where
 
 import Gemini.Prelude
-import Data.Map as Map
-import FRP.Event as Event
 
 initialDomInfo :: DomInfo
 initialDomInfo = { ringRadius: 0.0, ringCenter: mempty }

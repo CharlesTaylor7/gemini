@@ -1,7 +1,7 @@
 module Utils where
 
 import Prelude
-import Effect
+import Effect (Effect)
 import Debug (class DebugWarning, spy)
 import FRP.Event (Event)
 import FRP.Event as Event
@@ -13,7 +13,7 @@ bindToEffect e f =
     u <- Event.subscribe e (f >=> k)
     pure u
 
-monitor :: forall a. String -> Event a -> Event a
+monitor :: forall a. DebugWarning => String -> Event a -> Event a
 monitor tag event = event `bindToEffect` \a -> pure $ spy tag a
 
 -- Technically a side effect, but this value is static for the whole run of the application

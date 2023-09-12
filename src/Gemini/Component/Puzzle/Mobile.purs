@@ -3,22 +3,15 @@ module Gemini.Component.Puzzle.Mobile
   ) where
 
 import Gemini.Prelude
-import Data.Array as Array
 import Data.Int as Int
-import Data.Map as Map
 import Data.Point as Point
 import Data.Set as Set
 import Data.String.Common as String
 import Data.Gemini (geminiLookup, locationToIndex, location)
-import Deku.Do as Deku
 import Deku.DOM as D
-import Deku.Hooks (useState)
-import Deku.Attributes (style)
 import Gemini.Store as Store
-import Gemini.Env (Env)
 import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
 import Gemini.DomInfo (DomInfo)
-import FRP.Event (sampleOnRight, filterMap)
 import ClassName as Class
 
 type Props
