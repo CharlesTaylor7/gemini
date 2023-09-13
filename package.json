@@ -8,7 +8,7 @@
   "scripts": {
     "postinstall": "spago install",
     "watch:purs": "spago build -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
-    "watch:js": "PORT=4000 parcel --open serve parcel-dev.html --dist-dir .parcel",
+    "watch:js": "PORT=3000 parcel --open serve parcel-dev.html --dist-dir .parcel",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
     "prebuild": "yarn run tailwind && cp -r static/* dist/",
     "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",

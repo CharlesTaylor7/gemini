@@ -35,7 +35,7 @@ main =
       env <- getEnv Dev
       let jsonIso = json `withDefault` (initialStore env)
       let staticFolder = "./"
-      Run.liveWithStatic 3000 (spa jsonIso storeTVar rootView) staticFolder
+      Run.liveWithStatic (env ^. #port) (spa jsonIso storeTVar rootView) staticFolder
 
 
 spa :: forall k ix m
