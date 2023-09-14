@@ -7,7 +7,7 @@ import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Effect.Aff (launchAff_, delay)
 import Data.Cyclic
-import Data.Nat (class Pos, D2, D18, D54)
+import Data.Nat
 import Test.Spec (Spec, pending, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
@@ -22,16 +22,18 @@ dataCyclicSpec :: Spec Unit
 dataCyclicSpec = do
   describe "Data.Cyclic" $ do
     describe "methods" $ do
+
       it "creation & destruction" $ do
         let n = unCyclic $ (cyclic 3 :: Cyclic D2)
         n `shouldEqual` 1
-{-
-      it "compareCyclic" $ do
-        ((0 :: Cyclic D6) `compareCyclic` 3) `shouldEqual` Opposite
-        ((0 :: Cyclic D6) `compareCyclic` 6) `shouldEqual` Equal
-        ((1 :: Cyclic D7) `compareCyclic` 4) `shouldEqual` Precedes
-        ((1 :: Cyclic D5) `compareCyclic` 4) `shouldEqual` Exceeds
 
+      it "compareCyclic" $ do
+        ((cyclic 0 :: Cyclic D6) `compareCyclic` cyclic 3) `shouldEqual` Opposite
+        ((cyclic 0 :: Cyclic D6) `compareCyclic` cyclic 6) `shouldEqual` Equal
+        ((cyclic 1 :: Cyclic D7) `compareCyclic` cyclic 4) `shouldEqual` Precedes
+        ((cyclic 1 :: Cyclic D5) `compareCyclic` cyclic 4) `shouldEqual` Exceeds
+
+{-
     describe "Num instance" $ do
       it "integer literals" $ do
         unCyclic D@10 3 `shouldEqual` 3

@@ -10,7 +10,9 @@ module Data.Cyclic
 import Prelude
 import Data.Finitary (class Finitary)
 import Data.Group (class Group)
+import Data.Generic.Rep (class Generic)
 import Data.Nat (class Nat, class Pos, proxy, knownInt, natsUnder)
+import Data.Show.Generic (genericShow)
 import Safe.Coerce (coerce)
 
 -- | Cyclic group of order n
@@ -46,7 +48,9 @@ data CyclicOrdering
   | Exceeds
   | Equal
   | Opposite
+derive instance Generic CyclicOrdering _
 derive instance Eq CyclicOrdering
+instance Show CyclicOrdering where show = genericShow
 
 compareCyclic :: forall n. Pos n => Cyclic n -> Cyclic n -> CyclicOrdering
 compareCyclic a b =
