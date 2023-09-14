@@ -27,7 +27,7 @@ module Data.Gemini
 import Prelude
 import Control.Alt ((<|>))
 import Control.Alternative (guard)
-import Data.Cyclic (Cyclic, cyclic, unCyclic)
+import Data.Cyclic (Cyclic, cyclic, unCyclic, CyclicOrdering(..), compareCyclic)
 import Data.Group (pow)
 import Data.Enum (class Enum)
 import Data.Finitary (class Finitary, inhabitants)
@@ -44,7 +44,9 @@ import Data.Array as Array
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (fromJust)
+import Data.List.Lazy (List)
 import Data.List.Lazy as List
+import Data.List.Lazy.NonEmpty (NonEmptyList)
 import Data.List.Lazy.NonEmpty as NEList
 import Data.Nat (class Pos, D18, D54)
 import Data.Tuple.Nested (type (/\), (/\))
@@ -345,7 +347,7 @@ isFinishedSequence color ls =
     ls
       # map (onRing mostCommonRing)
       # sequence
-      # maybe false (isFinished (diskCount color) <<< map (unLocation >>> _.position))
+      # maybe false (isFinished (diskCount color)<<< NEArray.toUnfoldable1 <<< map (unLocation >>> _.position))
   where
   diskCount :: Color -> Int
   diskCount White = 9
@@ -367,35 +369,38 @@ isFinishedSequence color ls =
   numberOfRings = NEArray.length ringGroups
 
 -- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
-isFinished :: forall n. Pos n => Int -> NonEmptyArray (Cyclic n) -> Boolean
-isFinished = unsafeCrashWith ""
-
-{-
-isFinished expectedCount (head :| rest) = go rest head head
+isFinished :: forall n. Pos n => Int -> NonEmptyList (Cyclic n) -> Boolean
+isFinished expectedCount list = 
+  let { head, tail } = NEList.uncons list
+  in go tail head head
   where
-    precedes :: Cyclic n -> Cyclic n -> Bool
-    a `precedes` b =
+    precedes :: Cyclic n -> Cyclic n -> Boolean
+    precedes a b =
       case compareCyclic a b of
-        Precedes -> True
-        Equal    -> True
-        _        -> False
+        Precedes -> true
+        Equal    -> true
+        _        -> false
 
-    exceeds :: Cyclic n -> Cyclic n -> Bool
-    a `exceeds` b =
+    exceeds :: Cyclic n -> Cyclic n -> Boolean
+    exceeds a b =
       case compareCyclic a b of
-        Exceeds -> True
-        Equal   -> True
-        _       -> False
+        Exceeds -> true
+        Equal   -> true
+        _       -> false
 
-    go :: [Cyclic n] -> Cyclic n -> Cyclic n -> Bool
-    go [] _   _   = True
-    go (x:xs) min max
+    go :: List (Cyclic n) -> Cyclic n -> Cyclic n -> Boolean
+    --go (List.List (List.Nil)) _   _   = true
+    go list min max = 
+      case List.uncons list of
+        Nothing -> true
+        Just { head: x, tail:xs } -> unsafeCrashWith ""
+    {-
       | x `precedes` min ## (max - x < Cyclic expectedCount) = go xs x max
       -- ^ x is the new min
       | x `exceeds` max ## (x - min < Cyclic expectedCount) = go xs min x
       -- ^ x is the new max
       | x `precedes` max ## x `exceeds` min = go xs min max
       -- ^ x is between the min # max
-      | otherwise = False
+      | otherwise = false
       -- ^ x is outside the band of acceptability
--}
+      -}
