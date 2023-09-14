@@ -51,8 +51,11 @@ locationSpec = do
     it "sibling is its own (partial) inverse" $
       quickCheck $ \(AnyLocation x) -> case sibling x of
         Nothing -> Success
-        -- unit
-        Just y  -> sibling y === Just x
+        Just y  ->
+          if Just x == sibling y
+            then Success
+            else
+              Just x === sibling (y # spy "y")
 
 cyclicSpec :: Spec Unit
 cyclicSpec = do

@@ -171,7 +171,10 @@ canonical location =
 
 -- | if the position exists on two different rings, then prefer the alternate one
 alternate :: Location -> Location
-alternate location = location
+alternate location =
+  fromMaybe location
+    $ Array.find (\{ canonical } -> canonical == location) ambiguousLocations
+    <#> _.alternate
 
 -- | The other name for this location, if it has one
 sibling :: Location -> Maybe Location
