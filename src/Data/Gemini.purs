@@ -5,7 +5,7 @@ module Data.Gemini
   , applyToGemini
   , isSolved
   , DiskIndex
-  , Location(..)
+  , Location(..), LocationRecord
   , indexToLocation
   , locationToIndex
   , location
@@ -16,7 +16,6 @@ module Data.Gemini
   , Disk(..)
   , Color(..)
   , Motion(..)
-  -- , normalize
   , GeminiPermutation
   , class ToPermutation
   , toPerm
@@ -35,8 +34,10 @@ import Data.Finitary (class Finitary, inhabitants)
 import Data.Generic.Rep (class Generic)
 import Data.Show.Generic (genericShow)
 import Data.Permutation
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Semigroup.Foldable as NEFold
 import Data.Foldable (class Foldable, foldMap, all)
+import Data.Traversable (sequence)
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
 import Data.Array as Array
@@ -64,12 +65,17 @@ type DiskIndex
 -- the 4 locations where a pair of rings intersect each has two possible representations as a Location type
 -- We normalize by prefering the leftmost ring. See `canonical`.
 newtype Location
-  = Location
-  { ring :: Ring
-  , position :: DiskIndex
-  -- ^ Positions start at the top of the ring, run clockwise from there
-  }
+  = Location LocationRecord
+
+type LocationRecord
+  = { ring :: Ring
+    , position :: DiskIndex
+    -- ^ Positions start at the top of the ring, run clockwise from there
+    }
 derive instance Eq Location
+
+unLocation :: Location -> LocationRecord
+unLocation (Location r) = r
 
 location :: Ring -> Int -> Location
 location ring position = Location { ring, position: cyclic position }
@@ -79,6 +85,7 @@ data Ring
   | CenterRing
   | RightRing
 derive instance Eq Ring
+derive instance Ord Ring
 
 instance Finitary Ring where
   inhabitants = [ LeftRing, CenterRing, RightRing ]
@@ -331,30 +338,34 @@ onRing ring location = unsafeCrashWith ""
 
 -- | check if a set of disk locations is a finished sequence
 isFinishedSequence :: Color -> NonEmptyArray Location -> Boolean
-isFinishedSequence color ls = unsafeCrashWith ""
-
-{-
-  if numberOfRings > 2
-  then False
-  else ls
-    # fmap (onRing mostCommonRing)
-    # sequenceA
-    # maybe False (isFinished (diskCount color) <<< fmap (_.position))
+isFinishedSequence color ls =
+  if numberOfRings > 2 then
+    false
+  else
+    ls
+      # map (onRing mostCommonRing)
+      # sequence
+      # maybe false (isFinished (diskCount color) <<< map (unLocation >>> _.position))
   where
-    diskCount :: Color -> Int
-    diskCount White  = 9
-    diskCount Yellow = 9
-    diskCount _      = 8
+  diskCount :: Color -> Int
+  diskCount White = 9
+  diskCount Yellow = 9
+  diskCount _ = 8
 
-    mostCommonRing :: Ring
-    mostCommonRing = ringGroups # List.maximumBy (compare `on` length) # head # (_.ring)
+  mostCommonRing :: Ring
+  mostCommonRing =
+    ringGroups
+      # NEFold.maximumBy (comparing NEArray.length)
+      # NEArray.head
+      # unLocation
+      # _.ring
 
-    ringGroups :: [NonEmptyArray Location]
-    ringGroups = ls # NE.groupBy ((==) `on` view #ring)
+  ringGroups :: NonEmptyArray (NonEmptyArray Location)
+  ringGroups = ls # NEArray.groupAllBy (comparing ((_.ring) <<< unLocation))
 
-    numberOfRings :: Int
-    numberOfRings = length ringGroups
-    -}
+  numberOfRings :: Int
+  numberOfRings = NEArray.length ringGroups
+
 -- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
 isFinished :: forall n. Pos n => Int -> NonEmptyArray (Cyclic n) -> Boolean
 isFinished = unsafeCrashWith ""
