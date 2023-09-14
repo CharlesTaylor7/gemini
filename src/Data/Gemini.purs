@@ -5,7 +5,8 @@ module Data.Gemini
   , applyToGemini
   , isSolved
   , DiskIndex
-  , Location(..), LocationRecord
+  , Location(..)
+  , LocationRecord
   , indexToLocation
   , locationToIndex
   , location
@@ -347,7 +348,7 @@ isFinishedSequence color ls =
     ls
       # map (onRing mostCommonRing)
       # sequence
-      # maybe false (isFinished (diskCount color)<<< NEArray.toUnfoldable1 <<< map (unLocation >>> _.position))
+      # maybe false (isFinished (diskCount color) <<< NEArray.toUnfoldable1 <<< map (unLocation >>> _.position))
   where
   diskCount :: Color -> Int
   diskCount White = 9
@@ -370,37 +371,39 @@ isFinishedSequence color ls =
 
 -- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
 isFinished :: forall n. Pos n => Int -> NonEmptyList (Cyclic n) -> Boolean
-isFinished expectedCount list = 
-  let { head, tail } = NEList.uncons list
-  in go tail head head
+isFinished expectedCount list =
+  let
+    { head, tail } = NEList.uncons list
+  in
+    go tail head head
   where
-    precedes :: Cyclic n -> Cyclic n -> Boolean
-    precedes a b =
-      case compareCyclic a b of
-        Precedes -> true
-        Equal    -> true
-        _        -> false
+  precedes :: Cyclic n -> Cyclic n -> Boolean
+  precedes a b =
+    case compareCyclic a b of
+      Precedes -> true
+      Equal -> true
+      _ -> false
 
-    exceeds :: Cyclic n -> Cyclic n -> Boolean
-    exceeds a b =
-      case compareCyclic a b of
-        Exceeds -> true
-        Equal   -> true
-        _       -> false
+  exceeds :: Cyclic n -> Cyclic n -> Boolean
+  exceeds a b =
+    case compareCyclic a b of
+      Exceeds -> true
+      Equal -> true
+      _ -> false
 
-    go :: List (Cyclic n) -> Cyclic n -> Cyclic n -> Boolean
-    --go (List.List (List.Nil)) _   _   = true
-    go list min max = 
-      case List.uncons list of
-        Nothing -> true
-        Just { head: x, tail:xs } -> unsafeCrashWith ""
-    {-
-      | x `precedes` min ## (max - x < Cyclic expectedCount) = go xs x max
+  go :: List (Cyclic n) -> Cyclic n -> Cyclic n -> Boolean
+  go list min max =
+    case List.uncons list of
+      Nothing -> true
+      Just { head, tail } -> recurse head tail
+    where
+    recurse x xs
+      | x `precedes` min && (unCyclic (max - x) < expectedCount) = go xs x max
       -- ^ x is the new min
-      | x `exceeds` max ## (x - min < Cyclic expectedCount) = go xs min x
+      | x `exceeds` max && (unCyclic (x - min) < expectedCount) = go xs min x
       -- ^ x is the new max
-      | x `precedes` max ## x `exceeds` min = go xs min max
+      | x `precedes` max && x `exceeds` min = go xs min max
       -- ^ x is between the min # max
       | otherwise = false
-      -- ^ x is outside the band of acceptability
-      -}
+
+-- ^ x is outside the band of acceptability
