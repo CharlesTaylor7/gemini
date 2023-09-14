@@ -28,6 +28,9 @@
   , "web-dom"
   , "st"
   , "unsafe-coerce"
+  , "spec"
+  , "aff"
+  , "datetime"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

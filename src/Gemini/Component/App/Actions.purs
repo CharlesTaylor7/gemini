@@ -29,11 +29,12 @@ keyboardEvents store =
   where
   apply :: Motion -> Effect Unit
   apply motion = do
-     Store.modify store $ Gemini.applyToGemini motion
-     gemini <- Store.read store
-     if Gemini.isSolved gemini
-     then Console.log("solved!")
-     else pure unit
+    Store.modify store $ Gemini.applyToGemini motion
+    gemini <- Store.read store
+    if Gemini.isSolved gemini then
+      Console.log ("solved!")
+    else
+      pure unit
 
 scramble :: Store Gemini -> Effect Unit
 scramble gemini = do

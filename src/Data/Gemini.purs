@@ -338,12 +338,10 @@ isSolved (Gemini diskMap) =
 -- | Get a location on a specific ring, if it exists on that ring
 onRing :: Ring -> Location -> Maybe Location
 onRing ring location = check location <|> (check =<< sibling location)
-  where 
-    check loc@(Location location) = do 
-        guard (location.ring == ring)
-        pure loc
-
-
+  where
+  check loc@(Location location) = do
+    guard (location.ring == ring)
+    pure loc
 
 -- | check if a set of disk locations is a finished sequence
 isFinishedSequence :: Color -> NonEmptyArray Location -> Boolean
@@ -411,4 +409,5 @@ isFinished expectedCount list =
       | x `precedes` max && x `exceeds` min = go xs min max
       -- ^ x is between the min and max
       | otherwise = false
-      -- ^ x is outside the band of acceptability
+
+-- ^ x is outside the band of acceptability
