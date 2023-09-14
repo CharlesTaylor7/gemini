@@ -44,10 +44,10 @@ import Data.Array as Array
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (fromJust)
-import Data.List.Lazy (List)
-import Data.List.Lazy as List
-import Data.List.Lazy.NonEmpty (NonEmptyList)
-import Data.List.Lazy.NonEmpty as NEList
+import Data.List (List)
+import Data.List as List
+import Data.List.NonEmpty (NonEmptyList)
+import Data.List.NonEmpty as NEList
 import Data.Nat (class Pos, D18, D54)
 import Data.Tuple.Nested (type (/\), (/\))
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
