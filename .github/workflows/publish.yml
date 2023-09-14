@@ -3,10 +3,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - .github/workflows/publish.yml
-      - src/**
-      - static/**
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
   deploy:
