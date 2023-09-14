@@ -6,7 +6,7 @@ procs:
     shell: yarn watch:js
 
   Test:
-    shell: yarn test --watch
+    shell: yarn test --clear-screen --watch
 
   Format:
     shell: yarn format

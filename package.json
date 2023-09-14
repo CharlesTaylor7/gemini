@@ -7,14 +7,14 @@
   "type": "module",
   "scripts": {
     "postinstall": "spago install",
-    "watch:purs": "spago build -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\" --clear-screen",
+    "watch:purs": "spago build --clear-screen -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
     "watch:js": "PORT=3000 vite",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
     "prebuild": "yarn run tailwind && cp -r static/* dist/",
     "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
     "format": "prettier --write src test --plugin=@rowtype-yoga/prettier-plugin-purescript",
-    "test": "spago test --clear-screen"
+    "test": "spago test"
   },
   "devDependencies": {
     "@rowtype-yoga/prettier-plugin-purescript": "^1.11.2",

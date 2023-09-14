@@ -13,14 +13,14 @@ import Effect.Aff (launchAff_)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldSatisfy, shouldNotSatisfy)
 import Test.Spec.Reporter.Console (consoleReporter)
-import Test.Spec.Runner (runSpec)
+import Test.Spec.Runner (runSpec', defaultConfig)
 import Test.Spec.QuickCheck (quickCheck)
 import Test.QuickCheck (Result(..), class Arbitrary, (===), (/==))
 import Test.QuickCheck.Gen as Gen
 
 
 main :: Effect Unit
-main = launchAff_ $ runSpec [ consoleReporter ] $ do
+main = launchAff_ $ runSpec' (defaultConfig { failFast = true }) [ consoleReporter ] $ do
   cyclicSpec
   locationSpec
   geminiSpec

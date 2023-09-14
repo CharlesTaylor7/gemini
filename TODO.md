@@ -1,4 +1,3 @@
-- [ ] Port tests from haskell code
 - [ ] solve detection
 - [ ] Move count
 - [ ] Record time to solve
@@ -6,3 +5,4 @@
 - [ ] Leaderboard for solve times that makes use of localstorage
 - [ ] Reunify code for mobile & desktop views
 - [ ] Test mobile view on iPad
+- [ ] Run tests before deploy
