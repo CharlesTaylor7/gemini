@@ -26,11 +26,11 @@ jobs:
             .spago
             output
 
-      - name: Build
+      - name: Test & Build
         run: |
           yarn
+          yarn test
           yarn build
-
 
       # How to setup deploy key:
       # https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-create-ssh-deploy-key
