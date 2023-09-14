@@ -60,6 +60,8 @@ import Safe.Coerce (coerce)
 -- Use `geminiIx` to read / write at specific locations
 newtype Gemini
   = Gemini (Map Int Disk)
+derive instance Generic Gemini _
+instance Show Gemini where show = genericShow
 
 type DiskIndex
   = Cyclic D18
