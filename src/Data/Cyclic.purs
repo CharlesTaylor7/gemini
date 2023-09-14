@@ -21,6 +21,8 @@ import Safe.Coerce (coerce)
 newtype Cyclic (n :: Type)
   = MkCyclic Int
 derive instance Eq (Cyclic n)
+derive instance Generic (Cyclic n) _
+instance Show (Cyclic n) where show = genericShow
 
 unCyclic :: forall @n. Cyclic n -> Int
 unCyclic (MkCyclic x) = x
@@ -28,7 +30,7 @@ unCyclic (MkCyclic x) = x
 cyclic :: forall @n. Pos n => Int -> Cyclic n
 cyclic k = MkCyclic $ k `mod` (knownInt (proxy :: _ n))
 
--- | Semiring instance
+-- | Ring instance
 instance Pos n => Semiring (Cyclic n) where
   zero = MkCyclic 0
   one = cyclic 1
@@ -37,6 +39,16 @@ instance Pos n => Semiring (Cyclic n) where
 
 instance Pos n => Ring (Cyclic n) where
   sub (MkCyclic x) (MkCyclic y) = cyclic $ x - y
+
+-- | Group instance
+instance Pos n => Semigroup (Cyclic n) where
+  append = add
+
+instance Pos n => Monoid (Cyclic n) where
+  mempty = zero
+
+instance Pos n => Group (Cyclic n) where
+  invert (MkCyclic x) = cyclic $ negate x
 
 -- | Finitary instance
 instance Pos n => Finitary (Cyclic n) where

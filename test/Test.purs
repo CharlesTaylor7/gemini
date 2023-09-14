@@ -1,13 +1,12 @@
 module Test.Main where
 
 import Prelude
-import Effect (Effect)
-import Effect.Class.Console (log)
-import Data.Time.Duration (Milliseconds(..))
-import Effect (Effect)
-import Effect.Aff (launchAff_, delay)
 import Data.Cyclic
 import Data.Nat
+import Data.Group
+import Data.Foldable
+import Effect (Effect)
+import Effect.Aff (launchAff_)
 import Test.Spec (Spec, pending, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
@@ -22,7 +21,6 @@ dataCyclicSpec :: Spec Unit
 dataCyclicSpec = do
   describe "Data.Cyclic" $ do
     describe "methods" $ do
-
       it "creation & destruction" $ do
         let n = unCyclic $ (cyclic 3 :: Cyclic D2)
         n `shouldEqual` 1
@@ -43,18 +41,15 @@ dataCyclicSpec = do
       it "multiplication" $ do
         unCyclic @D10 (cyclic 3 * cyclic 7) `shouldEqual` 1
 
-
-{-
     describe "Group instance" $ do
-      it "addition should be the same as the group mappend" $
-        2 <> 3 `shouldEqual` (2 <> 3 :: Cyclic D17)
+      it "group operation matches the ring addition group" $ do
+        (cyclic 2 <> cyclic 3) `shouldEqual` (cyclic @D16 2 + cyclic 3)
 
-      it "subtraction should be the same as the group subtraction" $
-        2 - 3 `shouldEqual` (2 ~~ 3 :: Cyclic D17)
+      it "group invert should match the ring subtraction" $ do
+        invert (cyclic 2) `shouldEqual` (zero `sub` cyclic 2 :: Cyclic D17)
 
       it "can fold an empty list" $ do
         unCyclic @D3 (fold []) `shouldEqual` 0
 
       it "can fold a nonempty list" $ do
-        unCyclic @D10 (fold [3, 5, 7]) `shouldEqual` 5
-        -}
+        unCyclic @D10 (foldMap cyclic [3, 5, 7]) `shouldEqual` 5
