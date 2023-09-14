@@ -76,6 +76,8 @@ type LocationRecord
     -- ^ Positions start at the top of the ring, run clockwise from there
     }
 derive instance Eq Location
+derive instance Generic Location _
+instance Show Location where show = genericShow
 
 unLocation :: Location -> LocationRecord
 unLocation (Location r) = r
@@ -89,6 +91,8 @@ data Ring
   | RightRing
 derive instance Eq Ring
 derive instance Ord Ring
+derive instance Generic Ring _
+instance Show Ring where show = genericShow
 
 instance Finitary Ring where
   inhabitants = [ LeftRing, CenterRing, RightRing ]

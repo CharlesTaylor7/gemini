@@ -31,6 +31,7 @@
   , "spec"
   , "aff"
   , "quickcheck"
+  , "spec-quickcheck"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
