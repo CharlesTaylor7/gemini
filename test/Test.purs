@@ -28,30 +28,23 @@ dataCyclicSpec = do
         n `shouldEqual` 1
 
       it "compareCyclic" $ do
-        ((cyclic 0 :: Cyclic D6) `compareCyclic` cyclic 3) `shouldEqual` Opposite
-        ((cyclic 0 :: Cyclic D6) `compareCyclic` cyclic 6) `shouldEqual` Equal
-        ((cyclic 1 :: Cyclic D7) `compareCyclic` cyclic 4) `shouldEqual` Precedes
-        ((cyclic 1 :: Cyclic D5) `compareCyclic` cyclic 4) `shouldEqual` Exceeds
+        ((cyclic @D6 0) `compareCyclic` cyclic 3) `shouldEqual` Opposite
+        ((cyclic @D6 0) `compareCyclic` cyclic 6) `shouldEqual` Equal
+        ((cyclic @D7 1) `compareCyclic` cyclic 4) `shouldEqual` Precedes
+        ((cyclic @D5 1) `compareCyclic` cyclic 4) `shouldEqual` Exceeds
 
-{-
-    describe "Num instance" $ do
-      it "integer literals" $ do
-        unCyclic D@10 3 `shouldEqual` 3
-        unCyclic D@10 11 `shouldEqual` 1
-
+    describe "Ring instance" $ do
       it "addition" $ do
-        unCyclic D@10 (4 + 9) `shouldEqual` 3
+        unCyclic @D10 (cyclic 4 + cyclic 9) `shouldEqual` 3
 
       it "subtraction" $ do
-        unCyclic D@10 (4 - 9) `shouldEqual` 5
+        unCyclic @D10 (cyclic 4 - cyclic 9) `shouldEqual` 5
 
       it "multiplication" $ do
-        unCyclic D@10 (3 * 7) `shouldEqual` 1
+        unCyclic @D10 (cyclic 3 * cyclic 7) `shouldEqual` 1
 
-      it "signum" $ do
-        -- | always 1
-        unCyclic D(signum (-4) :: Cyclic D10) `shouldEqual` 1
 
+{-
     describe "Group instance" $ do
       it "addition should be the same as the group mappend" $
         2 <> 3 `shouldEqual` (2 <> 3 :: Cyclic D17)
@@ -60,8 +53,8 @@ dataCyclicSpec = do
         2 - 3 `shouldEqual` (2 ~~ 3 :: Cyclic D17)
 
       it "can fold an empty list" $ do
-        unCyclic D@3 (fold []) `shouldEqual` 0
+        unCyclic @D3 (fold []) `shouldEqual` 0
 
       it "can fold a nonempty list" $ do
-        unCyclic D@10 (fold [3, 5, 7]) `shouldEqual` 5
+        unCyclic @D10 (fold [3, 5, 7]) `shouldEqual` 5
         -}

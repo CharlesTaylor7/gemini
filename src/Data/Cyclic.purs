@@ -22,10 +22,10 @@ newtype Cyclic (n :: Type)
   = MkCyclic Int
 derive instance Eq (Cyclic n)
 
-unCyclic :: forall n. Cyclic n -> Int
+unCyclic :: forall @n. Cyclic n -> Int
 unCyclic (MkCyclic x) = x
 
-cyclic :: forall n. Pos n => Int -> Cyclic n
+cyclic :: forall @n. Pos n => Int -> Cyclic n
 cyclic k = MkCyclic $ k `mod` (knownInt (proxy :: _ n))
 
 -- | Semiring instance
