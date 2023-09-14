@@ -95,7 +95,7 @@ diskStyle diskAngle =
 angleOnCircle :: forall n. Pos n => Cyclic n -> Angle
 angleOnCircle k = turns
   where
-  turns = (Int.toNumber (unCyclic k)) / (Int.toNumber $ knownInt (proxy :: _ n)) :* Turns
+  turns = (Int.toNumber (unCyclic k)) / (Int.toNumber $ knownInt @n) :* Turns
 
 ringStyle :: Ring -> String
 ringStyle =

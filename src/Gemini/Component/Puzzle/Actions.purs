@@ -84,7 +84,7 @@ point { clientX, clientY } = Point { x: clientX, y: clientY }
 angleToPosition :: forall n. Pos n => Angle -> Cyclic n
 angleToPosition angle = cyclic $ Int.floor $ (k * turns) + 0.5
   where
-  k = Int.toNumber $ knownInt (proxy :: _ n)
+  k = Int.toNumber $ knownInt @n
   turns = angle `Angle.as` Angle.Turns
 
 -- | angle of current ring being dragged, (via location that disambiguates)

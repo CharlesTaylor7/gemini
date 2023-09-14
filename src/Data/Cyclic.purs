@@ -11,7 +11,7 @@ import Prelude
 import Data.Finitary (class Finitary)
 import Data.Group (class Group)
 import Data.Generic.Rep (class Generic)
-import Data.Nat (class Nat, class Pos, proxy, knownInt, natsUnder)
+import Data.Nat (class Nat, class Pos, knownInt, natsUnder)
 import Data.Show.Generic (genericShow)
 import Safe.Coerce (coerce)
 
@@ -28,7 +28,7 @@ unCyclic :: forall @n. Cyclic n -> Int
 unCyclic (MkCyclic x) = x
 
 cyclic :: forall @n. Pos n => Int -> Cyclic n
-cyclic k = MkCyclic $ k `mod` (knownInt (proxy :: _ n))
+cyclic k = MkCyclic $ k `mod` (knownInt @n)
 
 -- | Ring instance
 instance Pos n => Semiring (Cyclic n) where
@@ -52,7 +52,7 @@ instance Pos n => Group (Cyclic n) where
 
 -- | Finitary instance
 instance Pos n => Finitary (Cyclic n) where
-  inhabitants = coerce $ natsUnder (proxy :: _ n)
+  inhabitants = coerce $ natsUnder @n
 
 -- How do you impose order on the elements of a cyclic group?
 data CyclicOrdering
@@ -67,7 +67,7 @@ instance Show CyclicOrdering where show = genericShow
 compareCyclic :: forall n. Pos n => Cyclic n -> Cyclic n -> CyclicOrdering
 compareCyclic a b =
   let
-    k = knownInt (proxy :: _ n)
+    k = knownInt @n
     halfway = k `div` 2
     difference = unCyclic $ b - a
   in

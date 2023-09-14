@@ -15,7 +15,7 @@ import Data.Array as Array
 import Data.Set as Set
 import Data.Map (Map)
 import Data.Map as Map
-import Data.Nat (class Nat, knownInt, natsUnder, Proxy(..))
+import Data.Nat (class Nat, knownInt, natsUnder)
 import Data.List (List(..), (:))
 import Data.List as List
 import Data.List.NonEmpty as NonEmptyList
@@ -29,11 +29,11 @@ instance Nat n => Eq (Permutation n) where
   eq p q =
     Array.all
       (\k -> permute p k == permute q k)
-      (natsUnder (Proxy :: _ n))
+      (natsUnder @n)
 
 instance Nat bound => Semigroup (Permutation bound) where
   append p q =
-    natsUnder (Proxy :: _ bound)
+    natsUnder @bound
       # map (\n -> n /\ composed n)
       # Map.fromFoldable
       # Permutation
@@ -48,7 +48,7 @@ identityPermutation = Permutation Map.empty
 
 instance Nat bound => Group (Permutation bound) where
   invert p =
-    natsUnder (Proxy :: _ bound)
+    natsUnder @bound
       # map (\n -> permute p n /\ n)
       # Map.fromFoldable
       # Permutation
@@ -71,4 +71,4 @@ pairs x =
         go (a : as)
 
 domain :: forall bound. Nat bound => Permutation bound -> Array Int
-domain _ = natsUnder (Proxy :: _ bound)
+domain _ = natsUnder @bound
