@@ -13,7 +13,8 @@
     "prebuild": "yarn run tailwind && cp -r static/* dist/",
     "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
-    "format": "prettier --write src test --plugin=@rowtype-yoga/prettier-plugin-purescript"
+    "format": "prettier --write src test --plugin=@rowtype-yoga/prettier-plugin-purescript",
+    "test": "spago test"
   },
   "devDependencies": {
     "@rowtype-yoga/prettier-plugin-purescript": "^1.11.2",
