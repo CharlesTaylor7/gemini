@@ -31,23 +31,23 @@ import Control.Alternative (guard)
 import Data.Cyclic (Cyclic, cyclic, unCyclic)
 import Data.Group (pow)
 import Data.Enum (class Enum)
-import Data.Finitary
+import Data.Finitary (class Finitary, inhabitants)
 import Data.Generic.Rep (class Generic)
 import Data.Show.Generic (genericShow)
 import Data.Permutation
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Foldable (class Foldable, foldMap, all)
 import Data.Array.NonEmpty (NonEmptyArray)
+import Data.Array.NonEmpty as NEArray
 import Data.Array as Array
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (fromJust)
-import Data.List as List
-import Data.List.NonEmpty as NE
-import Data.Nat
+import Data.List.Lazy as List
+import Data.List.Lazy.NonEmpty as NEList
+import Data.Nat (class Pos, D18, D54)
 import Data.Tuple.Nested (type (/\), (/\))
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
-import Type.Equality as TE
 import Safe.Coerce (coerce)
 
 -- | An opaque wrapper.
@@ -116,11 +116,13 @@ instance ToPermutation Motion where
   toPerm (Motion { ring, amount }) =
     Permutation
       $ Map.fromFoldable
-      $ indices <#> \i -> 
-        let 
-          start = location ring $ unCyclic i 
-          end = location ring $ unCyclic $ i + amount
-        in locationToIndex' start /\ locationToIndex' end
+      $ indices
+      <#> \i ->
+          let
+            start = location ring $ unCyclic i
+            end = location ring $ unCyclic $ i + amount
+          in
+            locationToIndex' start /\ locationToIndex' end
     where
     indices = inhabitants :: Array (Cyclic D18)
 
@@ -308,37 +310,24 @@ permuteGemini p (Gemini disks) =
             Nothing -> unsafeCrashWith "wat"
             Just disk -> permute p n /\ disk
 
-
 -- | Is the puzzle solved?
 -- That is, every disk is grouped with other disks of the same color in sequence.
 isSolved :: Gemini -> Boolean
 isSolved (Gemini diskMap) =
   diskMap
     # Map.toUnfoldableUnordered
-    # selectGroups (\(_ /\ disk) -> disk.color)
-    # all (\(color /\ items) -> items <#> (\(i/\_) -> indexToLocation i) # isFinishedSequence color)
-
-
--- | Sort # group items by key projection
-selectGroups :: forall key a. (Ord key) => (a -> key) -> Array a -> Array (key /\ NonEmptyArray a)
-selectGroups projection foldable = unsafeCrashWith ""
-  {-
-  foldable
-  -- | decorate with the key for comparison
-  # fmap (\x -> (projection x /\ x))
-  # Array.groupAllBy ((==) `on` fst)
-  -- | only list the key once per group
-  # fmap (\group -> let (key, _):|_ = group in (key, fmap snd group))
-
--}
-
-
+    # Array.groupAllBy (comparing (\(_ /\ disk) -> disk.color))
+    # all
+        ( \items ->
+            let
+              { head: _ /\ { color } } = NEArray.uncons items
+            in
+              items <#> (\(i /\ _) -> indexToLocation i) # isFinishedSequence color
+        )
 
 -- | Get a location on a specific ring, if it exists on that ring
 onRing :: Ring -> Location -> Maybe Location
 onRing ring location = unsafeCrashWith ""
-
-
 
 -- | check if a set of disk locations is a finished sequence
 isFinishedSequence :: Color -> NonEmptyArray Location -> Boolean
@@ -366,10 +355,10 @@ isFinishedSequence color ls = unsafeCrashWith ""
     numberOfRings :: Int
     numberOfRings = length ringGroups
     -}
-
 -- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
 isFinished :: forall n. Pos n => Int -> NonEmptyArray (Cyclic n) -> Boolean
 isFinished = unsafeCrashWith ""
+
 {-
 isFinished expectedCount (head :| rest) = go rest head head
   where

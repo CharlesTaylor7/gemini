@@ -16,7 +16,6 @@
   , "unfoldable"
   , "maybe"
   , "numbers"
-  , "type-equality"
   , "control"
   , "partial"
   -- , "catenable-lists"
