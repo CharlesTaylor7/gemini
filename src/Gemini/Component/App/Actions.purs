@@ -10,9 +10,9 @@ import Data.Gemini as Gemini
 import Data.Gemini.Motions (l, l', c, c', r, r')
 import Web.UIEvent.KeyboardEvent as Event
 import Data.Maybe (fromJust)
-import Gemini.Component.Puzzle as Puzzle
 import Gemini.Store as Store
 import Effect.Random (randomInt)
+import Effect.Console as Console
 
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
 keyboardEvents :: Store Gemini -> Event.KeyboardEvent -> Effect Unit
@@ -28,7 +28,12 @@ keyboardEvents store =
         key -> log key
   where
   apply :: Motion -> Effect Unit
-  apply = Store.modify store <<< Gemini.applyToGemini
+  apply motion = do
+     Store.modify store $ Gemini.applyToGemini motion
+     gemini <- Store.read store
+     if Gemini.isSolved gemini
+     then Console.log("solved!")
+     else pure unit
 
 scramble :: Store Gemini -> Effect Unit
 scramble gemini = do
