@@ -3,8 +3,7 @@ module Data.Gemini
   , geminiLookup
   , initialGemini
   , applyToGemini
-  -- , isSolved, solvedColors
-  -- , disksOf , disksFrom
+  , isSolved
   , DiskIndex
   , Location(..)
   , indexToLocation
@@ -37,7 +36,8 @@ import Data.Generic.Rep (class Generic)
 import Data.Show.Generic (genericShow)
 import Data.Permutation
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.Foldable (class Foldable, foldMap)
+import Data.Foldable (class Foldable, foldMap, all)
+import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array as Array
 import Data.Map (Map)
 import Data.Map as Map
@@ -99,6 +99,8 @@ data Color
   | Green
   | Blue
 derive instance Generic Color _
+derive instance Eq Color
+derive instance Ord Color
 instance Show Color where
   show = genericShow
 
@@ -306,63 +308,43 @@ permuteGemini p (Gemini disks) =
             Nothing -> unsafeCrashWith "wat"
             Just disk -> permute p n /\ disk
 
-{-
-disksOf :: Ring -> IxFold DiskIndex Gemini Disk
-disksOf ring =
-  reindexed Cyclic $
-  ifolding $ \g ->
-  inhabitants <#> \cyclic -> g ^. geminiIx (Location ring cyclic)
 
-
-disksFrom :: Ring -> Array DiskIndex -> Fold Gemini (DiskIndex /\ Disk)
-disksFrom ring range =
-  folding $ \g ->
-  range <#> \i -> (i /\ geminiLookup (Location ring i) g)
-
--- | Get a location on a specific ring, if it exists on that ring
-onRing :: Ring -> Location -> Maybe Location
-onRing ring location = candidates
-  # filter (\loc -> loc.ring == ring)
-  # preview (ix 0)
-  where
-    candidates = location : toList (sibling location)
 -- | Is the puzzle solved?
--- That is, every disk is grouped with other disks of the same color in sequence<<<
-isSolved :: Gemini -> Bool
+-- That is, every disk is grouped with other disks of the same color in sequence.
+isSolved :: Gemini -> Boolean
 isSolved (Gemini diskMap) =
   diskMap
-    # Map.toList
+    # Map.toUnfoldableUnordered
     # selectGroups (\(_ /\ disk) -> disk.color)
     # all (\(color /\ items) -> items <#> (\(i/\_) -> indexToLocation i) # isFinishedSequence color)
 
 
-solvedColors :: Gemini -> Array Color
-solvedColors (Gemini diskMap) =
-  diskMap
-    # Map.toList
-    # selectGroups (\(_ /\ disk) -> disk.color)
-    # filter (\(color /\ items) -> items <#> (\(i/\_) -> indexToLocation i) # isFinishedSequence color)
-    # map fst
-
-toArray :: forall f. FoldableWithIndex f -> f ~> Array
-toArray = error ""
-
-
 -- | Sort # group items by key projection
-selectGroups :: forall key a. (Ord key) => (a -> key) -> Array a -> Array (key /\ NonEmpty a)
-selectGroups projection foldable =
+selectGroups :: forall key a. (Ord key) => (a -> key) -> Array a -> Array (key /\ NonEmptyArray a)
+selectGroups projection foldable = unsafeCrashWith ""
+  {-
   foldable
   -- | decorate with the key for comparison
   # fmap (\x -> (projection x /\ x))
-  # List.sortBy (compare `on` fst)
-  # NE.groupBy ((==) `on` fst)
+  # Array.groupAllBy ((==) `on` fst)
   -- | only list the key once per group
   # fmap (\group -> let (key, _):|_ = group in (key, fmap snd group))
 
+-}
+
+
+
+-- | Get a location on a specific ring, if it exists on that ring
+onRing :: Ring -> Location -> Maybe Location
+onRing ring location = unsafeCrashWith ""
+
+
 
 -- | check if a set of disk locations is a finished sequence
-isFinishedSequence :: Color -> NonEmpty Location -> Bool
-isFinishedSequence color ls =
+isFinishedSequence :: Color -> NonEmptyArray Location -> Boolean
+isFinishedSequence color ls = unsafeCrashWith ""
+
+{-
   if numberOfRings > 2
   then False
   else ls
@@ -378,15 +360,17 @@ isFinishedSequence color ls =
     mostCommonRing :: Ring
     mostCommonRing = ringGroups # List.maximumBy (compare `on` length) # head # (_.ring)
 
-    ringGroups :: [NonEmpty Location]
+    ringGroups :: [NonEmptyArray Location]
     ringGroups = ls # NE.groupBy ((==) `on` view #ring)
 
     numberOfRings :: Int
     numberOfRings = length ringGroups
-
+    -}
 
 -- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
-isFinished :: forall n. Pos n => Int -> NonEmpty (Cyclic n) -> Bool
+isFinished :: forall n. Pos n => Int -> NonEmptyArray (Cyclic n) -> Boolean
+isFinished = unsafeCrashWith ""
+{-
 isFinished expectedCount (head :| rest) = go rest head head
   where
     precedes :: Cyclic n -> Cyclic n -> Bool

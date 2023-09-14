@@ -32,12 +32,12 @@ keyboardEvents store =
 
 scramble :: Store Gemini -> Effect Unit
 scramble gemini = do
-  randomMotions :: Array _ <- replicateA 1000 $
-    ado
-      m <- randomInt 1 17
-      r <- randomInt 0 2
-      in Motion { ring: rings `unsafeIndex` r, amount: cyclic m }
-
+  randomMotions :: Array _ <-
+    replicateA 1000
+      $ ado
+          m <- randomInt 1 17
+          r <- randomInt 0 2
+          in Motion { ring: rings `unsafeIndex` r, amount: cyclic m }
   let perm = foldMap Gemini.toPerm randomMotions
   Store.modify gemini $ Gemini.applyToGemini perm
   where
@@ -45,4 +45,3 @@ scramble gemini = do
 
 unsafeIndex :: forall a. Array a -> Int -> a
 unsafeIndex arr i = unsafePartial $ fromJust $ Array.index arr i
-
