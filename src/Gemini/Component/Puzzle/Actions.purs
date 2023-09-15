@@ -21,7 +21,7 @@ onDragStart ::
   , drag :: Store (Maybe Drag)
   | rest
   } ->
-  PointerEvent ->
+  MouseEvent ->
   Effect Unit
 onDragStart { drag, location } event =
   Store.set drag
@@ -40,7 +40,7 @@ onDragUpdate ::
   { drag :: Store (Maybe Drag)
   | rest
   } ->
-  PointerEvent ->
+  MouseEvent ->
   Effect Unit
 onDragUpdate { drag } event = do
   maybe <- Store.read drag
@@ -65,7 +65,7 @@ onDragEnd ::
   , pushConfetti :: Pusher Confetti
   | rest
   } ->
-  PointerEvent ->
+  MouseEvent ->
   Effect Unit
 onDragEnd props@{ drag: dragS, gemini, pushConfetti } event = do
   onDragUpdate props event
@@ -83,7 +83,7 @@ onDragEnd props@{ drag: dragS, gemini, pushConfetti } event = do
       when (Gemini.isSolved gemini) $ do
         pushConfetti FadeIn
 
-point :: PointerEvent -> Point
+point :: MouseEvent -> Point
 point { clientX, clientY } = Point { x: clientX, y: clientY }
 
 angleToPosition :: forall n. Pos n => Angle -> Cyclic n

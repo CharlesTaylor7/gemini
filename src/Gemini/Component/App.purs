@@ -8,7 +8,6 @@ import Gemini.Component.Puzzle as Puzzle
 import Gemini.DomInfo (initialDomInfo, loadDomInfo)
 import Gemini.Component.App.Actions (keyboardEvents, scramble)
 import Gemini.Component.Puzzle.Actions (onDragEnd, onDragUpdate)
-import Gemini.Component.Puzzle.Mobile as Mobile
 import Data.Gemini as Gemini
 import Deku.Do as Deku
 import Deku.DOM as D
@@ -26,11 +25,10 @@ component = Deku.do
     $ case _ of
         FadeIn -> do
           liftEffect $ Console.log "fade in"
-          {-
+        {-
           delay $ Milliseconds 1000.0
           liftEffect $ pushConfetti FadeOut
           -}
-
         FadeOut -> do
           liftEffect $ Console.log "fade out"
           delay $ Milliseconds 1000.0
@@ -38,29 +36,11 @@ component = Deku.do
 
         Off -> do
           liftEffect $ Console.log "off"
-
   let resize = Resize.observe
   domInfo <- useRef initialDomInfo $ bindToEffect resize.event $ const loadDomInfo
   let props = { gemini, drag, domInfo, pushConfetti }
-  if isTouchDevice then
-    ( pursx ::
-        _ """
-          <div class="w-full h-full fixed" ~attrs~>
-            ~puzzle~
-          </div>
-        """
-    )
-      ~~
-        { attrs:
-            (D.Self !:= \e -> resize.listen e)
-              <|> (D.OnTouchmove !:= touch (onDragUpdate props))
-              <|> (D.OnTouchend !:= touch (onDragEnd props))
-              <|> (D.OnTouchcancel !:= touch (onDragEnd props))
-        , puzzle: Mobile.component props
-        }
-  else
-    ( pursx ::
-        _ """
+  ( pursx ::
+      _ """
           <div ~attrs~>
             <div ~confettiAttrs~ >
             </div>
@@ -71,31 +51,36 @@ component = Deku.do
             </div>
           </div>
         """
-    )
-      ~~
-        { header: header gemini
-        , confettiAttrs:
-            Class.name
-              [ pure "confetti"
-              , "fade-in" # Class.when (confetti <#> eq FadeIn)
-              , "fade-out" # Class.when (confetti <#> eq FadeOut)
-              ]
-        -- TODO: use oneOf, or whatever is more efficient
-        , attrs:
-            Class.name
-              [ pure "fixed w-full h-full flex justify-center"
-              , "cursor-grabbing" # Class.when (Store.subscribe drag <#> isJust)
-              ]
-              <|> autoFocus
-              <|> tabIndex (pure 0)
-              <|> (D.Self !:= \e -> resize.listen e)
-              <|> (D.OnKeydown !:= keyboard (keyboardEvents props))
-              <|> (D.OnMousemove !:= pointer (onDragUpdate props))
-              <|> (D.OnMouseup !:= pointer (onDragEnd props))
-              <|> (D.OnMouseleave !:= pointer (onDragEnd props))
-        , puzzle: Puzzle.component props
-        , footer
-        }
+  )
+    ~~
+      { header: header gemini
+      , confettiAttrs:
+          Class.name
+            [ pure "confetti"
+            , "fade-in" # Class.when (confetti <#> eq FadeIn)
+            , "fade-out" # Class.when (confetti <#> eq FadeOut)
+            ]
+      -- TODO: use oneOf, or whatever is more efficient
+      , attrs:
+          Class.name
+            [ pure "fixed w-full h-full flex justify-center"
+            , "cursor-grabbing" # Class.when (Store.subscribe drag <#> isJust)
+            ]
+            <|> autoFocus
+            <|> tabIndex (pure 0)
+            <|> (D.Self !:= \e -> resize.listen e)
+            <|> (D.OnKeydown !:= keyboard (keyboardEvents props))
+            -- | mouse controls
+            <|> (D.OnMousemove !:= mouse (onDragUpdate props))
+            <|> (D.OnMouseup !:= mouse (onDragEnd props))
+            <|> (D.OnMouseleave !:= mouse (onDragEnd props))
+            -- | touch controls
+            <|> (D.OnTouchmove !:= touch (onDragUpdate props))
+            <|> (D.OnTouchend !:= touch (onDragEnd props))
+            <|> (D.OnTouchcancel !:= touch (onDragEnd props))
+      , puzzle: Puzzle.component props
+      , footer
+      }
 
 header :: Store Gemini -> Nut
 header store =

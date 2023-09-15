@@ -2,12 +2,12 @@ module Deku.Extra
   ( autoFocus
   , tabIndex
   , keyboard
-  , pointer
+  , mouse
   , touch
   , Pusher
   , module FRP.Event
   , module Web.UIEvent.KeyboardEvent
-  , PointerEvent
+  , MouseEvent
   ) where
 
 import Prelude
@@ -35,11 +35,11 @@ keyboard f = cb $ f <<< convert
   convert :: Web.Event -> KeyboardEvent
   convert = unsafeCoerce
 
-pointer :: (PointerEvent -> Effect Unit) -> Cb
-pointer f =
+mouse :: (MouseEvent -> Effect Unit) -> Cb
+mouse f =
   cb $ f <<< convert
   where
-  convert :: Web.Event -> PointerEvent
+  convert :: Web.Event -> MouseEvent
   convert = unsafeCoerce
 
 touch :: (Touch -> Effect Unit) -> Cb
@@ -49,7 +49,7 @@ touch f =
   coerceEvent :: Web.Event -> TouchEvent
   coerceEvent = unsafeCoerce
 
-type PointerEvent
+type MouseEvent
   = { clientX :: Number
     , clientY :: Number
     }

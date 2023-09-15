@@ -38,8 +38,8 @@ keyboardEvents { gemini, pushConfetti } =
   apply motion = do
     Store.modify gemini $ Gemini.applyToGemini motion
     gemini <- Store.read gemini
-    when (Gemini.isSolved gemini) $ 
-      pushConfetti FadeIn
+    when (Gemini.isSolved gemini)
+      $ pushConfetti FadeIn
 
 scramble :: Store Gemini -> Effect Unit
 scramble gemini = do
