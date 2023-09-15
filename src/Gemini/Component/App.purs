@@ -26,8 +26,10 @@ component = Deku.do
     $ case _ of
         FadeIn -> do
           liftEffect $ Console.log "fade in"
+          {-
           delay $ Milliseconds 1000.0
           liftEffect $ pushConfetti FadeOut
+          -}
 
         FadeOut -> do
           liftEffect $ Console.log "fade out"
@@ -60,8 +62,9 @@ component = Deku.do
     ( pursx ::
         _ """
           <div ~attrs~>
-            <div ~confettiAttrs~ />
-            <div class="flex flex-col gap-12 items-center">
+            <div ~confettiAttrs~ >
+            </div>
+            <div class="mt-12 flex flex-col gap-12 items-center">
               ~header~
               ~puzzle~
               ~footer~
@@ -73,7 +76,7 @@ component = Deku.do
         { header: header gemini
         , confettiAttrs:
             Class.name
-              [ pure "fixed confetti"
+              [ pure "confetti"
               , "fade-in" # Class.when (confetti <#> eq FadeIn)
               , "fade-out" # Class.when (confetti <#> eq FadeOut)
               ]
