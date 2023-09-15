@@ -349,9 +349,9 @@ permuteGemini p (Gemini disks) =
 -- | Is the puzzle solved?
 -- That is, every disk is grouped with other disks of the same color in sequence.
 isSolved :: Gemini -> Boolean
-isSolved (Gemini array) = unsafeCrashWith ""
-  {-
+isSolved (Gemini array) = 
   array
+    # Array.mapWithIndex (/\)
     # Array.groupAllBy (comparing (\(_ /\ disk) -> disk.color))
     # all
         ( \items ->
@@ -360,7 +360,6 @@ isSolved (Gemini array) = unsafeCrashWith ""
             in
               items <#> (\(i /\ _) -> indexToLocation i) # isFinishedSequence color
         )
-        -}
 
 -- | Get a location on a specific ring, if it exists on that ring
 onRing :: Ring -> Location -> Maybe Location
