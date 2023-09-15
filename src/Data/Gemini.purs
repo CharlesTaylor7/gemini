@@ -59,7 +59,7 @@ import Safe.Coerce (coerce)
 -- Use `applyToGemini` to rotate / permute the puzzle.
 -- Use `geminiIx` to read / write at specific locations
 newtype Gemini
-  = Gemini (Map Int Disk)
+  = Gemini (Array Disk)
 derive instance Generic Gemini _
 instance Show Gemini where
   show = genericShow
@@ -235,11 +235,10 @@ locationToIndex (Location { ring, position }) =
 locationToIndex' :: Location -> Int
 locationToIndex' = canonical >>> locationToIndex
 
--- | Index into the gemini map
 geminiLookup :: Location -> Gemini -> Disk
-geminiLookup location (Gemini diskMap) =
-  diskMap
-    # Map.lookup (locationToIndex' location)
+geminiLookup location (Gemini array) =
+  locationToIndex' location
+    # Array.index array
     # unsafeFromJust
 
 unsafeFromJust :: forall a. Maybe a -> a
@@ -248,11 +247,16 @@ unsafeFromJust m = unsafePartial (fromJust m)
 divMod :: Int -> Int -> Int /\ Int
 divMod x y = x `div` y /\ x `mod` y
 
-unsafeGemini :: forall f. Functor f => Foldable f => f (Location /\ Disk) -> Gemini
+unsafeGemini :: Array (Location /\ Disk) -> Gemini
 unsafeGemini items =
-  Gemini
-    $ Map.fromFoldable
-    $ map (\(location /\ disk) -> (locationToIndex' location /\ disk)) items
+  items
+  # Array.sortBy (comparing (fst >>> locationToIndex'))
+  # map snd
+  # Array.fromFoldable
+  # Gemini
+  where
+    fst (a/\_) = a
+    snd (_/\b) = b
 
 initialGemini :: Gemini
 initialGemini =
@@ -319,10 +323,11 @@ applyToGemini :: forall a. ToPermutation a => a -> Gemini -> Gemini
 applyToGemini = permuteGemini <<< toPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
-permuteGemini p (Gemini disks) =
-  Gemini $ Map.fromFoldable items
+permuteGemini p (Gemini disks) = unsafeCrashWith ""
+  {-
+  Gemini $ Arrat.fromFoldable items
   where
-  lookup = flip Map.lookup disks
+  lookup = Array.index disks
 
   items :: Array (Int /\ Disk)
   items =
@@ -331,13 +336,14 @@ permuteGemini p (Gemini disks) =
           case lookup n <|> (siblingIndex n >>= lookup) of
             Nothing -> unsafeCrashWith "wat"
             Just disk -> permute p n /\ disk
+          -}
 
 -- | Is the puzzle solved?
 -- That is, every disk is grouped with other disks of the same color in sequence.
 isSolved :: Gemini -> Boolean
-isSolved (Gemini diskMap) =
-  diskMap
-    # Map.toUnfoldableUnordered
+isSolved (Gemini array) = unsafeCrashWith ""
+  {-
+  array
     # Array.groupAllBy (comparing (\(_ /\ disk) -> disk.color))
     # all
         ( \items ->
@@ -346,6 +352,7 @@ isSolved (Gemini diskMap) =
             in
               items <#> (\(i /\ _) -> indexToLocation i) # isFinishedSequence color
         )
+        -}
 
 -- | Get a location on a specific ring, if it exists on that ring
 onRing :: Ring -> Location -> Maybe Location
