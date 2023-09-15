@@ -90,10 +90,9 @@ component = Deku.do
               <|> tabIndex (pure 0)
               <|> (D.Self !:= \e -> resize.listen e)
               <|> (D.OnKeydown !:= keyboard (keyboardEvents props))
-              <|> (D.OnPointermove !:= pointer (onDragUpdate props))
-              <|> (D.OnPointerup !:= pointer (onDragEnd props))
-              <|> (D.OnPointerleave !:= pointer (onDragEnd props))
-              <|> (D.OnPointercancel !:= pointer (onDragEnd props))
+              <|> (D.OnMousemove !:= pointer (onDragUpdate props))
+              <|> (D.OnMouseup !:= pointer (onDragEnd props))
+              <|> (D.OnMouseleave !:= pointer (onDragEnd props))
         , puzzle: Puzzle.component props
         , footer
         }
