@@ -70,13 +70,17 @@ component props = Deku.do
 
 disk :: forall r. Location -> Props r -> Nut
 disk location@(Location { position, ring }) props =
-  (pursx :: _ "<div ~diskAttrs~ />")
+  (pursx :: _ "<div ~diskAttrs~ >~text~</div>")
     ~~
       { diskAttrs:
           Class.name [ pure "disk", color, "hidden" # Class.when (hidden location <$> Store.subscribe props.drag) ]
             <|> (style (diskStyle <$> (pure initial <|> (append initial <$> dragged))))
             <|> (D.OnPointerdown !:= mouse (onDragStart { drag: props.drag, location }))
             <|> (D.OnTouchstart !:= touch (onDragStart { drag: props.drag, location }))
+      , text: text $ Store.subscribe props.gemini
+            <#> geminiLookup location
+            >>> _.label
+            >>> show
       }
   where
   color =
@@ -109,11 +113,13 @@ angleOnCircle k = turns <> -90.0 :* Degrees
   turns = (Int.toNumber (unCyclic k)) / (Int.toNumber $ knownInt @n) :* Turns
 
 ringStyle :: Ring -> String
-ringStyle =
+ringStyle = const ""
+  {-
   case _ of
     LeftRing -> "left: 14.9%"
     RightRing -> "right: 14.9%"
     CenterRing -> ""
+    -}
 
 hiddenLocationIndices :: Drag -> Set Int
 hiddenLocationIndices drag =

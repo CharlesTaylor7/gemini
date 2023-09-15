@@ -55,6 +55,7 @@ import Data.Nat (class Pos, D18, D54)
 import Data.Tuple.Nested (type (/\), (/\))
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Safe.Coerce (coerce)
+import Debug
 
 -- | An opaque wrapper.
 -- Use `geminiFromList` or `initialGemini` to initialize.
@@ -239,9 +240,9 @@ locationToIndex' = canonical >>> locationToIndex
 
 geminiLookup :: Location -> Gemini -> Disk
 geminiLookup location (Gemini array) =
-  locationToIndex' location
-    # Array.index array
-    # unsafeFromJust
+  case locationToIndex location # Array.index array of
+    Just x -> x
+    Nothing -> unsafeCrashWith "geminiLookup"
 
 unsafeFromJust :: forall a. Maybe a -> a
 unsafeFromJust m = unsafePartial (fromJust m)
@@ -252,12 +253,17 @@ divMod x y = x `div` y /\ x `mod` y
 unsafeGemini :: Array (Location /\ Disk) -> Gemini
 unsafeGemini items =
   items
-  # Array.sortBy (comparing (fst >>> locationToIndex'))
-  # map snd
-  # Gemini
+    # Array.sortBy (comparing (fst >>> locationToIndex'))
+    # spyWith "gemini sorted" (map pretty)
+    # map snd
+    # Gemini
   where
-    fst (a/\_) = a
-    snd (_/\b) = b
+  fst (a /\ _) = a
+  snd (_ /\ b) = b
+
+  pretty ( Location { ring, position } /\ {color, label} ) = 
+    { ring, position, color, label }
+
 
 initialGemini :: Gemini
 initialGemini =
@@ -277,6 +283,7 @@ initialGemini =
     , (location LeftRing 5 /\ disk Yellow 3)
     , (location LeftRing 6 /\ disk Yellow 4)
     , (location LeftRing 7 /\ disk Yellow 5)
+    , (location CenterRing 11 /\ disk Yellow 5)
     , (location LeftRing 8 /\ disk Yellow 6)
     , (location LeftRing 9 /\ disk Yellow 7)
     , (location LeftRing 10 /\ disk Yellow 8)
@@ -287,6 +294,7 @@ initialGemini =
     , (location CenterRing 14 /\ disk Black 3)
     , (location CenterRing 15 /\ disk Black 4)
     , (location CenterRing 16 /\ disk Black 5)
+    , (location LeftRing   2  /\ disk Black 5)
     , (location CenterRing 17 /\ disk Black 6)
     , (location CenterRing 0 /\ disk Black 7)
     , (location CenterRing 1 /\ disk Black 8)
@@ -296,6 +304,7 @@ initialGemini =
     , (location CenterRing 5 /\ disk Blue 3)
     , (location CenterRing 6 /\ disk Blue 4)
     , (location CenterRing 7 /\ disk Blue 5)
+    , (location RightRing 11 /\ disk Blue 5)
     , (location CenterRing 8 /\ disk Blue 6)
     , (location CenterRing 9 /\ disk Blue 7)
     , (location CenterRing 10 /\ disk Blue 8)
@@ -314,6 +323,7 @@ initialGemini =
     , (location RightRing 14 /\ disk White 3)
     , (location RightRing 15 /\ disk White 4)
     , (location RightRing 16 /\ disk White 5)
+    , (location CenterRing 2 /\ disk White 5)
     , (location RightRing 17 /\ disk White 6)
     , (location RightRing 0 /\ disk White 7)
     , (location RightRing 1 /\ disk White 8)
@@ -324,32 +334,24 @@ applyToGemini :: forall a. ToPermutation a => a -> Gemini -> Gemini
 applyToGemini = permuteGemini <<< toPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
-permuteGemini p (Gemini disks) = 
-  Gemini $ ST.run do
-    array <- disks # STArray.thaw
-    for_ (domain p) $ \n -> do
-      case Array.index disks n of
-        Nothing -> 
-          unsafeCrashWith "wat"
+permuteGemini p (Gemini disks) =
+  Gemini
+    $ ST.run do
+        array <- disks # STArray.thaw
+        for_ (domain p)
+          $ \n -> do
+              case Array.index disks n of
+                Nothing ->
+                  unsafeCrashWith "wat"
 
-        Just disk ->
-          array # STArray.modify (permute p n) (const disk)
+                Just disk ->
+                  array # STArray.modify (permute p n) (const disk)
+        STArray.unsafeFreeze array
 
-    STArray.unsafeFreeze array
-
-{-
-  items :: Array (Int /\ Disk)
-  items =
-    (domain p)
-      <#> \n -> do
-          case lookup n <|> (siblingIndex n >>= lookup) of
-            Nothing -> unsafeCrashWith "wat"
-            Just disk -> permute p n /\ disk
-            -}
 -- | Is the puzzle solved?
 -- That is, every disk is grouped with other disks of the same color in sequence.
 isSolved :: Gemini -> Boolean
-isSolved (Gemini array) = 
+isSolved (Gemini array) =
   array
     # Array.mapWithIndex (/\)
     # Array.groupAllBy (comparing (\(_ /\ disk) -> disk.color))
