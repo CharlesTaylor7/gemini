@@ -37,11 +37,13 @@ import Data.Show.Generic (genericShow)
 import Data.Permutation
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Semigroup.Foldable as NEFold
-import Data.Foldable (class Foldable, foldMap, all)
+import Data.Foldable (class Foldable, foldMap, all, for_)
 import Data.Traversable (sequence)
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
 import Data.Array as Array
+import Data.Array.ST as STArray
+import Control.Monad.ST as ST
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (fromJust)
@@ -252,7 +254,6 @@ unsafeGemini items =
   items
   # Array.sortBy (comparing (fst >>> locationToIndex'))
   # map snd
-  # Array.fromFoldable
   # Gemini
   where
     fst (a/\_) = a
@@ -323,12 +324,20 @@ applyToGemini :: forall a. ToPermutation a => a -> Gemini -> Gemini
 applyToGemini = permuteGemini <<< toPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
-permuteGemini p (Gemini disks) = unsafeCrashWith ""
-  {-
-  Gemini $ Arrat.fromFoldable items
-  where
-  lookup = Array.index disks
+permuteGemini p (Gemini disks) = 
+  Gemini $ ST.run do
+    array <- disks # STArray.thaw
+    for_ (domain p) $ \n -> do
+      case Array.index disks n of
+        Nothing -> 
+          unsafeCrashWith "wat"
 
+        Just disk ->
+          array # STArray.modify (permute p n) (const disk)
+
+    STArray.unsafeFreeze array
+
+{-
   items :: Array (Int /\ Disk)
   items =
     (domain p)
@@ -336,8 +345,7 @@ permuteGemini p (Gemini disks) = unsafeCrashWith ""
           case lookup n <|> (siblingIndex n >>= lookup) of
             Nothing -> unsafeCrashWith "wat"
             Just disk -> permute p n /\ disk
-          -}
-
+            -}
 -- | Is the puzzle solved?
 -- That is, every disk is grouped with other disks of the same color in sequence.
 isSolved :: Gemini -> Boolean
