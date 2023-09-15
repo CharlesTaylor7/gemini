@@ -15,8 +15,15 @@ import Effect.Random (randomInt)
 import Effect.Console as Console
 
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
-keyboardEvents :: Store Gemini -> Event.KeyboardEvent -> Effect Unit
-keyboardEvents store =
+keyboardEvents ::
+  forall rest.
+  { gemini :: Store Gemini
+  , pushConfetti :: Pusher Confetti
+  | rest
+  } ->
+  Event.KeyboardEvent ->
+  Effect Unit
+keyboardEvents { gemini, pushConfetti } =
   Event.key
     >>> case _ of
         "q" -> apply $ l' 1
@@ -29,12 +36,10 @@ keyboardEvents store =
   where
   apply :: Motion -> Effect Unit
   apply motion = do
-    Store.modify store $ Gemini.applyToGemini motion
-    gemini <- Store.read store
-    if Gemini.isSolved gemini then
-      Console.log ("solved!")
-    else
-      pure unit
+    Store.modify gemini $ Gemini.applyToGemini motion
+    gemini <- Store.read gemini
+    when (Gemini.isSolved gemini) $ 
+      pushConfetti FadeIn
 
 scramble :: Store Gemini -> Effect Unit
 scramble gemini = do

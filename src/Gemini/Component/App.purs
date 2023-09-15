@@ -15,15 +15,31 @@ import Deku.DOM as D
 import Resize as Resize
 import Gemini.Store as Store
 import ClassName as Class
+import Effect.Console as Console
 
 component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini
   drag <- useStore (Nothing :: _ Drag)
+  pushConfetti /\ confetti <- useState'
+  useAff confetti
+    $ case _ of
+        FadeIn -> do
+          liftEffect $ Console.log "fade in"
+          delay $ Milliseconds 1000.0
+          liftEffect $ pushConfetti FadeOut
+
+        FadeOut -> do
+          liftEffect $ Console.log "fade out"
+          delay $ Milliseconds 1000.0
+          liftEffect $ pushConfetti Off
+
+        Off -> do
+          liftEffect $ Console.log "off"
+
   let resize = Resize.observe
-  let domInfoEvent = resize.event `bindToEffect` const loadDomInfo
-  domInfo <- useRef initialDomInfo domInfoEvent
-  let props = { gemini, drag, domInfo }
+  domInfo <- useRef initialDomInfo $ bindToEffect resize.event $ const loadDomInfo
+  let props = { gemini, drag, domInfo, pushConfetti }
   if isTouchDevice then
     ( pursx ::
         _ """
@@ -63,7 +79,7 @@ component = Deku.do
               <|> autoFocus
               <|> tabIndex (pure 0)
               <|> (D.Self !:= \e -> resize.listen e)
-              <|> (D.OnKeydown !:= keyboard (keyboardEvents gemini))
+              <|> (D.OnKeydown !:= keyboard (keyboardEvents props))
               <|> (D.OnPointermove !:= pointer (onDragUpdate props))
               <|> (D.OnPointerup !:= pointer (onDragEnd props))
               <|> (D.OnPointerleave !:= pointer (onDragEnd props))

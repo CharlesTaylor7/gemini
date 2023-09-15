@@ -1,16 +1,16 @@
 procs:
-  Purescript:
-    shell: yarn watch:purs
-
-  Dev Server:
-    shell: yarn watch:js
-
   Test:
     shell: yarn test --clear-screen --watch
 
   Format:
     shell: yarn format
     autostart: false
+
+  Purescript:
+    shell: yarn watch:purs
+
+  Dev Server:
+    shell: yarn watch:js
 
   Tailwind:
     shell: yarn tailwind --watch

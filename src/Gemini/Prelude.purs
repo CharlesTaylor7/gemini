@@ -10,12 +10,15 @@ module Gemini.Prelude
   , module Data.Group
   , module Data.Gemini
   , module Data.Set
+  , module Data.Time.Duration
   , module Data.Map
   , module Data.Maybe
   , module Data.Point
   , module Data.Foldable
   , module Data.Tuple.Nested
   , module Effect
+  , module Effect.Aff
+  , module Effect.Class
   , module Effect.Console
   , module Partial.Unsafe
   , module Deku.Common
@@ -41,7 +44,10 @@ import Data.Point (Point(..))
 import Data.Maybe (Maybe(..), fromMaybe, isJust, fromJust)
 import Data.Foldable (fold, foldMap)
 import Data.Tuple.Nested (type (/\), (/\))
+import Data.Time.Duration (Milliseconds)
 import Effect (Effect)
+import Effect.Aff
+import Effect.Class (liftEffect)
 import Effect.Console (log)
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Deku.Common

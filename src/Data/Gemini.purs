@@ -61,7 +61,8 @@ import Safe.Coerce (coerce)
 newtype Gemini
   = Gemini (Map Int Disk)
 derive instance Generic Gemini _
-instance Show Gemini where show = genericShow
+instance Show Gemini where
+  show = genericShow
 
 type DiskIndex
   = Cyclic D18
@@ -79,7 +80,8 @@ type LocationRecord
     }
 derive instance Eq Location
 derive instance Generic Location _
-instance Show Location where show = genericShow
+instance Show Location where
+  show = genericShow
 
 unLocation :: Location -> LocationRecord
 unLocation (Location r) = r
@@ -94,7 +96,8 @@ data Ring
 derive instance Eq Ring
 derive instance Ord Ring
 derive instance Generic Ring _
-instance Show Ring where show = genericShow
+instance Show Ring where
+  show = genericShow
 
 instance Finitary Ring where
   inhabitants = [ LeftRing, CenterRing, RightRing ]

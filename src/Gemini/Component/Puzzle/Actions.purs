@@ -13,6 +13,7 @@ import Data.Gemini as Gemini
 import Data.Point as Point
 import Gemini.DomInfo (DomInfo)
 import Gemini.Store as Store
+import Effect.Console as Console
 
 onDragStart ::
   forall rest.
@@ -61,11 +62,12 @@ onDragEnd ::
   { drag :: Store (Maybe Drag)
   , gemini :: Store Gemini
   , domInfo :: Effect DomInfo
+  , pushConfetti :: Pusher Confetti
   | rest
   } ->
   PointerEvent ->
   Effect Unit
-onDragEnd props@{ drag: dragS, gemini } event = do
+onDragEnd props@{ drag: dragS, gemini, pushConfetti } event = do
   onDragUpdate props event
   drag <- Store.read dragS
   case drag of
@@ -77,6 +79,9 @@ onDragEnd props@{ drag: dragS, gemini } event = do
       let motion = Motion { amount: n, ring }
       Store.set dragS Nothing
       Store.modify gemini $ Gemini.applyToGemini motion
+      gemini <- Store.read gemini
+      when (Gemini.isSolved gemini) $ do
+        pushConfetti FadeIn
 
 point :: PointerEvent -> Point
 point { clientX, clientY } = Point { x: clientX, y: clientY }

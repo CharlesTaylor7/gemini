@@ -14,10 +14,11 @@ import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
 import Gemini.DomInfo (DomInfo)
 import ClassName as Class
 
-type Props
+type Props r
   = { gemini :: Store Gemini
     , drag :: Store (Maybe Drag)
     , domInfo :: Effect DomInfo
+    | r
     }
 
 type DragProps
@@ -25,12 +26,13 @@ type DragProps
     , domInfo :: DomInfo
     }
 
-dragProps :: Props -> Event DragProps
+dragProps :: forall r. Props r -> Event DragProps
 dragProps { drag, domInfo } =
   (Store.subscribe drag)
     `bindToEffect`
       \drag -> domInfo <#> { drag, domInfo: _ }
-component :: Props -> Nut
+
+component :: forall r. Props r -> Nut
 component props = Deku.do
   D.div [ Class.name [ pure "gemini", "mobile" # Class.when (pure isTouchDevice) ] ]
     $ map ringView inhabitants
@@ -58,7 +60,7 @@ component props = Deku.do
           in
             disk location props
 
-disk :: Location -> Props -> Nut
+disk :: forall r. Location -> Props r -> Nut
 disk location@(Location { position, ring }) props =
   (pursx :: _ "<div ~diskAttrs~ />")
     ~~
