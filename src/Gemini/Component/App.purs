@@ -73,14 +73,14 @@ component = Deku.do
         { header: header gemini
         , confettiAttrs:
             Class.name
-              [ pure "fixed confetti fade-in"
-              -- , "fade-in" # Class.when (confetti <#> eq FadeIn)
-              -- , "fade-out" # Class.when (confetti <#> eq FadeOut)
+              [ pure "fixed confetti"
+              , "fade-in" # Class.when (confetti <#> eq FadeIn)
+              , "fade-out" # Class.when (confetti <#> eq FadeOut)
               ]
         -- TODO: use oneOf, or whatever is more efficient
         , attrs:
             Class.name
-              [ pure "mt-12 fixed w-full h-full flex justify-center"
+              [ pure "fixed w-full h-full flex justify-center"
               , "cursor-grabbing" # Class.when (Store.subscribe drag <#> isJust)
               ]
               <|> autoFocus

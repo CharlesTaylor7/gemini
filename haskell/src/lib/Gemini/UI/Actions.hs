@@ -96,9 +96,8 @@ applyMotionToStore motion = do
 -- check if the puzzle is solved
 checkWin :: MonadJSM m => Action m ()
 checkWin = do
-  wasScrambled <- get <&> isn't (#stats % _Nothing)
   isSolved <- use $ #gemini % to isSolved
-  when (wasScrambled && isSolved) $ do
+  when isSolved $ do
     solvedAt <- dateNow
     (#stats % _Just % #solvedAt ?= solvedAt)
     (#options % #confetti .= FadeIn)
