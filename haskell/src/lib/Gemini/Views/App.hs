@@ -65,8 +65,11 @@ rootView store =
     , Html.tabIndex 0
     , keyboardMotions
     -- drag update
+    , ("mousemove", onDragUpdate)
     , ("touchmove", onDragUpdate)
     -- drag end
+    , ("mouseup", onDragEnd)
+    , ("mouseleave", onDragEnd)
     , ("touchend", onDragEnd)
     , ("touchcancel", onDragEnd)
     ]
