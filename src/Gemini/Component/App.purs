@@ -60,6 +60,7 @@ component = Deku.do
     ( pursx ::
         _ """
           <div ~attrs~>
+            <div ~confettiAttrs~ />
             <div class="flex flex-col gap-12 items-center">
               ~header~
               ~puzzle~
@@ -70,6 +71,12 @@ component = Deku.do
     )
       ~~
         { header: header gemini
+        , confettiAttrs:
+            Class.name
+              [ pure "fixed confetti fade-in"
+              -- , "fade-in" # Class.when (confetti <#> eq FadeIn)
+              -- , "fade-out" # Class.when (confetti <#> eq FadeOut)
+              ]
         -- TODO: use oneOf, or whatever is more efficient
         , attrs:
             Class.name
