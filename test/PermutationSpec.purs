@@ -6,11 +6,11 @@ import Data.Gemini
 import Data.Gemini.Motions
 import Data.Group
 import Data.Nat
-import Data.Permutation
 import Gemini.Prelude
 
 import Data.Array as Array
 import Data.Map as Map
+import Data.Permutation (Permutation, unsafePermutation)
 import Effect (Effect)
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.QuickCheck.Gen as Gen
@@ -25,7 +25,7 @@ instance Pos n => Arbitrary (AnyPermutation n) where
     shuffled <- Gen.shuffle array
     in
       AnyPermutation
-        $ Permutation
+        $ unsafePermutation
         $ Map.fromFoldable
         $ Array.zip array shuffled
     where
@@ -37,20 +37,20 @@ permutationSpec = do
     describe "Group Laws" do
       it "associativity" $ quickCheck $
         \(AnyPermutation x) (AnyPermutation y) (AnyPermutation z) ->
-          (x <> y) <> z === (x <> (y <> z) :: Permutation D3)
+          (x <> y) <> z === (x <> (y <> z) :: Permutation D5)
 
       it "left identity" $ quickCheck $
         \(AnyPermutation x) ->
-          (mempty <> x) === (x :: Permutation D3)
+          (mempty <> x) === (x :: Permutation D5)
 
       it "right identity" $ quickCheck $
         \(AnyPermutation x) ->
-          (x <> mempty) == (x :: Permutation D3)
+          (x <> mempty) == (x :: Permutation D5)
 
       it "left inverse" $ quickCheck $
         \(AnyPermutation x) ->
-          (invert x <> x) === (mempty :: Permutation D3)
+          (invert x <> x) === (mempty :: Permutation D5)
 
       it "right inverse" $ quickCheck $
         \(AnyPermutation x) ->
-          (x <> invert x) === (mempty :: Permutation D3)
+          (x <> invert x) === (mempty :: Permutation D5)

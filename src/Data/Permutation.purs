@@ -1,9 +1,10 @@
 {- | Manipulate permutations
 -}
 module Data.Permutation
-  ( Permutation(..)
+  ( Permutation
+  , unsafePermutation
   , permute
-  , domain
+  , derangements
   ) where
 
 import Prelude
@@ -18,6 +19,7 @@ import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Nat (class Nat, knownInt, natsUnder)
+import Data.Tuple as Tuple
 import Data.Tuple.Nested (type (/\), (/\))
 
 newtype Permutation (bound :: Type) = Permutation (Map Int Int)
@@ -28,9 +30,8 @@ derive newtype instance Show (Permutation bound)
 -- we determine if permutations are equal if they map every element of the domain the same way
 instance Nat n => Eq (Permutation n) where
   eq p q =
-    Array.all
-      (\k -> permute p k == permute q k)
-      (natsUnder @n)
+    natsUnder @n
+      # Array.all (\k -> permute p k == permute q k)
 
 -- TODO:
 -- Either reimplement Permutations as Arrays or make the composition sparse.
@@ -43,37 +44,26 @@ instance Nat bound => Semigroup (Permutation bound) where
       # Map.fromFoldable
       # Permutation
     where
-    composed = permute q <<< permute p
+    composed = permute p >>> permute q
 
 instance Nat n => Monoid (Permutation n) where
-  mempty = identityPermutation
-
-identityPermutation :: forall n. Permutation n
-identityPermutation = Permutation Map.empty
+  mempty = Permutation Map.empty
 
 instance Nat bound => Group (Permutation bound) where
-  invert p =
-    natsUnder @bound
-      # map (\n -> permute p n /\ n)
+  invert (Permutation p) =
+    p
+      # (Map.toUnfoldableUnordered :: _ -> Array _)
+      # map Tuple.swap
       # Map.fromFoldable
       # Permutation
 
+-- | Apply permutation to int
 permute :: forall n. Permutation n -> Int -> Int
 permute (Permutation map) n = map # Map.lookup n # fromMaybe n
 
--- | all adjacent pairs in the list plus an extra pair between the last and first item
-pairs :: forall f a. Foldable f => f a -> List (a /\ a)
-pairs x =
-  case NonEmptyList.fromFoldable x of
-    Nothing -> Nil
-    Just list ->
-      let
-        { head: a, tail: as } = NonEmptyList.uncons list
-        go (Cons x (Cons y rest)) = (x /\ y) : go (y : rest)
-        go (Cons x Nil) = (x /\ a) : Nil
-        go _ = Nil
-      in
-        go (a : as)
+-- | Map of changed elements. Elements mapped to themself by the permutation are not present in the map.
+derangements :: forall n. Permutation n -> Map Int Int
+derangements (Permutation p) = p
 
-domain :: forall bound. Nat bound => Permutation bound -> Array Int
-domain _ = natsUnder @bound
+unsafePermutation :: forall n. Map Int Int -> Permutation n
+unsafePermutation = Permutation

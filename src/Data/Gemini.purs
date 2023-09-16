@@ -25,7 +25,6 @@ module Data.Gemini
   , Chosen(..)
   ) where
 
-import Data.Permutation
 import Debug
 import Prelude
 
@@ -52,6 +51,7 @@ import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nat (class Pos, D18, D54)
+import Data.Permutation (Permutation, derangements, permute, unsafePermutation)
 import Data.Semigroup.Foldable as NEFold
 import Data.Show.Generic (genericShow)
 import Data.Traversable (sequence)
@@ -138,7 +138,7 @@ class ToPermutation a where
 
 instance ToPermutation Motion where
   toPerm (Motion { ring, amount }) =
-    Permutation
+    unsafePermutation
       $ Map.fromFoldable
       $ indices
           <#> \i ->
@@ -328,10 +328,10 @@ applyToGemini :: forall a. ToPermutation a => a -> Gemini -> Gemini
 applyToGemini = permuteGemini <<< toPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
-permuteGemini (Permutation perm) (Gemini disks) =
+permuteGemini perm (Gemini disks) =
   Gemini $ ST.run do
     array <- disks # STArray.thaw
-    forWithIndex_ perm $ \i j ->
+    forWithIndex_ (derangements perm) $ \i j ->
       case Array.index disks i of
         Nothing ->
           unsafeCrashWith "wat"
