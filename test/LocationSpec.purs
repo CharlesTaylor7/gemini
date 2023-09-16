@@ -1,8 +1,8 @@
 module LocationSpec where
 
 import Gemini.Prelude
-import Data.Gemini (indexToLocation, sibling, location)
 
+import Data.Gemini (indexToLocation, location, sibling)
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.QuickCheck.Gen as Gen
 import Test.Spec (Spec, describe, it)
