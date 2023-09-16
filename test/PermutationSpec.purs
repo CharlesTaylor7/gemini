@@ -9,6 +9,8 @@ import Data.Nat
 import Data.Permutation
 import Gemini.Prelude
 
+import Data.Array as Array
+import Data.Map as Map
 import Effect (Effect)
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.QuickCheck.Gen as Gen
@@ -19,8 +21,15 @@ import Test.Spec.QuickCheck (quickCheck)
 newtype AnyPermutation n = AnyPermutation (Permutation n)
 
 instance Pos n => Arbitrary (AnyPermutation n) where
-  arbitrary = pure $ AnyPermutation $ (mempty :: Permutation n)
-
+  arbitrary = ado
+    shuffled <- Gen.shuffle array
+    in
+      AnyPermutation
+        $ Permutation
+        $ Map.fromFoldable
+        $ Array.zip array shuffled
+    where
+    array = enumFromTo 0 (knownInt @n - 1)
 
 permutationSpec :: Spec Unit
 permutationSpec = do

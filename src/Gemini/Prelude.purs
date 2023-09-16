@@ -6,6 +6,7 @@ module Gemini.Prelude
   , module Data.Nat
   , module Data.Angle
   , module Data.Cyclic
+  , module Data.Enum
   , module Data.Finitary
   , module Data.Group
   , module Data.Gemini
@@ -39,6 +40,7 @@ import Control.Alt ((<|>))
 import Control.Alternative (guard)
 import Data.Angle (Angle, AngleUnit(..), arctan, cosine, sine, (:*))
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
+import Data.Enum (enumFromTo)
 import Data.Finitary (class Finitary, inhabitants)
 import Data.Foldable (fold, foldMap)
 import Data.Gemini
