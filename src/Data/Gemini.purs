@@ -251,8 +251,9 @@ unsafeGemini :: Array (Location /\ Disk) -> Gemini
 unsafeGemini items = Gemini $ ST.run do
   array <- STArray.unsafeNewSized 54
   let
-    write loc disk = void $ array # STArray.modify (locationToIndex loc)
-      (const disk)
+    write loc disk = void $
+      array # STArray.modify (locationToIndex loc) (const disk)
+
   for_ items $ \(location /\ disk) -> do
     write location disk
     case sibling location of
