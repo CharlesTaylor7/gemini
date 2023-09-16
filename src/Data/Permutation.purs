@@ -31,6 +31,10 @@ instance Nat n => Eq (Permutation n) where
       (\k -> permute p k == permute q k)
       (natsUnder @n)
 
+-- TODO:
+-- Either reimplement Permutations as Arrays or make the composition sparse.
+-- There's no sense in using a Map with compact representation.
+-- Compact meaning, very key of the domain is present in the map.
 instance Nat bound => Semigroup (Permutation bound) where
   append p q =
     natsUnder @bound
