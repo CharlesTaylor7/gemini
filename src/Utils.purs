@@ -1,8 +1,9 @@
 module Utils where
 
 import Prelude
-import Effect (Effect)
+
 import Debug (class DebugWarning, spy)
+import Effect (Effect)
 import FRP.Event (Event)
 import FRP.Event as Event
 

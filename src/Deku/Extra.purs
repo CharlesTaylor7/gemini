@@ -10,21 +10,22 @@ module Deku.Extra
   , MouseEvent
   ) where
 
+import Debug
 import Prelude
-import Effect (Effect)
-import FRP.Event (Event)
+
+import Control.Apply (lift2)
+import Data.Array as Array
 import Data.Foldable (foldMap)
 import Data.Tuple.Nested (type (/\), (/\))
-import Data.Array as Array
-import Control.Apply (lift2)
-import Deku.DOM as H
-import Deku.Attribute (Attribute, class Attr, cb, Cb, unsafeAttribute, AttributeValue(..))
+import Deku.Attribute (class Attr, Attribute, AttributeValue(..), Cb, cb, unsafeAttribute)
 import Deku.Attributes (klass)
+import Deku.DOM as H
+import Effect (Effect)
+import FRP.Event (Event)
+import Safe.Coerce (coerce)
+import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event as Web
 import Web.UIEvent.KeyboardEvent (KeyboardEvent)
-import Unsafe.Coerce (unsafeCoerce)
-import Safe.Coerce (coerce)
-import Debug
 
 type Pusher a = a -> Effect Unit
 

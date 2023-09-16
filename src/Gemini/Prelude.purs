@@ -28,41 +28,42 @@ module Gemini.Prelude
   , module Utils
   ) where
 
+import Data.Nat
+import Debug
+import Deku.Common
+import Effect.Aff
 import Prelude hiding (class Ring)
+import Utils
+
 import Control.Alt ((<|>))
 import Control.Alternative (guard)
-import Debug
-import Utils
-import Data.Nat
-import Data.Angle (Angle, AngleUnit(..), (:*), arctan, cosine, sine)
+import Data.Angle (Angle, AngleUnit(..), arctan, cosine, sine, (:*))
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
 import Data.Finitary (class Finitary, inhabitants)
-import Data.Group (class Group, invert, pow)
-import Data.Set (Set)
-import Data.Map (Map)
-import Data.Point (Point(..))
-import Data.Maybe (Maybe(..), fromMaybe, isJust, fromJust)
 import Data.Foldable (fold, foldMap)
-import Data.Tuple.Nested (type (/\), (/\))
-import Data.Time.Duration (Milliseconds)
-import Effect (Effect)
-import Effect.Aff
-import Effect.Class (liftEffect)
-import Effect.Console (log)
-import Partial.Unsafe (unsafePartial, unsafeCrashWith)
-import Deku.Common
-import FRP.Event (Event)
-import Gemini.Store (Store)
 import Data.Gemini
-  ( Gemini
+  ( Choice(..)
+  , Chosen(..)
+  , Gemini
+  , Location(..)
   , Motion(..)
   , Ring(..)
-  , Location(..)
-  , Choice(..)
-  , Chosen(..)
   )
+import Data.Group (class Group, invert, pow)
+import Data.Map (Map)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)
+import Data.Point (Point(..))
+import Data.Set (Set)
+import Data.Time.Duration (Milliseconds)
+import Data.Tuple.Nested (type (/\), (/\))
+import Effect (Effect)
+import Effect.Class (liftEffect)
+import Effect.Console (log)
+import FRP.Event (Event)
+import Gemini.Store (Store)
 import Gemini.Types
-  ( Drag(..)
-  , Confetti(..)
+  ( Confetti(..)
+  , Drag(..)
   , Stats(..)
   )
+import Partial.Unsafe (unsafeCrashWith, unsafePartial)

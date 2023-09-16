@@ -7,18 +7,19 @@ module Data.Permutation
   ) where
 
 import Prelude
-import Data.Group (class Group)
-import Data.Maybe (Maybe(..), fromMaybe)
-import Data.Foldable (class Foldable)
-import Data.Tuple.Nested (type (/\), (/\))
+
 import Data.Array as Array
-import Data.Set as Set
-import Data.Map (Map)
-import Data.Map as Map
-import Data.Nat (class Nat, knownInt, natsUnder)
+import Data.Foldable (class Foldable)
+import Data.Group (class Group)
 import Data.List (List(..), (:))
 import Data.List as List
 import Data.List.NonEmpty as NonEmptyList
+import Data.Map (Map)
+import Data.Map as Map
+import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Nat (class Nat, knownInt, natsUnder)
+import Data.Set as Set
+import Data.Tuple.Nested (type (/\), (/\))
 
 newtype Permutation (bound :: Type) = Permutation (Map Int Int)
 

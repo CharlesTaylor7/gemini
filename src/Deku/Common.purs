@@ -9,10 +9,10 @@ module Deku.Common
   , module Extra
   ) where
 
+import Deku.Attribute (class Attr, attr, xdata, (!:=))
+import Deku.Attributes (klass, klass_, style, style_)
 import Deku.Control (text, text_)
 import Deku.Core (Nut)
-import Deku.Pursx (pursx, (~~))
-import Deku.Attributes (klass, klass_, style, style_)
-import Deku.Attribute (xdata, (!:=), attr, class Attr)
-import Deku.Hooks (useEffect, useRef, useState, useState', useAff)
 import Deku.Extra as Extra
+import Deku.Hooks (useAff, useEffect, useRef, useState, useState')
+import Deku.Pursx (pursx, (~~))

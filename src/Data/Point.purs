@@ -3,9 +3,10 @@ module Data.Point
   , angleToOrigin
   ) where
 
-import Prelude
 import Data.Angle
 import Data.Group
+import Prelude
+
 import Data.Number as Math
 
 newtype Point = Point

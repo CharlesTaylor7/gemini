@@ -3,21 +3,22 @@ module Gemini.Component.Puzzle
   ) where
 
 import Gemini.Prelude
+
+import ClassName as Class
 import Data.Array as Array
+import Data.Gemini (geminiLookup, location, locationToIndex)
 import Data.Int as Int
 import Data.Map as Map
 import Data.Point as Point
 import Data.Set as Set
 import Data.String.Common as String
-import Data.Gemini (geminiLookup, locationToIndex, location)
-import Deku.Do as Deku
-import Deku.DOM as D
-import Deku.Hooks (useState)
 import Deku.Attributes (style)
-import Gemini.Store as Store
+import Deku.DOM as D
+import Deku.Do as Deku
+import Deku.Hooks (useState)
 import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
 import Gemini.DomInfo (DomInfo)
-import ClassName as Class
+import Gemini.Store as Store
 
 type Props r =
   { gemini :: Store Gemini

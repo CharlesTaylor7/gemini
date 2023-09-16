@@ -1,7 +1,8 @@
 module Data.Gemini.Motions where
 
-import Prelude
 import Data.Gemini
+import Prelude
+
 import Data.Cyclic (cyclic)
 
 l :: Int -> Motion

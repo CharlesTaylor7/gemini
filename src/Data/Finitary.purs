@@ -5,6 +5,7 @@ module Data.Finitary
   ) where
 
 import Prelude
+
 import Data.Enum (class Enum, enumFromTo)
 
 class Finitary a where

@@ -10,6 +10,7 @@ module Data.Angle
   ) where
 
 import Prelude
+
 import Data.Group (class Group)
 import Data.Number as Math
 

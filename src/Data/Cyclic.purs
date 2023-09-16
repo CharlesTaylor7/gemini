@@ -8,9 +8,10 @@ module Data.Cyclic
   ) where
 
 import Prelude
+
 import Data.Finitary (class Finitary)
-import Data.Group (class Group)
 import Data.Generic.Rep (class Generic)
+import Data.Group (class Group)
 import Data.Nat (class Nat, class Pos, knownInt, natsUnder)
 import Data.Show.Generic (genericShow)
 import Safe.Coerce (coerce)

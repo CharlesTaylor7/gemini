@@ -4,6 +4,7 @@ module Resize
   ) where
 
 import Prelude
+
 import Control.Monad.ST.Global (Global, toEffect)
 import Control.Monad.ST.Ref (STRef)
 import Control.Monad.ST.Ref as Ref

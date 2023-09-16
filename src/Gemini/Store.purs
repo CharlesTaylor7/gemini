@@ -8,6 +8,7 @@ module Gemini.Store
   ) where
 
 import Prelude
+
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested (type (/\), (/\))
 import Deku.Core (Nut)

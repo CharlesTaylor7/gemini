@@ -3,6 +3,7 @@ module Data.Timestamp
   ) where
 
 import Prelude
+
 import Data.Generic.Rep (class Generic)
 
 -- | timestamp in milliseconds

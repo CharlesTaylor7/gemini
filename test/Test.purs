@@ -1,22 +1,23 @@
 module Test.Main where
 
-import Gemini.Prelude
 import Data.Cyclic
-import Data.Nat
-import Data.Group
+import Data.Foldable
 import Data.Gemini
 import Data.Gemini.Motions
-import Data.Foldable
+import Data.Group
+import Data.Nat
+import Gemini.Prelude
+
 import Data.Array.NonEmpty as NEArray
 import Effect (Effect)
 import Effect.Aff (launchAff_)
-import Test.Spec (Spec, describe, it)
-import Test.Spec.Assertions (shouldEqual, shouldSatisfy, shouldNotSatisfy)
-import Test.Spec.Reporter.Console (consoleReporter)
-import Test.Spec.Runner (runSpec', defaultConfig)
-import Test.Spec.QuickCheck (quickCheck)
-import Test.QuickCheck (Result(..), class Arbitrary, (===), (/==))
+import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.QuickCheck.Gen as Gen
+import Test.Spec (Spec, describe, it)
+import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)
+import Test.Spec.QuickCheck (quickCheck)
+import Test.Spec.Reporter.Console (consoleReporter)
+import Test.Spec.Runner (defaultConfig, runSpec')
 
 main :: Effect Unit
 main = launchAff_

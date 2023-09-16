@@ -6,9 +6,10 @@ module Data.Nat
   ) where
 
 import Prelude
+
 import Data.Enum (enumFromTo)
-import Data.Typelevel.Num.Aliases as Num
 import Data.Typelevel.Num (D1, D2, D3, D4, D5, D6, D7, D8, D9) as Num
+import Data.Typelevel.Num.Aliases as Num
 import Data.Typelevel.Num.Sets (class Nat, class Pos, toInt')
 import Type.Proxy (Proxy(..))
 

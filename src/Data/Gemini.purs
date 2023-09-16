@@ -25,37 +25,38 @@ module Data.Gemini
   , Chosen(..)
   ) where
 
+import Data.Permutation
+import Debug
 import Prelude
+
 import Control.Alt ((<|>))
 import Control.Alternative (guard)
-import Data.Cyclic (Cyclic, cyclic, unCyclic, CyclicOrdering(..), compareCyclic)
-import Data.Group (pow)
-import Data.Enum (class Enum)
-import Data.Finitary (class Finitary, inhabitants)
-import Data.Generic.Rep (class Generic)
-import Data.Show.Generic (genericShow)
-import Data.Permutation
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
-import Data.Semigroup.Foldable as NEFold
-import Data.Foldable (class Foldable, foldMap, all, for_)
-import Data.Traversable (sequence)
+import Control.Monad.ST as ST
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
 import Data.Array.ST as STArray
 import Data.Array.ST.Extra as STArray
-import Control.Monad.ST as ST
-import Data.Map (Map)
-import Data.Map as Map
+import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
+import Data.Enum (class Enum)
+import Data.Finitary (class Finitary, inhabitants)
+import Data.Foldable (class Foldable, all, foldMap, for_)
+import Data.Generic.Rep (class Generic)
+import Data.Group (pow)
 import Data.List (List)
 import Data.List as List
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEList
+import Data.Map (Map)
+import Data.Map as Map
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nat (class Pos, D18, D54)
+import Data.Semigroup.Foldable as NEFold
+import Data.Show.Generic (genericShow)
+import Data.Traversable (sequence)
 import Data.Tuple.Nested (type (/\), (/\))
 import Partial.Unsafe (unsafeCrashWith)
 import Safe.Coerce (coerce)
-import Debug
 
 -- | An opaque wrapper.
 -- Use `geminiFromList` or `initialGemini` to initialize.

@@ -4,14 +4,15 @@ module ClassName
   ) where
 
 import Prelude
-import FRP.Event (Event)
-import Data.Foldable (foldMap)
+
 import Control.Apply (lift2)
-import Deku.DOM as D
-import Deku.Attribute (Attribute, class Attr, cb, Cb, unsafeAttribute, AttributeValue(..))
+import Data.Foldable (foldMap)
+import Deku.Attribute (class Attr, Attribute, AttributeValue(..), Cb, cb, unsafeAttribute)
 import Deku.Attributes (klass)
-import Web.UIEvent.KeyboardEvent (KeyboardEvent)
+import Deku.DOM as D
+import FRP.Event (Event)
 import Safe.Coerce (coerce)
+import Web.UIEvent.KeyboardEvent (KeyboardEvent)
 
 newtype ClassName = ClassName String
 

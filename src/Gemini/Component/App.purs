@@ -3,18 +3,19 @@ module Gemini.Component.App
   ) where
 
 import Gemini.Prelude
-import Gemini.Store (Store, useStore)
-import Gemini.Component.Puzzle as Puzzle
-import Gemini.DomInfo (initialDomInfo, loadDomInfo)
-import Gemini.Component.App.Actions (keyboardEvents, scramble)
-import Gemini.Component.Puzzle.Actions (onDragEnd, onDragUpdate)
-import Data.Gemini as Gemini
-import Deku.Do as Deku
-import Deku.DOM as D
-import Resize as Resize
-import Gemini.Store as Store
+
 import ClassName as Class
+import Data.Gemini as Gemini
+import Deku.DOM as D
+import Deku.Do as Deku
 import Effect.Console as Console
+import Gemini.Component.App.Actions (keyboardEvents, scramble)
+import Gemini.Component.Puzzle as Puzzle
+import Gemini.Component.Puzzle.Actions (onDragEnd, onDragUpdate)
+import Gemini.DomInfo (initialDomInfo, loadDomInfo)
+import Gemini.Store (Store, useStore)
+import Gemini.Store as Store
+import Resize as Resize
 
 component :: Nut
 component = Deku.do

@@ -7,13 +7,14 @@ module Gemini.Component.Puzzle.Actions
   ) where
 
 import Gemini.Prelude
-import Data.Int as Int
+
 import Data.Angle as Angle
 import Data.Gemini as Gemini
+import Data.Int as Int
 import Data.Point as Point
+import Effect.Console as Console
 import Gemini.DomInfo (DomInfo)
 import Gemini.Store as Store
-import Effect.Console as Console
 
 onDragStart ::
   forall rest.

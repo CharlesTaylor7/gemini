@@ -4,15 +4,16 @@ module Gemini.Component.App.Actions
   ) where
 
 import Gemini.Prelude
+
 import Data.Array as Array
-import Data.Unfoldable (replicateA)
 import Data.Gemini as Gemini
-import Data.Gemini.Motions (l, l', c, c', r, r')
-import Web.UIEvent.KeyboardEvent as Event
+import Data.Gemini.Motions (c, c', l, l', r, r')
 import Data.Maybe (fromJust)
-import Gemini.Store as Store
-import Effect.Random (randomInt)
+import Data.Unfoldable (replicateA)
 import Effect.Console as Console
+import Effect.Random (randomInt)
+import Gemini.Store as Store
+import Web.UIEvent.KeyboardEvent as Event
 
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
 keyboardEvents ::
