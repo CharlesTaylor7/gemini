@@ -41,6 +41,7 @@ import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
 import Data.Enum (class Enum)
 import Data.Finitary (class Finitary, inhabitants)
 import Data.Foldable (class Foldable, all, foldMap, for_)
+import Data.FoldableWithIndex (forWithIndex_)
 import Data.Generic.Rep (class Generic)
 import Data.Group (pow)
 import Data.List (List)
@@ -250,9 +251,7 @@ divMod x y = x `div` y /\ x `mod` y
 unsafeGemini :: Array (Location /\ Disk) -> Gemini
 unsafeGemini items = Gemini $ ST.run do
   array <- STArray.unsafeNewSized 54
-  let
-    write loc disk = void $
-      array # STArray.modify (locationToIndex loc) (const disk)
+  let write loc disk = array # STArray.write (locationToIndex loc) disk
 
   for_ items $ \(location /\ disk) -> do
     write location disk
@@ -261,6 +260,7 @@ unsafeGemini items = Gemini $ ST.run do
         pure unit
       Just s ->
         write s disk
+
   STArray.unsafeFreeze array
 
 initialGemini :: Gemini
@@ -328,16 +328,24 @@ applyToGemini :: forall a. ToPermutation a => a -> Gemini -> Gemini
 applyToGemini = permuteGemini <<< toPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
-permuteGemini p (Gemini disks) =
+permuteGemini (Permutation perm) (Gemini disks) =
   Gemini $ ST.run do
     array <- disks # STArray.thaw
-    for_ (domain p) $ \n -> do
-      case Array.index disks n of
+    forWithIndex_ perm $ \i j ->
+      case Array.index disks i of
         Nothing ->
           unsafeCrashWith "wat"
 
         Just disk ->
-          array # STArray.modify (permute p n) (const disk)
+          array # STArray.write j disk
+
+    for_ ambiguousLocations $ \{ canonical, alternate } -> do
+      val <- array # STArray.peek (locationToIndex canonical)
+      case val of
+        Nothing ->
+          unsafeCrashWith "wat"
+        Just disk ->
+          array # STArray.write (locationToIndex alternate) disk
 
     STArray.unsafeFreeze array
 

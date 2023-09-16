@@ -6,6 +6,7 @@ import Gemini.Prelude
 
 import ClassName as Class
 import Data.Gemini as Gemini
+import Data.Time.Duration (Milliseconds(..))
 import Deku.DOM as D
 import Deku.Do as Deku
 import Effect.Console as Console
