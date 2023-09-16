@@ -26,9 +26,9 @@ component = Deku.do
         FadeIn -> do
           liftEffect $ Console.log "fade in"
         {-
-          delay $ Milliseconds 1000.0
-          liftEffect $ pushConfetti FadeOut
-          -}
+        delay $ Milliseconds 1000.0
+        liftEffect $ pushConfetti FadeOut
+        -}
         FadeOut -> do
           liftEffect $ Console.log "fade out"
           delay $ Milliseconds 1000.0
@@ -37,10 +37,12 @@ component = Deku.do
         Off -> do
           liftEffect $ Console.log "off"
   let resize = Resize.observe
-  domInfo <- useRef initialDomInfo $ bindToEffect resize.event $ const loadDomInfo
+  domInfo <- useRef initialDomInfo $ bindToEffect resize.event $ const
+    loadDomInfo
   let props = { gemini, drag, domInfo, pushConfetti }
   ( pursx ::
-      _ """
+      _
+        """
           <div ~attrs~>
             <div ~confettiAttrs~ >
             </div>
@@ -85,7 +87,8 @@ component = Deku.do
 header :: Store Gemini -> Nut
 header store =
   ( pursx ::
-      _ """
+      _
+        """
     <div ~headerAttrs~>
       <button class="action-button" ~buttonAttrs~>
         Scramble
@@ -106,7 +109,8 @@ header store =
 footer :: Nut
 footer =
   ( pursx ::
-      _ """
+      _
+        """
       <div ~footer~>
         <div class="text-2xl">
           <div>Q: Rotate left disk counter clockwise</div>
@@ -134,7 +138,8 @@ footer =
 hyperlink :: String -> String -> String -> Nut
 hyperlink iconSrc linkUrl display =
   ( pursx ::
-      _ """
+      _
+        """
     <a target="_blank" rel="noopener noreferrer" ~linkAttrs~>
         <img ~imgAttrs~ />
         <span ~labelAttrs~>~label~</span>

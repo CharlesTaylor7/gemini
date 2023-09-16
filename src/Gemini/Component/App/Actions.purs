@@ -26,13 +26,13 @@ keyboardEvents ::
 keyboardEvents { gemini, pushConfetti } =
   Event.key
     >>> case _ of
-        "q" -> apply $ l' 1
-        "w" -> apply $ l 1
-        "t" -> apply $ c' 1
-        "y" -> apply $ c 1
-        "o" -> apply $ r' 1
-        "p" -> apply $ r 1
-        key -> log key
+      "q" -> apply $ l' 1
+      "w" -> apply $ l 1
+      "t" -> apply $ c' 1
+      "y" -> apply $ c 1
+      "o" -> apply $ r' 1
+      "p" -> apply $ r 1
+      key -> log key
   where
   apply :: Motion -> Effect Unit
   apply motion = do

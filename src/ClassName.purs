@@ -13,16 +13,15 @@ import Deku.Attributes (klass)
 import Web.UIEvent.KeyboardEvent (KeyboardEvent)
 import Safe.Coerce (coerce)
 
-newtype ClassName
-  = ClassName String
+newtype ClassName = ClassName String
 
-type ClassEntry
-  = Event String
+type ClassEntry = Event String
 
 when :: Event Boolean -> String -> Event String
 when event name = event <#> if _ then name else ""
 
-name :: forall e. Attr e D.Class String => Array (Event String) -> Event (Attribute e)
+name ::
+  forall e. Attr e D.Class String => Array (Event String) -> Event (Attribute e)
 name = klass <<< coerce <<< foldMap coerceEvent
   where
   coerceEvent :: Event String -> Event ClassName
@@ -33,10 +32,10 @@ instance Semigroup ClassName where
     | x == "" = b
     | y == "" = a
     | otherwise =
-      ClassName
-        $ x
-        <> " "
-        <> y
+        ClassName
+          $ x
+              <> " "
+              <> y
 
 instance Monoid ClassName where
   mempty = ClassName ""

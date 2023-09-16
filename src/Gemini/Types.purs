@@ -10,20 +10,21 @@ import Data.Gemini (Choice(..), Chosen(..), Gemini, Location, Ring, initialGemin
 import Data.Point (Point)
 import Data.Timestamp (Timestamp)
 
-type Stats
-  = { scrambledAt :: Maybe Timestamp
-    , solvedAt :: Maybe Timestamp
-    }
+type Stats =
+  { scrambledAt :: Maybe Timestamp
+  , solvedAt :: Maybe Timestamp
+  }
 
-type Drag
-  = { location :: Choice Location
-    , chosen :: Maybe Chosen
-    , initialPoint :: Point
-    , currentPoint :: Point
-    }
+type Drag =
+  { location :: Choice Location
+  , chosen :: Maybe Chosen
+  , initialPoint :: Point
+  , currentPoint :: Point
+  }
 
 data Confetti
   = Off
   | FadeIn
   | FadeOut
+
 derive instance Eq Confetti

@@ -2979,6 +2979,11 @@ purescript@^0.15.10:
   dependencies:
     purescript-installer "^0.3.5"
 
+purs-tidy@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/purs-tidy/-/purs-tidy-0.10.0.tgz#01a3e7c88d1909c56e31098fad6a8f61933ecc7f"
+  integrity sha512-ULbJfBHRngczYwcOzugytRiNy+Guy2VXoAG1jMtGaSFEaUZk1lZkKU11t8jIZTrDdOrkgqlWCZLi3mfcHvdimA==
+
 queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"

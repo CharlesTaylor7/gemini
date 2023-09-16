@@ -19,17 +19,17 @@ import Gemini.Component.Puzzle.Actions (disambiguate, onDragStart)
 import Gemini.DomInfo (DomInfo)
 import ClassName as Class
 
-type Props r
-  = { gemini :: Store Gemini
-    , drag :: Store (Maybe Drag)
-    , domInfo :: Effect DomInfo
-    | r
-    }
+type Props r =
+  { gemini :: Store Gemini
+  , drag :: Store (Maybe Drag)
+  , domInfo :: Effect DomInfo
+  | r
+  }
 
-type DragProps
-  = { drag :: Maybe Drag
-    , domInfo :: DomInfo
-    }
+type DragProps =
+  { drag :: Maybe Drag
+  , domInfo :: DomInfo
+  }
 
 dragProps :: forall r. Props r -> Event DragProps
 dragProps { drag, domInfo } =
@@ -73,12 +73,28 @@ disk location@(Location { position, ring }) props =
   (pursx :: _ "<div ~diskAttrs~ >~text~</div>")
     ~~
       { diskAttrs:
-          Class.name [ pure "disk", color, "hidden" # Class.when (hidden location <$> Store.subscribe props.drag) ]
-            <|> (style (diskStyle <$> (pure initial <|> (append initial <$> dragged))))
-            <|> (D.OnPointerdown !:= mouse (onDragStart { drag: props.drag, location }))
-            <|> (D.OnTouchstart !:= touch (onDragStart { drag: props.drag, location }))
+          Class.name
+            [ pure "disk"
+            , color
+            , "hidden" # Class.when
+                (hidden location <$> Store.subscribe props.drag)
+            ]
+            <|>
+              ( style
+                  ( diskStyle <$>
+                      (pure initial <|> (append initial <$> dragged))
+                  )
+              )
+            <|>
+              ( D.OnPointerdown !:= mouse
+                  (onDragStart { drag: props.drag, location })
+              )
+            <|>
+              ( D.OnTouchstart !:= touch
+                  (onDragStart { drag: props.drag, location })
+              )
       , text: text $ Store.subscribe props.gemini
-            <#> geminiLookup location
+          <#> geminiLookup location
             >>> _.label
             >>> show
       }
@@ -86,9 +102,9 @@ disk location@(Location { position, ring }) props =
   color =
     Store.subscribe props.gemini
       <#> geminiLookup location
-      >>> _.color
-      >>> show
-      >>> String.toLower
+        >>> _.color
+        >>> show
+        >>> String.toLower
   drag = dragProps props
   dragged = drag <#> dragAngle ring
   initial = angleOnCircle position
@@ -114,12 +130,13 @@ angleOnCircle k = turns <> -90.0 :* Degrees
 
 ringStyle :: Ring -> String
 ringStyle = const ""
-  {-
-  case _ of
-    LeftRing -> "left: 14.9%"
-    RightRing -> "right: 14.9%"
-    CenterRing -> ""
-    -}
+
+{-
+case _ of
+  LeftRing -> "left: 14.9%"
+  RightRing -> "right: 14.9%"
+  CenterRing -> ""
+  -}
 
 hiddenLocationIndices :: Drag -> Set Int
 hiddenLocationIndices drag =

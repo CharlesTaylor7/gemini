@@ -26,8 +26,7 @@ import Unsafe.Coerce (unsafeCoerce)
 import Safe.Coerce (coerce)
 import Debug
 
-type Pusher a
-  = a -> Effect Unit
+type Pusher a = a -> Effect Unit
 
 keyboard :: (KeyboardEvent -> Effect Unit) -> Cb
 keyboard f = cb $ f <<< convert
@@ -49,22 +48,23 @@ touch f =
   coerceEvent :: Web.Event -> TouchEvent
   coerceEvent = unsafeCoerce
 
-type MouseEvent
-  = { clientX :: Number
-    , clientY :: Number
-    }
+type MouseEvent =
+  { clientX :: Number
+  , clientY :: Number
+  }
 
-type TouchEvent
-  = { changedTouches :: { item :: Int -> Touch }
-    }
+type TouchEvent =
+  { changedTouches :: { item :: Int -> Touch }
+  }
 
-type Touch
-  = { clientX :: Number
-    , clientY :: Number
-    }
+type Touch =
+  { clientX :: Number
+  , clientY :: Number
+  }
 
 autoFocus :: forall e. Event (Attribute e)
 autoFocus = pure $ unsafeAttribute { key: "autofocus", value: Prop' "" }
 
 tabIndex :: forall e. Event Int -> Event (Attribute e)
-tabIndex = map (\index -> unsafeAttribute { key: "tabIndex", value: Prop' $ show index })
+tabIndex = map
+  (\index -> unsafeAttribute { key: "tabIndex", value: Prop' $ show index })

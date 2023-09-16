@@ -17,6 +17,7 @@ data AngleUnit
   = Degrees
   | Radians
   | Turns
+
 -- ^ How many turns of a circle? e.g. 1 turn is equal to 2 pi radians and 360 degrees.
 construct :: Number -> AngleUnit -> Angle
 construct x =
@@ -38,8 +39,8 @@ infixr 6 construct as :*
 -- | Opaque data type. Angles are internally stored as a 'Number' in radians.
 -- Construct or match on the amount of the angle by using one of these bi-directional pattern synonyms:
 -- `Radians`, `Degrees`, `Turns`
-newtype Angle
-  = Angle Number
+newtype Angle = Angle Number
+
 instance Semigroup Angle where
   append (Angle a) (Angle b) = Angle (a + b)
 

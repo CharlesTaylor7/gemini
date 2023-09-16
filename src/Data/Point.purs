@@ -8,14 +8,14 @@ import Data.Angle
 import Data.Group
 import Data.Number as Math
 
-newtype Point
-  = Point
+newtype Point = Point
   { x :: Number
   , y :: Number
   }
 
 instance Semigroup Point where
-  append (Point { x: x1, y: y1 }) (Point { x: x2, y: y2 }) = Point { x: x1 + x2, y: y1 + y2 }
+  append (Point { x: x1, y: y1 }) (Point { x: x2, y: y2 }) = Point
+    { x: x1 + x2, y: y1 + y2 }
 
 instance Monoid Point where
   mempty = Point { x: 0.0, y: 0.0 }

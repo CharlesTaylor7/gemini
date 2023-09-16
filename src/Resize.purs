@@ -51,15 +51,14 @@ observe =
                 pusher target
         )
 
-type Observer a
-  = { ob :: ForeignObserver
-    , ref :: STRef Global (a -> Effect Unit)
-    }
+type Observer a =
+  { ob :: ForeignObserver
+  , ref :: STRef Global (a -> Effect Unit)
+  }
 
 foreign import data ForeignObserver :: Type
 
-type Listener
-  = Array { target :: Element } -> Effect Unit
+type Listener = Array { target :: Element } -> Effect Unit
 
 foreign import data DomRect :: Type
 foreign import getBoundingClientRectF :: Element -> Effect DomRect

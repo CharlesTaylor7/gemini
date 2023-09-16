@@ -18,18 +18,18 @@ import Test.Spec.QuickCheck (quickCheck)
 import Test.QuickCheck (Result(..), class Arbitrary, (===), (/==))
 import Test.QuickCheck.Gen as Gen
 
-
 main :: Effect Unit
-main = launchAff_ $ runSpec' (defaultConfig { failFast = true }) [ consoleReporter ] $ do
-  cyclicSpec
-  locationSpec
-  geminiSpec
+main = launchAff_
+  $ runSpec' (defaultConfig { failFast = true }) [ consoleReporter ]
+  $ do
+      cyclicSpec
+      locationSpec
+      geminiSpec
 
 newtype AnyLocation = AnyLocation Location
-  
+
 instance Arbitrary AnyLocation where
   arbitrary = AnyLocation <<< indexToLocation <$> Gen.chooseInt 0 53
-
 
 geminiSpec :: Spec Unit
 geminiSpec = do
@@ -38,7 +38,6 @@ geminiSpec = do
       initialGemini `shouldSatisfy` isSolved
       (initialGemini # applyToGemini (l 3)) `shouldNotSatisfy` isSolved
 
-
 locationSpec :: Spec Unit
 locationSpec = do
   describe "Location" $ do
@@ -46,10 +45,11 @@ locationSpec = do
       sibling (location LeftRing 0) `shouldEqual` Nothing
       sibling (location LeftRing 2) `shouldEqual` Just (location CenterRing 16)
 
-    it "sibling is its own (partial) inverse" $
-      quickCheck $ \(AnyLocation x) -> case sibling x of
-        Nothing -> Success
-        Just y  -> Just x === sibling y 
+    it "sibling is its own (partial) inverse"
+      $ quickCheck
+      $ \(AnyLocation x) -> case sibling x of
+          Nothing -> Success
+          Just y -> Just x === sibling y
 
 cyclicSpec :: Spec Unit
 cyclicSpec = do
@@ -86,7 +86,7 @@ cyclicSpec = do
         unCyclic @D3 (fold []) `shouldEqual` 0
 
       it "can fold a nonempty list" $ do
-        unCyclic @D10 (foldMap cyclic [3, 5, 7]) `shouldEqual` 5
+        unCyclic @D10 (foldMap cyclic [ 3, 5, 7 ]) `shouldEqual` 5
 
 dataCyclicSpec :: Spec Unit
 dataCyclicSpec = do
@@ -123,4 +123,4 @@ dataCyclicSpec = do
         unCyclic @D3 (fold []) `shouldEqual` 0
 
       it "can fold a nonempty list" $ do
-        unCyclic @D10 (foldMap cyclic [3, 5, 7]) `shouldEqual` 5
+        unCyclic @D10 (foldMap cyclic [ 3, 5, 7 ]) `shouldEqual` 5

@@ -61,26 +61,25 @@ import Debug
 -- Use `geminiFromList` or `initialGemini` to initialize.
 -- Use `applyToGemini` to rotate / permute the puzzle.
 -- Use `geminiIx` to read / write at specific locations
-newtype Gemini
-  = Gemini (Array Disk)
+newtype Gemini = Gemini (Array Disk)
+
 derive instance Generic Gemini _
 instance Show Gemini where
   show = genericShow
 
-type DiskIndex
-  = Cyclic D18
+type DiskIndex = Cyclic D18
 
 -- | Location on the gemini puzzle, where a disk can slide
 -- the 4 locations where a pair of rings intersect each has two possible representations as a Location type
 -- We normalize by prefering the leftmost ring. See `canonical`.
-newtype Location
-  = Location LocationRecord
+newtype Location = Location LocationRecord
 
-type LocationRecord
-  = { ring :: Ring
-    , position :: DiskIndex
-    -- ^ Positions start at the top of the ring, run clockwise from there
-    }
+type LocationRecord =
+  { ring :: Ring
+  , position :: DiskIndex
+  -- ^ Positions start at the top of the ring, run clockwise from there
+  }
+
 derive instance Eq Location
 derive instance Generic Location _
 instance Show Location where
@@ -96,6 +95,7 @@ data Ring
   = LeftRing
   | CenterRing
   | RightRing
+
 derive instance Eq Ring
 derive instance Ord Ring
 derive instance Generic Ring _
@@ -105,10 +105,10 @@ instance Show Ring where
 instance Finitary Ring where
   inhabitants = [ LeftRing, CenterRing, RightRing ]
 
-type Disk
-  = { color :: Color
-    , label :: Int
-    }
+type Disk =
+  { color :: Color
+  , label :: Int
+  }
 
 disk :: Color -> Int -> Disk
 disk color label = { color, label }
@@ -120,6 +120,7 @@ data Color
   | Red
   | Green
   | Blue
+
 derive instance Generic Color _
 derive instance Eq Color
 derive instance Ord Color
@@ -127,8 +128,7 @@ instance Show Color where
   show = genericShow
 
 --  Basic operations
-type GeminiPermutation
-  = Permutation D54
+type GeminiPermutation = Permutation D54
 
 -- | Typeclass for things that describe permutations of the Gemini puzzle
 class ToPermutation a where
@@ -139,28 +139,27 @@ instance ToPermutation Motion where
     Permutation
       $ Map.fromFoldable
       $ indices
-      <#> \i ->
-          let
-            start = location ring $ unCyclic i
-            end = location ring $ unCyclic $ i + amount
-          in
-            locationToIndex' start /\ locationToIndex' end
+          <#> \i ->
+            let
+              start = location ring $ unCyclic i
+              end = location ring $ unCyclic $ i + amount
+            in
+              locationToIndex' start /\ locationToIndex' end
     where
     indices = inhabitants :: Array (Cyclic D18)
 
 instance ToPermutation GeminiPermutation where
   toPerm = identity
 
-newtype Motion
-  = Motion
+newtype Motion = Motion
   { amount :: Cyclic D18
   , ring :: Ring
   }
 
-type LocationPair
-  = { canonical :: Location
-    , alternate :: Location
-    }
+type LocationPair =
+  { canonical :: Location
+  , alternate :: Location
+  }
 
 ambiguousLocations :: Array LocationPair
 ambiguousLocations =
@@ -175,14 +174,14 @@ canonical :: Location -> Location
 canonical location =
   fromMaybe location
     $ Array.find (\{ alternate } -> alternate == location) ambiguousLocations
-    <#> _.canonical
+        <#> _.canonical
 
 -- | if the position exists on two different rings, then prefer the alternate one
 alternate :: Location -> Location
 alternate location =
   fromMaybe location
     $ Array.find (\{ canonical } -> canonical == location) ambiguousLocations
-    <#> _.alternate
+        <#> _.alternate
 
 -- | The other name for this location, if it has one
 sibling :: Location -> Maybe Location
@@ -250,14 +249,16 @@ divMod x y = x `div` y /\ x `mod` y
 unsafeGemini :: Array (Location /\ Disk) -> Gemini
 unsafeGemini items = Gemini $ ST.run do
   array <- STArray.unsafeNewSized 54
-  let write loc disk = void $ array # STArray.modify (locationToIndex loc) (const disk)
+  let
+    write loc disk = void $ array # STArray.modify (locationToIndex loc)
+      (const disk)
   for_ items $ \(location /\ disk) -> do
-     write location disk
-     case sibling location of
-        Nothing -> 
-          pure unit
-        Just s -> 
-          write s disk
+    write location disk
+    case sibling location of
+      Nothing ->
+        pure unit
+      Just s ->
+        write s disk
   STArray.unsafeFreeze array
 
 initialGemini :: Gemini
@@ -337,6 +338,7 @@ permuteGemini p (Gemini disks) =
 
                 Just disk ->
                   array # STArray.modify (permute p n) (const disk)
+
         STArray.unsafeFreeze array
 
 -- | Is the puzzle solved?
@@ -351,7 +353,8 @@ isSolved (Gemini array) =
             let
               { head: _ /\ { color } } = NEArray.uncons items
             in
-              items <#> (\(i /\ _) -> indexToLocation i) # isFinishedSequence color
+              items <#> (\(i /\ _) -> indexToLocation i) # isFinishedSequence
+                color
         )
 
 -- | Get a location on a specific ring, if it exists on that ring
@@ -371,7 +374,10 @@ isFinishedSequence color ls =
     ls
       # map (onRing mostCommonRing)
       # sequence
-      # maybe false (isFinished (diskCount color) <<< NEArray.toUnfoldable1 <<< map (unLocation >>> _.position))
+      # maybe false
+          ( isFinished (diskCount color) <<< NEArray.toUnfoldable1 <<< map
+              (unLocation >>> _.position)
+          )
   where
   diskCount :: Color -> Int
   diskCount White = 9

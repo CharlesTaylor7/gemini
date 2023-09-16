@@ -7,7 +7,8 @@ module Data.Group
 import Prelude
 
 class
-  Monoid m <= Group m where
+  Monoid m <=
+  Group m where
   invert :: m -> m
 
 pow :: forall m. Group m => m -> Int -> m

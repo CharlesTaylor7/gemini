@@ -40,8 +40,7 @@ useStore initial callback = Deku.do
   ref <- useRef initial event
   callback $ Store { event, ref, pusher }
 
-newtype Store a
-  = Store
+newtype Store a = Store
   { event :: Event a
   , pusher :: a -> Effect Unit
   , ref :: Effect a

@@ -20,8 +20,7 @@ import Data.List (List(..), (:))
 import Data.List as List
 import Data.List.NonEmpty as NonEmptyList
 
-newtype Permutation (bound :: Type)
-  = Permutation (Map Int Int)
+newtype Permutation (bound :: Type) = Permutation (Map Int Int)
 
 -- Because the permutation representation is not normalized,
 -- we determine if permutations are equal if they map every element of the domain the same way
