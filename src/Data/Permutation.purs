@@ -7,10 +7,12 @@ module Data.Permutation
   , derangements
   ) where
 
+import Partial.Unsafe
 import Prelude
 
 import Data.Array as Array
 import Data.Foldable (class Foldable)
+import Data.FoldableWithIndex (foldlWithIndex, foldrWithIndex)
 import Data.Group (class Group)
 import Data.List (List(..), (:))
 import Data.List as List
@@ -19,6 +21,7 @@ import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Nat (class Nat, knownInt, natsUnder)
+import Data.Set as Set
 import Data.Tuple as Tuple
 import Data.Tuple.Nested (type (/\), (/\))
 
@@ -33,18 +36,29 @@ instance Nat n => Eq (Permutation n) where
     natsUnder @n
       # Array.all (\k -> permute p k == permute q k)
 
--- TODO:
--- Either reimplement Permutations as Arrays or make the composition sparse.
--- There's no sense in using a Map with compact representation.
--- Compact meaning, very key of the domain is present in the map.
+-- O(m * log n + floor(n - m) * log m) < O(k * log k) where k = max(m,n)
+-- where m is the size of the first permutation
+-- and m is the size of the second permutation
 instance Nat bound => Semigroup (Permutation bound) where
-  append p q =
-    natsUnder @bound
-      # map (\n -> n /\ composed n)
-      # Map.fromFoldable
-      # Permutation
-    where
-    composed = permute p >>> permute q
+  append (Permutation p) perm2@(Permutation q) =
+    -- fold over p and lookup composed image)
+    -- also delete elements from q, and insert the remanant of q, into the end result
+    let
+      worker k v acc =
+        { p: acc.p # Map.update
+            ( \_ ->
+                let
+                  qv = permute perm2 v
+                in
+                  if k == qv then Nothing else Just qv
+            )
+            k
+        , q: acc.q # Map.delete v
+        }
+      { p, q } = foldrWithIndex worker { p, q } p
+    in
+      unsafePermutation $
+        Map.union p q
 
 instance Nat n => Monoid (Permutation n) where
   mempty = Permutation Map.empty
