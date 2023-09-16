@@ -6,9 +6,6 @@ procs:
     shell: yarn format
     autostart: false
 
-  Purescript:
-    shell: yarn watch:purs
-
   Dev Server:
     shell: yarn watch:js
 

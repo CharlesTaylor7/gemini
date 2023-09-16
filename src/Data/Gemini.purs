@@ -39,21 +39,21 @@ import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Semigroup.Foldable as NEFold
 import Data.Foldable (class Foldable, foldMap, all, for_)
 import Data.Traversable (sequence)
+import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
-import Data.Array as Array
 import Data.Array.ST as STArray
+import Data.Array.ST.Extra as STArray
 import Control.Monad.ST as ST
 import Data.Map (Map)
 import Data.Map as Map
-import Data.Maybe (fromJust)
 import Data.List (List)
 import Data.List as List
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEList
 import Data.Nat (class Pos, D18, D54)
 import Data.Tuple.Nested (type (/\), (/\))
-import Partial.Unsafe (unsafePartial, unsafeCrashWith)
+import Partial.Unsafe (unsafeCrashWith)
 import Safe.Coerce (coerce)
 import Debug
 
@@ -244,26 +244,21 @@ geminiLookup location (Gemini array) =
     Just x -> x
     Nothing -> unsafeCrashWith "geminiLookup"
 
-unsafeFromJust :: forall a. Maybe a -> a
-unsafeFromJust m = unsafePartial (fromJust m)
-
 divMod :: Int -> Int -> Int /\ Int
 divMod x y = x `div` y /\ x `mod` y
 
 unsafeGemini :: Array (Location /\ Disk) -> Gemini
-unsafeGemini items =
-  items
-    # Array.sortBy (comparing (fst >>> locationToIndex'))
-    # spyWith "gemini sorted" (map pretty)
-    # map snd
-    # Gemini
-  where
-  fst (a /\ _) = a
-  snd (_ /\ b) = b
-
-  pretty ( Location { ring, position } /\ {color, label} ) = 
-    { ring, position, color, label }
-
+unsafeGemini items = Gemini $ ST.run do
+  array <- STArray.unsafeNewSized 54
+  let write loc disk = void $ array # STArray.modify (locationToIndex loc) (const disk)
+  for_ items $ \(location /\ disk) -> do
+     write location disk
+     case sibling location of
+        Nothing -> 
+          pure unit
+        Just s -> 
+          write s disk
+  STArray.unsafeFreeze array
 
 initialGemini :: Gemini
 initialGemini =
@@ -283,7 +278,6 @@ initialGemini =
     , (location LeftRing 5 /\ disk Yellow 3)
     , (location LeftRing 6 /\ disk Yellow 4)
     , (location LeftRing 7 /\ disk Yellow 5)
-    , (location CenterRing 11 /\ disk Yellow 5)
     , (location LeftRing 8 /\ disk Yellow 6)
     , (location LeftRing 9 /\ disk Yellow 7)
     , (location LeftRing 10 /\ disk Yellow 8)
@@ -294,7 +288,6 @@ initialGemini =
     , (location CenterRing 14 /\ disk Black 3)
     , (location CenterRing 15 /\ disk Black 4)
     , (location CenterRing 16 /\ disk Black 5)
-    , (location LeftRing   2  /\ disk Black 5)
     , (location CenterRing 17 /\ disk Black 6)
     , (location CenterRing 0 /\ disk Black 7)
     , (location CenterRing 1 /\ disk Black 8)
@@ -304,7 +297,6 @@ initialGemini =
     , (location CenterRing 5 /\ disk Blue 3)
     , (location CenterRing 6 /\ disk Blue 4)
     , (location CenterRing 7 /\ disk Blue 5)
-    , (location RightRing 11 /\ disk Blue 5)
     , (location CenterRing 8 /\ disk Blue 6)
     , (location CenterRing 9 /\ disk Blue 7)
     , (location CenterRing 10 /\ disk Blue 8)
@@ -323,7 +315,6 @@ initialGemini =
     , (location RightRing 14 /\ disk White 3)
     , (location RightRing 15 /\ disk White 4)
     , (location RightRing 16 /\ disk White 5)
-    , (location CenterRing 2 /\ disk White 5)
     , (location RightRing 17 /\ disk White 6)
     , (location RightRing 0 /\ disk White 7)
     , (location RightRing 1 /\ disk White 8)
@@ -430,12 +421,11 @@ isFinished expectedCount list =
       Just { head, tail } -> recurse head tail
     where
     recurse x xs
+      -- x is the new min
       | x `precedes` min && (unCyclic (max - x) < expectedCount) = go xs x max
-      -- ^ x is the new min
+      -- x is the new max
       | x `exceeds` max && (unCyclic (x - min) < expectedCount) = go xs min x
-      -- ^ x is the new max
+      -- x is between the min and max
       | x `precedes` max && x `exceeds` min = go xs min max
-      -- ^ x is between the min and max
+      -- x is outside the band of acceptability
       | otherwise = false
-
--- ^ x is outside the band of acceptability
