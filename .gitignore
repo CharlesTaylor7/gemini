@@ -19,3 +19,6 @@
 
 # Tailwind output
 /public/index.css
+
+# Purescript IDE
+.psc-ide-port

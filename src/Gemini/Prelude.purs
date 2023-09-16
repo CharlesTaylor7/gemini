@@ -51,7 +51,7 @@ import Data.Gemini
   , Motion(..)
   , Ring(..)
   )
-import Data.Group (class Group, invert, pow)
+import Data.Group (class Group, invert)
 import Data.Map (Map)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)
 import Data.Point (Point(..))

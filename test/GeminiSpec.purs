@@ -1,9 +1,9 @@
 module GeminiSpec where
 
-import Data.Gemini
-import Data.Gemini.Motions
 import Gemini.Prelude
 
+import Data.Gemini (initialGemini, isSolved, applyToGemini)
+import Data.Gemini.Motions (l)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldNotSatisfy, shouldSatisfy)
 

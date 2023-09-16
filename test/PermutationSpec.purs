@@ -1,18 +1,11 @@
 module PermutationSpec where
 
-import Data.Cyclic
-import Data.Foldable
-import Data.Gemini
-import Data.Gemini.Motions
-import Data.Group
-import Data.Nat
 import Gemini.Prelude
 
 import Data.Array as Array
 import Data.Map as Map
 import Data.Permutation (Permutation, unsafePermutation)
-import Effect (Effect)
-import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
+import Test.QuickCheck (class Arbitrary, (===))
 import Test.QuickCheck.Gen as Gen
 import Test.Spec (Spec, describe, it)
 import Test.Spec.QuickCheck (quickCheck)

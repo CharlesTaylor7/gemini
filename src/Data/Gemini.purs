@@ -42,12 +42,10 @@ import Data.Finitary (class Finitary, inhabitants)
 import Data.Foldable (class Foldable, all, foldMap, for_)
 import Data.FoldableWithIndex (forWithIndex_)
 import Data.Generic.Rep (class Generic)
-import Data.Group (pow)
 import Data.List (List)
 import Data.List as List
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEList
-import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nat (class Pos, D18, D54)
