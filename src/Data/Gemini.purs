@@ -328,19 +328,17 @@ applyToGemini = permuteGemini <<< toPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
 permuteGemini p (Gemini disks) =
-  Gemini
-    $ ST.run do
-        array <- disks # STArray.thaw
-        for_ (domain p)
-          $ \n -> do
-              case Array.index disks n of
-                Nothing ->
-                  unsafeCrashWith "wat"
+  Gemini $ ST.run do
+    array <- disks # STArray.thaw
+    for_ (domain p) $ \n -> do
+      case Array.index disks n of
+        Nothing ->
+          unsafeCrashWith "wat"
 
-                Just disk ->
-                  array # STArray.modify (permute p n) (const disk)
+        Just disk ->
+          array # STArray.modify (permute p n) (const disk)
 
-        STArray.unsafeFreeze array
+    STArray.unsafeFreeze array
 
 -- | Is the puzzle solved?
 -- That is, every disk is grouped with other disks of the same color in sequence.
