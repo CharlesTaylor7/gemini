@@ -9,28 +9,26 @@ import Data.Nat
 import Data.Permutation
 import Gemini.Prelude
 
-import Data.Array.NonEmpty as NEArray
 import Effect (Effect)
-import Effect.Aff (launchAff_)
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.QuickCheck.Gen as Gen
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)
 import Test.Spec.QuickCheck (quickCheck)
-import Test.Spec.Reporter.Console (consoleReporter)
-import Test.Spec.Runner (defaultConfig, runSpec')
 
 newtype AnyPermutation n = AnyPermutation (Permutation n)
 
 instance Pos n => Arbitrary (AnyPermutation n) where
   arbitrary = pure $ AnyPermutation $ (mempty :: Permutation n)
-  --unsafeCrashWith ""
+
+--unsafeCrashWith ""
 
 permutationSpec :: Spec Unit
 permutationSpec = do
   describe "Group Laws" $ do
     it "associativity" $ quickCheck $
-      \(AnyPermutation x) (AnyPermutation y) (AnyPermutation z) -> (x <> y) <> z === (x <> (y <> z) :: Permutation D3)
+      \(AnyPermutation x) (AnyPermutation y) (AnyPermutation z) -> (x <> y) <> z
+        === (x <> (y <> z) :: Permutation D3)
 
     it "left identity" $ quickCheck $
       \(AnyPermutation x) -> (mempty <> x) === (x :: Permutation D3)

@@ -14,7 +14,7 @@
     "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
     "format": "purs-tidy format-in-place \"src/**/*.purs\" \"test/**/*.purs\"; prettier --write src",
-    "test": "spago test"
+    "test": "spago test --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\""
   },
   "devDependencies": {
     "@rowtype-yoga/prettier-plugin-purescript": "^1.11.2",

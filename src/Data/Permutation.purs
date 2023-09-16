@@ -18,10 +18,10 @@ import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Nat (class Nat, knownInt, natsUnder)
-import Data.Set as Set
 import Data.Tuple.Nested (type (/\), (/\))
 
 newtype Permutation (bound :: Type) = Permutation (Map Int Int)
+
 derive newtype instance Show (Permutation bound)
 
 -- Because the permutation representation is not normalized,
