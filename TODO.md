@@ -3,3 +3,4 @@
 - [ ] Confetti drop
 - [ ] Leaderboard for solve times that makes use of localstorage
 - [ ] Test mobile view on iPad
+- [ ] Test the solve detection by permuting colors.
