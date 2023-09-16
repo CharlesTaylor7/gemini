@@ -57,8 +57,8 @@ component = Deku.do
       , confettiAttrs:
           Class.name
             [ pure "confetti"
-            , "fade-in" # Class.when (confetti <#> eq FadeIn)
-            , "fade-out" # Class.when (confetti <#> eq FadeOut)
+            -- , "fade-in" # Class.when (confetti <#> eq FadeIn)
+            -- , "fade-out" # Class.when (confetti <#> eq FadeOut)
             ]
       -- TODO: use oneOf, or whatever is more efficient
       , attrs:
