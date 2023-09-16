@@ -22,6 +22,7 @@ import Data.Set as Set
 import Data.Tuple.Nested (type (/\), (/\))
 
 newtype Permutation (bound :: Type) = Permutation (Map Int Int)
+derive newtype instance Show (Permutation bound)
 
 -- Because the permutation representation is not normalized,
 -- we determine if permutations are equal if they map every element of the domain the same way

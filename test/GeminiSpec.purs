@@ -1,9 +1,4 @@
-module Test.Main where
-
-import CyclicSpec
-import GeminiSpec
-import PermutationSpec
-import LocationSpec
+module GeminiSpec where
 
 import Data.Cyclic
 import Data.Foldable
@@ -25,11 +20,9 @@ import Test.Spec.QuickCheck (quickCheck)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (defaultConfig, runSpec')
 
-main :: Effect Unit
-main = launchAff_
-  $ runSpec' (defaultConfig { failFast = true }) [ consoleReporter ]
-  $ do
-      cyclicSpec
-      locationSpec
-      geminiSpec
-      permutationSpec
+geminiSpec :: Spec Unit
+geminiSpec = do
+  describe "Gemini" $ do
+    it "isSolved" $ do
+      initialGemini `shouldSatisfy` isSolved
+      (initialGemini # applyToGemini (l 3)) `shouldNotSatisfy` isSolved

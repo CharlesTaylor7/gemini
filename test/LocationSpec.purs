@@ -1,9 +1,4 @@
-module Test.Main where
-
-import CyclicSpec
-import GeminiSpec
-import PermutationSpec
-import LocationSpec
+module LocationSpec where
 
 import Data.Cyclic
 import Data.Foldable
@@ -25,11 +20,22 @@ import Test.Spec.QuickCheck (quickCheck)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (defaultConfig, runSpec')
 
-main :: Effect Unit
-main = launchAff_
-  $ runSpec' (defaultConfig { failFast = true }) [ consoleReporter ]
-  $ do
-      cyclicSpec
-      locationSpec
-      geminiSpec
-      permutationSpec
+newtype AnyLocation = AnyLocation Location
+
+instance Arbitrary AnyLocation where
+  arbitrary = AnyLocation <<< indexToLocation <$> Gen.chooseInt 0 53
+
+
+
+locationSpec :: Spec Unit
+locationSpec = do
+  describe "Location" $ do
+    it "sibling" $ do
+      sibling (location LeftRing 0) `shouldEqual` Nothing
+      sibling (location LeftRing 2) `shouldEqual` Just (location CenterRing 16)
+
+    it "sibling is its own (partial) inverse"
+      $ quickCheck
+      $ \(AnyLocation x) -> case sibling x of
+          Nothing -> Success
+          Just y -> Just x === sibling y
