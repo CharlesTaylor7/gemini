@@ -8,6 +8,7 @@ import Gemini.Prelude
 import Data.Array as Array
 import Data.Gemini as Gemini
 import Data.Gemini.Motions (c, c', l, l', r, r')
+import Data.Gemini.Solve as Gemini
 import Data.Maybe (fromJust)
 import Data.Unfoldable (replicateA)
 import Effect.Console as Console

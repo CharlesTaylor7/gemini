@@ -1,10 +1,11 @@
 module Data.Gemini
   ( Gemini
+  , disks
   , geminiLookup
   , initialGemini
   , applyToGemini
-  , isSolved
   , DiskIndex
+  , unLocation
   , Location(..)
   , LocationRecord
   , indexToLocation
@@ -55,17 +56,21 @@ import Data.Show.Generic (genericShow)
 import Data.Traversable (sequence)
 import Data.Tuple.Nested (type (/\), (/\))
 import Partial.Unsafe (unsafeCrashWith)
-import Safe.Coerce (coerce)
 
 -- | An opaque wrapper.
--- Use `geminiFromList` or `initialGemini` to initialize.
--- Use `applyToGemini` to rotate / permute the puzzle.
--- Use `geminiIx` to read / write at specific locations
+-- Use `unsafeGemini` or `initialGemini` to initialize.
+-- Use `applyToGemini` to permute the puzzle.
+-- Use `geminiLookup` to read at specific locations.
+-- Use `disks` to get the underlying representation as an array.
 newtype Gemini = Gemini (Array Disk)
 
 derive instance Generic Gemini _
 instance Show Gemini where
   show = genericShow
+
+-- | Get an array of the disks in location order
+disks :: Gemini -> Array Disk
+disks (Gemini disks) = disks
 
 type DiskIndex = Cyclic D18
 
@@ -192,9 +197,6 @@ sibling l =
   in
     (guard (a /= l) *> pure a)
       <|> (guard (c /= l) *> pure c)
-
-siblingIndex :: Int -> Maybe Int
-siblingIndex = map locationToIndex' <<< sibling <<< indexToLocation
 
 data Choice a
   = Obvious a
@@ -346,98 +348,3 @@ permuteGemini perm (Gemini disks) =
           array # STArray.write (locationToIndex alternate) disk
 
     STArray.unsafeFreeze array
-
--- | Is the puzzle solved?
--- That is, every disk is grouped with other disks of the same color in sequence.
-isSolved :: Gemini -> Boolean
-isSolved (Gemini array) =
-  array
-    # Array.mapWithIndex (/\)
-    # Array.groupAllBy (comparing (\(_ /\ disk) -> disk.color))
-    # all
-        ( \items ->
-            let
-              { head: _ /\ { color } } = NEArray.uncons items
-            in
-              items <#> (\(i /\ _) -> indexToLocation i) # isFinishedSequence
-                color
-        )
-
--- | Get a location on a specific ring, if it exists on that ring
-onRing :: Ring -> Location -> Maybe Location
-onRing ring location = check location <|> (check =<< sibling location)
-  where
-  check loc@(Location location) = do
-    guard (location.ring == ring)
-    pure loc
-
--- | check if a set of disk locations is a finished sequence
-isFinishedSequence :: Color -> NonEmptyArray Location -> Boolean
-isFinishedSequence color ls =
-  if numberOfRings > 2 then
-    false
-  else
-    ls
-      # map (onRing mostCommonRing)
-      # sequence
-      # maybe false
-          ( isFinished (diskCount color) <<< NEArray.toUnfoldable1 <<< map
-              (unLocation >>> _.position)
-          )
-  where
-  diskCount :: Color -> Int
-  diskCount White = 9
-  diskCount Yellow = 9
-  diskCount _ = 8
-
-  mostCommonRing :: Ring
-  mostCommonRing =
-    ringGroups
-      # NEFold.maximumBy (comparing NEArray.length)
-      # NEArray.head
-      # unLocation
-      # _.ring
-
-  ringGroups :: NonEmptyArray (NonEmptyArray Location)
-  ringGroups = ls # NEArray.groupAllBy (comparing ((_.ring) <<< unLocation))
-
-  numberOfRings :: Int
-  numberOfRings = NEArray.length ringGroups
-
--- | Linear algorithm to determine if a collection of positions are contiguous when wrapping at the cyclic modulus
-isFinished :: forall n. Pos n => Int -> NonEmptyList (Cyclic n) -> Boolean
-isFinished expectedCount list =
-  let
-    { head, tail } = NEList.uncons list
-  in
-    go tail head head
-  where
-  precedes :: Cyclic n -> Cyclic n -> Boolean
-  precedes a b =
-    case compareCyclic a b of
-      Precedes -> true
-      Equal -> true
-      _ -> false
-
-  exceeds :: Cyclic n -> Cyclic n -> Boolean
-  exceeds a b =
-    case compareCyclic a b of
-      Exceeds -> true
-      Equal -> true
-      _ -> false
-
-  go :: List (Cyclic n) -> Cyclic n -> Cyclic n -> Boolean
-  go list min max =
-    case List.uncons list of
-      Nothing -> true
-      Just { head, tail } -> recurse head tail
-    where
-    recurse x xs
-      -- x is the new min
-      | x `precedes` min && (unCyclic (max - x) < expectedCount) = go xs x max
-      -- x is the new max
-      | x `exceeds` max && (unCyclic (x - min) < expectedCount) = go xs min x
-      -- x is between the min and max
-      | x `precedes` max && x `exceeds` min = go xs min max
-      -- x is outside the band of acceptability
-      | otherwise = false
