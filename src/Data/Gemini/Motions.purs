@@ -1,6 +1,7 @@
 module Data.Gemini.Motions where
 
 import Data.Gemini
+import Data.Location
 import Prelude
 
 import Data.Cyclic (cyclic)

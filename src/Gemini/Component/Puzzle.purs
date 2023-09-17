@@ -6,7 +6,8 @@ import Gemini.Prelude
 
 import ClassName as Class
 import Data.Array as Array
-import Data.Gemini (geminiLookup, location, locationToIndex)
+import Data.Gemini (geminiLookup)
+import Data.Location (location, locationToIndex)
 import Data.Int as Int
 import Data.Map as Map
 import Data.Point as Point

@@ -6,7 +6,8 @@ module Gemini.Types
 
 import Prelude
 
-import Data.Gemini (Choice, Chosen, Gemini, Location, Ring, initialGemini)
+import Data.Location (Choice, Chosen, Location, Ring)
+import Data.Gemini (Gemini , initialGemini)
 import Data.Maybe (Maybe(..))
 import Data.Point (Point)
 import Data.Timestamp (Timestamp)

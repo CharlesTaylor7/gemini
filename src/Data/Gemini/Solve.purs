@@ -9,7 +9,8 @@ import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, unCyclic)
 import Data.Foldable (all)
-import Data.Gemini (Color(..), Gemini, Location(..), Ring, indexToLocation, sibling, unLocation)
+import Data.Gemini (Color(..), Gemini)
+import Data.Location (Location(..), Ring, indexToLocation, sibling, unLocation)
 import Data.Gemini as Gemini
 import Data.List (List)
 import Data.List as List

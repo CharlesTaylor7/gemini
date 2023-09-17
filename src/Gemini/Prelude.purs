@@ -10,6 +10,7 @@ module Gemini.Prelude
   , module Data.Finitary
   , module Data.Group
   , module Data.Gemini
+  , module Data.Location
   , module Data.Set
   , module Data.Time.Duration
   , module Data.Map
@@ -44,13 +45,7 @@ import Data.Enum (enumFromTo)
 import Data.Finitary (class Finitary, inhabitants)
 import Data.Foldable (fold, foldMap)
 import Data.Gemini
-  ( Choice(..)
-  , Chosen(..)
-  , Gemini
-  , Location(..)
-  , Motion(..)
-  , Ring(..)
-  )
+import Data.Location
 import Data.Group (class Group, invert)
 import Data.Map (Map)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)
