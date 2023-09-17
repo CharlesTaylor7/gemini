@@ -30,6 +30,8 @@ module Gemini.Prelude
   , module Utils
   ) where
 
+import Data.Gemini
+import Data.Location
 import Data.Nat
 import Debug
 import Deku.Common
@@ -44,8 +46,6 @@ import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
 import Data.Enum (enumFromTo)
 import Data.Finitary (class Finitary, inhabitants)
 import Data.Foldable (fold, foldMap)
-import Data.Gemini
-import Data.Location
 import Data.Group (class Group, invert)
 import Data.Map (Map)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)

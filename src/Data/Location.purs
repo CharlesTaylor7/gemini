@@ -1,34 +1,16 @@
 module Data.Location where
 
-import Debug
 import Prelude
 
 import Control.Alt ((<|>))
 import Control.Alternative (guard)
-import Control.Monad.ST as ST
 import Data.Array as Array
-import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NEArray
-import Data.Array.ST as STArray
-import Data.Array.ST.Extra as STArray
-import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
-import Data.Enum (class Enum)
-import Data.Finitary (class Finitary, inhabitants)
-import Data.Foldable (class Foldable, all, foldMap, for_)
-import Data.FoldableWithIndex (forWithIndex_)
+import Data.Cyclic (Cyclic, cyclic, unCyclic)
+import Data.Finitary (class Finitary)
 import Data.Generic.Rep (class Generic)
-import Data.List (List)
-import Data.List as List
-import Data.List.NonEmpty (NonEmptyList)
-import Data.List.NonEmpty as NEList
-import Data.Map as Map
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
-import Data.Nat (class Pos, D18, D54)
-import Data.Permutation (Permutation, derangements, permute, unsafePermutation)
-import Data.Semigroup.Foldable as NEFold
+import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Nat (D18)
 import Data.Show.Generic (genericShow)
-import Data.Traversable (sequence)
-import Data.Tuple.Nested (type (/\), (/\))
 import Partial.Unsafe (unsafeCrashWith)
 
 -- | Location on the gemini puzzle, where a disk can slide
@@ -68,8 +50,6 @@ instance Show Ring where
 
 instance Finitary Ring where
   inhabitants = [ LeftRing, CenterRing, RightRing ]
-
-
 
 type LocationPair =
   { canonical :: Location
@@ -148,5 +128,4 @@ dragRing loc1 =
   case sibling loc1 of
     Nothing -> Obvious loc1
     Just loc2 -> Ambiguous loc1 loc2
-
 

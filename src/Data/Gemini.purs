@@ -12,9 +12,10 @@ module Data.Gemini
   , toPerm
   ) where
 
+import Data.Location
 import Debug
 import Prelude
-import Data.Location
+
 import Control.Alt ((<|>))
 import Control.Alternative (guard)
 import Control.Monad.ST as ST
@@ -114,7 +115,6 @@ geminiLookup location (Gemini array) =
   case locationToIndex location # Array.index array of
     Just x -> x
     Nothing -> unsafeCrashWith "geminiLookup"
-
 
 unsafeGemini :: Array (Location /\ Disk) -> Gemini
 unsafeGemini items = Gemini $ ST.run do

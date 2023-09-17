@@ -10,9 +10,9 @@ import Gemini.Prelude
 
 import Data.Angle as Angle
 import Data.Gemini as Gemini
-import Data.Location as Gemini
 import Data.Gemini.Solve as Gemini
 import Data.Int as Int
+import Data.Location as Gemini
 import Data.Point as Point
 import Effect.Console as Console
 import Gemini.DomInfo (DomInfo)

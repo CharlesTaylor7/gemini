@@ -10,12 +10,12 @@ import Data.Array.NonEmpty as NEArray
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, unCyclic)
 import Data.Foldable (all)
 import Data.Gemini (Color(..), Gemini)
-import Data.Location (Location(..), Ring, indexToLocation, sibling, unLocation)
 import Data.Gemini as Gemini
 import Data.List (List)
 import Data.List as List
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEList
+import Data.Location (Location(..), Ring, indexToLocation, sibling, unLocation)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Nat (class Pos)
 import Data.Semigroup.Foldable as NEFold
