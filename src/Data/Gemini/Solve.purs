@@ -1,38 +1,25 @@
 module Data.Gemini.Solve where
 
-import Debug
 import Prelude
 
 import Control.Alt ((<|>))
 import Control.Alternative (guard)
-import Control.Monad.ST as ST
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
-import Data.Array.ST as STArray
-import Data.Array.ST.Extra as STArray
-import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
-import Data.Enum (class Enum)
-import Data.Finitary (class Finitary, inhabitants)
-import Data.Foldable (class Foldable, all, foldMap, for_)
-import Data.FoldableWithIndex (forWithIndex_)
-import Data.Gemini (Color(..), Disk, Gemini, Location(..), Ring, indexToLocation, sibling, unLocation)
+import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, unCyclic)
+import Data.Foldable (all)
+import Data.Gemini (Color(..), Gemini, Location(..), Ring, indexToLocation, sibling, unLocation)
 import Data.Gemini as Gemini
-import Data.Generic.Rep (class Generic)
 import Data.List (List)
 import Data.List as List
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEList
-import Data.Map as Map
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
-import Data.Nat (class Pos, D18, D54)
-import Data.Permutation (Permutation, derangements, permute, unsafePermutation)
+import Data.Maybe (Maybe(..), maybe)
+import Data.Nat (class Pos)
 import Data.Semigroup.Foldable as NEFold
-import Data.Show.Generic (genericShow)
 import Data.Traversable (sequence)
-import Data.Tuple.Nested (type (/\), (/\))
-import Partial.Unsafe (unsafeCrashWith)
-import Safe.Coerce (coerce)
+import Data.Tuple.Nested ((/\))
 
 -- | Is the puzzle solved?
 -- That is, every disk is grouped with other disks of the same color in sequence.
