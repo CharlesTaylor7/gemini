@@ -325,11 +325,6 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@rowtype-yoga/prettier-plugin-purescript@^1.11.2":
-  version "1.11.2"
-  resolved "https://registry.yarnpkg.com/@rowtype-yoga/prettier-plugin-purescript/-/prettier-plugin-purescript-1.11.2.tgz#00ea3163bdfe9e1c265cfca36c29e288ba7659c8"
-  integrity sha512-9G66e0cF+OB5wzX4SZKV8/gsAOkxJsuIUXeiNrzstEbc/a7aI4LT+ho+Tkz3JBkNCtvz9Z5GPL50WLaq1XGLPQ==
-
 "@tootallnate/once@2":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
