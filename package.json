@@ -6,14 +6,14 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "postinstall": "spago install",
+    "postinstall": "spago install; cabal install dhall --overwrite-policy=always",
     "watch:purs": "spago build --clear-screen -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
     "watch:js": "PORT=3000 vite",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
     "prebuild": "yarn run tailwind && cp -r static/* dist/",
     "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
-    "format": "purs-tidy format-in-place \"src/**/*.purs\" \"test/**/*.purs\"; prettier --write src",
+    "format": "purs-tidy format-in-place \"src/**/*.purs\" \"test/**/*.purs\"; prettier --write src; dhall format --transitive spago.dhall",
     "test": "spago test --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\""
   },
   "devDependencies": {
