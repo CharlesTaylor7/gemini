@@ -14,8 +14,12 @@
     "prebuild": "yarn run tailwind && cp -r static/* dist/",
     "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
-    "format": "purs-tidy format-in-place \"src/**/*.purs\" \"test/**/*.purs\"; prettier --write src; dhall format --transitive spago.dhall",
-    "test": "spago test --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\""
+    "format": "yarn format:purs; yarn format:js; yarn format:dhall",
+    "format:purs": "purs-tidy format-in-place \"src/**/*.purs\" \"test/**/*.purs\" \"benchmark/**/*.purs\"",
+    "format:js": "prettier --write src",
+    "format:dhall": "dhall format --transitive spago.dhall",
+    "test": "spago test --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
+    "bench": "spago run -m Benchmark.Main"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
