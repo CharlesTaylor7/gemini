@@ -12,7 +12,6 @@ module Data.Permutation
 
 import Partial.Unsafe
 import Prelude
-import Prim.TypeError
 
 import Data.Array as Array
 import Data.Foldable (class Foldable)
@@ -98,7 +97,3 @@ transposition = unsafeTranspose (knownInt @a) (knownInt @b)
       [ a /\ b
       , b /\ a
       ]
-
-
-class NotEqual a b
-instance Fail (Text "") => NotEqual a a
