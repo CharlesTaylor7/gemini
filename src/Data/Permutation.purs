@@ -5,7 +5,6 @@ module Data.Permutation
   , unsafePermutation
   , permute
   , derangements
-  , transposition
   , lift
   , transpose
   , module Data.Group
@@ -88,10 +87,6 @@ unsafePermutation = Permutation
 
 lift :: forall @a @b. Lt a b => Permutation a -> Permutation b
 lift = derangements >>> unsafePermutation
-
-transposition ::
-  forall @a @b @c. Lt a b => Lt b c => Nat a => Nat b => Permutation c
-transposition = transpose (knownInt @a) (knownInt @b)
 
 transpose :: forall @c. Int -> Int -> Permutation c
 transpose a b = unsafePermutation $
