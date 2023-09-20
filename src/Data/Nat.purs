@@ -1,5 +1,6 @@
 module Data.Nat
-  ( module Data.Typelevel.Num.Sets
+  ( module Data.Typelevel.Num.Ops
+  , module Data.Typelevel.Num.Sets
   , module Num
   , knownInt
   , natsUnder
@@ -8,8 +9,9 @@ module Data.Nat
 import Prelude
 
 import Data.Enum (enumFromTo)
-import Data.Typelevel.Num (D1, D2, D3, D4, D5, D6, D7, D8, D9) as Num
+import Data.Typelevel.Num (D0, D1, D2, D3, D4, D5, D6, D7, D8, D9) as Num
 import Data.Typelevel.Num.Aliases as Num
+import Data.Typelevel.Num.Ops (class Lt, class LtEq)
 import Data.Typelevel.Num.Sets (class Nat, class Pos, toInt')
 import Type.Proxy (Proxy(..))
 

@@ -1,41 +1,47 @@
 module Benchmark.Main where
 
+import Data.Gemini
+import Data.Gemini
+import Data.Nat
+import Data.Permutation
+import Partial.Unsafe
 import Prelude
+import Test.QuickCheck.Arbitrary
 
--- new imports
 import Benchotron.Core (Benchmark, benchFn, mkBenchmark)
--- This module includes other `benchmarkToX` functions (e.g. benchmarkToFile)
--- However, there's no reason to directly use them. `runSuite`
--- uses them and provides the best interface to run
--- multiple benchmarks in one command
 import Benchotron.UI.Console (runSuite)
--- needed to run the benchmark
-import Data.Foldable (foldMap, foldr)
-import Data.Monoid.Additive (Additive(..))
-import Data.Newtype (ala)
+import Data.Array.ST as STArray
 import Effect (Effect)
-import Test.QuickCheck.Arbitrary (arbitrary)
-import Test.QuickCheck.Gen (vectorOf)
+import PermutationSpec (AnyPermutation(..))
+import Test.QuickCheck.Gen (Gen)
+
+scrambleGemini :: Gen Gemini
+scrambleGemini = do
+  AnyPermutation perm <- arbitrary
+  let extended = lift @D50 @D54 perm
+  -- | transpose the extra indices to the end of the index space
+  let t1 = transposition @D34 @D50
+  let t2 = transposition @D29 @D51
+  let t3 = transposition @D47 @D53
+  let t4 = transposition @D52 @D52
+  let t = t1 <> t2 <> t3
+  let conjugated = t <> extended <> t
+  pure $ permuteGemini conjugated initialGemini
 
 main :: Effect Unit
-main = runSuite [ syntax ]
+main = runSuite [ solveDetection ]
 
-syntax :: Benchmark
-syntax = mkBenchmark
+solveDetection :: Benchmark
+solveDetection = mkBenchmark
   { slug: "benchmark-gemini-solve-detection"
   , title: "Solve Detection"
   -- Each `Int` in this `Array` will be the `n` argument in the `gen` field
-  , sizes: [ 1000, 2000, 3000, 4000, 5000 ]
-  , sizeInterpretation:
-      "Human-readable explanation of 'sizes': \
-      \the number of elements in an array"
-  -- how many times to run a benchmark for each 'size' above
-  -- totalBenchmarksRun = (length sizes) * inputsPerSize
-  -- If this was 2, we'd run each of the 5 benchmarks above twice
-  , inputsPerSize: 1
-  , gen: \n -> vectorOf n arbitrary
+  , sizes: [ 1000 ]
+  , sizeInterpretation: ""
+  , inputsPerSize: 10
+  , gen: const scrambleGemini
   , functions:
-      [ benchFn "function name: foldr" (foldr (+) 0)
-      , benchFn "function name: foldmap" (ala Additive foldMap)
+      [ benchFn "function name: foldr" $ identity
+      , benchFn "function name: foldmap" $ identity
       ]
   }

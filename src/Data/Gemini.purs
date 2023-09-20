@@ -4,6 +4,7 @@ module Data.Gemini
   , geminiLookup
   , initialGemini
   , applyToGemini
+  , permuteGemini
   , Disk(..)
   , Color(..)
   , Motion(..)

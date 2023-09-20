@@ -15,7 +15,6 @@
   , "integers"
   , "lists"
   , "maybe"
-  , "newtype"
   , "numbers"
   , "ordered-collections"
   , "partial"
