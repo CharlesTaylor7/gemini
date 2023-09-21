@@ -1,16 +1,13 @@
 module Test.Gemini.CyclicSpec where
 
-import Data.Cyclic
-import Data.Foldable
-import Data.Gemini
-import Data.Gemini.Motions
-import Data.Group
-import Data.Nat
-import Data.Permutation
-import Gemini.Prelude
+import Prelude
 
+import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
+import Data.Foldable (fold, foldMap)
+import Data.Group (invert)
+import Data.Nat (D10, D16, D17, D2, D3, D5, D6, D7)
 import Test.Spec (Spec, describe, it)
-import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)
+import Test.Spec.Assertions (shouldEqual, shouldSatisfy)
 
 spec :: Spec Unit
 spec = do

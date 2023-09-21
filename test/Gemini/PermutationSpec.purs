@@ -1,13 +1,10 @@
 module Test.Gemini.PermutationSpec where
 
 import Gemini.Prelude
-import Test.Gemini.Gen
 
-import Data.Array as Array
-import Data.Map as Map
-import Data.Permutation (Permutation, unsafePermutation)
-import Test.QuickCheck (class Arbitrary, (===))
-import Test.QuickCheck.Gen as Gen
+import Data.Permutation (Permutation)
+import Test.Gemini.Gen (AnyPermutation(..))
+import Test.QuickCheck ((===))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.QuickCheck (quickCheck)
 

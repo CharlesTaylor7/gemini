@@ -2,10 +2,8 @@ module Test.Gemini.LocationSpec where
 
 import Gemini.Prelude
 
-import Data.Location (indexToLocation, location, sibling)
 import Test.Gemini.Gen (AnyLocation(..))
-import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
-import Test.QuickCheck.Gen as Gen
+import Test.QuickCheck (Result(..), (===))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.QuickCheck (quickCheck)

@@ -7,7 +7,6 @@ import Data.Gemini.Motions (l)
 import Data.Gemini.Solve (isSolved, isSolvedFast)
 import Test.Gemini.Gen (ScrambledGemini(..))
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
-import Test.QuickCheck.Gen as Gen
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)
 import Test.Spec.QuickCheck (quickCheck)
