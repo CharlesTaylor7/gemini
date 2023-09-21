@@ -1,6 +1,7 @@
 module PermutationSpec where
 
 import Gemini.Prelude
+import Test.Gemini.Gen
 
 import Data.Array as Array
 import Data.Map as Map
@@ -9,19 +10,6 @@ import Test.QuickCheck (class Arbitrary, (===))
 import Test.QuickCheck.Gen as Gen
 import Test.Spec (Spec, describe, it)
 import Test.Spec.QuickCheck (quickCheck)
-
-newtype AnyPermutation n = AnyPermutation (Permutation n)
-
-instance Pos n => Arbitrary (AnyPermutation n) where
-  arbitrary = ado
-    shuffled <- Gen.shuffle array
-    in
-      AnyPermutation
-        $ unsafePermutation
-        $ Map.fromFoldable
-        $ Array.zip array shuffled
-    where
-    array = enumFromTo 0 (knownInt @n - 1)
 
 permutationSpec :: Spec Unit
 permutationSpec = do

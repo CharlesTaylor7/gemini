@@ -118,3 +118,5 @@ isFinished expectedCount list =
       -- x is outside the band of acceptability
       | otherwise = false
 
+isSolvedFast :: Gemini -> Boolean
+isSolvedFast = const true

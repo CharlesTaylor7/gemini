@@ -2,10 +2,6 @@ procs:
   Test:
     shell: yarn test --clear-screen --watch
 
-  Format:
-    shell: yarn format
-    autostart: false
-
   Dev Server:
     shell: yarn watch:js
 

@@ -26,6 +26,7 @@ type LocationRecord =
 
 derive instance Eq Location
 derive instance Generic Location _
+
 instance Show Location where
   show = genericShow
 
