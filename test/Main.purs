@@ -1,13 +1,13 @@
 module Test.Main where
 
-import CyclicSpec
-import GeminiSpec
-import LocationSpec
-import PermutationSpec
 import Prelude
 
 import Effect (Effect)
 import Effect.Aff (launchAff_)
+import Test.Gemini.CyclicSpec as CyclicSpec
+import Test.Gemini.GeminiSpec as GeminiSpec
+import Test.Gemini.LocationSpec as LocationSpec
+import Test.Gemini.PermutationSpec as PermutationSpec
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (defaultConfig, runSpec')
 
@@ -15,7 +15,7 @@ main :: Effect Unit
 main = launchAff_
   $ runSpec' (defaultConfig { failFast = true }) [ consoleReporter ]
   $ do
-      cyclicSpec
-      locationSpec
-      geminiSpec
-      permutationSpec
+      CyclicSpec.spec
+      GeminiSpec.spec
+      LocationSpec.spec
+      PermutationSpec.spec

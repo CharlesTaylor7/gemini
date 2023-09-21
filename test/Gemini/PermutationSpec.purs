@@ -1,4 +1,4 @@
-module PermutationSpec where
+module Test.Gemini.PermutationSpec where
 
 import Gemini.Prelude
 import Test.Gemini.Gen
@@ -11,8 +11,8 @@ import Test.QuickCheck.Gen as Gen
 import Test.Spec (Spec, describe, it)
 import Test.Spec.QuickCheck (quickCheck)
 
-permutationSpec :: Spec Unit
-permutationSpec = do
+spec :: Spec Unit
+spec = do
   describe "Data.Permutation" do
     describe "Group Laws" do
       it "left identity" $ quickCheck $

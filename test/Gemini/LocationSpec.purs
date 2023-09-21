@@ -1,21 +1,17 @@
-module LocationSpec where
+module Test.Gemini.LocationSpec where
 
 import Gemini.Prelude
 
 import Data.Location (indexToLocation, location, sibling)
+import Test.Gemini.Gen (AnyLocation(..))
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.QuickCheck.Gen as Gen
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.QuickCheck (quickCheck)
 
-newtype AnyLocation = AnyLocation Location
-
-instance Arbitrary AnyLocation where
-  arbitrary = AnyLocation <<< indexToLocation <$> Gen.chooseInt 0 53
-
-locationSpec :: Spec Unit
-locationSpec = do
+spec :: Spec Unit
+spec = do
   describe "Location" $ do
     it "sibling" $ do
       sibling (location LeftRing 0) `shouldEqual` Nothing

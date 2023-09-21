@@ -6,11 +6,17 @@ import Prelude
 
 import Data.Array as Array
 import Data.Enum (enumFromTo)
+import Data.Location (Location, indexToLocation, location, sibling)
 import Data.Map as Map
 import Data.Nat (class Nat, class Pos, D50, D54, knownInt)
 import Test.QuickCheck (class Arbitrary, arbitrary)
 import Test.QuickCheck.Gen (Gen)
 import Test.QuickCheck.Gen as Gen
+
+newtype AnyLocation = AnyLocation Location
+
+instance Arbitrary AnyLocation where
+  arbitrary = AnyLocation <<< indexToLocation <$> Gen.chooseInt 0 53
 
 newtype AnyPermutation n = AnyPermutation (Permutation n)
 

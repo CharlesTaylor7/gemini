@@ -1,4 +1,4 @@
-module CyclicSpec where
+module Test.Gemini.CyclicSpec where
 
 import Data.Cyclic
 import Data.Foldable
@@ -12,8 +12,8 @@ import Gemini.Prelude
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)
 
-cyclicSpec :: Spec Unit
-cyclicSpec = do
+spec :: Spec Unit
+spec = do
   describe "Data.Cyclic" $ do
     describe "methods" $ do
       it "creation & destruction" $ do
