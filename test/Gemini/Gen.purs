@@ -2,13 +2,16 @@ module Test.Gemini.Gen where
 
 import Data.Gemini
 import Data.Permutation
+import Partial.Unsafe
 import Prelude
 
 import Data.Array as Array
 import Data.Enum (enumFromTo)
+import Data.Foldable (foldMap)
 import Data.Location (Location, indexToLocation, location, sibling)
 import Data.Map as Map
 import Data.Nat (class Nat, class Pos, D50, D54, knownInt)
+import Effect (Effect)
 import Test.QuickCheck (class Arbitrary, arbitrary)
 import Test.QuickCheck.Gen (Gen)
 import Test.QuickCheck.Gen as Gen
@@ -42,18 +45,32 @@ instance Arbitrary ScrambledGemini where
 newtype AlmostSolvedGemini = AlmostSolvedGemini Gemini
 
 instance Arbitrary AlmostSolvedGemini where
-  arbitrary = do
-    transposition
-      <#> toGeminiPermutation
-        >>> flip permuteGemini initialGemini
-        >>> AlmostSolvedGemini
+  arbitrary = apply <$> gen
     where
-    transposition :: forall n. Nat n => Gen (Permutation n)
-    transposition = do
-      let max = knownInt @n - 1
-      a <- Gen.chooseInt 0 max
-      b <- Gen.chooseInt 0 max `Gen.suchThat` notEq a
-      pure $ transpose a b
+    apply = AlmostSolvedGemini <<< flip permuteGemini initialGemini
+
+gen :: Gen (Permutation D54)
+gen = ado
+  t <- toGeminiPermutation <$> transposition
+  left <- arbitrary <#> if _ then mirrorLeftRing else mempty
+  right <- arbitrary <#> if _ then mirrorRightRing else mempty
+  in left <> right <> t
+
+t' :: Gen (Permutation D54)
+t' = toGeminiPermutation <$> transposition
+
+left' :: Gen (Permutation D54)
+left' = arbitrary <#> if _ then mirrorLeftRing else mempty
+
+right' :: Gen (Permutation D54)
+right' = arbitrary <#> if _ then mirrorRightRing else mempty
+
+transposition :: forall n. Nat n => Gen (Permutation n)
+transposition = do
+  let max = knownInt @n - 1
+  a <- Gen.chooseInt 0 max
+  b <- Gen.chooseInt 0 max `Gen.suchThat` notEq a
+  pure $ transpose a b
 
 toGeminiPermutation :: Permutation D50 -> Permutation D54
 toGeminiPermutation perm = do
@@ -65,4 +82,16 @@ toGeminiPermutation perm = do
   let t = t1 <> t2 <> t3
   let conjugated = t <> extended <> t
   conjugated
+
+-- | in the initial state, this swaps the Red & Yellow bands
+mirrorLeftRing :: Permutation D54
+mirrorLeftRing =
+  (enumFromTo 0 7 :: Array Int) #
+    foldMap (\i -> transpose ((1 - i) `mod` 18) (i + 3))
+
+-- | in the initial state, this swaps the Green & White bands
+mirrorRightRing :: Permutation D54
+mirrorRightRing =
+  (enumFromTo 0 7 :: Array Int) #
+    foldMap (\i -> transpose (46 - i) (i + 48))
 

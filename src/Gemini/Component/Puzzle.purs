@@ -72,7 +72,7 @@ component props = Deku.do
 
 disk :: forall r. Location -> Props r -> Nut
 disk location@(Location { position, ring }) props =
-  (pursx :: _ "<div ~diskAttrs~ />")
+  (pursx :: _ "<div ~diskAttrs~>~text~</div>")
     ~~
       { diskAttrs:
           Class.name
@@ -94,6 +94,7 @@ disk location@(Location { position, ring }) props =
             <|>
               D.OnTouchstart !:= touch
                 (onDragStart { drag: props.drag, location })
+      , text: text_ $ show $ locationToIndex location
       }
   where
   color =

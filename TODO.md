@@ -3,7 +3,6 @@
 - [ ] Confetti drop
 - [ ] Leaderboard for solve times that makes use of localstorage
 
-
 # Solve detection - Internals
 - [x] Benchmarks
 - [x] Basic Generators
@@ -13,3 +12,6 @@
 
 # Mobile
 - [ ] Test mobile view on iPad
+
+# UI
+- [ ] Debug mode that lists the location index of each disk
