@@ -81,20 +81,19 @@ disk location@(Location { position, ring }) props =
             , "hidden" # Class.when
                 (hidden location <$> Store.subscribe props.drag)
             ]
+            <|> pure (xdata "disk" "")
             <|>
-              ( style
-                  ( diskStyle <$>
-                      (pure initial <|> (append initial <$> dragged))
-                  )
-              )
+              style
+                ( diskStyle <$>
+                    (pure initial <|> (append initial <$> dragged))
+                )
             <|>
-              ( D.OnPointerdown !:= mouse
-                  (onDragStart { drag: props.drag, location })
-              )
+              D.OnPointerdown !:= mouse
+                (onDragStart { drag: props.drag, location })
+
             <|>
-              ( D.OnTouchstart !:= touch
-                  (onDragStart { drag: props.drag, location })
-              )
+              D.OnTouchstart !:= touch
+                (onDragStart { drag: props.drag, location })
       , text: text $ Store.subscribe props.gemini
           <#> geminiLookup location
             >>> _.label

@@ -23,6 +23,6 @@ function getDiameter(selector) {
 
 function ringRadius() {
   let ring = getDiameter("[data-ring]");
-  let disk = getDiameter(".disk");
+  let disk = getDiameter("[data-disk]");
   return (ring - disk) / 2.0;
 }
