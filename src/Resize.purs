@@ -8,10 +8,11 @@ import Prelude
 import Control.Monad.ST.Global (Global, toEffect)
 import Control.Monad.ST.Ref (STRef)
 import Control.Monad.ST.Ref as Ref
+import Data.Array.NonEmpty (NonEmptyArray)
+import Data.Array.NonEmpty as NE
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import FRP.Event (Event, makeEvent)
-import Partial.Unsafe (unsafePartial)
 import Web.DOM (Element)
 
 -- | the listen callback, sets up the source of the event.
@@ -42,15 +43,10 @@ observe =
     where
     -- Technically violates referential transparency, but the JS output is correct...
     ref = unsafePerformEffect $ toEffect $ Ref.new mempty
-    ob =
-      -- Safe, because the callback would never run with an empty array.
-      -- The callback only runs when an element resizes
-      unsafePartial
-        ( newResizeObserverF
-            $ \[ { target } ] -> do
-                pusher <- toEffect $ Ref.read ref
-                pusher target
-        )
+    ob = newResizeObserverF $ \resized -> do
+      let el = NE.head resized
+      pusher <- toEffect $ Ref.read ref
+      pusher el.target
 
 type Observer a =
   { ob :: ForeignObserver
@@ -59,7 +55,8 @@ type Observer a =
 
 foreign import data ForeignObserver :: Type
 
-type Listener = Array { target :: Element } -> Effect Unit
+-- The callback only runs when an element resizes, which means the array is non empty
+type Listener = NonEmptyArray { target :: Element } -> Effect Unit
 
 foreign import data DomRect :: Type
 foreign import getBoundingClientRectF :: Element -> Effect DomRect
