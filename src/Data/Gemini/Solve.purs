@@ -9,16 +9,18 @@ import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, unCyclic)
 import Data.Foldable (all)
-import Data.Gemini (Color(..), Gemini)
+import Data.Gemini (Color(..), Gemini, geminiLookup)
 import Data.Gemini as Gemini
 import Data.List (List)
 import Data.List as List
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEList
-import Data.Location (Location(..), Ring, indexToLocation, sibling, unLocation)
+import Data.Location (Location(..), Ring, ambiguousLocations, indexToLocation, sibling, unLocation)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Nat (class Pos)
 import Data.Semigroup.Foldable as NEFold
+import Data.Set (Set)
+import Data.Set as Set
 import Data.Traversable (sequence)
 import Data.Tuple.Nested ((/\))
 
@@ -119,4 +121,15 @@ isFinished expectedCount list =
       | otherwise = false
 
 isSolvedFast :: Gemini -> Boolean
-isSolvedFast = const true
+isSolvedFast gemini = all force [ \_ -> Set.size colors == 4 ]
+  where
+  force :: forall a. (Unit -> a) -> a
+  force = (#) unit
+
+  colors :: Set Color
+  colors = startingPoints # Set.map (flip geminiLookup gemini >>> _.color)
+
+  startingPoints :: Set Location
+  startingPoints =
+    Set.fromFoldable $
+      ambiguousLocations <#> \pair -> pair.canonical
