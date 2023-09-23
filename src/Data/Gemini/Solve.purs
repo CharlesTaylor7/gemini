@@ -160,9 +160,6 @@ isSolvedFast gemini = all force
       in
         if color next == color start then go offset (count + 1) next else count
 
---let
---next = Location { ring: l.ring, position: l.position}
-
 advance :: Location -> Cyclic D18 -> Location
 advance (Location { position, ring }) offset =
   Location { position: position + offset, ring }
@@ -172,8 +169,3 @@ diskCount White = 9
 diskCount Yellow = 9
 diskCount _ = 8
 
-neighbors :: Location -> Array Location
-neighbors (Location r) =
-  [ Location { ring: r.ring, position: (r.position + cyclic 1) }
-  , Location { ring: r.ring, position: (r.position - cyclic 1) }
-  ]
