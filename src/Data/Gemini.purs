@@ -37,7 +37,7 @@ import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEList
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
-import Data.Nat (class Pos, D18, D54)
+import Data.Nat (class Pos)
 import Data.Permutation (Permutation, derangements, permute, unsafePermutation)
 import Data.Semigroup.Foldable as NEFold
 import Data.Show.Generic (genericShow)
@@ -83,7 +83,7 @@ instance Show Color where
   show = genericShow
 
 --  Basic operations
-type GeminiPermutation = Permutation D54
+type GeminiPermutation = Permutation 54
 
 -- | Typeclass for things that describe permutations of the Gemini puzzle
 class ToPermutation a where
@@ -101,13 +101,13 @@ instance ToPermutation Motion where
             in
               locationToIndex' start /\ locationToIndex' end
     where
-    indices = inhabitants :: Array (Cyclic D18)
+    indices = inhabitants :: Array (Cyclic 18)
 
 instance ToPermutation GeminiPermutation where
   toPerm = identity
 
 newtype Motion = Motion
-  { amount :: Cyclic D18
+  { amount :: Cyclic 18
   , ring :: Ring
   }
 

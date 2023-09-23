@@ -27,7 +27,6 @@
   , "st"
   , "strings"
   , "tuples"
-  , "typelevel"
   , "unfoldable"
   , "unsafe-coerce"
   , "web-dom"

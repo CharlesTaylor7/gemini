@@ -14,20 +14,20 @@ spec = do
     describe "Group Laws" do
       it "left identity" $ quickCheck $
         \(AnyPermutation x) ->
-          (mempty <> x) === (x :: Permutation D5)
+          (mempty <> x) === (x :: Permutation 5)
 
       it "right identity" $ quickCheck $
         \(AnyPermutation x) ->
-          (x <> mempty) === (x :: Permutation D5)
+          (x <> mempty) === (x :: Permutation 5)
 
       it "left inverse" $ quickCheck $
         \(AnyPermutation x) ->
-          (invert x <> x) === (mempty :: Permutation D5)
+          (invert x <> x) === (mempty :: Permutation 5)
 
       it "right inverse" $ quickCheck $
         \(AnyPermutation x) ->
-          (x <> invert x) === (mempty :: Permutation D5)
+          (x <> invert x) === (mempty :: Permutation 5)
 
       it "associativity" $ quickCheck $
         \(AnyPermutation x) (AnyPermutation y) (AnyPermutation z) ->
-          (x <> y) <> z === (x <> (y <> z) :: Permutation D5)
+          (x <> y) <> z === (x <> (y <> z) :: Permutation 5)

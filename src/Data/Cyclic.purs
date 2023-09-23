@@ -19,7 +19,7 @@ import Safe.Coerce (coerce)
 -- | Cyclic group of order n
 -- Note: Cyclic has an ord instance because its required to put the data into a map.
 -- For relative comparisons, consider  using compareCyclic instead of compare
-newtype Cyclic (n :: Type) = MkCyclic Int
+newtype Cyclic (n :: Int) = MkCyclic Int
 
 derive instance Eq (Cyclic n)
 derive instance Generic (Cyclic n) _

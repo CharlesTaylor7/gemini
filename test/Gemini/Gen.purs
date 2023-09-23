@@ -28,7 +28,7 @@ import Data.Location (Location, indexToLocation)
 import Data.Location (Ring(..))
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
-import Data.Nat (class Pos, D2, D4, D50, D54, knownInt)
+import Data.Nat (class Pos, knownInt)
 import Data.Permutation as Permutation
 import Test.QuickCheck (class Arbitrary, arbitrary)
 import Test.QuickCheck (arbitrary) as ReExport
@@ -70,9 +70,9 @@ instance Arbitrary SolvedGemini where
     left <- arbitrary <#> if _ then mirrorLeftRing else mempty
     right <- arbitrary <#> if _ then mirrorRightRing else mempty
     colorPerm8 <- arbitrary <#>
-      \(AnyPermutation p) -> permuteRanges @D4 eightDiskRanges p
+      \(AnyPermutation p) -> permuteRanges @4 eightDiskRanges p
     colorPerm9 <- arbitrary <#>
-      \(AnyPermutation p) -> permuteRanges @D2 nineDiskRanges p
+      \(AnyPermutation p) -> permuteRanges @2 nineDiskRanges p
     in colorPerm8
 
 --colorPerm8 <> colorPerm9 <> left <> right <> h
@@ -94,12 +94,12 @@ instance Arbitrary AlmostSolvedGemini where
     (SolvedGemini g) <- arbitrary
     in permuteGemini p g
 
-permuteInitial :: Permutation D54 -> Gemini
+permuteInitial :: Permutation 54 -> Gemini
 permuteInitial p = permuteGemini p initialGemini
 
-toGeminiPermutation :: Permutation D50 -> Permutation D54
+toGeminiPermutation :: Permutation 50 -> Permutation 54
 toGeminiPermutation perm = do
-  let extended = lift @D50 @D54 perm
+  let extended = lift @50 @54 perm
   -- | transpose the extra indices to the end of the index space
   let t1 = transpose 34 50
   let t2 = transpose 29 51
@@ -110,14 +110,14 @@ toGeminiPermutation perm = do
 
 -- | mirror left ring along a diagonal
 -- | in the initial state, this swaps the Red & Yellow bands
-mirrorLeftRing :: Permutation D54
+mirrorLeftRing :: Permutation 54
 mirrorLeftRing =
   (enumFromTo 0 7 :: Array Int)
     # foldMap (\i -> transpose ((1 - i) `mod` 18) (i + 3))
 
 -- | mirror right ring along a diagonal
 -- | in the initial state, this swaps the Green & White bands
-mirrorRightRing :: Permutation D54
+mirrorRightRing :: Permutation 54
 mirrorRightRing =
   fold
     [ transpose 46 48
@@ -131,10 +131,10 @@ mirrorRightRing =
     ]
 
 -- | swap every disk along the horizontal axis
-mirrorHorizontal :: Permutation D54
+mirrorHorizontal :: Permutation 54
 mirrorHorizontal = foldMap mirror inhabitants
   where
-  mirror :: Ring -> Permutation D54
+  mirror :: Ring -> Permutation 54
   mirror ring =
     (enumFromTo 0 8 :: Array _)
       # foldMap
@@ -179,7 +179,7 @@ permuteRanges ::
   Pos n =>
   Array (Array Int) ->
   Permutation n ->
-  Permutation D54
+  Permutation 54
 permuteRanges ranges p =
   ranges
     # Array.transpose

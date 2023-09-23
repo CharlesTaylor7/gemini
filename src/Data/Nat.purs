@@ -1,7 +1,7 @@
 module Data.Nat
-  ( module Data.Typelevel.Num.Ops
-  , module Data.Typelevel.Num.Sets
-  , module Num
+  ( class Nat
+  , class Pos
+  , class Lt
   , knownInt
   , natsUnder
   ) where
@@ -9,14 +9,25 @@ module Data.Nat
 import Prelude
 
 import Data.Enum (enumFromTo)
-import Data.Typelevel.Num (D0, D1, D2, D3, D4, D5, D6, D7, D8, D9) as Num
-import Data.Typelevel.Num.Aliases as Num
-import Data.Typelevel.Num.Ops (class Lt, class LtEq)
-import Data.Typelevel.Num.Sets (class Nat, class Pos, toInt')
+import Data.Reflectable (class Reflectable, reflectType)
+import Prim.Int (class Compare)
+import Prim.Ordering (GT, LT)
 import Type.Proxy (Proxy(..))
 
+class Nat :: Int -> Constraint
+class Reflectable n Int <= Nat n
+
+class Pos :: Int -> Constraint
+class (Compare n 0 GT, Nat n) <= Pos n
+
+class (Compare a b LT) <= Lt a b
+
+instance Reflectable n Int => Nat n
+instance (Compare n 0 GT, Nat n) => Pos n
+instance (Compare a b LT) => Lt a b
+
 knownInt :: forall @n. Nat n => Int
-knownInt = toInt' (Proxy :: _ n)
+knownInt = reflectType (Proxy :: _ n)
 
 natsUnder :: forall @bound. Nat bound => Array Int
 natsUnder = enumFromTo 0 $ n - 1

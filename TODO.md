@@ -15,3 +15,6 @@
 
 # UI
 - [ ] Debug mode that lists the location index of each disk
+
+# Refactor
+- [ ] Use Purescript Reflectable instead of Data.Nat

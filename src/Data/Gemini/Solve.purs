@@ -20,7 +20,6 @@ import Data.List.NonEmpty as NEList
 import Data.Location (Location(..), Ring, ambiguousLocations, indexToLocation, sibling, unLocation)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Nat (class Pos)
-import Data.Nat (D18)
 import Data.Semigroup.Foldable as NEFold
 import Data.Set (Set)
 import Data.Set as Set
@@ -153,14 +152,14 @@ isSolvedFast gemini = all force
     where
     color l = (geminiLookup l gemini).color
 
-    go :: Cyclic D18 -> Int -> Location -> Int
+    go :: Cyclic 18 -> Int -> Location -> Int
     go offset count l =
       let
         next = advance l offset
       in
         if color next == color start then go offset (count + 1) next else count
 
-advance :: Location -> Cyclic D18 -> Location
+advance :: Location -> Cyclic 18 -> Location
 advance (Location { position, ring }) offset =
   Location { position: position + offset, ring }
 

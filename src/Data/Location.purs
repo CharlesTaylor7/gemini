@@ -9,7 +9,6 @@ import Data.Cyclic (Cyclic, cyclic, unCyclic)
 import Data.Finitary (class Finitary)
 import Data.Generic.Rep (class Generic)
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.Nat (D18)
 import Data.Show.Generic (genericShow)
 import Partial.Unsafe (unsafeCrashWith)
 
@@ -39,7 +38,7 @@ unLocation (Location r) = r
 location :: Ring -> Int -> Location
 location ring position = Location { ring, position: cyclic position }
 
-type DiskIndex = Cyclic D18
+type DiskIndex = Cyclic 18
 
 data Ring
   = LeftRing
