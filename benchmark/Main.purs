@@ -12,8 +12,6 @@ import Data.Permutation (Permutation, lift, transpose)
 import Effect (Effect)
 import Partial.Unsafe (unsafeCrashWith)
 import Test.QuickCheck.Arbitrary (arbitrary)
-import Test.QuickCheck.Gen (Gen)
-import Test.QuickCheck.Gen as Gen
 
 main :: Effect Unit
 main = runSuite [ solveDetection ]

@@ -7,11 +7,10 @@ import Prelude
 
 import Data.Array as Array
 import Data.Enum (enumFromTo)
-import Data.Foldable (foldMap)
-import Data.Location (Location, indexToLocation, location, sibling)
+import Data.Foldable (fold, foldMap)
+import Data.Location (Location, indexToLocation)
 import Data.Map as Map
-import Data.Nat (class Nat, class Pos, D50, D54, knownInt)
-import Effect (Effect)
+import Data.Nat (class Pos, D50, D54, knownInt)
 import Test.QuickCheck (class Arbitrary, arbitrary)
 import Test.QuickCheck.Gen (Gen)
 import Test.QuickCheck.Gen as Gen
@@ -34,6 +33,23 @@ instance Pos n => Arbitrary (AnyPermutation n) where
     where
     array = enumFromTo 0 (knownInt @n - 1)
 
+newtype AnyTransposition n = AnyTransposition (Permutation n)
+
+instance Pos n => Arbitrary (AnyTransposition n) where
+  arbitrary = AnyTransposition <$> do
+    let max = knownInt @n - 1
+    a <- Gen.chooseInt 0 max
+    b <- Gen.chooseInt 0 max `Gen.suchThat` notEq a
+    pure $ transpose a b
+
+newtype SolveInvariantPermutation = SolveInvariantPermutation (Permutation D54)
+
+instance Arbitrary SolveInvariantPermutation where
+  arbitrary = SolveInvariantPermutation <$> ado
+    left <- arbitrary <#> if _ then mirrorLeftRing else mempty
+    right <- arbitrary <#> if _ then mirrorRightRing else mempty
+    in left <> right
+
 newtype ScrambledGemini = ScrambledGemini Gemini
 
 instance Arbitrary ScrambledGemini where
@@ -51,26 +67,10 @@ instance Arbitrary AlmostSolvedGemini where
 
 gen :: Gen (Permutation D54)
 gen = ado
-  t <- toGeminiPermutation <$> transposition
-  left <- arbitrary <#> if _ then mirrorLeftRing else mempty
-  right <- arbitrary <#> if _ then mirrorRightRing else mempty
-  in left <> right <> t
-
-t' :: Gen (Permutation D54)
-t' = toGeminiPermutation <$> transposition
-
-left' :: Gen (Permutation D54)
-left' = arbitrary <#> if _ then mirrorLeftRing else mempty
-
-right' :: Gen (Permutation D54)
-right' = arbitrary <#> if _ then mirrorRightRing else mempty
-
-transposition :: forall n. Nat n => Gen (Permutation n)
-transposition = do
-  let max = knownInt @n - 1
-  a <- Gen.chooseInt 0 max
-  b <- Gen.chooseInt 0 max `Gen.suchThat` notEq a
-  pure $ transpose a b
+  (AnyTransposition t) <- arbitrary
+  let transposed = toGeminiPermutation t
+  (SolveInvariantPermutation p) <- arbitrary
+  in p <> transposed
 
 toGeminiPermutation :: Permutation D50 -> Permutation D54
 toGeminiPermutation perm = do
@@ -92,6 +92,14 @@ mirrorLeftRing =
 -- | in the initial state, this swaps the Green & White bands
 mirrorRightRing :: Permutation D54
 mirrorRightRing =
-  (enumFromTo 0 7 :: Array Int) #
-    foldMap (\i -> transpose (46 - i) (i + 48))
+  fold
+    [ transpose 46 48
+    , transpose 45 49
+    , transpose 44 50
+    , transpose 43 51
+    , transpose 42 20
+    , transpose 41 53
+    , transpose 40 36
+    , transpose 39 37
+    ]
 

@@ -1,9 +1,11 @@
 module Gemini.Component.App.Actions
   ( keyboardEvents
   , scramble
+  , scrambleWith
   ) where
 
 import Gemini.Prelude
+import Test.Gemini.Gen
 
 import Data.Array as Array
 import Data.Gemini as Gemini
@@ -14,6 +16,8 @@ import Data.Unfoldable (replicateA)
 import Effect.Console as Console
 import Effect.Random (randomInt)
 import Gemini.Store as Store
+import Test.QuickCheck.Gen (Gen)
+import Test.QuickCheck.Gen as Gen
 import Web.UIEvent.KeyboardEvent as Event
 
 -- | The keyboard shortcuts are based on the top row of keys on a QWERTY keyboard
@@ -44,7 +48,7 @@ keyboardEvents { gemini, pushConfetti } =
       $ pushConfetti FadeIn
 
 scramble :: Store Gemini -> Effect Unit
-scramble gemini = do
+scramble store = do
   randomMotions :: Array _ <-
     replicateA 1000
       $ ado
@@ -52,9 +56,12 @@ scramble gemini = do
           r <- randomInt 0 2
           in Motion { ring: rings `unsafeIndex` r, amount: cyclic m }
   let perm = foldMap Gemini.toPerm randomMotions
-  Store.modify gemini $ Gemini.applyToGemini perm
+  Store.modify store $ Gemini.applyToGemini perm
   where
   rings = inhabitants
+
+scrambleWith :: Store Gemini -> Gen Gemini -> Effect Unit
+scrambleWith store gen = Gen.randomSampleOne gen >>= Store.set store
 
 unsafeIndex :: forall a. Array a -> Int -> a
 unsafeIndex arr i = unsafePartial $ fromJust $ Array.index arr i

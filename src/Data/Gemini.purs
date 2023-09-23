@@ -203,7 +203,7 @@ permuteGemini perm (Gemini disks) =
     forWithIndex_ (derangements perm) $ \i j ->
       case Array.index disks i of
         Nothing ->
-          unsafeCrashWith "wat"
+          unsafeCrashWith $ "index out of range: " <> show i
 
         Just disk ->
           array # STArray.write j disk
