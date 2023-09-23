@@ -11,7 +11,7 @@ import Data.Time.Duration (Milliseconds(..))
 import Deku.DOM as D
 import Deku.Do as Deku
 import Effect.Console as Console
-import Gemini.Component.App.Actions (keyboardEvents, scramble, scrambleWith)
+import Gemini.Component.App.Actions (keyboardEvents, scramble2)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.Component.Puzzle.Actions (onDragEnd, onDragUpdate)
 import Gemini.DomInfo (initialDomInfo, loadDomInfo)
@@ -107,8 +107,7 @@ header store =
             , "hidden" # Class.when (pure isTouchDevice)
             ]
       , buttonAttrs:
-          D.OnClick !:= scrambleWith store
-            (arbitrary <#> \(AlmostSolvedGemini g) -> g)
+          D.OnClick !:= scramble2 store
       }
 
 footer :: Nut

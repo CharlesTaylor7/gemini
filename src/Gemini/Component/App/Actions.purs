@@ -1,7 +1,7 @@
 module Gemini.Component.App.Actions
   ( keyboardEvents
   , scramble
-  , scrambleWith
+  , scramble2
   ) where
 
 import Gemini.Prelude
@@ -60,8 +60,14 @@ scramble store = do
   where
   rings = inhabitants
 
-scrambleWith :: Store Gemini -> Gen Gemini -> Effect Unit
-scrambleWith store gen = Gen.randomSampleOne gen >>= Store.set store
+scrambleWith :: Effect GeminiPermutation -> Store Gemini -> Effect Unit
+scrambleWith perm store = do
+  p <- perm
+  Store.modify store $ Gemini.applyToGemini p
+
+scramble2 :: Store Gemini -> Effect Unit
+scramble2 = scrambleWith $ Gen.randomSampleOne arbitrary <#>
+  \(SolveInvariantPermutation p) -> p
 
 unsafeIndex :: forall a. Array a -> Int -> a
 unsafeIndex arr i = unsafePartial $ fromJust $ Array.index arr i

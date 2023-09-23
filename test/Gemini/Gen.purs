@@ -1,4 +1,12 @@
-module Test.Gemini.Gen where
+module Test.Gemini.Gen
+  ( module ReExport
+  , AnyLocation(..)
+  , AnyPermutation(..)
+  , AnyTransposition(..)
+  , SolveInvariantPermutation(..)
+  , ScrambledGemini(..)
+  , AlmostSolvedGemini(..)
+  ) where
 
 import Data.Gemini
 import Data.Permutation
@@ -7,11 +15,14 @@ import Prelude
 
 import Data.Array as Array
 import Data.Enum (enumFromTo)
+import Data.Finitary (inhabitants)
 import Data.Foldable (fold, foldMap)
 import Data.Location (Location, indexToLocation)
+import Data.Location (Ring(..))
 import Data.Map as Map
 import Data.Nat (class Pos, D50, D54, knownInt)
 import Test.QuickCheck (class Arbitrary, arbitrary)
+import Test.QuickCheck (arbitrary) as ReExport
 import Test.QuickCheck.Gen (Gen)
 import Test.QuickCheck.Gen as Gen
 
@@ -45,32 +56,41 @@ instance Pos n => Arbitrary (AnyTransposition n) where
 newtype SolveInvariantPermutation = SolveInvariantPermutation (Permutation D54)
 
 instance Arbitrary SolveInvariantPermutation where
-  arbitrary = SolveInvariantPermutation <$> ado
+  arbitrary = SolveInvariantPermutation <$> do
+    horizontal <- arbitrary
+    let h = if horizontal then mirrorHorizontal else mempty
+    let mirrorLeftRing = if horizontal then mirrorLeftRing2 else mirrorLeftRing1
+    let
+      mirrorRightRing =
+        if horizontal then mirrorRightRing2 else mirrorRightRing1
     left <- arbitrary <#> if _ then mirrorLeftRing else mempty
     right <- arbitrary <#> if _ then mirrorRightRing else mempty
-    in left <> right
+    pure $ h <> left <> right
 
 newtype ScrambledGemini = ScrambledGemini Gemini
 
 instance Arbitrary ScrambledGemini where
-  arbitrary = do
+  arbitrary = ado
     AnyPermutation p <- arbitrary
     let perm = toGeminiPermutation p
-    pure $ ScrambledGemini $ permuteGemini perm initialGemini
+    in ScrambledGemini $ permuteInitial perm
 
 newtype AlmostSolvedGemini = AlmostSolvedGemini Gemini
 
 instance Arbitrary AlmostSolvedGemini where
-  arbitrary = apply <$> gen
+  arbitrary = apply <$> almostSolved
     where
-    apply = AlmostSolvedGemini <<< flip permuteGemini initialGemini
+    apply = AlmostSolvedGemini <<< permuteInitial
 
-gen :: Gen (Permutation D54)
-gen = ado
+almostSolved :: Gen (Permutation D54)
+almostSolved = ado
   (AnyTransposition t) <- arbitrary
   let transposed = toGeminiPermutation t
   (SolveInvariantPermutation p) <- arbitrary
   in p <> transposed
+
+permuteInitial :: Permutation D54 -> Gemini
+permuteInitial p = permuteGemini p initialGemini
 
 toGeminiPermutation :: Permutation D50 -> Permutation D54
 toGeminiPermutation perm = do
@@ -83,15 +103,22 @@ toGeminiPermutation perm = do
   let conjugated = t <> extended <> t
   conjugated
 
+-- | mirror left ring along a diagonal
 -- | in the initial state, this swaps the Red & Yellow bands
-mirrorLeftRing :: Permutation D54
-mirrorLeftRing =
-  (enumFromTo 0 7 :: Array Int) #
-    foldMap (\i -> transpose ((1 - i) `mod` 18) (i + 3))
+mirrorLeftRing1 :: Permutation D54
+mirrorLeftRing1 =
+  (enumFromTo 0 7 :: Array Int)
+    # foldMap (\i -> transpose ((1 - i) `mod` 18) (i + 3))
 
+mirrorLeftRing2 :: Permutation D54
+mirrorLeftRing2 =
+  (enumFromTo 0 7 :: Array Int)
+    # foldMap (\i -> transpose ((6 - i) `mod` 18) (i + 8))
+
+-- | mirror right ring along a diagonal
 -- | in the initial state, this swaps the Green & White bands
-mirrorRightRing :: Permutation D54
-mirrorRightRing =
+mirrorRightRing1 :: Permutation D54
+mirrorRightRing1 =
   fold
     [ transpose 46 48
     , transpose 45 49
@@ -103,3 +130,37 @@ mirrorRightRing =
     , transpose 39 37
     ]
 
+-- | mirror right ring along a diagonal
+-- | in the initial state, this swaps the Green & White bands
+mirrorRightRing2 :: Permutation D54
+mirrorRightRing2 =
+  fold
+    [ transpose 51 53
+    , transpose 50 36
+    , transpose 49 37
+    , transpose 48 38
+    , transpose 25 39
+    , transpose 46 40
+    , transpose 45 41
+    , transpose 44 42
+    ]
+
+-- | swap every disk along the horizontal axis
+mirrorHorizontal :: Permutation D54
+mirrorHorizontal = foldMap mirror inhabitants
+  where
+  mirror :: Ring -> Permutation D54
+  mirror ring =
+    (enumFromTo 0 8 :: Array _)
+      # foldMap
+          ( \i -> transpose
+              (ringOffset ring + (14 + i) `mod` 18)
+              (ringOffset ring + (13 - i) `mod` 18)
+          )
+
+  ringOffset :: Ring -> Int
+  ringOffset =
+    case _ of
+      LeftRing -> 0
+      CenterRing -> 18
+      RightRing -> 36
