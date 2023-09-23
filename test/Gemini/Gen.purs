@@ -3,8 +3,8 @@ module Test.Gemini.Gen
   , AnyLocation(..)
   , AnyPermutation(..)
   , AnyTransposition(..)
-  , SolveInvariantPermutation(..)
   , ScrambledGemini(..)
+  , SolvedGemini(..)
   , AlmostSolvedGemini(..)
   ) where
 
@@ -53,10 +53,10 @@ instance Pos n => Arbitrary (AnyTransposition n) where
     b <- Gen.chooseInt 0 max `Gen.suchThat` notEq a
     pure $ transpose a b
 
-newtype SolveInvariantPermutation = SolveInvariantPermutation (Permutation D54)
+newtype SolvedGemini = SolvedGemini Gemini
 
-instance Arbitrary SolveInvariantPermutation where
-  arbitrary = SolveInvariantPermutation <$> do
+instance Arbitrary SolvedGemini where
+  arbitrary = SolvedGemini <<< permuteInitial <$> do
     horizontal <- arbitrary
     let h = if horizontal then mirrorHorizontal else mempty
     let mirrorLeftRing = if horizontal then mirrorLeftRing2 else mirrorLeftRing1
@@ -78,16 +78,11 @@ instance Arbitrary ScrambledGemini where
 newtype AlmostSolvedGemini = AlmostSolvedGemini Gemini
 
 instance Arbitrary AlmostSolvedGemini where
-  arbitrary = apply <$> almostSolved
-    where
-    apply = AlmostSolvedGemini <<< permuteInitial
-
-almostSolved :: Gen (Permutation D54)
-almostSolved = ado
-  (AnyTransposition t) <- arbitrary
-  let transposed = toGeminiPermutation t
-  (SolveInvariantPermutation p) <- arbitrary
-  in p <> transposed
+  arbitrary = AlmostSolvedGemini <$> ado
+    (AnyTransposition t) <- arbitrary
+    let p = toGeminiPermutation t
+    (SolvedGemini g) <- arbitrary
+    in permuteGemini p g
 
 permuteInitial :: Permutation D54 -> Gemini
 permuteInitial p = permuteGemini p initialGemini

@@ -65,9 +65,12 @@ scrambleWith perm store = do
   p <- perm
   Store.modify store $ Gemini.applyToGemini p
 
+scrambleInto :: Effect Gemini -> Store Gemini -> Effect Unit
+scrambleInto g store = g >>= Store.set store
+
 scramble2 :: Store Gemini -> Effect Unit
-scramble2 = scrambleWith $ Gen.randomSampleOne arbitrary <#>
-  \(SolveInvariantPermutation p) -> p
+scramble2 = scrambleInto $
+  Gen.randomSampleOne arbitrary <#> \(SolvedGemini g) -> g
 
 unsafeIndex :: forall a. Array a -> Int -> a
 unsafeIndex arr i = unsafePartial $ fromJust $ Array.index arr i
