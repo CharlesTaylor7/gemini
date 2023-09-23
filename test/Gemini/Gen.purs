@@ -56,16 +56,11 @@ instance Pos n => Arbitrary (AnyTransposition n) where
 newtype SolvedGemini = SolvedGemini Gemini
 
 instance Arbitrary SolvedGemini where
-  arbitrary = SolvedGemini <<< permuteInitial <$> do
-    horizontal <- arbitrary
-    let h = if horizontal then mirrorHorizontal else mempty
-    let mirrorLeftRing = if horizontal then mirrorLeftRing2 else mirrorLeftRing1
-    let
-      mirrorRightRing =
-        if horizontal then mirrorRightRing2 else mirrorRightRing1
+  arbitrary = SolvedGemini <<< permuteInitial <$> ado
+    h <- arbitrary <#> if _ then mirrorHorizontal else mempty
     left <- arbitrary <#> if _ then mirrorLeftRing else mempty
     right <- arbitrary <#> if _ then mirrorRightRing else mempty
-    pure $ h <> left <> right
+    in left <> right <> h
 
 newtype ScrambledGemini = ScrambledGemini Gemini
 
@@ -100,20 +95,15 @@ toGeminiPermutation perm = do
 
 -- | mirror left ring along a diagonal
 -- | in the initial state, this swaps the Red & Yellow bands
-mirrorLeftRing1 :: Permutation D54
-mirrorLeftRing1 =
+mirrorLeftRing :: Permutation D54
+mirrorLeftRing =
   (enumFromTo 0 7 :: Array Int)
     # foldMap (\i -> transpose ((1 - i) `mod` 18) (i + 3))
 
-mirrorLeftRing2 :: Permutation D54
-mirrorLeftRing2 =
-  (enumFromTo 0 7 :: Array Int)
-    # foldMap (\i -> transpose ((6 - i) `mod` 18) (i + 8))
-
 -- | mirror right ring along a diagonal
 -- | in the initial state, this swaps the Green & White bands
-mirrorRightRing1 :: Permutation D54
-mirrorRightRing1 =
+mirrorRightRing :: Permutation D54
+mirrorRightRing =
   fold
     [ transpose 46 48
     , transpose 45 49
@@ -123,21 +113,6 @@ mirrorRightRing1 =
     , transpose 41 53
     , transpose 40 36
     , transpose 39 37
-    ]
-
--- | mirror right ring along a diagonal
--- | in the initial state, this swaps the Green & White bands
-mirrorRightRing2 :: Permutation D54
-mirrorRightRing2 =
-  fold
-    [ transpose 51 53
-    , transpose 50 36
-    , transpose 49 37
-    , transpose 48 38
-    , transpose 25 39
-    , transpose 46 40
-    , transpose 45 41
-    , transpose 44 42
     ]
 
 -- | swap every disk along the horizontal axis
@@ -159,3 +134,15 @@ mirrorHorizontal = foldMap mirror inhabitants
       LeftRing -> 0
       CenterRing -> 18
       RightRing -> 36
+
+swapYellowWhite :: Permutation D54
+swapYellowWhite = mempty
+
+permuteRanges ::
+  forall m n.
+  Pos m =>
+  Pos n =>
+  Array (Array Int) ->
+  Permutation n ->
+  Permutation m
+permuteRanges _ _ = mempty

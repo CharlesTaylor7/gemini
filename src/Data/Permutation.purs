@@ -27,6 +27,7 @@ import Data.Nat (class Lt, class Nat, knownInt, natsUnder)
 import Data.Set as Set
 import Data.Tuple as Tuple
 import Data.Tuple.Nested (type (/\), (/\))
+import Data.Tuple.Nested (type (/\), (/\))
 
 newtype Permutation (bound :: Type) = Permutation (Map Int Int)
 
@@ -94,3 +95,22 @@ transpose a b = unsafePermutation $
     [ a /\ b
     , b /\ a
     ]
+
+cycle :: forall @c. Array Int -> Permutation c
+cycle input = unsafePermutation
+  $ Map.fromFoldable
+  $ pairs input
+
+-- | all adjacent pairs in the list plus an extra pair between the last and first item
+pairs :: forall a f. Foldable f => f a -> List (a /\ a)
+pairs x =
+  case NonEmptyList.fromFoldable x of
+    Nothing -> List.Nil
+    Just list ->
+      let
+        { head: a, tail: as } = NonEmptyList.uncons list
+        go (x : y : rest) = (x /\ y) : go (y : rest)
+        go (x : List.Nil) = (x /\ a) : List.Nil
+        go _ = List.Nil
+      in
+        go (a : as)
