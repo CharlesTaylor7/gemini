@@ -7,6 +7,7 @@ module Data.Permutation
   , derangements
   , lift
   , transpose
+  , cycle
   , module Data.Group
   ) where
 

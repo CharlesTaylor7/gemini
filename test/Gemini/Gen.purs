@@ -13,14 +13,23 @@ import Data.Permutation
 import Partial.Unsafe
 import Prelude
 
+import Control.Monad.ST as ST
 import Data.Array as Array
+import Data.Array as Array
+import Data.Array.NonEmpty (NonEmptyArray)
+import Data.Array.NonEmpty as NEArray
+import Data.Array.ST as STArray
+import Data.Array.ST.Extra as STArray
 import Data.Enum (enumFromTo)
 import Data.Finitary (inhabitants)
 import Data.Foldable (fold, foldMap)
+import Data.FoldableWithIndex (forWithIndex_)
 import Data.Location (Location, indexToLocation)
 import Data.Location (Ring(..))
 import Data.Map as Map
-import Data.Nat (class Pos, D50, D54, knownInt)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Nat (class Pos, D2, D4, D50, D54, knownInt)
+import Data.Permutation as Permutation
 import Test.QuickCheck (class Arbitrary, arbitrary)
 import Test.QuickCheck (arbitrary) as ReExport
 import Test.QuickCheck.Gen (Gen)
@@ -60,7 +69,15 @@ instance Arbitrary SolvedGemini where
     h <- arbitrary <#> if _ then mirrorHorizontal else mempty
     left <- arbitrary <#> if _ then mirrorLeftRing else mempty
     right <- arbitrary <#> if _ then mirrorRightRing else mempty
-    in left <> right <> h
+    colorPerm8 <- arbitrary <#> \(AnyPermutation p) -> permuteRanges @D4
+      eightDiskRanges
+      p
+    colorPerm9 <- arbitrary <#> \(AnyPermutation p) -> permuteRanges @D2
+      nineDiskRanges
+      p
+    in colorPerm9
+
+--colorPerm8 <> colorPerm9 <> left <> right <> h
 
 newtype ScrambledGemini = ScrambledGemini Gemini
 
@@ -135,14 +152,51 @@ mirrorHorizontal = foldMap mirror inhabitants
       CenterRing -> 18
       RightRing -> 36
 
-swapYellowWhite :: Permutation D54
-swapYellowWhite = mempty
+yellowRange :: Array Int
+yellowRange = enumFromTo 3 11
+
+whiteRange :: Array Int
+whiteRange = [ 48, 49, 50, 51, 20, 53, 36, 37, 38 ]
+
+redRange :: Array Int
+redRange = enumFromTo 0 7 <#> (add 12) >>> (mod 18)
+
+blueRange :: Array Int
+blueRange = enumFromTo 21 28
+
+greenRange :: Array Int
+greenRange = enumFromTo 39 46
+
+blackRange :: Array Int
+blackRange = [ 30, 31, 32, 33, 2, 35, 18, 19 ]
+
+eightDiskRanges :: Array (Array Int)
+eightDiskRanges = [ redRange, blackRange, blueRange, greenRange ]
+
+nineDiskRanges :: Array (Array Int)
+nineDiskRanges = [ whiteRange, yellowRange ]
 
 permuteRanges ::
-  forall m n.
-  Pos m =>
+  forall @n.
   Pos n =>
   Array (Array Int) ->
   Permutation n ->
-  Permutation m
-permuteRanges _ _ = mempty
+  Permutation D54
+permuteRanges ranges p =
+  ranges
+    # Array.transpose
+    # foldMap (\array -> Permutation.cycle $ permuteArray p array)
+
+permuteArray :: forall n a. Permutation n -> Array a -> Array a
+permuteArray perm array = ST.run do
+  copy <- array # STArray.thaw
+  forWithIndex_ (derangements perm) $ \i j ->
+    case Array.index array i of
+      Nothing ->
+        unsafeCrashWith $ "index out of range: " <> show i
+
+      Just x ->
+        copy # STArray.write j x
+
+  STArray.unsafeFreeze copy
+
