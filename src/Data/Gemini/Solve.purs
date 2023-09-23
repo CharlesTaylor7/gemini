@@ -1,5 +1,7 @@
 module Data.Gemini.Solve where
 
+import Data.Cyclic
+import Data.Location
 import Prelude
 
 import Control.Alt ((<|>))
@@ -8,7 +10,7 @@ import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, unCyclic)
-import Data.Foldable (all)
+import Data.Foldable (all, any)
 import Data.Gemini (Color(..), Gemini, geminiLookup)
 import Data.Gemini as Gemini
 import Data.List (List)
@@ -18,6 +20,7 @@ import Data.List.NonEmpty as NEList
 import Data.Location (Location(..), Ring, ambiguousLocations, indexToLocation, sibling, unLocation)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Nat (class Pos)
+import Data.Nat (D18)
 import Data.Semigroup.Foldable as NEFold
 import Data.Set (Set)
 import Data.Set as Set
@@ -63,11 +66,6 @@ isFinishedSequence color ls =
               (unLocation >>> _.position)
           )
   where
-  diskCount :: Color -> Int
-  diskCount White = 9
-  diskCount Yellow = 9
-  diskCount _ = 8
-
   mostCommonRing :: Ring
   mostCommonRing =
     ringGroups
@@ -120,16 +118,62 @@ isFinished expectedCount list =
       -- x is outside the band of acceptability
       | otherwise = false
 
+force :: forall a. (Unit -> a) -> a
+force = (#) unit
+
 isSolvedFast :: Gemini -> Boolean
-isSolvedFast gemini = all force [ \_ -> Set.size colors == 4 ]
+isSolvedFast gemini = all force
+  [ \_ -> Set.size colors == 4
+  , \_ -> all checkJunction ambiguousLocations
+  ]
   where
-  force :: forall a. (Unit -> a) -> a
-  force = (#) unit
-
   colors :: Set Color
-  colors = startingPoints # Set.map (flip geminiLookup gemini >>> _.color)
-
-  startingPoints :: Set Location
-  startingPoints =
+  colors =
     Set.fromFoldable $
-      ambiguousLocations <#> \pair -> pair.canonical
+      ambiguousLocations
+        <#> \pair ->
+          gemini
+            # geminiLookup pair.canonical
+            # _.color
+
+  checkJunction :: LocationPair -> Boolean
+  checkJunction { canonical, alternate } =
+    any force
+      [ \_ -> checkLocation canonical
+      , \_ -> checkLocation alternate
+      ]
+
+  checkLocation :: Location -> Boolean
+  checkLocation start =
+    let
+      tally = go (cyclic 1) 0 start + go (-cyclic 1) 0 start
+    in
+      tally == diskCount (color start)
+
+    where
+    color l = (geminiLookup l gemini).color
+
+    go :: Cyclic D18 -> Int -> Location -> Int
+    go offset count l =
+      let
+        next = advance l offset
+      in
+        if color next == color start then go offset (count + 1) next else count
+
+--let
+--next = Location { ring: l.ring, position: l.position}
+
+advance :: Location -> Cyclic D18 -> Location
+advance (Location { position, ring }) offset =
+  Location { position: position + offset, ring }
+
+diskCount :: Color -> Int
+diskCount White = 9
+diskCount Yellow = 9
+diskCount _ = 8
+
+neighbors :: Location -> Array Location
+neighbors (Location r) =
+  [ Location { ring: r.ring, position: (r.position + cyclic 1) }
+  , Location { ring: r.ring, position: (r.position - cyclic 1) }
+  ]
