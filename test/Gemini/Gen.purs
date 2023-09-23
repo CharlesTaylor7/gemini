@@ -69,13 +69,11 @@ instance Arbitrary SolvedGemini where
     h <- arbitrary <#> if _ then mirrorHorizontal else mempty
     left <- arbitrary <#> if _ then mirrorLeftRing else mempty
     right <- arbitrary <#> if _ then mirrorRightRing else mempty
-    colorPerm8 <- arbitrary <#> \(AnyPermutation p) -> permuteRanges @D4
-      eightDiskRanges
-      p
-    colorPerm9 <- arbitrary <#> \(AnyPermutation p) -> permuteRanges @D2
-      nineDiskRanges
-      p
-    in colorPerm9
+    colorPerm8 <- arbitrary <#>
+      \(AnyPermutation p) -> permuteRanges @D4 eightDiskRanges p
+    colorPerm9 <- arbitrary <#>
+      \(AnyPermutation p) -> permuteRanges @D2 nineDiskRanges p
+    in colorPerm8
 
 --colorPerm8 <> colorPerm9 <> left <> right <> h
 
