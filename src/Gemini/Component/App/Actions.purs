@@ -59,10 +59,5 @@ scramble store = do
   where
   rings = inhabitants
 
-scrambleWith :: Effect GeminiPermutation -> Store Gemini -> Effect Unit
-scrambleWith perm store = do
-  p <- perm
-  Store.modify store $ Gemini.permuteGemini p
-
 unsafeIndex :: forall a. Array a -> Int -> a
 unsafeIndex arr i = unsafePartial $ fromJust $ Array.index arr i
