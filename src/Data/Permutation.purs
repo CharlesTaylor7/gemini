@@ -11,7 +11,6 @@ module Data.Permutation
   , module Data.Group
   ) where
 
-import Partial.Unsafe
 import Prelude
 
 import Data.Array as Array

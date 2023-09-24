@@ -16,14 +16,14 @@ import Prim.Ordering (EQ, GT, LT)
 import Type.Proxy (Proxy(..))
 
 class Nat :: Int -> Constraint
-class Reflectable n Int <= Nat n
+class (Compare n (-1) GT, Reflectable n Int) <= Nat n
 
 class Pos :: Int -> Constraint
 class (Compare n 0 GT, Nat n) <= Pos n
 
 class (Compare a b LT) <= Lt a b
 
-instance Reflectable n Int => Nat n
+instance (Compare n (-1) GT, Reflectable n Int) => Nat n
 instance (Compare n 0 GT, Nat n) => Pos n
 
 knownInt :: forall @n. Nat n => Int
