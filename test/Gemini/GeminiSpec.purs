@@ -1,8 +1,8 @@
 module Test.Gemini.GeminiSpec where
 
-import Gemini.Prelude
+import Prelude
 
-import Data.Gemini (applyToGemini, initialGemini)
+import Data.Gemini (applyToGemini, initialGemini, permuteGemini)
 import Data.Gemini.Motions (l)
 import Data.Gemini.Solve (isSolved, isSolvedFast)
 import Data.Permutation (transpose)
@@ -17,7 +17,7 @@ spec = do
   describe "Solve detection" $ do
     it "initial gemini" $ do
       initialGemini `shouldSatisfy` isSolved
-    --initialGemini `shouldSatisfy` isSolvedFast
+      initialGemini `shouldSatisfy` isSolvedFast
 
     it "rotate left ring" $ do
       -- | rotate the left ring

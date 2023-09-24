@@ -1,7 +1,7 @@
 module Data.Gemini.Solve where
 
-import Data.Cyclic
 import Data.Location
+import Debug
 import Prelude
 
 import Control.Alt ((<|>))
@@ -9,7 +9,7 @@ import Control.Alternative (guard)
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
-import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, unCyclic)
+import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
 import Data.Foldable (all, any)
 import Data.Gemini (Color(..), Gemini, geminiLookup)
 import Data.Gemini as Gemini
@@ -147,7 +147,7 @@ isSolvedFast gemini = all force
     let
       tally = go (cyclic 1) 0 start + go (-cyclic 1) 0 start
     in
-      tally == diskCount (color start)
+      (spy ("tally = " <> show (color start)) tally) == diskCount (color start)
 
     where
     color l = (geminiLookup l gemini).color
