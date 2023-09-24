@@ -23,7 +23,7 @@ import Data.Array.ST.Extra as STArray
 import Data.Enum (enumFromTo)
 import Data.Finitary (inhabitants)
 import Data.Foldable (fold, foldMap)
-import Data.FoldableWithIndex (forWithIndex_)
+import Data.FoldableWithIndex (foldMapWithIndex, forWithIndex_)
 import Data.Location (Location, indexToLocation)
 import Data.Location (Ring(..))
 import Data.Location (locationToIndex')
@@ -71,14 +71,10 @@ instance Arbitrary SolvedGemini where
     left <- arbitrary <#> if _ then mirrorLeftRing else mempty
     right <- arbitrary <#> if _ then mirrorRightRing else mempty
     colorPerm8 <- arbitrary <#>
-      \(AnyPermutation p) -> permuteRanges @4 eightDiskRanges p
+      \(AnyPermutation p) -> permuteRanges @4 8 eightDiskRanges p
     colorPerm9 <- arbitrary <#>
-      \(AnyPermutation p) -> permuteRanges @2 nineDiskRanges p
-    in left <> right <> h
-
---colorPerm8
-
---colorPerm8 <> colorPerm9 <> left <> right <> h
+      \(AnyPermutation p) -> permuteRanges @2 9 nineDiskRanges p
+    in colorPerm8 <> colorPerm9 <> left <> right <> h
 
 newtype ScrambledGemini = ScrambledGemini Gemini
 
@@ -120,8 +116,16 @@ toGeminiPermutation perm = do
 -- | in the initial state, this swaps the Red & Yellow bands
 mirrorLeftRing :: Permutation 54
 mirrorLeftRing =
-  (enumFromTo 0 7 :: Array Int)
-    # foldMap (\i -> transpose ((1 - i) `mod` 18) (i + 3))
+  fold
+    [ transpose 1 3
+    , transpose 0 4
+    , transpose 17 5
+    , transpose 16 6
+    , transpose 15 29
+    , transpose 14 8
+    , transpose 13 9
+    , transpose 12 10
+    ]
 
 -- | mirror right ring along a diagonal
 -- | in the initial state, this swaps the Green & White bands
@@ -167,13 +171,35 @@ nineDiskRanges = [ whiteRange, yellowRange ]
 permuteRanges ::
   forall @n.
   Pos n =>
+  Int ->
   Array (Array Location) ->
   Permutation n ->
   Permutation 54
-permuteRanges ranges p =
-  ranges
-    # Array.transpose
-    # foldMap (\array -> Permutation.cycle $ permuteArray p array)
+permuteRanges rangeLen ranges p =
+  derangements p
+    # foldMapWithIndex \i j ->
+        (enumFromTo 0 (rangeLen - 1) :: Array _)
+          # foldMap \k ->
+              transpose
+                (ranges !! i !! k # locationToIndex')
+                (ranges !! j !! k # locationToIndex')
+
+infixl 8 unsafeIndex as !!
+
+unsafeIndex :: forall a. Array a -> Int -> a
+unsafeIndex array i =
+  case Array.index array i of
+    Just x -> x
+    _ -> unsafeCrashWith "unsafeIndex"
+
+{-
+ranges
+  # Array.transpose
+  # foldMap
+      ( \array -> Permutation.cycle $ permuteArray p
+          (array <#> locationToIndex')
+      )
+      -}
 
 permuteArray :: forall n a. Permutation n -> Array a -> Array a
 permuteArray perm array = ST.run do
