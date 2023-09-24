@@ -11,7 +11,7 @@ import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
 import Data.Foldable (all, any)
-import Data.Gemini (Color(..), Gemini, geminiLookup)
+import Data.Gemini (Color(..), Gemini, diskCount, geminiLookup)
 import Data.Gemini as Gemini
 import Data.List (List)
 import Data.List as List
@@ -162,9 +162,4 @@ isSolvedFast gemini = all force
 advance :: Location -> Cyclic 18 -> Location
 advance (Location { position, ring }) offset =
   Location { position: position + offset, ring }
-
-diskCount :: Color -> Int
-diskCount White = 9
-diskCount Yellow = 9
-diskCount _ = 8
 
