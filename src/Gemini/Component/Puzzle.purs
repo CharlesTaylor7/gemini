@@ -94,7 +94,8 @@ disk location@(Location { position, ring }) props =
             <|>
               D.OnTouchstart !:= touch
                 (onDragStart { drag: props.drag, location })
-      , text: text_ $ show $ locationToIndex location
+      , text: text_ ""
+      -- $ show $ locationToIndex location
       }
   where
   color =
