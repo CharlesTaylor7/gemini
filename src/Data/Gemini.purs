@@ -152,6 +152,7 @@ range =
     Green -> greenRange
     White -> whiteRange
 
+redRange :: Array Location
 redRange =
   [ (location LeftRing 12)
   , (location LeftRing 13)
@@ -163,6 +164,7 @@ redRange =
   , (location LeftRing 1)
   ]
 
+yellowRange :: Array Location
 yellowRange =
   [ (location LeftRing 3)
   , (location LeftRing 4)
@@ -175,6 +177,7 @@ yellowRange =
   , (location LeftRing 11)
   ]
 
+blackRange :: Array Location
 blackRange =
   [ (location CenterRing 12)
   , (location CenterRing 13)
@@ -186,6 +189,7 @@ blackRange =
   , (location CenterRing 1)
   ]
 
+blueRange :: Array Location
 blueRange =
   [ (location CenterRing 3)
   , (location CenterRing 4)
@@ -197,6 +201,7 @@ blueRange =
   , (location CenterRing 10)
   ]
 
+greenRange :: Array Location
 greenRange =
   [ (location RightRing 3)
   , (location RightRing 4)
@@ -208,6 +213,7 @@ greenRange =
   , (location RightRing 10)
   ]
 
+whiteRange :: Array Location
 whiteRange =
   [ (location RightRing 12)
   , (location RightRing 13)
