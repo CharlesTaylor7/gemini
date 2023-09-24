@@ -20,7 +20,6 @@ spec = do
       initialGemini `shouldSatisfy` isSolvedFast
 
     it "rotate left ring" $ do
-      -- | rotate the left ring
       (initialGemini # applyToGemini (l 3)) `shouldNotSatisfy` isSolved
       (initialGemini # applyToGemini (l 3)) `shouldNotSatisfy` isSolvedFast
 

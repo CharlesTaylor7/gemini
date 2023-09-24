@@ -145,9 +145,9 @@ isSolvedFast gemini = all force
   checkLocation :: Location -> Boolean
   checkLocation start =
     let
-      tally = go (cyclic 1) 0 start + go (-cyclic 1) 0 start
+      tally = 1 + go (cyclic 1) 0 start + go (-cyclic 1) 0 start
     in
-      (spy ("tally = " <> show (color start)) tally) == diskCount (color start)
+      tally == diskCount (color start)
 
     where
     color l = (geminiLookup l gemini).color
