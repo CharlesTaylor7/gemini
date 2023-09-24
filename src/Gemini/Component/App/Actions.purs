@@ -56,14 +56,14 @@ scramble store = do
           r <- randomInt 0 2
           in Motion { ring: rings `unsafeIndex` r, amount: cyclic m }
   let perm = foldMap Gemini.toPerm randomMotions
-  Store.modify store $ Gemini.applyToGemini perm
+  Store.modify store $ Gemini.permuteGemini perm
   where
   rings = inhabitants
 
 scrambleWith :: Effect GeminiPermutation -> Store Gemini -> Effect Unit
 scrambleWith perm store = do
   p <- perm
-  Store.modify store $ Gemini.applyToGemini p
+  Store.modify store $ Gemini.permuteGemini p
 
 scrambleInto :: Effect Gemini -> Store Gemini -> Effect Unit
 scrambleInto g store = g >>= Store.set store

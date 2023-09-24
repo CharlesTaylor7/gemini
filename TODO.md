@@ -7,14 +7,10 @@
 - [x] Benchmarks
 - [x] Basic Generators
 - [ ] Generator that permutes colors
-- [ ] Generator that swaps colors on the left and/or right ring. e.g. swaps a 9 count color with an 8 count color.
-- [ ] Generator that permutes disks from the left ring to the right ring.
+- [x] Generator that swaps colors on the left and/or right ring. e.g. swaps a 9 count color with an 8 count color.
+- [ ] Edge cases for new solve detection:
+        Mostly solved with disks from leftmost ring transposed with rightmost ring.
 
 # Mobile
 - [ ] Test mobile view on iPad
 
-# UI
-- [ ] Debug mode that lists the location index of each disk
-
-# Refactor
-- [ ] Use Purescript Reflectable instead of Data.Nat

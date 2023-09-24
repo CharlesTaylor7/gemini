@@ -9,7 +9,6 @@ module Data.Gemini
   , Color(..)
   , Motion(..)
   , GeminiPermutation
-  , class ToPermutation
   , toPerm
   ) where
 
@@ -85,26 +84,19 @@ instance Show Color where
 --  Basic operations
 type GeminiPermutation = Permutation 54
 
--- | Typeclass for things that describe permutations of the Gemini puzzle
-class ToPermutation a where
-  toPerm :: a -> GeminiPermutation
-
-instance ToPermutation Motion where
-  toPerm (Motion { ring, amount }) =
-    unsafePermutation
-      $ Map.fromFoldable
-      $ indices
-          <#> \i ->
-            let
-              start = location ring $ unCyclic i
-              end = location ring $ unCyclic $ i + amount
-            in
-              locationToIndex' start /\ locationToIndex' end
-    where
-    indices = inhabitants :: Array (Cyclic 18)
-
-instance ToPermutation GeminiPermutation where
-  toPerm = identity
+toPerm :: Motion -> GeminiPermutation
+toPerm (Motion { ring, amount }) =
+  unsafePermutation
+    $ Map.fromFoldable
+    $ indices
+        <#> \i ->
+          let
+            start = location ring $ unCyclic i
+            end = location ring $ unCyclic $ i + amount
+          in
+            locationToIndex' start /\ locationToIndex' end
+  where
+  indices = inhabitants :: Array (Cyclic 18)
 
 newtype Motion = Motion
   { amount :: Cyclic 18
@@ -193,7 +185,7 @@ initialGemini =
     , (location RightRing 2 /\ disk White 9)
     ]
 
-applyToGemini :: forall a. ToPermutation a => a -> Gemini -> Gemini
+applyToGemini :: Motion -> Gemini -> Gemini
 applyToGemini = permuteGemini <<< toPerm
 
 permuteGemini :: GeminiPermutation -> Gemini -> Gemini
