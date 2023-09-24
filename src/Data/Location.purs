@@ -69,6 +69,7 @@ ambiguousLocations =
 
 -- | if the position exists on two different rings, then prefer the canonical one
 canonical :: Location -> Location
+canonical loc@(Location l) | l.ring == CenterRing = loc
 canonical location =
   fromMaybe location
     $ Array.find (\{ alternate } -> alternate == location) ambiguousLocations
@@ -131,4 +132,3 @@ dragRing loc1 =
   case sibling loc1 of
     Nothing -> Obvious loc1
     Just loc2 -> Ambiguous loc1 loc2
-

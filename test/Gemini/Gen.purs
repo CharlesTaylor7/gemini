@@ -107,10 +107,11 @@ permuteInitial p = permuteGemini p initialGemini
 toGeminiPermutation :: Permutation 50 -> Permutation 54
 toGeminiPermutation perm = do
   let extended = lift @50 @54 perm
+  -- alternates: [52,47,7,2]
   -- | transpose the extra indices to the end of the index space
-  let t1 = transpose 34 50
-  let t2 = transpose 29 51
-  let t3 = transpose 47 53
+  let t1 = transpose 47 50
+  let t2 = transpose 7 51
+  let t3 = transpose 2 53
   let t = t1 <> t2 <> t3
   let conjugated = t <> extended <> t
   conjugated
