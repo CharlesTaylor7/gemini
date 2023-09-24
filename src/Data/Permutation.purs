@@ -44,7 +44,7 @@ instance Nat n => Eq (Permutation n) where
 -- O(m * log n + floor(n - m) * log m) < O(k * log k) where k = max(m,n)
 -- where m is the size of the first permutation
 -- and m is the size of the second permutation
-instance Nat bound => Semigroup (Permutation bound) where
+instance Semigroup (Permutation bound) where
   append (Permutation p) perm2@(Permutation q) =
     -- fold over p and lookup composed image)
     -- also delete elements from q, and insert the remanant of q, into the end result
@@ -65,10 +65,10 @@ instance Nat bound => Semigroup (Permutation bound) where
       unsafePermutation $
         Map.union p q
 
-instance Nat n => Monoid (Permutation n) where
+instance Monoid (Permutation n) where
   mempty = Permutation Map.empty
 
-instance Nat bound => Group (Permutation bound) where
+instance Group (Permutation n) where
   invert (Permutation p) =
     p
       # (Map.toUnfoldableUnordered :: _ -> Array _)
