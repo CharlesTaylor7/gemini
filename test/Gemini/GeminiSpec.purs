@@ -12,9 +12,6 @@ import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)
 import Test.Spec.QuickCheck (quickCheck)
 
-check :: Gemini -> { isSolved :: Boolean, isSolvedFast :: Boolean }
-check g = { isSolved: isSolved g, isSolvedFast: isSolvedFast g }
-
 spec :: Spec Unit
 spec = do
   describe "Solve detection" $ do
@@ -34,22 +31,23 @@ spec = do
       (initialGemini # permuteGemini (transpose 0 45)) `shouldNotSatisfy`
         isSolvedFast
 
-    describe "property - correctness of original" $ do
-      it "almost solved" $ quickCheck $
-        \(AlmostSolvedGemini g) -> isSolved g === false
+    describe "property" $ do
+      describe "correctness of original" $ do
+        it "almost solved" $ quickCheck $
+          \(AlmostSolvedGemini g) -> isSolved g === false
 
-      it "solved" $ quickCheck $
-        \(SolvedGemini g) -> isSolved g === true
+        it "solved" $ quickCheck $
+          \(SolvedGemini g) -> isSolved g === true
 
-    describe "property - equivalence of algorithms" $ do
-      it "scrambled" $ quickCheck $
-        \(ScrambledGemini g) ->
-          isSolved g === isSolvedFast g
+      describe "equivalence of algorithms" $ do
+        it "scrambled" $ quickCheck $
+          \(ScrambledGemini g) ->
+            isSolved g === isSolvedFast g
 
-      it "almost solved" $ quickCheck $
-        \(AlmostSolvedGemini g) ->
-          isSolved g === isSolvedFast g
+        it "almost solved" $ quickCheck $
+          \(AlmostSolvedGemini g) ->
+            isSolved g === isSolvedFast g
 
-      it "solved" $ quickCheck $
-        \(SolvedGemini g) ->
-          isSolved g === isSolvedFast g
+        it "solved" $ quickCheck $
+          \(SolvedGemini g) ->
+            isSolved g === isSolvedFast g
