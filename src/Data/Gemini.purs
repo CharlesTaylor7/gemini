@@ -93,7 +93,7 @@ instance Finitary Color where
   inhabitants = [ Red, Green, Blue, Black, White, Yellow ]
 
 --  Basic operations
-type GeminiPermutation = Permutation 54
+type GeminiPermutation = Permutation 50
 
 toPerm :: Motion -> GeminiPermutation
 toPerm (Motion { ring, amount }) =
@@ -116,22 +116,15 @@ newtype Motion = Motion
 
 geminiLookup :: Location -> Gemini -> Disk
 geminiLookup location (Gemini array) =
-  case locationToIndex location # Array.index array of
+  case locationToIndex' location # Array.index array of
     Just x -> x
     Nothing -> unsafeCrashWith "geminiLookup"
 
 unsafeGemini :: Array (Location /\ Disk) -> Gemini
 unsafeGemini items = Gemini $ ST.run do
-  array <- STArray.unsafeNewSized 54
-  let write loc disk = array # STArray.write (locationToIndex loc) disk
-
+  array <- STArray.unsafeNewSized 50
   for_ items $ \(location /\ disk) -> do
-    write location disk
-    case sibling location of
-      Nothing ->
-        pure unit
-      Just s ->
-        write s disk
+    array # STArray.write (locationToIndex' location) disk
 
   STArray.unsafeFreeze array
 
@@ -142,6 +135,31 @@ initialGemini = unsafeGemini $
       (\l i -> l /\ disk color i)
       (range color)
       (enumFromTo 1 (diskCount color))
+
+applyToGemini :: Motion -> Gemini -> Gemini
+applyToGemini = permuteGemini <<< toPerm
+
+permuteGemini :: GeminiPermutation -> Gemini -> Gemini
+permuteGemini perm (Gemini disks) =
+  Gemini $ ST.run do
+    array <- disks # STArray.thaw
+    forWithIndex_ (derangements perm) $ \i j ->
+      case Array.index disks i of
+        Nothing ->
+          unsafeCrashWith $ "index out of range: " <> show i
+
+        Just disk ->
+          array # STArray.write j disk
+
+    for_ ambiguousLocations $ \{ canonical, alternate } -> do
+      val <- array # STArray.peek (locationToIndex canonical)
+      case val of
+        Nothing ->
+          unsafeCrashWith "wat"
+        Just disk ->
+          array # STArray.write (locationToIndex alternate) disk
+
+    STArray.unsafeFreeze array
 
 diskCount :: Color -> Int
 diskCount White = 9
@@ -232,27 +250,3 @@ whiteRange =
   , (location RightRing 2)
   ]
 
-applyToGemini :: Motion -> Gemini -> Gemini
-applyToGemini = permuteGemini <<< toPerm
-
-permuteGemini :: GeminiPermutation -> Gemini -> Gemini
-permuteGemini perm (Gemini disks) =
-  Gemini $ ST.run do
-    array <- disks # STArray.thaw
-    forWithIndex_ (derangements perm) $ \i j ->
-      case Array.index disks i of
-        Nothing ->
-          unsafeCrashWith $ "index out of range: " <> show i
-
-        Just disk ->
-          array # STArray.write j disk
-
-    for_ ambiguousLocations $ \{ canonical, alternate } -> do
-      val <- array # STArray.peek (locationToIndex canonical)
-      case val of
-        Nothing ->
-          unsafeCrashWith "wat"
-        Just disk ->
-          array # STArray.write (locationToIndex alternate) disk
-
-    STArray.unsafeFreeze array
