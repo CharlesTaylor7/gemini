@@ -9,13 +9,13 @@ module Test.Gemini.Gen
   ) where
 
 import Data.Gemini
+import Data.Location
 import Data.Permutation
 import Debug
 import Partial.Unsafe
 import Prelude
 
 import Control.Monad.ST as ST
-import Data.Array as Array
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
@@ -105,44 +105,33 @@ permuteInitial p = permuteGemini p initialGemini
 toGeminiPermutation :: Permutation 50 -> Permutation 54
 toGeminiPermutation perm = do
   let extended = lift @50 @54 perm
-  -- alternates: [52,47,7,2]
   -- | transpose the extra indices to the end of the index space
-  let t1 = transpose 47 50
-  let t2 = transpose 7 51
-  let t3 = transpose 2 53
-  let t = t1 <> t2 <> t3
+  let
+    t =
+      ambiguousLocations
+        # foldMapWithIndex \i { alternate } -> transpose
+            (locationToIndex alternate)
+            (50 + i)
   let conjugated = t <> extended <> t
   conjugated
 
--- | mirror left ring along a diagonal
 -- | in the initial state, this swaps the Red & Yellow bands
 mirrorLeftRing :: Permutation 54
 mirrorLeftRing =
-  fold
-    [ transpose 1 3
-    , transpose 0 4
-    , transpose 17 5
-    , transpose 16 6
-    , transpose 15 29
-    , transpose 14 8
-    , transpose 13 9
-    , transpose 12 10
-    ]
+  fold $
+    Array.zipWith
+      (\r y -> transpose (locationToIndex' r) (locationToIndex' y))
+      redRange
+      yellowRange
 
--- | mirror right ring along a diagonal
 -- | in the initial state, this swaps the Green & White bands
 mirrorRightRing :: Permutation 54
 mirrorRightRing =
-  fold
-    [ transpose 46 48
-    , transpose 45 49
-    , transpose 44 50
-    , transpose 43 51
-    , transpose 42 20
-    , transpose 41 53
-    , transpose 40 36
-    , transpose 39 37
-    ]
+  fold $
+    Array.zipWith
+      (\g w -> transpose (locationToIndex' g) (locationToIndex' w))
+      greenRange
+      whiteRange
 
 -- | swap every disk along the horizontal axis
 mirrorHorizontal :: Permutation 54
