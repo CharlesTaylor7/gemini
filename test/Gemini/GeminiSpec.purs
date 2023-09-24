@@ -15,13 +15,23 @@ import Test.Spec.QuickCheck (quickCheck)
 spec :: Spec Unit
 spec = do
   describe "Gemini" $ do
-    it "isSolved" $ do
-      initialGemini `shouldSatisfy` isSolved
-      -- | rotate the left ring
-      (initialGemini # applyToGemini (l 3)) `shouldNotSatisfy` isSolved
-      -- | transpose a red disk with a green one
-      (initialGemini # permuteGemini (transpose 0 45)) `shouldNotSatisfy`
-        isSolved
+    describe "isSolved" $ do
+      it "initial gemini" $ do
+        initialGemini `shouldSatisfy` isSolved
+        initialGemini `shouldSatisfy` isSolvedFast
+
+      it "rotate left ring" $ do
+        -- | rotate the left ring
+        (initialGemini # applyToGemini (l 3)) `shouldNotSatisfy` isSolved
+        (initialGemini # applyToGemini (l 3)) `shouldNotSatisfy` isSolvedFast
+
+      it "transpose a red disk with a green one" $ do
+        (initialGemini # permuteGemini (transpose 0 45)) `shouldNotSatisfy`
+          isSolved
+
+        (initialGemini # permuteGemini (transpose 0 45)) `shouldNotSatisfy`
+          isSolvedFast
+
     it "property test" $ quickCheck $
       \(ScrambledGemini g) ->
         isSolved g === isSolvedFast g
