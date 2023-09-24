@@ -24,7 +24,7 @@ import Data.List.NonEmpty as NonEmptyList
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.Nat (class Lt, class Nat, knownInt, natsUnder)
+import Data.Nat (class Compare, class Nat, LT, knownInt, natsUnder)
 import Data.Reflectable (class Reflectable)
 import Data.Set as Set
 import Data.Tuple as Tuple
@@ -87,7 +87,7 @@ derangements (Permutation p) = p
 unsafePermutation :: forall n. Map Int Int -> Permutation n
 unsafePermutation = Permutation
 
-lift :: forall @a @b. Lt a b => Permutation a -> Permutation b
+lift :: forall @a @b. Compare a b LT => Permutation a -> Permutation b
 lift = derangements >>> unsafePermutation
 
 transpose :: forall @c. Int -> Int -> Permutation c
