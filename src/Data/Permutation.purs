@@ -35,10 +35,16 @@ derive newtype instance Show (Permutation bound)
 
 -- Because the permutation representation is not normalized,
 -- we determine if permutations are equal if they map every element of the domain the same way
-instance Nat n => Eq (Permutation n) where
+
+instance Eq (Permutation n) where
   eq p q =
-    natsUnder @n
-      # Array.all (\k -> permute p k == permute q k)
+    p <> invert q
+      # isIdentity
+    where
+    isIdentity p =
+      derangements p
+        # Map.toUnfoldableUnordered
+        # Array.all (\(i /\ j) -> i == j)
 
 -- O(m * log n + floor(n - m) * log m) < O(k * log k) where k = max(m,n)
 -- where m is the size of the first permutation
