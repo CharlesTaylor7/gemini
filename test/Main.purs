@@ -16,6 +16,6 @@ main = launchAff_
   $ runSpec' (defaultConfig { failFast = true }) [ consoleReporter ]
   $ do
       CyclicSpec.spec
-      GeminiSpec.spec
       LocationSpec.spec
       PermutationSpec.spec
+      GeminiSpec.spec

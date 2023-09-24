@@ -138,12 +138,12 @@ isSolvedFast gemini = all force
   checkJunction :: LocationPair -> Boolean
   checkJunction { canonical, alternate } =
     any force
-      [ \_ -> checkLocation canonical
-      , \_ -> checkLocation alternate
+      [ \_ -> belongsToCompleteArc canonical
+      , \_ -> belongsToCompleteArc alternate
       ]
 
-  checkLocation :: Location -> Boolean
-  checkLocation start =
+  belongsToCompleteArc :: Location -> Boolean
+  belongsToCompleteArc start =
     let
       tally = 1 + go (cyclic 1) 0 start + go (-cyclic 1) 0 start
     in
