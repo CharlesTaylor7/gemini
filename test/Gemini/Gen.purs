@@ -194,25 +194,11 @@ unsafeIndex array i =
     Just x -> x
     _ -> unsafeCrashWith "unsafeIndex"
 
-{-
-ranges
-  # Array.transpose
-  # foldMap
-      ( \array -> Permutation.cycle $ permuteArray p
-          (array <#> locationToIndex')
-      )
-      -}
-
 permuteArray :: forall n a. Permutation n -> Array a -> Array a
 permuteArray perm array = ST.run do
   copy <- array # STArray.thaw
   forWithIndex_ (derangements perm) $ \i j ->
-    case Array.index array i of
-      Nothing ->
-        unsafeCrashWith $ "index out of range: " <> show i
-
-      Just x ->
-        copy # STArray.write j x
+    copy # STArray.write j (array !! i)
 
   STArray.unsafeFreeze copy
 
