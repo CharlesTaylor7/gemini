@@ -36,7 +36,10 @@ spec = do
 
     describe "property - correctness of original" $ do
       it "solved" $ quickCheck $
-        \(SolvedGemini g) -> isSolved g
+        \(SolvedGemini g) -> isSolved g === true
+
+      it "almost solved" $ quickCheck $
+        \(AlmostSolvedGemini g) -> isSolved g === false
 
     describe "property - equivalence of algorithms" $ do
       it "scrambled" $ quickCheck $

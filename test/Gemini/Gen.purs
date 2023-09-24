@@ -26,6 +26,7 @@ import Data.Foldable (fold, foldMap)
 import Data.FoldableWithIndex (forWithIndex_)
 import Data.Location (Location, indexToLocation)
 import Data.Location (Ring(..))
+import Data.Location (locationToIndex')
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nat (class Pos, knownInt)
@@ -73,7 +74,9 @@ instance Arbitrary SolvedGemini where
       \(AnyPermutation p) -> permuteRanges @4 eightDiskRanges p
     colorPerm9 <- arbitrary <#>
       \(AnyPermutation p) -> permuteRanges @2 nineDiskRanges p
-    in colorPerm8
+    in left <> right <> h
+
+--colorPerm8
 
 --colorPerm8 <> colorPerm9 <> left <> right <> h
 
@@ -88,11 +91,15 @@ instance Arbitrary ScrambledGemini where
 newtype AlmostSolvedGemini = AlmostSolvedGemini Gemini
 
 instance Arbitrary AlmostSolvedGemini where
-  arbitrary = AlmostSolvedGemini <$> ado
-    (AnyTransposition t) <- arbitrary
-    let p = toGeminiPermutation t
+  arbitrary = AlmostSolvedGemini <$> do
     (SolvedGemini g) <- arbitrary
-    in permuteGemini p g
+    let color l = (geminiLookup l g).color
+    (AnyLocation a) <- arbitrary
+    (AnyLocation b) <- arbitrary
+      `Gen.suchThat` \(AnyLocation b) -> (color a /= color b)
+    let i = locationToIndex' a
+    let j = locationToIndex' b
+    pure $ g # permuteGemini (transpose i j)
 
 permuteInitial :: Permutation 54 -> Gemini
 permuteInitial p = permuteGemini p initialGemini
