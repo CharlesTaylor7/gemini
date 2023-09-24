@@ -83,7 +83,8 @@ newtype ScrambledGemini = ScrambledGemini Gemini
 instance Arbitrary ScrambledGemini where
   arbitrary = ado
     AnyPermutation p <- arbitrary
-    in ScrambledGemini $ permuteInitial p
+    let perm = toGeminiPermutation p
+    in ScrambledGemini $ permuteInitial perm
 
 newtype AlmostSolvedGemini = AlmostSolvedGemini Gemini
 
@@ -98,11 +99,10 @@ instance Arbitrary AlmostSolvedGemini where
     let j = locationToIndex' b
     pure $ g # permuteGemini (transpose i j)
 
-permuteInitial :: GeminiPermutation -> Gemini
+permuteInitial :: Permutation 54 -> Gemini
 permuteInitial p = permuteGemini p initialGemini
 
-{-
-toGeminiPermutation :: Permutation 50 -> GeminiPermutation
+toGeminiPermutation :: Permutation 50 -> Permutation 54
 toGeminiPermutation perm = do
   let extended = lift @50 @54 perm
   -- | transpose the extra indices to the end of the index space
@@ -114,10 +114,9 @@ toGeminiPermutation perm = do
             (50 + i)
   let conjugated = t <> extended <> t
   conjugated
-  -}
 
 -- | in the initial state, this swaps the Red & Yellow bands
-mirrorLeftRing :: GeminiPermutation
+mirrorLeftRing :: Permutation 54
 mirrorLeftRing =
   fold $
     Array.zipWith
@@ -126,7 +125,7 @@ mirrorLeftRing =
       yellowRange
 
 -- | in the initial state, this swaps the Green & White bands
-mirrorRightRing :: GeminiPermutation
+mirrorRightRing :: Permutation 54
 mirrorRightRing =
   fold $
     Array.zipWith
@@ -135,10 +134,10 @@ mirrorRightRing =
       whiteRange
 
 -- | swap every disk along the horizontal axis
-mirrorHorizontal :: GeminiPermutation
+mirrorHorizontal :: Permutation 54
 mirrorHorizontal = foldMap mirror inhabitants
   where
-  mirror :: Ring -> GeminiPermutation
+  mirror :: Ring -> Permutation 54
   mirror ring =
     (enumFromTo 0 8 :: Array _)
       # foldMap
@@ -166,7 +165,7 @@ permuteRanges ::
   Int ->
   Array (Array Location) ->
   Permutation n ->
-  GeminiPermutation
+  Permutation 54
 permuteRanges rangeLen ranges p =
   unsafePermutation <<< Map.fromFoldable $
     (derangements p # Map.toUnfoldableUnordered :: Array _)
