@@ -46,7 +46,7 @@ instance Eq (Permutation n) where
         # Map.toUnfoldableUnordered
         # Array.all (\(i /\ j) -> i == j)
 
--- O(m * log n + floor(n - m) * log m) < O(k * log k) where k = max(m,n)
+-- O(m * log n + n * log m) < O(k * log k) where k = max(m,n)
 -- where m is the size of the first permutation
 -- and m is the size of the second permutation
 instance Semigroup (Permutation bound) where
