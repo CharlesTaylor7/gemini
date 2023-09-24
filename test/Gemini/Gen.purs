@@ -158,34 +158,16 @@ mirrorHorizontal = foldMap mirror inhabitants
       CenterRing -> 18
       RightRing -> 36
 
-yellowRange :: Array Int
-yellowRange = enumFromTo 3 11
-
-whiteRange :: Array Int
-whiteRange = [ 48, 49, 50, 51, 20, 53, 36, 37, 38 ]
-
-redRange :: Array Int
-redRange = enumFromTo 0 7 <#> (add 12) >>> (mod 18)
-
-blueRange :: Array Int
-blueRange = enumFromTo 21 28
-
-greenRange :: Array Int
-greenRange = enumFromTo 39 46
-
-blackRange :: Array Int
-blackRange = [ 30, 31, 32, 33, 2, 35, 18, 19 ]
-
-eightDiskRanges :: Array (Array Int)
+eightDiskRanges :: Array (Array Location)
 eightDiskRanges = [ redRange, blackRange, blueRange, greenRange ]
 
-nineDiskRanges :: Array (Array Int)
+nineDiskRanges :: Array (Array Location)
 nineDiskRanges = [ whiteRange, yellowRange ]
 
 permuteRanges ::
   forall @n.
   Pos n =>
-  Array (Array Int) ->
+  Array (Array Location) ->
   Permutation n ->
   Permutation 54
 permuteRanges ranges p =

@@ -11,6 +11,12 @@ module Data.Gemini
   , Motion(..)
   , GeminiPermutation
   , toPerm
+  , whiteRange
+  , redRange
+  , blueRange
+  , greenRange
+  , blackRange
+  , yellowRange
   ) where
 
 import Data.Location
