@@ -61,10 +61,10 @@ type LocationPair =
 
 ambiguousLocations :: Array LocationPair
 ambiguousLocations =
-  [ { canonical: location LeftRing 2, alternate: location CenterRing 16 }
-  , { canonical: location LeftRing 7, alternate: location CenterRing 11 }
-  , { canonical: location CenterRing 2, alternate: location RightRing 16 }
+  [ { canonical: location CenterRing 2, alternate: location RightRing 16 }
   , { canonical: location CenterRing 7, alternate: location RightRing 11 }
+  , { canonical: location CenterRing 11, alternate: location LeftRing 7 }
+  , { canonical: location CenterRing 16, alternate: location LeftRing 2 }
   ]
 
 -- | if the position exists on two different rings, then prefer the canonical one
