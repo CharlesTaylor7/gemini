@@ -10,6 +10,7 @@ module Test.Gemini.Gen
 
 import Data.Gemini
 import Data.Permutation
+import Debug
 import Partial.Unsafe
 import Prelude
 
@@ -31,6 +32,7 @@ import Data.Map as Map
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nat (class Pos, knownInt)
 import Data.Permutation as Permutation
+import Data.Tuple.Nested (type (/\), (/\))
 import Test.QuickCheck (class Arbitrary, arbitrary)
 import Test.QuickCheck (arbitrary) as ReExport
 import Test.QuickCheck.Gen (Gen)
@@ -176,13 +178,13 @@ permuteRanges ::
   Permutation n ->
   Permutation 54
 permuteRanges rangeLen ranges p =
-  derangements p
-    # foldMapWithIndex \i j ->
+  unsafePermutation <<< Map.fromFoldable $
+    (derangements p # Map.toUnfoldableUnordered :: Array _)
+      >>= \(i /\ j) ->
         (enumFromTo 0 (rangeLen - 1) :: Array _)
-          # foldMap \k ->
-              transpose
-                (ranges !! i !! k # locationToIndex')
-                (ranges !! j !! k # locationToIndex')
+          <#> \k ->
+            (ranges !! i !! k # locationToIndex') /\
+              (ranges !! j !! k # locationToIndex')
 
 infixl 8 unsafeIndex as !!
 
