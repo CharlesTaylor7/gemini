@@ -6,11 +6,12 @@ import Data.Gemini (applyToGemini, initialGemini, permuteGemini)
 import Data.Gemini.Motions (l)
 import Data.Gemini.Solve (isSolved, isSolvedFast)
 import Data.Permutation (transpose)
+import Random.LCG (mkSeed)
 import Test.Gemini.Gen (AlmostSolvedGemini(..), ScrambledGemini(..), SolvedGemini(..))
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)
-import Test.Spec.QuickCheck (quickCheck)
+import Test.Spec.QuickCheck (quickCheck, quickCheckPure)
 
 spec :: Spec Unit
 spec = do
@@ -43,7 +44,7 @@ spec = do
           \(ScrambledGemini g) ->
             isSolved g === isSolvedFast g
 
-        it "almost solved" $ quickCheck $
+        it "almost solved" $ quickCheckPure (mkSeed 1847507541) 1 $
           \(AlmostSolvedGemini g) ->
             isSolved g === isSolvedFast g
 

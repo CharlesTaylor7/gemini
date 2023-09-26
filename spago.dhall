@@ -14,6 +14,7 @@
   , "foldable-traversable"
   , "hyrule"
   , "integers"
+  , "lcg"
   , "lists"
   , "maybe"
   , "numbers"
