@@ -10,7 +10,7 @@ import Test.Gemini.Gen (AlmostSolvedGemini(..), ScrambledGemini(..), SolvedGemin
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)
-import Test.Spec.QuickCheck (quickCheck)
+import Test.Util (prop)
 
 spec :: Spec Unit
 spec = do
@@ -32,21 +32,21 @@ spec = do
 
     describe "property" $ do
       describe "correctness of original" $ do
-        it "almost solved" $ quickCheck $
+        prop "almost solved" $
           \(AlmostSolvedGemini g) -> isSolved g === false
 
-        it "solved" $ quickCheck $
+        prop "solved" $
           \(SolvedGemini g) -> isSolved g === true
 
       describe "equivalence of algorithms" $ do
-        it "scrambled" $ quickCheck $
+        prop "scrambled" $
           \(ScrambledGemini g) ->
             isSolved g === isSolvedFast g
 
-        it "almost solved" $ quickCheck $
+        prop "almost solved" $
           \(AlmostSolvedGemini g) ->
             isSolved g === isSolvedFast g
 
-        it "solved" $ quickCheck $
+        prop "solved" $
           \(SolvedGemini g) ->
             isSolved g === isSolvedFast g

@@ -6,7 +6,7 @@ import Test.Gemini.Gen (AnyLocation(..))
 import Test.QuickCheck (Result(..), (===))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Test.Spec.QuickCheck (quickCheck)
+import Test.Util (prop)
 
 spec :: Spec Unit
 spec = do
@@ -15,8 +15,7 @@ spec = do
       sibling (location LeftRing 0) `shouldEqual` Nothing
       sibling (location LeftRing 2) `shouldEqual` Just (location CenterRing 16)
 
-    it "sibling is its own (partial) inverse"
-      $ quickCheck
+    prop "sibling is its own (partial) inverse"
       $ \(AnyLocation x) -> case sibling x of
           Nothing -> Success
           Just y -> Just x === sibling y
