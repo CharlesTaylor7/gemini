@@ -182,12 +182,3 @@ unsafeIndex array i =
   case Array.index array i of
     Just x -> x
     _ -> unsafeCrashWith "unsafeIndex"
-
-permuteArray :: forall n a. Permutation n -> Array a -> Array a
-permuteArray perm array = ST.run do
-  copy <- array # STArray.thaw
-  forWithIndex_ (derangements perm) $ \i j ->
-    copy # STArray.write j (array !! i)
-
-  STArray.unsafeFreeze copy
-
