@@ -18,7 +18,7 @@ solveDetection = mkBenchmark
   { slug: "benchmark-gemini-solve-detection"
   , title: "Solve Detection"
   , sizes: [ 1, 2, 3 ]
-  , sizeInterpretation: "1: scrambled, 2: almost solved"
+  , sizeInterpretation: "1: scrambled, 2: almost solved, 3: solved"
   , inputsPerSize: 1000
   , gen:
       case _ of
