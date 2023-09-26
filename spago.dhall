@@ -24,6 +24,7 @@
   , "random"
   , "safe-coerce"
   , "spec"
+  , "spec-quickcheck"
   , "st"
   , "strings"
   , "tuples"

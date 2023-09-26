@@ -6,28 +6,28 @@ import Data.Permutation (Permutation)
 import Test.Gemini.Gen (AnyPermutation(..))
 import Test.QuickCheck ((===))
 import Test.Spec (Spec, describe, it)
-import Test.Util (prop)
+import Test.Spec.QuickCheck (quickCheck)
 
 spec :: Spec Unit
 spec = do
   describe "Data.Permutation" do
     describe "Group Laws" do
-      prop "left identity" $
+      it "left identity" $ quickCheck $
         \(AnyPermutation x) ->
           (mempty <> x) === (x :: Permutation 5)
 
-      prop "right identity" $
+      it "right identity" $ quickCheck $
         \(AnyPermutation x) ->
           (x <> mempty) === (x :: Permutation 5)
 
-      prop "left inverse" $
+      it "left inverse" $ quickCheck $
         \(AnyPermutation x) ->
           (invert x <> x) === (mempty :: Permutation 5)
 
-      prop "right inverse" $
+      it "right inverse" $ quickCheck $
         \(AnyPermutation x) ->
           (x <> invert x) === (mempty :: Permutation 5)
 
-      prop "associativity" $
+      it "associativity" $ quickCheck $
         \(AnyPermutation x) (AnyPermutation y) (AnyPermutation z) ->
           (x <> y) <> z === (x <> (y <> z) :: Permutation 5)
