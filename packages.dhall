@@ -5,6 +5,9 @@ let upstream =
 in  upstream
   with spec.version = "v7.5.5"
   with deku.version = "v0.9.24"
+  with spec-quickcheck.repo
+       = "https://github.com/CharlesTaylor7/purescript-spec-quickcheck.git"
+  with spec-quickcheck.version = "master"
   with benchotron =
     { dependencies =
       [ "ansi"
