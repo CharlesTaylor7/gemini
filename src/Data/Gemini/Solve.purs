@@ -9,8 +9,9 @@ import Control.Alternative (guard)
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NEArray
+import Data.Compactable (compact)
 import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
-import Data.Foldable (all, any)
+import Data.Foldable (all, any, foldl)
 import Data.Gemini (Color(..), Gemini, diskCount, geminiLookup)
 import Data.Gemini as Gemini
 import Data.List (List)
@@ -122,42 +123,61 @@ force = (#) unit
 
 isSolvedFast :: Gemini -> Boolean
 isSolvedFast gemini = all force
-  [ \_ -> Set.size colors == 4
-  , \_ -> all checkJunction ambiguousLocations
+  [ \_ -> Set.size (force colors) == 4
+  , \_ -> Array.length (force junctionRings) == 4
+  , \_ -> (force junctionRings) # Array.filter (eq CenterRing) # Array.length #
+      eq 2
+  , checkExtremities
   ]
   where
-  colors :: Set Color
-  colors =
-    Set.fromFoldable $
-      ambiguousLocations
-        <#> \pair ->
-          gemini
-            # geminiLookup pair.canonical
-            # _.color
 
-  checkJunction :: LocationPair -> Boolean
-  checkJunction { canonical, alternate } =
+  checkExtremities :: Unit -> Boolean
+  checkExtremities _ =
     any force
-      [ \_ -> belongsToCompleteArc canonical
-      , \_ -> belongsToCompleteArc alternate
+      [ \_ -> checkFrom (location RightRing 17) (cyclic 1)
+      , \_ -> checkFrom (location RightRing 10) (-cyclic 1)
       ]
+    where
 
-  belongsToCompleteArc :: Location -> Boolean
+    checkFrom :: Location -> DiskIndex -> Boolean
+    checkFrom start offset =
+      1 + go start offset 0 start == diskCount (color start)
+
+  colors :: Unit -> Set Color
+  colors _ =
+    Set.fromFoldable $
+      ambiguousLocations <#>
+        \pair -> color pair.canonical
+
+  junctionRings :: Unit -> Array Ring
+  junctionRings _ = ambiguousLocations <#> checkJunction # compact
+
+  checkJunction :: LocationPair -> Maybe Ring
+  checkJunction { canonical, alternate } =
+    [ \_ -> belongsToCompleteArc canonical
+    , \_ -> belongsToCompleteArc alternate
+    ]
+      # map force
+      # foldl (<|>) Nothing
+
+  belongsToCompleteArc :: Location -> Maybe Ring
   belongsToCompleteArc start =
     let
-      tally = 1 + go (cyclic 1) 0 start + go (-cyclic 1) 0 start
+      tally = 1 + go start (cyclic 1) 0 start + go start (-cyclic 1) 0 start
+      Location { ring } = start
     in
-      tally == diskCount (color start)
+      if tally == diskCount (color start) then Just ring else Nothing
 
-    where
-    color l = (geminiLookup l gemini).color
+  color :: Location -> Color
+  color l = (geminiLookup l gemini).color
 
-    go :: Cyclic 18 -> Int -> Location -> Int
-    go offset count l =
-      let
-        next = advance l offset
-      in
-        if color next == color start then go offset (count + 1) next else count
+  go :: Location -> Cyclic 18 -> Int -> Location -> Int
+  go start offset count l =
+    let
+      next = advance l offset
+    in
+      if color next == color start then go start offset (count + 1) next
+      else count
 
 advance :: Location -> Cyclic 18 -> Location
 advance (Location { position, ring }) offset =

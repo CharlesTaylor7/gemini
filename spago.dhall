@@ -10,6 +10,7 @@
   , "deku"
   , "effect"
   , "enums"
+  , "filterable"
   , "foldable-traversable"
   , "hyrule"
   , "integers"

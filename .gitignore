@@ -4,6 +4,9 @@
 # Spago deps
 /.spago/
 
+# Spago docs folder
+/generated-docs/
+
 # Spago compilation
 /output/
 
