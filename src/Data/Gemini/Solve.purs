@@ -124,15 +124,21 @@ force = (#) unit
 isSolvedFast :: Gemini -> Boolean
 isSolvedFast gemini = all force
   [ \_ -> Set.size (force colors) == 4
-  , \_ -> Array.length (force junctionRings) == 4
-  , \_ -> (force junctionRings) # Array.filter (eq CenterRing) # Array.length #
-      eq 2
-  , checkExtremities
+  , checkRightmostArc
+  , \_ ->
+      let
+        rings = force junctionRings
+      in
+        all force
+          [ \_ -> Array.length rings == 4
+          , \_ -> rings # Array.filter (eq CenterRing) # Array.length # eq 2
+          ]
   ]
   where
-
-  checkExtremities :: Unit -> Boolean
-  checkExtremities _ =
+  -- | checking the junctions + the right ring is enough
+  -- | the remaining leftmost arc
+  checkRightmostArc :: Unit -> Boolean
+  checkRightmostArc _ =
     any force
       [ \_ -> checkFrom (location RightRing 17) (cyclic 1)
       , \_ -> checkFrom (location RightRing 10) (-cyclic 1)
