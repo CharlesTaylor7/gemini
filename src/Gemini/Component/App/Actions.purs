@@ -1,6 +1,6 @@
 module Gemini.Component.App.Actions
   ( keyboardEvents
-  , scramble
+  , scramble2
   ) where
 
 import Gemini.Prelude
@@ -15,6 +15,7 @@ import Data.Unfoldable (replicateA)
 import Effect.Console as Console
 import Effect.Random (randomInt)
 import Gemini.Store as Store
+import Random.LCG (mkSeed)
 import Test.QuickCheck.Gen (Gen)
 import Test.QuickCheck.Gen as Gen
 import Web.UIEvent.KeyboardEvent as Event
@@ -45,6 +46,13 @@ keyboardEvents { gemini, pushConfetti } =
     gemini <- Store.read gemini
     when (Gemini.isSolved gemini)
       $ pushConfetti FadeIn
+
+scramble2 :: Store Gemini -> Effect Unit
+scramble2 store =
+  Store.set store $
+    Gen.evalGen
+      (arbitrary <#> \(AlmostSolvedGemini g) -> g)
+      { newSeed: mkSeed 1847507541, size: 0 }
 
 scramble :: Store Gemini -> Effect Unit
 scramble store = do
