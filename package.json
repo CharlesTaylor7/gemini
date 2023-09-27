@@ -8,7 +8,7 @@
   "scripts": {
     "setup:dhall": "cabal install dhall",
     "postinstall": "spago install",
-    "watch:purs": "spago build -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
+    "watch:purs": "spago build --clear-screen -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
     "watch:js": "PORT=3000 vite",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
     "prebuild": "yarn run tailwind && cp -r static/* dist/",
@@ -28,7 +28,7 @@
     "purescript": "^0.15.10",
     "purescript-psa": "^0.8.2",
     "purs-tidy": "^0.10.0",
-    "spago": "^0.93.14",
+    "spago": "^0.21.0",
     "tailwindcss": "^3.3.3",
     "vite": "^4.4.9"
   }
