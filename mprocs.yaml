@@ -1,6 +1,6 @@
 procs:
   Test:
-    shell: yarn test --clear-screen --watch
+    shell: watchexec -e purs,js -- yarn test
 
   Dev Server:
     shell: yarn watch:js

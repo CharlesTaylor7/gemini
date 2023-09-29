@@ -6,19 +6,14 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "setup:dhall": "cabal install dhall",
     "postinstall": "spago install",
-    "watch:purs": "spago build --clear-screen -w --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
+    "test": "spago test --censor-code=ImplicitQualifiedImportReExport,ShadowedName",
+    "watch:purs": "watchexec -e purs,js -- spago build --censor-codes=ImplicitQualifiedImportReExport,ShadowedName",
     "watch:js": "PORT=3000 vite",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
-    "prebuild": "yarn run tailwind && cp -r static/* dist/",
-    "build": "yarn spago bundle-app --minify --source-maps --to dist/index.js",
+    "prebuild": "yarn tailwind && cp -r static/* dist/",
+    "build": "spago bundle --minify --outfile dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
-    "format": "yarn format:purs; yarn format:js; yarn format:dhall",
-    "format:purs": "purs-tidy format-in-place \"src/**/*.purs\" \"test/**/*.purs\" \"benchmark/**/*.purs\"",
-    "format:js": "prettier --write src",
-    "format:dhall": "dhall format --transitive spago.dhall",
-    "test": "spago test --purs-args \"--censor-codes=ImplicitQualifiedImportReExport,ShadowedName\"",
     "bench": "spago run -m Benchmark.Main"
   },
   "devDependencies": {
@@ -28,7 +23,7 @@
     "purescript": "^0.15.10",
     "purescript-psa": "^0.8.2",
     "purs-tidy": "^0.10.0",
-    "spago": "^0.21.0",
+    "spago": "^0.93.14",
     "tailwindcss": "^3.3.3",
     "vite": "^4.4.9"
   }
