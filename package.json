@@ -12,7 +12,7 @@
     "watch:js": "PORT=3000 vite",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
     "prebuild": "yarn tailwind && cp -r static/* dist/",
-    "build": "spago bundle --minify --outfile dist/index.js",
+    "build": "spago bundle --minify --source-maps --outfile dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
     "bench": "spago run -m Benchmark.Main"
   },
@@ -20,7 +20,7 @@
     "benchmark": "^2.1.4",
     "esbuild": "^0.19.2",
     "prettier": "^3.0.2",
-    "purescript": "^0.15.10",
+    "purescript": "^0.15.11",
     "purescript-psa": "^0.8.2",
     "purs-tidy": "^0.10.0",
     "spago": "^0.93.14",
