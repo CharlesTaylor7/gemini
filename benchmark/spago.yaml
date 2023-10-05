@@ -1,2 +1,11 @@
 package:
   name: gemini-bench
+  dependencies:
+    - benchotron
+    - console
+    - effect
+    - partial
+    - prelude
+    - quickcheck
+    - random
+ 

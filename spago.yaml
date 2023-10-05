@@ -1,8 +1,8 @@
 package:
+  name: gemini
   dependencies:
     - aff
     - arrays
-    - benchotron
     - console
     - control
     - datetime
@@ -24,8 +24,6 @@ package:
     - quickcheck
     - random
     - safe-coerce
-    - spec
-    - spec-quickcheck
     - st
     - strings
     - tuples
@@ -34,7 +32,15 @@ package:
     - web-dom
     - web-events
     - web-uievents
-  name: gemini
+
+    - spec
+    - spec-quickcheck
+test:
+  deps:
+    - quickcheck
+    - spec
+    - spec-quickcheck
+
 workspace:
   extra_packages:
     benchotron:
