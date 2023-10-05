@@ -6,7 +6,7 @@ import Data.Cyclic (Cyclic, CyclicOrdering(..), compareCyclic, cyclic, unCyclic)
 import Data.Foldable (fold, foldMap)
 import Data.Group (invert)
 import Test.Spec (Spec, describe, it)
-import Test.Spec.Assertions (shouldEqual, shouldSatisfy)
+import Test.Spec.Assertions (shouldEqual)
 
 spec :: Spec Unit
 spec = do

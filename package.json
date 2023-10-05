@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "postinstall": "spago install",
+    "test": "spago build --censor-code=ImplicitQualifiedImportReExport,ShadowedName",
     "test": "spago test --censor-code=ImplicitQualifiedImportReExport,ShadowedName",
     "watch:purs": "watchexec -e purs,js -- spago build --censor-codes=ImplicitQualifiedImportReExport,ShadowedName",
     "watch:js": "PORT=3000 vite",
