@@ -32,15 +32,25 @@ package:
     - web-dom
     - web-events
     - web-uievents
+
     - spec
     - spec-quickcheck
 test:
+  main: Test.Main
   deps:
-    - quickcheck
     - spec
     - spec-quickcheck
+    - quickcheck
 
 workspace:
+  build_opts:
+    stash: true
+    stashFile: .stash
+    strict: false
+      # censor_warnings: project
+      # censor_codes:
+      # - ImplicitQualifiedImportReExport
+      # - ImplicitQualifiedImport
   extra_packages:
     benchotron:
       dependencies:
