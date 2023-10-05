@@ -1,4 +1,4 @@
-module Test.Gemini.Gen
+module Data.Gemini.Gen
   ( module ReExport
   , AnyLocation(..)
   , AnyPermutation(..)

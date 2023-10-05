@@ -2,8 +2,8 @@ module Gemini.Component.App
   ( component
   ) where
 
+-- import Data.Gemini.Gen
 import Gemini.Prelude
-import Test.Gemini.Gen
 
 import ClassName as Class
 import Data.Gemini as Gemini

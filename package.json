@@ -7,14 +7,14 @@
   "type": "module",
   "scripts": {
     "postinstall": "spago install",
-    "test": "spago test -p gemini --censor-code=ImplicitQualifiedImportReExport,ShadowedName",
+    "test": "spago test --censor-code=ImplicitQualifiedImportReExport,ShadowedName",
     "watch:purs": "watchexec -e purs,js -- spago build --censor-codes=ImplicitQualifiedImportReExport,ShadowedName",
     "watch:js": "PORT=3000 vite",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
     "prebuild": "yarn tailwind && cp -r static/* dist/",
     "build": "spago bundle --minify --source-maps --outfile dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
-    "bench": "spago run -m Benchmark.Main"
+    "bench": "spago run -p gemini-bench -m Benchmark.Main"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",

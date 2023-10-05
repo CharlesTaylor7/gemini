@@ -3,11 +3,11 @@ module Test.Gemini.GeminiSpec where
 import Prelude
 
 import Data.Gemini (applyToGemini, initialGemini, permuteGemini)
+import Data.Gemini.Gen (AlmostSolvedGemini(..), ScrambledGemini(..), SolvedGemini(..))
 import Data.Gemini.Motions (l)
 import Data.Gemini.Solve (isSolved, isSolvedFast)
 import Data.Permutation (transpose)
 import Random.LCG (mkSeed)
-import Test.Gemini.Gen (AlmostSolvedGemini(..), ScrambledGemini(..), SolvedGemini(..))
 import Test.QuickCheck (class Arbitrary, Result(..), (/==), (===))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldNotSatisfy, shouldSatisfy)

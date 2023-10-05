@@ -32,7 +32,6 @@ package:
     - web-dom
     - web-events
     - web-uievents
-
     - spec
     - spec-quickcheck
 test:

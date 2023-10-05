@@ -2,8 +2,8 @@ module Test.Gemini.PermutationSpec where
 
 import Gemini.Prelude
 
+import Data.Gemini.Gen (AnyPermutation(..))
 import Data.Permutation (Permutation)
-import Test.Gemini.Gen (AnyPermutation(..))
 import Test.QuickCheck ((===))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.QuickCheck (quickCheck)

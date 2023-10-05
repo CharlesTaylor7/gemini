@@ -2,7 +2,7 @@ module Test.Gemini.LocationSpec where
 
 import Gemini.Prelude
 
-import Test.Gemini.Gen (AnyLocation(..))
+import Data.Gemini.Gen (AnyLocation(..))
 import Test.QuickCheck (Result(..), (===))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)

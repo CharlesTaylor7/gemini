@@ -4,11 +4,10 @@ import Prelude
 
 import Benchotron.Core (Benchmark, benchFn, mkBenchmark)
 import Benchotron.UI.Console (runSuite)
+import Data.Gemini.Gen (AlmostSolvedGemini(..), ScrambledGemini(..), SolvedGemini(..), arbitrary)
 import Data.Gemini.Solve (isSolved, isSolvedFast)
 import Effect (Effect)
 import Partial.Unsafe (unsafeCrashWith)
-import Test.Gemini.Gen (AlmostSolvedGemini(..), ScrambledGemini(..), SolvedGemini(..))
-import Test.QuickCheck.Arbitrary (arbitrary)
 
 main :: Effect Unit
 main = runSuite [ solveDetection ]

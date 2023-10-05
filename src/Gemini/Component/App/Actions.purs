@@ -3,8 +3,8 @@ module Gemini.Component.App.Actions
   , scramble2
   ) where
 
+import Data.Gemini.Gen
 import Gemini.Prelude
-import Test.Gemini.Gen
 
 import Data.Array as Array
 import Data.Gemini as Gemini
