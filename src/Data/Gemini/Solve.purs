@@ -125,6 +125,7 @@ isSolvedFast :: Gemini -> Boolean
 isSolvedFast gemini = all force
   [ \_ -> Set.size (force colors) == 4
   , checkRightmostArc
+  , checkLeftmostArc
   , \_ ->
       let
         rings = force junctionRings
@@ -135,19 +136,23 @@ isSolvedFast gemini = all force
           ]
   ]
   where
-  -- | checking the junctions + the right ring is enough
-  -- | the remaining leftmost arc
   checkRightmostArc :: Unit -> Boolean
   checkRightmostArc _ =
     any force
       [ \_ -> checkFrom (location RightRing 17) (cyclic 1)
       , \_ -> checkFrom (location RightRing 10) (-cyclic 1)
       ]
-    where
 
-    checkFrom :: Location -> DiskIndex -> Boolean
-    checkFrom start offset =
-      1 + go start offset 0 start == diskCount (color start)
+  checkLeftmostArc :: Unit -> Boolean
+  checkLeftmostArc _ =
+    any force
+      [ \_ -> checkFrom (location LeftRing 1) (-cyclic 1)
+      , \_ -> checkFrom (location LeftRing 8) (cyclic 1)
+      ]
+
+  checkFrom :: Location -> DiskIndex -> Boolean
+  checkFrom start offset =
+    1 + go start offset 0 start == diskCount (color start)
 
   colors :: Unit -> Set Color
   colors _ =

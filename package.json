@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "postinstall": "spago install",
-    "test": "spago test --censor-code=ImplicitQualifiedImportReExport,ShadowedName",
+    "test": "spago test",
     "watch:js": "PORT=3000 vite",
     "watch:purs": "watchexec -e purs,yaml,js -- spago build",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
