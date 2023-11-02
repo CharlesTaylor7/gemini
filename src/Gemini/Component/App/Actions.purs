@@ -24,12 +24,11 @@ import Web.UIEvent.KeyboardEvent as Event
 keyboardEvents ::
   forall rest.
   { gemini :: Store Gemini
-  , pushConfetti :: Pusher Confetti
   | rest
   } ->
   Event.KeyboardEvent ->
   Effect Unit
-keyboardEvents { gemini, pushConfetti } =
+keyboardEvents { gemini } =
   Event.key
     >>> case _ of
       "q" -> apply $ l' 1
@@ -41,11 +40,7 @@ keyboardEvents { gemini, pushConfetti } =
       key -> log key
   where
   apply :: Motion -> Effect Unit
-  apply motion = do
-    Store.modify gemini $ Gemini.applyToGemini motion
-    gemini <- Store.read gemini
-    when (Gemini.isSolved gemini)
-      $ pushConfetti FadeIn
+  apply motion = Store.modify gemini $ Gemini.applyToGemini motion
 
 scramble :: Store Gemini -> Effect Unit
 scramble store = do

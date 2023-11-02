@@ -6,6 +6,7 @@ import Gemini.Prelude
 
 import ClassName as Class
 import Data.Gemini as Gemini
+import Data.Gemini.Solve (isSolvedFast)
 import Data.Time.Duration (Milliseconds(..))
 import Deku.DOM as D
 import Deku.Do as Deku
@@ -23,14 +24,16 @@ component = Deku.do
   gemini <- useStore Gemini.initialGemini
   drag <- useStore (Nothing :: _ Drag)
   pushConfetti /\ confetti <- useState'
+  useAff (Store.subscribe gemini)
+    $ \gemini -> when (isSolvedFast gemini)
+        (liftEffect $ pushConfetti FadeIn)
+
   useAff confetti
     $ case _ of
         FadeIn -> do
           liftEffect $ Console.log "fade in"
-        {-
-        delay $ Milliseconds 1000.0
-        liftEffect $ pushConfetti FadeOut
-        -}
+          delay $ Milliseconds 1000.0
+          liftEffect $ pushConfetti FadeOut
         FadeOut -> do
           liftEffect $ Console.log "fade out"
           delay $ Milliseconds 1000.0
