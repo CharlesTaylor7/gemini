@@ -23,10 +23,13 @@ component :: Nut
 component = Deku.do
   gemini <- useStore Gemini.initialGemini
   drag <- useStore (Nothing :: _ Drag)
+  scrambleTime <- useStore (Nothing :: _ Number)
   pushConfetti /\ confetti <- useState'
-  useAff (Store.subscribe gemini)
-    $ \gemini -> when (isSolvedFast gemini)
-        (liftEffect $ pushConfetti FadeIn)
+  useEffect (Store.subscribe gemini)
+    $ \gemini -> do
+        time <- Store.read scrambleTime
+        when (time /= Nothing && isSolvedFast gemini)
+          (pushConfetti FadeIn)
 
   useAff confetti
     $ case _ of
@@ -38,7 +41,6 @@ component = Deku.do
           liftEffect $ Console.log "fade out"
           delay $ Milliseconds 1000.0
           liftEffect $ pushConfetti Off
-
         Off -> do
           liftEffect $ Console.log "off"
   let resize = Resize.observe
