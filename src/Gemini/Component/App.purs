@@ -46,7 +46,7 @@ component = Deku.do
   let resize = Resize.observe
   domInfo <- useRef initialDomInfo $ bindToEffect resize.event $ const
     loadDomInfo
-  let props = { gemini, drag, domInfo, pushConfetti }
+  let props = { gemini, drag, domInfo, scrambleTime }
   ( pursx ::
       _
         """
@@ -62,7 +62,7 @@ component = Deku.do
         """
   )
     ~~
-      { header: header gemini
+      { header: header props
       , confettiAttrs:
           Class.name
             [ pure "confetti"
@@ -91,8 +91,14 @@ component = Deku.do
       , footer
       }
 
-header :: Store Gemini -> Nut
-header store =
+header ::
+  forall rest.
+  { gemini :: Store Gemini
+  , scrambleTime :: Store (Maybe Number)
+  | rest
+  } ->
+  Nut
+header { gemini, scrambleTime } =
   ( pursx ::
       _
         """
@@ -113,9 +119,12 @@ header store =
             , "hidden" # Class.when (pure isTouchDevice)
             ]
       , solveAttrs:
-          D.OnClick !:= Store.set store initialGemini
+          D.OnClick !:= Store.set gemini initialGemini
       , scrambleAttrs:
-          D.OnClick !:= scramble store
+          D.OnClick !:= do
+            scramble gemini
+            -- TODO: get current time
+            Store.set scrambleTime $ Just 0.0
       }
 
 footer :: Nut
