@@ -614,6 +614,10 @@ div:focus {
   gap: 3rem !important;
 }
 
+.gap-3 {
+  gap: 0.75rem !important;
+}
+
 .p-2 {
   padding: 0.5rem !important;
 }
