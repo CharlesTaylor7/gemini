@@ -1,6 +1,6 @@
 module Gemini.Component.App.Actions
   ( keyboardEvents
-  , scramble2
+  , scramble
   ) where
 
 import Data.Gemini.Gen
@@ -46,13 +46,6 @@ keyboardEvents { gemini, pushConfetti } =
     gemini <- Store.read gemini
     when (Gemini.isSolved gemini)
       $ pushConfetti FadeIn
-
-scramble2 :: Store Gemini -> Effect Unit
-scramble2 store =
-  Store.set store $
-    Gen.evalGen
-      (arbitrary <#> \(AlmostSolvedGemini g) -> g)
-      { newSeed: mkSeed 1847507541, size: 0 }
 
 scramble :: Store Gemini -> Effect Unit
 scramble store = do
