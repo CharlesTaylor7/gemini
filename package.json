@@ -12,7 +12,7 @@
     "watch:purs": "watchexec -e purs,yaml,js -- spago build",
     "tailwind": "tailwindcss -i tailwind.source.css -o dist/tailwind.css",
     "prebundle": "yarn tailwind && cp -r static/* dist/",
-    "bundle": "spago bundle --minify --source-maps --outfile dist/index.js",
+    "bundle": "spago bundle -p gemini --minify --outfile dist/index.js",
     "clean:purs": "rm -rf .spago/ output/",
     "bench": "spago run -p gemini-bench -m Benchmark.Main"
   },
