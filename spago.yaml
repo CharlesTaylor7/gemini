@@ -43,6 +43,7 @@ test:
     - quickcheck
 
 workspace:
+  lock: true
   extra_packages:
     benchotron:
       dependencies:
