@@ -2,7 +2,6 @@ module Gemini.Component.App
   ( component
   ) where
 
--- import Data.Gemini.Gen
 import Gemini.Prelude
 
 import ClassName as Class
@@ -18,7 +17,6 @@ import Gemini.DomInfo (initialDomInfo, loadDomInfo)
 import Gemini.Store (Store, useStore)
 import Gemini.Store as Store
 import Resize as Resize
-import Test.QuickCheck (arbitrary)
 
 component :: Nut
 component = Deku.do
@@ -94,7 +92,10 @@ header store =
       _
         """
     <div ~headerAttrs~>
-      <button class="action-button" ~buttonAttrs~>
+      <button class="action-button" ~solveAttrs~>
+        Solve
+      </button>
+      <button class="action-button" ~scrambleAttrs~>
         Scramble
       </button>
     </div>
@@ -103,10 +104,12 @@ header store =
     ~~
       { headerAttrs:
           Class.name
-            [ pure "flex justify-center"
+            [ pure "flex gap-3 justify-center"
             , "hidden" # Class.when (pure isTouchDevice)
             ]
-      , buttonAttrs:
+      , solveAttrs:
+          D.OnClick !:= Store.set store initialGemini
+      , scrambleAttrs:
           D.OnClick !:= scramble store
       }
 
