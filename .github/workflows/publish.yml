@@ -21,16 +21,23 @@ jobs:
       - name: Cache PureScript dependencies
         uses: actions/cache@v3
         with:
-          key: spago-${{ hashFiles('**/*.dhall') }}
+          key: spago-${{ hashFiles('**/spago.lock') }}
           path: |
             .spago
             output
 
-      - name: Test & Build
+      - name: Cache NPM dependencies
+        uses: actions/cache@v3
+        with:
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+          path: |
+            node_modules
+
+      - name: Test & Bundle
         run: |
           yarn
           yarn test
-          yarn build
+          yarn bundle
 
       # How to setup deploy key:
       # https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-create-ssh-deploy-key
