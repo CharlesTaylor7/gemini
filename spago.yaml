@@ -14,6 +14,7 @@ package:
     - foldable-traversable
     - hyrule
     - integers
+    - js-date
     - lists
     - maybe
     - numbers
@@ -30,17 +31,21 @@ package:
     - web-dom
     - web-events
     - web-uievents
-
-    - spec-quickcheck
-test:
-  main: Test.Main
-  deps:
-    - spec
-    - spec-quickcheck
-    - quickcheck
+  build:
+    censor_package_warnings:
+      - WildCardInferredType
+      - ShadowedName
+  test:
+    main: Test.Main
+    dependencies:
+      - spec
+      - spec-quickcheck
+      - quickcheck
 
 workspace:
   lock: true
+  build_opts:
+    censor_library_warnings: all
   extra_packages:
     benchotron:
       dependencies:

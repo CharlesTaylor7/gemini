@@ -16,4 +16,3 @@
 
 # Refactor 
 - [ ] Gemini array has only 50 elements instead of 54
-

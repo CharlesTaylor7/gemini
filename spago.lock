@@ -16,6 +16,7 @@ workspace:
         - foldable-traversable
         - hyrule
         - integers
+        - js-date
         - lists
         - maybe
         - numbers
@@ -24,7 +25,6 @@ workspace:
         - prelude
         - random
         - safe-coerce
-        - spec-quickcheck
         - st
         - strings
         - tuples
@@ -33,7 +33,10 @@ workspace:
         - web-dom
         - web-events
         - web-uievents
-      test_dependencies: []
+      test_dependencies:
+        - quickcheck
+        - spec
+        - spec-quickcheck
     gemini-bench:
       path: benchmark
       dependencies:

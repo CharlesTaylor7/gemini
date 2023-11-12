@@ -5,12 +5,15 @@ module Gemini.Component.App
 import Gemini.Prelude
 
 import ClassName as Class
+import Data.DateTime.Instant as Instant
 import Data.Gemini as Gemini
 import Data.Gemini.Solve (isSolvedFast)
+import Data.JSDate as Date
 import Data.Time.Duration (Milliseconds(..))
 import Deku.DOM as D
 import Deku.Do as Deku
 import Effect.Console as Console
+import Effect.Now as Now
 import Gemini.Component.App.Actions (keyboardEvents, scramble)
 import Gemini.Component.Puzzle as Puzzle
 import Gemini.Component.Puzzle.Actions (onDragEnd, onDragUpdate)
@@ -19,17 +22,24 @@ import Gemini.Store (Store, useStore)
 import Gemini.Store as Store
 import Resize as Resize
 
-component :: Nut
-component = Deku.do
+useAppState :: (_ -> _) -> Nut
+useAppState continuation = Deku.do
   gemini <- useStore Gemini.initialGemini
   drag <- useStore (Nothing :: _ Drag)
-  scrambleTime <- useStore (Nothing :: _ Number)
+  scrambleTime <- useStore Nothing
+  setSolveTime /\ solveTime <- useState'
   pushConfetti /\ confetti <- useState'
   useEffect (Store.subscribe gemini)
     $ \gemini -> do
-        time <- Store.read scrambleTime
-        when (time /= Nothing && isSolvedFast gemini)
-          (pushConfetti FadeIn)
+        startTime <- Store.read scrambleTime
+        case startTime of
+          Just start ->
+            when (isSolvedFast gemini) do
+              now <- Now.now
+              setSolveTime $ (Instant.diff now start :: Milliseconds)
+              pushConfetti FadeIn
+          Nothing ->
+            pure unit
 
   useAff confetti
     $ case _ of
@@ -43,10 +53,15 @@ component = Deku.do
           liftEffect $ pushConfetti Off
         Off -> do
           liftEffect $ Console.log "off"
+
   let resize = Resize.observe
-  domInfo <- useRef initialDomInfo $ bindToEffect resize.event $ const
-    loadDomInfo
-  let props = { gemini, drag, domInfo, scrambleTime }
+  domInfo <- useRef initialDomInfo $ bindToEffect resize.event $ const loadDomInfo
+
+  continuation { resize, gemini, drag, domInfo, solveTime, scrambleTime, confetti }
+
+component :: Nut
+component = Deku.do
+  props <- useAppState
   ( pursx ::
       _
         """
@@ -66,18 +81,19 @@ component = Deku.do
       , confettiAttrs:
           Class.name
             [ pure "confetti"
-            -- , "fade-in" # Class.when (confetti <#> eq FadeIn)
-            -- , "fade-out" # Class.when (confetti <#> eq FadeOut)
+            , "fade-in" # Class.when (props.confetti <#> eq FadeIn)
+            , "fade-out" # Class.when (props.confetti <#> eq FadeOut)
             ]
       -- TODO: use oneOf, or whatever is more efficient
       , attrs:
           Class.name
             [ pure "fixed w-full h-full flex justify-center"
-            , "cursor-grabbing" # Class.when (Store.subscribe drag <#> isJust)
+            , "cursor-grabbing" # Class.when
+                (Store.subscribe props.drag <#> isJust)
             ]
             <|> autoFocus
             <|> tabIndex (pure 0)
-            <|> (D.Self !:= \e -> resize.listen e)
+            <|> (D.Self !:= \e -> props.resize.listen e)
             <|> (D.OnKeydown !:= keyboard (keyboardEvents props))
             -- | mouse controls
             <|> (D.OnMousemove !:= mouse (onDragUpdate props))
@@ -94,7 +110,7 @@ component = Deku.do
 header ::
   forall rest.
   { gemini :: Store Gemini
-  , scrambleTime :: Store (Maybe Number)
+  , scrambleTime :: Store (Maybe _)
   | rest
   } ->
   Nut
@@ -102,11 +118,11 @@ header { gemini, scrambleTime } =
   ( pursx ::
       _
         """
-    <div ~headerAttrs~>
-      <button class="action-button" ~solveAttrs~>
+    <div ~headerAttrs~ >
+      <button class="action-button" ~solveAttrs~ >
         Solve
       </button>
-      <button class="action-button" ~scrambleAttrs~>
+      <button class="action-button" ~scrambleAttrs~ >
         Scramble
       </button>
     </div>
@@ -123,8 +139,8 @@ header { gemini, scrambleTime } =
       , scrambleAttrs:
           D.OnClick !:= do
             scramble gemini
-            -- TODO: get current time
-            Store.set scrambleTime $ Just 0.0
+            now <- Now.now
+            Store.set scrambleTime $ Just now
       }
 
 footer :: Nut
@@ -132,7 +148,7 @@ footer =
   ( pursx ::
       _
         """
-      <div ~footer~>
+      <div ~footer~ >
         <div class="text-2xl">
           <div>Q: Rotate left disk counter clockwise</div>
           <div>W: Rotate left disk clockwise</div>
