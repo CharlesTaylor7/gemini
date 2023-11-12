@@ -14,14 +14,12 @@ package:
     - foldable-traversable
     - hyrule
     - integers
-    - lcg
     - lists
     - maybe
     - numbers
     - ordered-collections
     - partial
     - prelude
-    - quickcheck
     - random
     - safe-coerce
     - st
@@ -33,7 +31,6 @@ package:
     - web-events
     - web-uievents
 
-    - spec
     - spec-quickcheck
 test:
   main: Test.Main
