@@ -9,8 +9,7 @@ module Gemini.Store
 
 import Prelude
 
-import Data.Maybe (Maybe(..))
-import Data.Tuple.Nested (type (/\), (/\))
+import Data.Tuple.Nested ((/\))
 import Deku.Core (Nut)
 import Deku.Do as Deku
 import Deku.Extra (Event)
